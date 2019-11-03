@@ -4,7 +4,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns dactyl-keyboard.cad.key
-  (:require [scad-clj.model :exclude [use import] :refer :all]
+  (:require [scad-clj.model :as model]
             [scad-tarmi.core :refer [abs π]]
             [scad-tarmi.maybe :as maybe]
             [scad-tarmi.util :refer [loft]]
@@ -161,17 +161,18 @@
   [getopt cluster coord {h3 :height wd3 :top-width m :margin}]
   (let [cmp (getopt :dfm :derived :compensator)
         t 1
-        step (fn [x y h] (translate [0 0 h] (cube (cmp x) (cmp y) t)))
+        step (fn [x y h]
+               (model/translate [0 0 h] (model/cube (cmp x) (cmp y) t)))
         prop (key-properties getopt cluster coord)
-        {:keys [style switch-type skirt-length unit-size]} prop
+        {:keys [switch-type skirt-length]} prop
         ;; The size of the switch with overhangs is not to be confused with
         ;; capdata/switch-footprint.
         {sx :x, sy :y} (get-in switch-properties [switch-type :foot])
         [wx wy] (capdata/skirt-footprint prop)
         h1 (capdata/pressed-clearance switch-type skirt-length)
         h2 (capdata/resting-clearance switch-type skirt-length)]
-    (color (:cap-negative generics/colours)
-      (translate [0 0 (getopt :case :key-mount-thickness)]
+    (model/color (:cap-negative generics/colours)
+      (model/translate [0 0 (getopt :case :key-mount-thickness)]
         (loft
           [(step (+ sx m) (+ sy m) (/ t 2)) ; A bottom plate for ease of mounting a switch.
            (step (+ sx m) (+ sy m) 1) ; Roughly the height of the foot of the switch.
@@ -189,14 +190,15 @@
   (->>
     (merge {:supported supported} (getopt :keys :derived key-style))
     keycap
-    (translate [0 0 (+ (getopt :case :key-mount-thickness)
-                       (getopt :keys :derived key-style :vertical-offset))])
-    (color (:cap-body generics/colours))))
+    (model/translate
+      [0 0 (+ (getopt :case :key-mount-thickness)
+              (getopt :keys :derived key-style :vertical-offset))])
+    (model/color (:cap-body generics/colours))))
 
 (defn cap-positive
   "Recall of the results of single-cap for a particular coordinate."
   [getopt cluster coord]
-  (call-module (:module-keycap (key-properties getopt cluster coord))))
+  (model/call-module (:module-keycap (key-properties getopt cluster coord))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -217,19 +219,19 @@
         {hole-x :x, hole-y :y} (get-in switch-properties [:alps :hole])
         height-to-plate-top 4.5
         {foot-x :x, foot-y :y} (get-in switch-properties [:alps :foot])]
-    (union
+    (model/union
       ;; Space for the part of a switch above the mounting hole.
       ;; The actual height of the notches is 1 mm and it’s not a full cuboid.
-      (translate [0 0 (/ thickness 2)]
-        (cube foot-x foot-y thickness))
+      (model/translate [0 0 (/ thickness 2)]
+        (model/cube foot-x foot-y thickness))
       ;; The hole through the plate.
-      (translate [0 0 (/ height-to-plate-top -2)]
-        (cube hole-x hole-y (plate-cutout-height getopt height-to-plate-top)))
+      (model/translate [0 0 (/ height-to-plate-top -2)]
+        (model/cube hole-x hole-y (plate-cutout-height getopt height-to-plate-top)))
       ;; ALPS-specific space for wings to flare out inside the plate.
-      (translate [0 0 (- (/ height-to-plate-top -2) 0.6)]
-        (difference
-          (cube (inc hole-x) hole-y height-to-plate-top)
-          (cube (inc hole-x) 7.5 height-to-plate-top))))))
+      (model/translate [0 0 (- (/ height-to-plate-top -2) 0.6)]
+        (model/difference
+          (model/cube (inc hole-x) hole-y height-to-plate-top)
+          (model/cube (inc hole-x) 7.5 height-to-plate-top))))))
 
 (defn mx-switch
   "One MX Cherry-compatible cutout model. Square."
@@ -240,26 +242,26 @@
         height-to-plate-top 5.004
         nub-radius 1
         nub-depth 4
-        nub (->> (cylinder nub-radius 2.75)
-                 (with-fn 20)
-                 (rotate [(/ π 2) 0 0])
-                 (translate [(/ hole-xy 2) 0 (- nub-radius nub-depth)])
-                 (hull
-                   (translate [(+ 3/4 (/ hole-xy 2)) 0 (/ nub-depth -2)]
-                     (cube 1.5 2.75 nub-depth))))]
-    (difference
-      (union
+        nub (->> (model/cylinder nub-radius 2.75)
+                 (model/with-fn 20)
+                 (model/rotate [(/ π 2) 0 0])
+                 (model/translate [(/ hole-xy 2) 0 (- nub-radius nub-depth)])
+                 (model/hull
+                   (model/translate [(+ 3/4 (/ hole-xy 2)) 0 (/ nub-depth -2)]
+                     (model/cube 1.5 2.75 nub-depth))))]
+    (model/difference
+      (model/union
         ;; Space for the part of a switch above the mounting hole.
-        (translate [0 0 (/ thickness 2)]
-          (cube foot-xy foot-xy thickness))
+        (model/translate [0 0 (/ thickness 2)]
+          (model/cube foot-xy foot-xy thickness))
         ;; The hole through the plate.
-        (translate [0 0 (/ height-to-plate-top -2)]
-          (cube hole-xy hole-xy
+        (model/translate [0 0 (/ height-to-plate-top -2)]
+          (model/cube hole-xy hole-xy
             (plate-cutout-height getopt height-to-plate-top))))
       ;; MX-specific nubs that hold the keyswitch in place.
-      (union
+      (model/union
         nub
-        (mirror [0 1 0] (mirror [1 0 0] nub))))))
+        (model/mirror [0 1 0] (model/mirror [1 0 0] nub))))))
 
 (defn single-switch
   "Negative space for the insertion of a key switch through a mounting plate."
@@ -279,21 +281,21 @@
   (let [thickness (getopt :case :key-mount-thickness)
         style-data (getopt :keys :derived key-style)
         [x y] (map capdata/key-length (get style-data :unit-size [1 1]))]
-   (translate [0 0 (/ thickness -2)]
-     (cube x y thickness))))
+   (model/translate [0 0 (/ thickness -2)]
+     (model/cube x y thickness))))
 
 (defn web-post
   "A shape for attaching things to a corner of a switch mount."
   [getopt]
-  (cube (getopt :case :key-mount-corner-margin)
-        (getopt :case :key-mount-corner-margin)
-        (getopt :case :web-thickness)))
+  (model/cube (getopt :case :key-mount-corner-margin)
+              (getopt :case :key-mount-corner-margin)
+              (getopt :case :web-thickness)))
 
 (defn mount-corner-post
   "A post shape that comes offset for one corner of a key mount."
   [getopt key-style directions]
   (->> (web-post getopt)
-       (translate (place/mount-corner-offset getopt key-style directions))))
+       (model/translate (place/mount-corner-offset getopt key-style directions))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -301,16 +303,18 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn cluster-plates [getopt cluster]
-  (apply union (map #(place/cluster-place getopt cluster %
-                       (single-plate getopt
-                         (most-specific getopt [:key-style] cluster %)))
-                    (derived getopt cluster :key-coordinates))))
+  (apply model/union
+    (map #(place/cluster-place getopt cluster %
+            (single-plate getopt
+              (most-specific getopt [:key-style] cluster %)))
+         (derived getopt cluster :key-coordinates))))
 
 (defn cluster-cutouts [getopt cluster]
-  (apply union (map #(place/cluster-place getopt cluster %1
-                       (call-module
-                         (:module-switch (key-properties getopt cluster %1))))
-                    (derived getopt cluster :key-coordinates))))
+  (apply model/union
+     (map #(place/cluster-place getopt cluster %1
+             (model/call-module
+               (:module-switch (key-properties getopt cluster %1))))
+          (derived getopt cluster :key-coordinates))))
 
 (defn cluster-channels [getopt cluster]
   (letfn [(modeller [coord]
@@ -320,13 +324,15 @@
                 {:top-width (most [:channel :top-width])
                  :height (most [:channel :height])
                  :margin (most [:channel :margin])})))]
-    (apply union (map #(place/cluster-place getopt cluster % (modeller %))
-                      (derived getopt cluster :key-coordinates)))))
+    (apply model/union
+      (map #(place/cluster-place getopt cluster % (modeller %))
+           (derived getopt cluster :key-coordinates)))))
 
 (defn cluster-keycaps [getopt cluster]
-  (apply union (map #(place/cluster-place getopt cluster %
-                       (cap-positive getopt cluster %))
-                    (derived getopt cluster :key-coordinates))))
+  (apply model/union
+    (map #(place/cluster-place getopt cluster %
+            (cap-positive getopt cluster %))
+         (derived getopt cluster :key-coordinates))))
 
 (defn metacluster
   "Apply passed modelling function to all key clusters."

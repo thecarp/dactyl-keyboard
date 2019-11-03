@@ -16,9 +16,8 @@
             [dactyl-keyboard.cad.key :as key]
             [dactyl-keyboard.cad.body :as body]
             [dactyl-keyboard.cad.wrist :as wrist]
-            [dactyl-keyboard.param.access :refer [most-specific
-                                                  get-key-alias
-                                                  tweak-data]]))
+            [dactyl-keyboard.param.access
+             :refer [most-specific get-key-alias tweak-data]]))
 
 
 ;;;;;;;;;;;

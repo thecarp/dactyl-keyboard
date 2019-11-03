@@ -4,7 +4,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns dactyl-keyboard.cad.body
-  (:require [scad-clj.model :exclude [use import] :refer :all]
+  (:require [scad-clj.model :as model]
             [scad-tarmi.core :refer [mean]]
             [scad-tarmi.maybe :as maybe]
             [scad-tarmi.threaded :as threaded]
@@ -25,10 +25,11 @@
   "Implement overall limits on passed shapes."
   [getopt with-plate & shapes]
   (let [plate (if with-plate (getopt :case :bottom-plate :thickness) 0)]
-    (intersection
+    (model/intersection
       (maybe/translate [0 0 plate]
-        (translate (getopt :mask :center) (apply cube (getopt :mask :size))))
-      (apply union shapes))))
+        (model/translate (getopt :mask :center)
+          (apply model/cube (getopt :mask :size))))
+      (apply model/union shapes))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;
@@ -81,7 +82,7 @@
   (web-shapes (matrix/coordinate-pairs columns rows) spotter placer corner-finder))
 
 (defn cluster-web [getopt cluster]
-  (apply union
+  (apply model/union
     (walk-and-web
       (getopt :key-clusters :derived :by-cluster cluster :column-range)
       (getopt :key-clusters :derived :by-cluster cluster :row-range)
@@ -150,14 +151,14 @@
   [getopt cluster edges]
   (let [upper (map (partial wall-edge-post getopt cluster true) edges)
         lower (map (partial wall-edge-post getopt cluster false) edges)]
-   (union
-     (apply hull upper)
+   (model/union
+     (apply model/hull upper)
      (apply misc/bottom-hull lower))))
 
 (defn cluster-wall
   "Walk the edge of a key cluster, walling it in."
   [getopt cluster]
-  (apply union
+  (apply model/union
     (reduce
       (fn [coll position]
         (conj coll
@@ -174,7 +175,7 @@
 
 (defn- housing-post [getopt]
   (let [xy (getopt :case :rear-housing :wall-thickness)]
-    (cube xy xy (getopt :case :rear-housing :roof-thickness))))
+    (model/cube xy xy (getopt :case :rear-housing :roof-thickness))))
 
 (defn- housing-height
   "The precise height of (the center of) each top-level housing-post."
@@ -215,7 +216,7 @@
   "A cuboid shape between the four corners of the rear housing’s roof."
   [getopt]
   (let [getcorner (partial getopt :case :rear-housing :derived)]
-    (apply hull
+    (apply model/hull
       (map #(maybe/translate (getcorner %) (housing-post getopt))
            [:nw :ne :se :sw]))))
 
@@ -253,7 +254,7 @@
                              (matrix/left (matrix/left (second directions)))]
                             directions))
                         (housing-post getopt))]
-                (apply (if reckon mean hull)
+                (apply (if reckon mean model/hull)
                   (map #(place/housing-place getopt directions % subject)
                        (if upper [0 1] [1]))))))]
     [(cluster-pillar :west-end-coord :west matrix/right matrix/left)
@@ -279,7 +280,7 @@
   "The complete walls of the rear housing: Vertical walls and a bevelled upper
   level that meets the roof."
   [getopt]
-  (union
+  (model/union
     (housing-wall-shape-level getopt true identity)
     (housing-wall-shape-level getopt false misc/bottom-hull)))
 
@@ -303,10 +304,11 @@
      (reduce
        (fn [coll [coord corner]]
          (conj coll
-           (hull (place/cluster-place getopt cluster coord
-                   (key/mount-corner-post getopt (key-style coord) corner))
-                 (translate [(x coord corner) y z]
-                   (housing-post getopt)))))
+           (model/hull
+             (place/cluster-place getopt cluster coord
+               (key/mount-corner-post getopt (key-style coord) corner))
+             (model/translate [(x coord corner) y z]
+               (housing-post getopt)))))
        []
        (getopt :case :rear-housing :derived :coordinate-corner-pairs)))))
 
@@ -321,23 +323,22 @@
                       :east [- (getopt :case :rear-housing :derived :se)])
         near (mapv + base [(+ (- (sign offset)) (sign d)) d (/ (+ t h) -2)])
         far (mapv + near [0 (- n d d) 0])]
-   (hull
-     (translate near shape)
-     (translate far shape))))
+   (model/hull
+     (model/translate near shape)
+     (model/translate far shape))))
 
 (defn- housing-mount-positive [getopt side]
   (let [d (getopt :case :rear-housing :fasteners :diameter)
         w (* 2.2 d)]
    (housing-mount-place getopt side
-     (cube w w (threaded/datum d :hex-nut-height)))))
+     (model/cube w w (threaded/datum d :hex-nut-height)))))
 
 (defn- housing-mount-negative [getopt side]
   (let [d (getopt :case :rear-housing :fasteners :diameter)
-        compensator (getopt :dfm :derived :compensator)
-        mount-side (* 2.2 d)]
-   (union
+        compensator (getopt :dfm :derived :compensator)]
+   (model/union
      (housing-mount-place getopt side
-       (cylinder (/ d 2) 20))
+       (model/cylinder (/ d 2) 20))
      (if (getopt :case :rear-housing :fasteners :bosses)
        (housing-mount-place getopt side
          (threaded/nut :iso-size d :compensator compensator :negative true))))))
@@ -347,11 +348,11 @@
   [getopt]
   (let [prop (partial getopt :case :rear-housing :fasteners)
         pair (fn [function]
-               (union
+               (model/union
                  (if (prop :west :include) (function getopt :west))
                  (if (prop :east :include) (function getopt :east))))]
-   (difference
-     (union
+   (model/difference
+     (model/union
        (housing-roof getopt)
        (housing-web getopt)
        (housing-outer-wall getopt)
@@ -375,8 +376,8 @@
                   (key/web-post getopt))
        :corner directions
        :segment first-segment})
-    (apply hull (map #(tweak-posts getopt anchor directions %1 %1)
-                     (range first-segment (inc last-segment))))))
+    (apply model/hull (map #(tweak-posts getopt anchor directions %1 %1)
+                           (range first-segment (inc last-segment))))))
 
 (declare tweak-plating)
 
@@ -385,14 +386,14 @@
   [getopt node]
   (let [parts (get node :chunk-size)
         at-ground (get node :at-ground false)
-        prefix (if (get node :highlight) -# identity)
-        shapes (reduce (partial tweak-plating getopt) [] (:hull-around node))]
+        prefix (if (get node :highlight) model/-# identity)
+        shapes (reduce (partial tweak-plating getopt) [] (:hull-around node))
+        hull (if at-ground misc/bottom-hull model/hull)]
     (when (get node :above-ground true)
       (prefix
-        (apply (if parts union (if at-ground misc/bottom-hull hull))
+        (apply (if parts model/union hull)
           (if parts
-            (map (partial apply (if at-ground misc/bottom-hull hull))
-                 (partition parts 1 shapes))
+            (map (partial apply hull) (partition parts 1 shapes))
             shapes))))))
 
 (defn- tweak-plating
@@ -406,5 +407,5 @@
 (defn wall-tweaks
   "User-requested additional shapes."
   [getopt]
-  (apply union
+  (apply model/union
     (reduce (partial tweak-plating getopt) [] (tweak-data getopt))))

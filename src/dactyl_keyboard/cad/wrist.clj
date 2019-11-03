@@ -4,7 +4,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns dactyl-keyboard.cad.wrist
-  (:require [scad-clj.model :exclude [use import] :refer :all]
+  (:require [scad-clj.model :as model]
             [scad-tarmi.core :refer [abs sin cos π]]
             [scad-tarmi.maybe :as maybe]
             [scad-tarmi.threaded :as threaded]
@@ -13,11 +13,8 @@
             [thi.ng.geom.polygon :refer [polygon2 inset-polygon]]
             [thi.ng.geom.vector :refer [vec2]]
             [dactyl-keyboard.generics :refer [ESE SSE SSW colours]]
-            [dactyl-keyboard.cad.body :as body]
-            [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.misc :as misc]
-            [dactyl-keyboard.cad.place :as place]
-            [dactyl-keyboard.param.access :as access]))
+            [dactyl-keyboard.cad.place :as place]))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -122,8 +119,7 @@
 (defn- pad-surface-polyhedron
   "A scad-clj polyhedron for the basic surface shape of a rubber pad."
   [getopt]
-  (let [outline (getopt :wrist-rest :derived :outline :base)
-        base-polygon (getopt :wrist-rest :derived :base-polygon)
+  (let [base-polygon (getopt :wrist-rest :derived :base-polygon)
         last-elevation (getopt :wrist-rest :derived :pad-surface-height)
         floor-triangles (transition-triangles getopt)
         ceiling-triangles
@@ -137,7 +133,7 @@
                     "high.")
                {:base-polygon base-polygon,
                 :inset (getopt :wrist-rest :shape :pad :surface :edge :inset)})))
-    (polyhedron
+    (model/polyhedron
       points
       (concat wall-faces
               ;; Additional faces for the floor.
@@ -150,11 +146,12 @@
 (defn- rubber-surface-heightmap
   "A heightmap horizontally centered on the world origin."
   [getopt]
-  (resize (conj
-            (getopt :wrist-rest :derived :bound-size)
-            (getopt :wrist-rest :derived :pad-surface-height))
-    (surface (getopt :wrist-rest :shape :pad :surface :heightmap :filepath)
-             :convexity 3)))
+  (model/resize (conj
+                  (getopt :wrist-rest :derived :bound-size)
+                  (getopt :wrist-rest :derived :pad-surface-height))
+    (model/surface
+      (getopt :wrist-rest :shape :pad :surface :heightmap :filepath)
+      :convexity 3)))
 
 (defn- rubber-bottom
   "Parts of the rubber pad below its upper surface."
@@ -163,19 +160,19 @@
         intermediate (getopt :wrist-rest :shape :pad :height :lip-to-surface)
         depth (getopt :wrist-rest :shape :pad :height :below-lip)
         width (getopt :wrist-rest :shape :lip :width)]
-    (union
-      (translate [0 0 (prop :z2)]
-        (extrude-linear {:height intermediate, :center false}
-          (polygon (prop :outline :base))))
-      (translate [0 0 (- (prop :z2) depth)]
-        (extrude-linear {:height depth, :center false}
-          (polygon (inset-polygon (prop :outline :base) width)))))))
+    (model/union
+      (model/translate [0 0 (prop :z2)]
+        (model/extrude-linear {:height intermediate, :center false}
+          (model/polygon (prop :outline :base))))
+      (model/translate [0 0 (- (prop :z2) depth)]
+        (model/extrude-linear {:height depth, :center false}
+          (model/polygon (inset-polygon (prop :outline :base) width)))))))
 
 (defn- rubber-body
   [getopt]
-  (union
+  (model/union
     (rubber-bottom getopt)
-    (translate [0 0 (getopt :wrist-rest :derived :z3)]
+    (model/translate [0 0 (getopt :wrist-rest :derived :z3)]
       (maybe/intersection
         (pad-surface-polyhedron getopt)
         (when (getopt :wrist-rest :shape :pad :surface :heightmap :include)
@@ -230,7 +227,7 @@
   [getopt]
   (let [segments [3 1 0]
         [points faces] (temporary-polygon getopt (vec (range (count segments))))]
-    (polyhedron
+    (model/polyhedron
       (move-points points (plinth-mapping getopt points segments))
       faces
       :convexity 2)))
@@ -243,8 +240,7 @@
   [getopt tmp-points]
   (let [prop (partial getopt :wrist-rest :derived)
         base (prop :outline :base)
-        mould (prop :outline :mould)
-        z1 (prop :outline :mould)]
+        mould (prop :outline :mould)]
     (reduce
       (fn [hmap [ox oy oz]]
         (let [[nx ny] (nth mould (.indexOf base [ox oy]))
@@ -276,9 +272,8 @@
   "A model of a sprue. This assumes that wrist-rest rotation is modest."
   [getopt]
   (let [height (getopt :wrist-rest :derived :z5)]
-    (translate [0 0 (/ height 2)]
-      (cylinder (/ (getopt :wrist-rest :sprues :diameter) 2)
-                height))))
+    (model/translate [0 0 (/ height 2)]
+      (model/cylinder (/ (getopt :wrist-rest :sprues :diameter) 2) height))))
 
 (defn- get-block-alias
   [getopt mount-index]
@@ -418,9 +413,10 @@
   [getopt mount-index]
   (let [prop (partial getopt :wrist-rest :mounts mount-index)]
     (->>
-      (cylinder (/ (prop :fasteners :diameter) 2) (prop :fasteners :length))
-      (rotate [0 (/ π 2) (prop :derived :angle)])
-      (translate (prop :derived :midpoint)))))
+      (prop :fasteners :length)
+      (model/cylinder (/ (prop :fasteners :diameter) 2))
+      (model/rotate [0 (/ π 2) (prop :derived :angle)])
+      (model/translate (prop :derived :midpoint)))))
 
 (defn- rod-offset
   "A rod-specific offset relative to the primary rod (index 0).
@@ -438,10 +434,10 @@
   (let [prop (partial getopt :wrist-rest :mounts mount-index)]
     (->>
       (threaded/nut :iso-size (prop :fasteners :diameter), :negative true)
-      (rotate [(/ π 2) 0 0])
-      (translate [0 3 0])
-      (rotate [0 0 (prop :derived :angle)])
-      (translate (prop :derived :case-side)))))
+      (model/rotate [(/ π 2) 0 0])
+      (model/translate [0 3 0])
+      (model/rotate [0 0 (prop :derived :angle)])
+      (model/translate (prop :derived :case-side)))))
 
 (defn- mount-fasteners
   "One mount’s set of connecting threaded rods with nuts."
@@ -449,7 +445,7 @@
   (let [prop (partial getopt :wrist-rest :mounts mount-index)]
     (apply maybe/union
       (for [i (range (prop :fasteners :amount))]
-        (translate (rod-offset getopt mount-index i)
+        (model/translate (rod-offset getopt mount-index i)
           (maybe/union
             (threaded-rod getopt mount-index)
             (if (prop :blocks :case-side :nuts :bosses :include)
@@ -469,15 +465,15 @@
         height (prop :blocks :plinth-side :pocket-height)
         compensator (getopt :dfm :derived :compensator)
         nut (->> (threaded/nut :iso-size d, :negative true)
-                 (rotate [(/ π 2) 0 (/ π 2)])
+                 (model/rotate [(/ π 2) 0 (/ π 2)])
                  (compensator d {}))]
     (->>
-      (apply union
+      (apply model/union
         (for [i (range (prop :fasteners :amount))]
-          (translate (rod-offset getopt mount-index i)
-            (hull nut (translate [0 0 height] nut)))))
-      (rotate [0 0 (prop :derived :angle)])
-      (translate (prop :derived :plinth-side)))))
+          (model/translate (rod-offset getopt mount-index i)
+            (model/hull nut (model/translate [0 0 height] nut)))))
+      (model/rotate [0 0 (prop :derived :angle)])
+      (model/translate (prop :derived :plinth-side)))))
 
 (defn- block-model
   [getopt mount-index side-key]
@@ -486,18 +482,18 @@
         g1 (dec g0)
         d0 (prop :blocks side-key :depth)
         d1 (dec d0)]
-    (union
-      (cube d1 g0 g0)
-      (cube d0 g1 g1)
-      (cube 1 1 (+ g1 3)))))
+    (model/union
+      (model/cube d1 g0 g0)
+      (model/cube d0 g1 g1)
+      (model/cube 1 1 (+ g1 3)))))
 
 (defn- block-in-place
   [getopt mount-index side-key]
   (let [prop (partial getopt :wrist-rest :mounts mount-index)]
     (->>
       (block-model getopt mount-index side-key)
-      (rotate [0 0 (prop :derived :angle)])
-      (translate
+      (model/rotate [0 0 (prop :derived :angle)])
+      (model/translate
         (mapv + (prop :derived side-key) (rod-offset getopt mount-index)))
       (misc/bottom-hull))))
 
@@ -539,7 +535,7 @@
   "A maquette of the plastic, rigid portion of wrist rest."
   [getopt]
   (maybe/union
-    (difference
+    (model/difference
       (plinth-polyhedron getopt)
       (place/wrist-place getopt (rubber-bottom getopt)))
     (when (= (getopt :wrist-rest :style) :threaded)
@@ -552,7 +548,7 @@
   (maybe/difference
     (plinth-positive getopt)
     (when (= (getopt :wrist-rest :style) :threaded)
-      (union
+      (model/union
         (all-fasteners getopt)
         (all-mounts getopt plinth-nut-pockets)))
     (when (getopt :wrist-rest :sprues :include)
@@ -563,7 +559,7 @@
   This model is not fully featured."
   [getopt]
   (maybe/difference
-    (color (:rubber colours)
+    (model/color (:rubber colours)
       (place/wrist-place getopt
         (rubber-body getopt)))
     (all-mounts getopt plinth-block)))
@@ -573,7 +569,7 @@
   prototype but is not suitable for long-term use: It would typically be too
   hard for ergonomy and does not have all the details."
   [getopt]
-  (union
+  (model/union
     (rubber-insert-positive getopt)
     (plinth-positive getopt)))
 
@@ -583,7 +579,7 @@
   since it is presently just one level with straight edges."
   [getopt]
   (let [[points faces] (temporary-polygon getopt [0 1])]
-    (polyhedron
+    (model/polyhedron
       (move-points points (mould-mapping getopt points))
       faces
       :convexity 2)))

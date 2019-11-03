@@ -56,9 +56,7 @@
               (get-in-section section-path)
               (catch clojure.lang.ExceptionInfo e
                 (if-not (= (:type (ex-data e)) :missing-parameter)
-                  (throw e)))))
-        find-index (fn [pred coll]
-                     (first (keep-indexed #(when (pred %2) %1) coll)))]
+                  (throw e)))))]
     (fn [cluster [column row]]
       "Check, in order: Key-specific values favouring first/last row;
       column-specific values favouring first/last column;

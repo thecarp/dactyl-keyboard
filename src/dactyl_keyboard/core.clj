@@ -8,7 +8,6 @@
             [clojure.pprint :refer [pprint]]
             [clojure.java.io :as io]
             [clj-yaml.core :as yaml]
-            [scad-clj.scad :refer [write-scad]]
             [scad-clj.model :as model]
             [scad-app.core :refer [filter-by-name
                                    refine-asset refine-all build-all]]
@@ -259,7 +258,7 @@
 
 (defn- parse-build-opts
   "Parse model parameters. Return an accessor for them."
-  [{:keys [debug configuration-file] :as options}]
+  [{:keys [debug configuration-file]}]
   (let [raws (apply generics/soft-merge
                (conj (map from-file configuration-file) {}))]
    (if debug
@@ -471,5 +470,5 @@
            (println "An exception occurred:" (.getMessage e))
            (pprint (ex-data e))
            (System/exit 1))))
-   (if (:debug options) (println "Exiting without error."))
+   (when (:debug options) (println "Exiting without error."))
    (System/exit 0)))

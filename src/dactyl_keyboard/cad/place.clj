@@ -18,10 +18,8 @@
             [dactyl-keyboard.generics :refer [directions-to-unordered-corner]]
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.misc :as misc]
-            [dactyl-keyboard.param.access :refer [most-specific
-                                                  resolve-anchor
-                                                  key-properties]]
-            [dactyl-keyboard.param.schema :as schema]))
+            [dactyl-keyboard.param.access
+             :refer [most-specific resolve-anchor key-properties]]))
 
 
 ;;;;;;;;;;;;;;;
@@ -100,8 +98,7 @@
   single point in 3-dimensional space, typically an offset in mm from the
   middle of the indicated key, or a scad-clj object."
   [getopt cluster coord subject]
-  (let [[column row] coord
-        most #(most-specific getopt (concat [:layout] %) cluster coord)
+  (let [most #(most-specific getopt (concat [:layout] %) cluster coord)
         center (most [:matrix :neutral :row])
         bridge (cluster-origin-finder getopt cluster)]
     (->> subject
@@ -302,8 +299,8 @@
   (case segment
     0 (wrist-place getopt (conj xy (getopt :wrist-rest :derived :z2)))
     1 (wrist-lip-coord getopt xy :lip)
-    (let [[x y z] (wrist-segment-coord getopt xy 1)]
-      [x y (if (= segment 2) 0.0 -100.0)])))
+    ; By default, recurse and override the z coordinate of segment 1.
+    (assoc (wrist-segment-coord getopt xy 1) 2 (if (= segment 2) 0.0 -100.0))))
 
 (defn wrist-segment-naive
   "Use wrist-segment-coord with a layer of translation from the naïve/relative

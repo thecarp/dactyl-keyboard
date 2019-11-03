@@ -4,8 +4,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns dactyl-keyboard.param.tree.nested
-  (:require [clojure.spec.alpha :as spec]
-            [scad-tarmi.core :as tarmi-core]
+  (:require [scad-tarmi.core :as tarmi-core]
             [dactyl-keyboard.param.schema :as schema]))
 
 (def raws
