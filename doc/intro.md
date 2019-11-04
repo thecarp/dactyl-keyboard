@@ -77,10 +77,6 @@ do both. However, this is not what Make is for, so you will need to finish with
 a named target that actually calls the application, as in `make vis
 dmote_62key`, where `dmote_62key` is the (otherwise implicit) default target.
 
-There are [other ways to evaluate](http://stackoverflow.com/a/28213489) the
-Clojure code, including the bundled `transpile.sh` shell script, which will
-tail your changes with `inotify` if you have that.
-
 ## Customization
 
 You probably want to customize the design for your own hands. You won’t need
@@ -173,3 +169,24 @@ are printing.
 As for microcontroller firmware, QMK works great. In that project, the DMOTE
 is filed as a version of the Dactyl-ManuForm
 [here](https://github.com/qmk/qmk_firmware/tree/master/keyboards/handwired/dactyl_manuform/dmote).
+
+## Alternative execution
+
+There are [other ways to evaluate](http://stackoverflow.com/a/28213489)
+Clojure code, including the bundled `transpile.sh` shell script, which will
+tail your changes with `inotify` if you have that, and optionally `rsync` the
+outputs to a render farm.
+
+If you are accustomed to the
+[REPL](https://clojure.org/guides/repl/introduction) or you find yourself
+making many changes to the application itself, `transpile.sh` may be too slow.
+You can save time by running `lein repl` and working interactively from there.
+As an example workflow, to reload the body module (after editing it in another
+window) and then build the bundled macropad configuration using the altered
+module without having to restart the application, enter these two lines at the
+REPL prompt, or roll them into one under a `do` expression:
+
+```clojure
+(use 'dactyl-keyboard.cad.body :reload)
+(run {:configuration-file ["config/base.yaml" "config/macropad/base.yaml"]})
+```

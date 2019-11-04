@@ -208,7 +208,6 @@
                    (into {} (for [[k v] (getopt :secondaries)]
                               [k (merge v {:type :secondary})])))})
 
-
 (def derivers-static
   "A vector of configuration locations and functions for expanding them."
   ;; Mind the order. One of these may depend upon earlier steps.
@@ -432,8 +431,30 @@
     (refine-all requested
       {:refine-fn (partial finalize-asset getopt module-map)})))
 
+(defn run
+  "Build all models, authoring files in parallel. Easily used from a REPL."
+  [{:keys [whitelist render renderer] :or {whitelist #""} :as options}]
+  (build-all (filter-by-name whitelist (finalize-all options))
+             {:render render
+              :rendering-program renderer
+              :filepath-fn output-filepath-fn}))
+
+(defn execute-mode
+  "Act on arguments received from the command line (shell), already parsed.
+  If arguments are erroneous, show how, else react to flags for special modes,
+  else proceed to the default mode, which is building models.
+  Return an appropriate Unix exit code."
+  [{:keys [errors summary options]}]
+  (let [{:keys [help describe-parameters debug]} options]
+    (cond
+      (some? errors) (do (println (first errors)) (println summary))
+      help (println summary)
+      describe-parameters (document-settings options)
+      :else (do (run options) (when debug (println "Exiting without error."))))
+    (if (some? errors) 1 0)))
+
 (def cli-options
-  "Define command-line interface."
+  "Define command-line interface for using the application from the shell."
   [["-c" "--configuration-file PATH" "Path to parameter file in YAML format"
     :default []
     :assoc-fn (fn [m k new] (update-in m [k] (fn [old] (conj old new))))]
@@ -444,31 +465,17 @@
    [nil "--renderer PATH" "Path to OpenSCAD" :default "openscad"]
    ["-w" "--whitelist RE"
     "Limit output to files whose names match the regular expression RE"
-    :default #"" :parse-fn re-pattern]
+    :parse-fn re-pattern]
    ["-d" "--debug"]
    ["-h" "--help"]])
 
 (defn -main
-  "Act on command-line arguments, authoring files in parallel."
+  "Parse command-line arguments, act on them and exit the application."
   [& raw]
-  (let [args (parse-opts raw cli-options)
-        options (:options args)]
-   (cond
-     (some? (:errors args)) (do (println (first (:errors args)))
-                                (println (:summary args))
-                                (System/exit 1))
-     (:help options) (println (:summary args))
-     (:describe-parameters options) (document-settings options)
-     :else
-       (try
-         (build-all (filter-by-name (:whitelist options) (finalize-all options))
-                    {:render (:render options)
-                     :rendering-program (:renderer options)
-                     :filepath-fn output-filepath-fn})
-         (catch clojure.lang.ExceptionInfo e
-           ;; Likely raised by getopt.
-           (println "An exception occurred:" (.getMessage e))
-           (pprint (ex-data e))
-           (System/exit 1))))
-   (when (:debug options) (println "Exiting without error."))
-   (System/exit 0)))
+  (try
+    (System/exit (execute-mode (parse-opts raw cli-options)))
+    (catch clojure.lang.ExceptionInfo e
+      ;; Likely raised by getopt.
+      (println "An exception occurred:" (.getMessage e))
+      (pprint (ex-data e))
+      (System/exit 1))))
