@@ -15,6 +15,6 @@ do
     rsync -a things/scad/*.scad $RENDERER &
   fi
   echo "Waiting for source changes."
-  inotifywait -re CLOSE_WRITE src/ resources/
+  inotifywait -re CLOSE_WRITE src/ resources/ config/
   sleep 1
 done
