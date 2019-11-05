@@ -2,7 +2,7 @@
 
 Here’s how to use this code repository to build a keyboard case.
 For a still-more general introduction to the larger project, see
-[this](http://viktor.eikman.se/article/the-dmote/).
+[this](https://viktor.eikman.se/article/the-dmote/).
 
 ## From code to print
 
@@ -38,61 +38,38 @@ here’s how to make your own.
 * Optional: Install [GNU make](https://www.gnu.org/software/make/)
 * Install [OpenSCAD](http://www.openscad.org/)
 
-On Debian GNU+Linux, the first three are accomplished with
-`apt install clojure leiningen make`.
-
-The necessary Clojure libraries will be pulled in by a `lein run`.
-
-### Finding bundled configurations
-
-The Clojure application combines configuration details from zero or more
-[YAML](https://en.wikipedia.org/wiki/YAML) files. There are examples in
-[`config`](config/). These files have a nested structure
-[documented here](options-main.md).
-
-The files are used when you pass them to the application, not automatically.
-The ones you name are gently combined into a single master configuration. In
-this process, files named later take precedence over those names earlier, in
-case of direct conflicts.
+On Debian GNU+Linux, the first three are accomplished with `apt install clojure
+leiningen make`. The necessary Clojure libraries will be pulled in when you run
+Leiningen.
 
 ### Producing OpenSCAD and STL files
 
-* To produce OpenSCAD files for the default configuration, run `make`.
-  * If you do not have Make, or if you want more control, run `lein run` with
-    the arguments you see prepared in the makefile. For example,
-    `lein run -c config/base.yaml -c config/dmote/base.yaml` will
-    build a basic DMOTE, with the same results as `make`, just
-    without an optional compilation step that speeds up each iteration.
-* In OpenSCAD, open one of the `things/scad/*.scad` files for a preview.
-  * To render a complex model in OpenSCAD you may need to go to Edit >>
-    Preferences >> Advanced and raise the ceiling for when to “Turn off
-    rendering”.
-* When satisfied, render to STL by calling the Clojure application with the
-  `--render` flag in addition to previous flags, i.e. those you typed yourself
-  or got through Make. You can also render directly from OpenSCAD.
+There is more than one way to run the application. The easiest and most
+automated is to call `make` from your command line. Refer to the [execution
+guide](execution.md) for details and alternatives.
 
-If you do have Make and you want to weave in more configuration files, you can
-put more YAML paths on the command line or name an intermediate Make target, or
-do both. However, this is not what Make is for, so you will need to finish with
-a named target that actually calls the application, as in `make vis
-dmote_62key`, where `dmote_62key` is the (otherwise implicit) default target.
+After running the application, start OpenSCAD. Open one of the
+`things/scad/*.scad` files for a preview. To render a complex model in
+OpenSCAD, you may need to go to Edit >> Preferences >> Advanced and raise the
+ceiling for when to “Turn off rendering”. When you are satisfied with the
+preview, you can render to STL from OpenSCAD.
 
 ## Customization
 
 You probably want to customize the design for your own hands. You won’t need
-to do any coding if all you want is a personal fit or additional keys.
+to touch the source code for a personal fit or additional keys.
+
+The Clojure application combines configuration details from zero or more
+[YAML](https://en.wikipedia.org/wiki/YAML) files like the ones in
+[`config`](config/). These files have a nested structure [documented
+here](options-main.md).
 
 You can change the bundled YAML files if you like. However, it is generally
 easier to add your own files, maintaining them separately from the DMOTE
 repository. That way, they will be safe if you upgrade the application with a
 `git pull`.
 
-Remember to put your own file(s) last in your list of arguments to the
-application, to get the most power. For example, to override all the ALPS-style
-key mounts with MX-style mounts on a DMOTE, run `lein run -c config/base.yaml
--c config/dmote/base.yaml -c config/dmote/mx.yaml`.
-
-#### Nomenclature: Finding north
+### Nomenclature: Finding north
 
 The parameter files and the code use the cardinal directions of the compass
 to describe directions in the space of the keyboard model. To understand these,
@@ -169,24 +146,3 @@ are printing.
 As for microcontroller firmware, QMK works great. In that project, the DMOTE
 is filed as a version of the Dactyl-ManuForm
 [here](https://github.com/qmk/qmk_firmware/tree/master/keyboards/handwired/dactyl_manuform/dmote).
-
-## Alternative execution
-
-There are [other ways to evaluate](http://stackoverflow.com/a/28213489)
-Clojure code, including the bundled `transpile.sh` shell script, which will
-tail your changes with `inotify` if you have that, and optionally `rsync` the
-outputs to a render farm.
-
-If you are accustomed to the
-[REPL](https://clojure.org/guides/repl/introduction) or you find yourself
-making many changes to the application itself, `transpile.sh` may be too slow.
-You can save time by running `lein repl` and working interactively from there.
-As an example workflow, to reload the body module (after editing it in another
-window) and then build the bundled macropad configuration using the altered
-module without having to restart the application, enter these two lines at the
-REPL prompt, or roll them into one under a `do` expression:
-
-```clojure
-(use 'dactyl-keyboard.cad.body :reload)
-(run {:configuration-file ["config/base.yaml" "config/macropad/base.yaml"]})
-```

@@ -4,7 +4,15 @@ This log follows the conventions of
 version 0.2.0, thus covering only a fraction of the project’s history.
 
 ## [Unreleased]
-Nothing yet.
+### Added
+- Documentation: An execution guide.
+- A GNU Make target for the Dactyl-ManuForm.
+
+### Fixed
+- Made `transpile.sh` sensitive to configuration changes again.
+
+### Developer
+- Improved REPL support.
 
 ## [Version 0.5.1] - 2019-10-16
 ### Fixed

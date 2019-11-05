@@ -16,7 +16,7 @@ SOURCECODE := $(shell find src -type f)
 CONFFILES := $(CONFDIR)base.yaml
 
 # TO_SCAD evaluates to a Java CLI call.
-TO_SCAD =	java -jar target/dmote.jar $(foreach FILE,$(CONFFILES),-c $(FILE))
+TO_SCAD = java -jar target/dmote.jar $(foreach FILE,$(CONFFILES),-c $(FILE))
 
 # The append_config function is what adds (more) YAML filepaths to CONFFILES.
 # If not already present in the path, CONFDIR will be prepended to each path.
@@ -36,6 +36,10 @@ endef
 # When resolved, its recipe constructs a Java command where each
 # selected configuration file gets its own -c parameter.
 dmote_62key: target/dmote.jar dmote/base.yaml
+	$(TO_SCAD)
+
+# A corresponding target approximating Tom Short’s Dactyl-ManuForm.
+dactylmanuform_46key: target/dmote.jar dactyl_manuform/base.yaml
 	$(TO_SCAD)
 
 # A corresponding target for a relatively simple 12-key macropad.
