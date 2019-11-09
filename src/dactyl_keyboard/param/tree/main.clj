@@ -10,6 +10,7 @@
             [scad-tarmi.threaded :as threaded]
             [scad-app.core :as appdata]
             [dmote-keycap.data :as capdata]
+            [dmote-keycap.schema :as capschema]
             [dactyl-keyboard.param.base :as base]
             [dactyl-keyboard.param.schema :as schema]
             [dactyl-keyboard.param.tree.cluster :as cluster]
@@ -49,19 +50,22 @@
     "is intended for illustration as you work on a design, not for printing."]
    [:parameter [:keys :styles]
     {:default {:default {}} :parse-fn schema/keycap-map
-     :validate [(spec/map-of keyword? ::capdata/keycap-parameters)]}
-    "Here you name all the types of keys on the keyboard. For each type, "
-    "describe the properties of the style using the parameters of the "
-    "[`dmote-keycap`](https://github.com/veikman/dmote-keycap) library, "
-    "documented in that project. The names of the styles are then used "
-    "elsewhere, as described [here](options-nested.md).\n"
+     :validate [(spec/map-of keyword? ::capschema/keycap-parameters)]}
+    "Here you name all the styles of keys on the keyboard and describe each "
+    "style using parameters to the `keycap` function of the "
+    "[`dmote-keycap`](https://github.com/veikman/dmote-keycap) library. "
+    "Switch type is one aspect of key style.\n"
     "\n"
-    "Key styles determine the size of key mounting plates on the keyboard and "
-    "what kind of holes are cut into those plates for the switches to fit "
-    "into. Negative space is also reserved above the plate, for the movement "
+    "These key styles determine the size of key mounting plates on the "
+    "keyboard and what kind of holes are cut into those plates for the "
+    "switches to fit inside. "
+    "Negative space is also reserved above the plate for the movement "
     "of the keycap: A function of switch height, switch travel, and keycap "
     "shape. In addition, if the keyboard is curved, key styles help determine "
-    "the spacing between key mounts."]
+    "the spacing between key mounts.\n"
+    "\n"
+    "In options by key, documented [here](options-nested.md), you specify "
+    "which style of key is used for each position on the keyboard."]
    [:parameter [:key-clusters]
     {:heading-template "Special section `%s`"
      :default {:main {:matrix-columns [{:rows-below-home 0}]

@@ -15,6 +15,7 @@
             [scad-tarmi.maybe :as maybe]
             [scad-tarmi.flex :as flex]
             [dmote-keycap.data :as capdata]
+            [dmote-keycap.measure :as measure]
             [dactyl-keyboard.generics :refer [directions-to-unordered-corner]]
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.misc :as misc]
@@ -32,7 +33,7 @@
   "Produce a mm coordinate offset for a corner of a switch mount."
   [getopt key-style directions]
   (let [style-data (getopt :keys :derived key-style)
-        [subject-x subject-y] (map capdata/key-length
+        [subject-x subject-y] (map measure/key-length
                                 (get style-data :unit-size [1 1]))
         m (getopt :case :key-mount-corner-margin)]
     [(* (apply matrix/compass-dx directions) (- (/ subject-x 2) (/ m 2)))
@@ -54,7 +55,7 @@
         flat-distance (* capdata/mount-1u (- index neutral))
         key-prop (key-properties getopt cluster coord)
         {:keys [switch-type skirt-length]} key-prop
-        radius (+ (capdata/resting-clearance switch-type skirt-length)
+        radius (+ (measure/resting-clearance switch-type skirt-length)
                   (/ (/ (+ capdata/mount-1u separation) 2)
                      (Math/sin (/ angle-factor 2))))
         ortho-x (- (* delta-r (+ -1 (- (* radius (Math/sin angle-factor))))))

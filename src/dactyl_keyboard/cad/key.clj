@@ -4,11 +4,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns dactyl-keyboard.cad.key
-  (:require [scad-clj.model :as model]
+  (:require [clojure.java.io :as io]
+            [scad-clj.model :as model]
             [scad-tarmi.core :refer [abs π]]
             [scad-tarmi.maybe :as maybe]
             [scad-tarmi.util :refer [loft]]
             [dmote-keycap.data :as capdata]
+            [dmote-keycap.measure :as measure]
             [dmote-keycap.models :refer [keycap]]
             [dactyl-keyboard.generics :as generics]
             [dactyl-keyboard.cad.matrix :as matrix]
@@ -110,10 +112,12 @@
         (assoc coll style-key
           (merge
             capdata/option-defaults
-            {:module-keycap (str "keycap_" (generics/key-to-scadstr style-key))
+            {:importable-filepath-fn
+               #(str (io/file generics/output-directory "scad" %))
+             :module-keycap (str "keycap_" (generics/key-to-scadstr style-key))
              :module-switch (str "switch_" (generics/key-to-scadstr switch-type))
-             :skirt-length (capdata/default-skirt-length switch-type)
-             :vertical-offset (capdata/plate-to-stem-end switch-type)
+             :skirt-length (measure/default-skirt-length switch-type)
+             :vertical-offset (measure/plate-to-stem-end switch-type)
              :error-stem-positive (getopt :dfm :keycaps :error-stem-positive)
              :error-stem-negative (getopt :dfm :keycaps :error-stem-negative)
              :error-body-positive (getopt :dfm :error-general)}
@@ -166,11 +170,11 @@
         prop (key-properties getopt cluster coord)
         {:keys [switch-type skirt-length]} prop
         ;; The size of the switch with overhangs is not to be confused with
-        ;; capdata/switch-footprint.
+        ;; measure/switch-footprint.
         {sx :x, sy :y} (get-in switch-properties [switch-type :foot])
-        [wx wy] (capdata/skirt-footprint prop)
-        h1 (capdata/pressed-clearance switch-type skirt-length)
-        h2 (capdata/resting-clearance switch-type skirt-length)]
+        [wx wy] (measure/skirt-footprint prop)
+        h1 (measure/pressed-clearance switch-type skirt-length)
+        h2 (measure/resting-clearance switch-type skirt-length)]
     (model/color (:cap-negative generics/colours)
       (model/translate [0 0 (getopt :case :key-mount-thickness)]
         (loft
@@ -280,7 +284,7 @@
   [getopt key-style]
   (let [thickness (getopt :case :key-mount-thickness)
         style-data (getopt :keys :derived key-style)
-        [x y] (map capdata/key-length (get style-data :unit-size [1 1]))]
+        [x y] (map measure/key-length (get style-data :unit-size [1 1]))]
    (model/translate [0 0 (/ thickness -2)]
      (model/cube x y thickness))))
 

@@ -251,9 +251,8 @@
 
 (defn- output-filepath-fn
   [base suffix]
-  "Produce a relative file path for e.g. SCAD or STL.
-  This upholds Dactyl tradition with “things” over the scad-app default."
-  (io/file "things" suffix (str base "." suffix)))
+  "Produce a relative file path for e.g. SCAD or STL."
+  (io/file generics/output-directory suffix (str base "." suffix)))
 
 (defn- parse-build-opts
   "Parse model parameters. Return an accessor for them."

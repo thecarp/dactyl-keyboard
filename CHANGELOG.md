@@ -10,6 +10,9 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 
 ### Fixed
 - Made `transpile.sh` sensitive to configuration changes again.
+- A more categorical fix for `dmote-keycap` parameter support, achieved by
+  migrating of that library’s parsing logic into the library itself.
+  See version 0.5.1.
 
 ### Developer
 - Improved REPL support.

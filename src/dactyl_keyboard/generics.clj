@@ -9,6 +9,10 @@
 (ns dactyl-keyboard.generics
   (:require [clojure.string :as string]))
 
+(def output-directory
+  "Uphold Dactyl tradition with “things” over the scad-app default directory."
+  "things")
+
 (def colours
   "OpenSCAD preview colours."
   {:cap-body [220/255 163/255 163/255 1]

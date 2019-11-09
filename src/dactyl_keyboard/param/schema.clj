@@ -7,6 +7,7 @@
 
 (ns dactyl-keyboard.param.schema
   (:require [clojure.spec.alpha :as spec]
+            [dmote-keycap.schema :as capschema]
             [dactyl-keyboard.generics :as generics]))
 
 
@@ -86,21 +87,11 @@
   (map-of keyword case-tweaks))
 
 (def keycap-map
-  "A parser for some of the options exposed by the dmote-keycap library."
-  (map-of
-    keyword
-    (map-like
-      {:style keyword
-       :switch-type keyword
-       :unit-size vec
-       :top-size vec
-       :top-rotation vec
-       :bowl-radii vec
-       :bowl-plate-offset num
-       :skirt-length num
-       :skirt-thickness num
-       :slope num
-       :supported boolean})))
+  "A parser for the options exposed by the dmote-keycap library.
+  For ease of maintenance, this map is complete, even though some options to
+  dmote-keycap, such as filename, are effectively useless inside a DMOTE
+  configuration."
+  (map-of keyword (map-like capschema/option-parsers)))
 
 (def named-secondary-positions
   (map-of
