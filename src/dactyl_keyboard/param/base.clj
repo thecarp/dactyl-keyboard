@@ -15,15 +15,18 @@
 ;;;;;;;;;;;;;;
 
 (defn- coalesce
-  "Assemble one branch in a tree structure from flat specifications."
+  "Assemble one branch in a tree structure from flat specifications.
+  Keep paths around for ease of building tables of content."
   [coll [type path & metadata]]
   (case type
     :section
       (assoc-in coll path
-        (ordered-map :metadata {:help (apply str metadata)}))
+        (ordered-map :metadata
+          {:path path, :help (apply str metadata)}))
     :parameter
       (assoc-in coll path
-        (assoc (first metadata) :help (apply str (rest metadata))))
+        (merge (first metadata)
+               {:path path, :help (apply str (rest metadata))}))
     (throw (Exception.
              (format "Bad type in ‘%s’ configuration master." type)))))
 

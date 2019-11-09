@@ -27,9 +27,9 @@ Equivalently, in terms of typical file name endings:
 
 > .yaml through .clj (or .jar) → .scad → .stl → .gcode → tangible keyboard
 
-If this repository includes STL files you will find them in the
-[`things/stl`](../things/) directory. They should be ready to print. Otherwise,
-here’s how to make your own.
+If this repository includes STL files you will find them in the `things/stl`
+directory. They should be ready to print. Otherwise, here’s how to make your
+own.
 
 ### Setting up the build environment
 
@@ -60,9 +60,8 @@ You probably want to customize the design for your own hands. You won’t need
 to touch the source code for a personal fit or additional keys.
 
 The Clojure application combines configuration details from zero or more
-[YAML](https://en.wikipedia.org/wiki/YAML) files like the ones in
-[`config`](config/). These files have a nested structure [documented
-here](options-main.md).
+[YAML](https://en.wikipedia.org/wiki/YAML) files like the ones under `config`.
+These files have a nested structure [documented here](options-main.md).
 
 You can change the bundled YAML files if you like. However, it is generally
 easier to add your own files, maintaining them separately from the DMOTE

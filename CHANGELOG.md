@@ -5,7 +5,9 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 
 ## [Unreleased]
 ### Added
-- Documentation: An execution guide.
+- Documentation:
+    - An execution guide, as a new document branched off from the introduction.
+    - Tables of content in auto-generated documents.
 - A GNU Make target for the Dactyl-ManuForm.
 
 ### Fixed

@@ -180,5 +180,5 @@
 (spec/def ::foot-plate-polygons (spec/coll-of ::foot-plate))
 
 (spec/def ::descriptor  ; Parameter metadata descriptor.
-  #{:heading-template :help :default :parse-fn :validate :resolve-fn})
+  #{:path :heading-template :help :default :parse-fn :validate :resolve-fn})
 (spec/def ::parameter-spec (spec/map-of ::descriptor some?))
