@@ -19,23 +19,32 @@
 ;; Internal ;;
 ;;;;;;;;;;;;;;
 
+(defn- default-doc-heading
+  "Produce a default heading template for documents."
+  [is-param]
+  (if is-param "Parameter %s" "Section %s"))
+
 (defn- slugify
   "Represent a section or parameter as a unique string for HTML anchors.
   Take an iterable of keywords."
   [path]
   (string/join "-" (map name path)))
 
-(defn- default-doc-heading
-  [is-param]
-  (if is-param "Parameter %s" "Section %s"))
-
 (defn- target-anchor
+  "Tag a setting name as HTML navigable by its path of keywords.
+  Notice that on GitHub as of 2019, the ID string provided here will not be
+  used as is, but will enstead be prefixed by “user-content-” for namespacing."
   [path]
-  (format "<a id=\"#%s\">`%s`</a>" (slugify path) (name (last path))))
+  (format "<a id=\"%s\">`%s`</a>" (slugify path) (name (last path))))
 
 (defn- link-to-anchor
+  "Produce HTML for a hyperlink to a local anchor on a GitHub page.
+  Notice the injection of a “user-content-” prefix to counter the behaviour
+  of GitHub’s Markdown parser as of 2019-11. If the project moves to another
+  site, or GitHub repents, this will break."
   [path]
-  (format "<a href=\"#%s\">`%s`</a>" (slugify path) (name (last path))))
+  (format "<a href=\"#user-content-%s\">`%s`</a>"
+     (slugify path) (name (last path))))
 
 (defn- print-markdown-toc
   "Print an indented list as a table of contents. Descend recursively."
@@ -61,6 +70,7 @@
     (doseq [[key {:keys [path help metadata] :as value}] node]
       (let [is-param (spec/valid? ::schema/parameter-spec value)]
         (when (not (= key :metadata))
+          (println)
           (println
             (heading-style
               (format

@@ -67,7 +67,7 @@
     "In options by key, documented [here](options-nested.md), you specify "
     "which style of key is used for each position on the keyboard."]
    [:parameter [:key-clusters]
-    {:heading-template "Special section `%s`"
+    {:heading-template "Special section %s"
      :default {:main {:matrix-columns [{:rows-below-home 0}]
                       :aliases {}}}
      :parse-fn (schema/map-of keyword
@@ -84,14 +84,14 @@
     "the level of individual keys. It’s all documented "
     "[here](options-nested.md)."]
    [:parameter [:by-key :parameters]
-    {:heading-template "Special recurring section `%s`"
+    {:heading-template "Special recurring section %s"
      :default (base/extract-defaults nested/raws)
      :parse-fn (base/parser-with-defaults nested/raws)
      :validate [(base/delegated-validation nested/raws)]}
     "Default values at the global level."]
    [:parameter [:by-key :clusters]
     (let [rep (base/parser-wo-defaults nested/raws)]
-      {:heading-template "Special section `%s` ← overrides go in here"
+      {:heading-template "Special section %s ← overrides go in here"
        :default {}
        :parse-fn (schema/map-of
                    keyword
@@ -763,7 +763,7 @@
     {:default 0 :parse-fn num}
     "Tait-Bryan roll."]
    [:parameter [:wrist-rest :mounts]
-    {:heading-template "Special section `%s`"
+    {:heading-template "Special section %s"
      :default []
      :parse-fn (schema/tuple-of (base/parser-with-defaults restmnt/raws))
      :validate [(spec/coll-of (base/delegated-validation restmnt/raws))]}
