@@ -1,3 +1,5 @@
+<!--This document was generated and is intended for rendering to HTML on GitHub. Edit the source files, not this file.-->
+
 # Options for connecting a wrist rest
 
 Each heading in this document represents a recognized configuration key in YAML files for a DMOTE variant.
@@ -33,7 +35,6 @@ This specific document describes options for each “mount”, a pair of cuboid 
         - Parameter <a href="#user-content-blocks-plinth-side-depth">`depth`</a>
         - Parameter <a href="#user-content-blocks-plinth-side-pocket-height">`pocket-height`</a>
     - Parameter <a href="#user-content-blocks-aliases">`aliases`</a>
-
 
 ## Section <a id="fasteners">`fasteners`</a>
 

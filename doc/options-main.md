@@ -1,3 +1,5 @@
+<!--This document was generated and is intended for rendering to HTML on GitHub. Edit the source files, not this file.-->
+
 # General configuration options
 
 Each heading in this document represents a recognized configuration key in the main body of a YAML file for a DMOTE variant. Other documents cover special sections of this one in more detail.
@@ -178,7 +180,6 @@ Each heading in this document represents a recognized configuration key in the m
 - Section <a href="#user-content-mask">`mask`</a>
     - Parameter <a href="#user-content-mask-size">`size`</a>
     - Parameter <a href="#user-content-mask-center">`center`</a>
-
 
 ## Parameter <a id="split">`split`</a>
 

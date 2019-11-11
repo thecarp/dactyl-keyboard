@@ -1,3 +1,5 @@
+<!--This document was generated and is intended for rendering to HTML on GitHub. Edit the source files, not this file.-->
+
 # Key cluster configuration options
 
 Each heading in this document represents a recognized configuration key in YAML files for a DMOTE variant.
@@ -11,7 +13,6 @@ This specific document describes options for the general outline and position of
 - Section <a href="#user-content-position">`position`</a>
     - Parameter <a href="#user-content-position-anchor">`anchor`</a>
     - Parameter <a href="#user-content-position-offset">`offset`</a>
-
 
 ## Parameter <a id="matrix-columns">`matrix-columns`</a>
 

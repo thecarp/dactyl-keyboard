@@ -1,3 +1,5 @@
+<!--This document was generated and is intended for rendering to HTML on GitHub. Edit the source files, not this file.-->
+
 # Nestable configuration options
 
 This document describes all those settings which can be made at any level of specificity, from the entire keyboard down to an individual key. These settings all go under `by-key` in a YAML file.
@@ -87,7 +89,6 @@ WARNING: Due to a peculiarity of the YAML parser, take care to quote your numeri
         - Parameter <a href="#user-content-wall-west-extent">`extent`</a>
         - Parameter <a href="#user-content-wall-west-parallel">`parallel`</a>
         - Parameter <a href="#user-content-wall-west-perpendicular">`perpendicular`</a>
-
 
 ## Section <a id="layout">`layout`</a>
 

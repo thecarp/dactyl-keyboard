@@ -17,6 +17,7 @@
             [dactyl-keyboard.generics :as generics]
             [dactyl-keyboard.sandbox :as sandbox]
             [dactyl-keyboard.param.access :as access]
+            [dactyl-keyboard.param.doc :refer [print-markdown-section]]
             [dactyl-keyboard.param.tree.cluster]
             [dactyl-keyboard.param.tree.nested]
             [dactyl-keyboard.param.tree.main]
@@ -38,7 +39,10 @@
 (defn document-settings
   "Show documentation for settings."
   [{section :describe-parameters}]
-  (access/print-markdown-section
+  (println "<!--This document was generated and is intended for rendering"
+           "to HTML on GitHub. Edit the source files, not this file.-->")
+  (println)
+  (print-markdown-section
     (case section
       :main dactyl-keyboard.param.tree.main/raws
       :clusters dactyl-keyboard.param.tree.cluster/raws
