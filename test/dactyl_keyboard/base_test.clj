@@ -1,5 +1,5 @@
 (ns dactyl-keyboard.base-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest testing is]]
             [clojure.spec.alpha :as spec]
             [flatland.ordered.map :refer [ordered-map]]
             [dactyl-keyboard.param.base :as base]
@@ -70,8 +70,8 @@
         inflated (base/inflate raws)]
     (testing "inflation"
       (is (= inflated
-             (om :a (om :metadata {:help "A."}
-                        :b {:default 1, :help "B."})))))
+             (om :a (om :metadata {:path [:a], :help "A."}
+                        :b {:default 1, :path [:a :b], :help "B."})))))
     (testing "parsing with defaults and no input"
       (is (= ((base/parser-with-defaults raws)
               {})
@@ -104,7 +104,8 @@
         inflated (base/inflate sup-raws)]
     (testing "inflation of nested structure"
       (is (= inflated
-             (om :x {:default {:b {:p 0}},
+             (om :x {:path [:x]
+                     :default {:b {:p 0}},
                      :parse-fn sub-parser,
                      :validate [sub-validator]
                      :help "Superordinate P."}))))
@@ -158,11 +159,13 @@
         consume (partial base/consume-branch inflated)]
     (testing "inflation of nested list structure"
       (is (= inflated
-             (om :x {:default [],
+             (om :x {:path [:x]
+                     :default [],
                      :parse-fn sub-parser
                      :validate [sub-validator]
                      :help "X."}
-                 :y {:default [],
+                 :y {:path [:y]
+                     :default [],
                      :parse-fn alt-parser
                      :validate [sub-validator]
                      :help "Y."}))))
