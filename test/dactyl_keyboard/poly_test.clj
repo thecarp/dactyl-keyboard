@@ -44,4 +44,18 @@
            [[0.0 0.0] [1.0 0.0]])))
   (testing "1D at inset 1 (illegal)."
     (is (thrown-with-msg? clojure.lang.ExceptionInfo #"Unable to inset"
-          (poly/from-outline [[0 0] [1 0]] 1)))))
+          (poly/from-outline [[0 0] [1 0]] 1))))
+  (testing "2D at inset 1."
+    (is (= (poly/from-outline [[0 0] [0 5] [5 5] [5 0]] 1)
+           [[1.0 1.0] [1.0 4.0] [4.0 4.0] [4.0 1.0]]))))
+
+(deftest test-coords-to-indices
+  (testing "Minimal valid input."
+    (is (= (poly/coords-to-indices [] [])
+           [])))
+  (testing "Input with unexpected point."
+    (is (thrown? java.lang.AssertionError
+          (poly/coords-to-indices [[1 0] [1 2]] [[[0 0] [1 2]]]))))
+  (testing "Simple input."
+    (is (= (poly/coords-to-indices [[1 0] [1 1]] [[[1 0] [1 1]]])
+           [[0 1]]))))

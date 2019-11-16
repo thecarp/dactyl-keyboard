@@ -82,13 +82,6 @@
 
 (defn- to-3d [triangles z] (mapv (fn [p] (map #(conj % z) p)) triangles))
 
-(defn- find-face
-  "Take point coordinates on a polyhedron level. Translate them to indices."
-  [ref triangles]
-  (letfn [(to-index [coord] (.indexOf ref coord))
-          (to-face [triangle] (map to-index triangle))]
-    (mapv to-face triangles)))
-
 (defn- pad-walls
   "Points in a stepped polyhedron and faces that constitute its walls."
   [getopt]
@@ -134,9 +127,10 @@
       points
       (concat wall-faces
               ;; Additional faces for the floor.
-              (find-face points (to-3d floor-triangles first-elevation))
+              (poly/coords-to-indices points
+                (to-3d floor-triangles first-elevation))
               ;; Additional faces for the ceiling (reversed to go clockwise).
-              (find-face points
+              (poly/coords-to-indices points
                 (mapv reverse (to-3d ceiling-triangles last-elevation))))
       :convexity 2)))
 
@@ -198,9 +192,11 @@
      (concat
        wall-faces
        ;; Additional faces for the floor.
-       (find-face tmp-points (to-3d triangles (first indices)))
+       (poly/coords-to-indices tmp-points
+         (to-3d triangles (first indices)))
        ;; Additional faces for the ceiling (reversed to go clockwise).
-       (find-face tmp-points (mapv reverse (to-3d triangles (last indices)))))]))
+       (poly/coords-to-indices tmp-points
+         (mapv reverse (to-3d triangles (last indices)))))]))
 
 (defn- move-points [base mapping] (mapv #(get mapping % %) base))
 

@@ -49,3 +49,17 @@
          (> resolution 0)]
    :post [(spec/valid? ::tarmi/point-coll-2d %)]}
   (butlast (vertices (auto-spline2 (mapv vec2 points) true) resolution)))
+
+(defn coords-to-indices
+  "Take point coordinates and triangles referring to the same
+  points by their coordinates. Return point-index triangles.
+  This is intended to prepare a list of faces for an OpenSCAD polyhedron."
+  ;; Notice that negative indices, as returned by .indexOf for unrecognized
+  ;; inputs, are checked as illegal here, meaning that the inputs must match.
+  [points triangles]
+  {:pre [(spec/valid? ::tarmi/point-coll-2d points)
+         (spec/valid? (spec/coll-of ::tarmi/point-coll-2d) triangles)]
+   :post [(spec/valid? (spec/coll-of (spec/coll-of nat-int?)) %)]}
+  (letfn [(to-index [coord] (.indexOf points coord))
+          (to-face [triangle] (mapv to-index triangle))]
+    (mapv to-face triangles)))
