@@ -8,13 +8,12 @@
             [scad-tarmi.core :refer [abs sin cos π]]
             [scad-tarmi.maybe :as maybe]
             [scad-tarmi.threaded :as threaded]
-            [thi.ng.geom.bezier :refer [auto-spline2]]
             [thi.ng.geom.core :refer [tessellate vertices bounds]]
             [thi.ng.geom.polygon :refer [polygon2 inset-polygon]]
-            [thi.ng.geom.vector :refer [vec2]]
             [dactyl-keyboard.generics :refer [ESE SSE SSW colours]]
             [dactyl-keyboard.cad.misc :as misc]
-            [dactyl-keyboard.cad.place :as place]))
+            [dactyl-keyboard.cad.place :as place]
+            [dactyl-keyboard.cad.poly :as poly]))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -23,11 +22,10 @@
 
 (def first-elevation 0.0)
 
-(defn- from-outline
-  "Draw a thi.ng polygon based on the user-requested spline."
+(defn- from-base-outline
+  "Vertices based on the user-requested spline."
   [getopt inset]
-  (let [outline (getopt :wrist-rest :derived :outline :base)]
-    (polygon2 (inset-polygon outline inset))))
+  (poly/from-outline (getopt :wrist-rest :derived :outline :base) inset))
 
 (defn- get-resolution
   "Get the effective spline resolution. Default to 1, i.e. no interpolation."
@@ -57,9 +55,9 @@
     (* maximum (sin θ))))
 
 (defn- polygon-step
-  "Draw a thi.ng polygon for one level of the pad surface edge."
+  "Vertices of one level of the pad surface edge."
   [getopt θ]
-  (from-outline getopt (edge-inset getopt θ)))
+  (from-base-outline getopt (edge-inset getopt θ)))
 
 (defn- polygon-faces
   "A list of faces by index number, for one level of a polyhedron.
@@ -98,9 +96,8 @@
     (reduce
       (fn [[points faces] index]
         (let [θ (nth (edge-angles getopt) index)
-              elevation (edge-elevation getopt θ)
-              poly (polygon-step getopt θ)]
-          [(concat points (map #(conj % elevation) (:points poly)))
+              elevation (edge-elevation getopt θ)]
+          [(concat points (map #(conj % elevation) (polygon-step getopt θ)))
            (concat faces (polygon-faces (count points) (count outline) index))]))
       [(map #(conj % first-elevation) outline) []]
       (map inc (range (get-resolution getopt :pad :surface :edge :resolution))))))
@@ -123,7 +120,7 @@
         last-elevation (getopt :wrist-rest :derived :pad-surface-height)
         floor-triangles (transition-triangles getopt)
         ceiling-triangles
-          (tessellate (polygon-step getopt (last (edge-angles getopt))))
+          (tessellate (polygon2 (polygon-step getopt (last (edge-angles getopt)))))
         [points wall-faces] (pad-walls getopt)]
     (if (nil? ceiling-triangles)
       (throw (ex-info
@@ -252,8 +249,7 @@
 (defn- splined
   "The 2D coordinates along a closed spline through passed points."
   [getopt points]
-  (let [res (get-resolution getopt :spline :resolution)]
-    (butlast (vertices (auto-spline2 (mapv vec2 points) true) res))))
+  (poly/spline points (get-resolution getopt :spline :resolution)))
 
 
 ;;;;;;;;;;;;;;;;;;;
@@ -330,7 +326,7 @@
         ;; Draw the outline anew, now centered on the origin.
         ;; This obviates moving the pad before rotating it.
         raw-outline (splined getopt (mapv around-origin raw))
-        inset (fn [n] (:points (polygon2 (inset-polygon (vec raw-outline) n))))
+        inset (fn [n] (poly/from-outline (vec raw-outline) n))
         lip-inset (getopt :wrist-rest :shape :lip :inset)
         z2 (getopt :wrist-rest :plinth-height)
         z1 (- z2 (getopt :wrist-rest :shape :lip :height))
