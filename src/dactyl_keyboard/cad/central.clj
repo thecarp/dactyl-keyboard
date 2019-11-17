@@ -29,8 +29,9 @@
   "Derive certain properties from the base configuration."
   [getopt]
   (let [thickness (getopt :case :web-thickness)
-        width 100
-        points-3d [[0 -20 -5] [0 -20 30] [0 -15 35] [0 20 35] [0 20 -5]]
+        width (getopt :case :central-housing :shape :width)
+        edge (getopt :case :central-housing :shape :edge)
+        points-3d (map :point edge)
         base-polygon (mapv rest points-3d)
         inner-polygon (poly/from-outline base-polygon thickness)
         gabel-base (outline-back-to-3d points-3d base-polygon)

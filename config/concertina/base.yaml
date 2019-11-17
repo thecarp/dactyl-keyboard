@@ -1,0 +1,14 @@
+# WIP.
+
+reflect: true
+case:
+  central-housing:
+    include: true
+    shape:
+      width: 100
+      edge:
+        - point: [0, -20, -5]
+        - point: [0, -20, 30]
+        - point: [0, -15, 35]
+        - point: [0, 20, 35]
+        - point: [0, 20, -5]

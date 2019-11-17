@@ -156,12 +156,24 @@
     "The thickness in mm of the webbing between switch key "
     "mounting plates, and of the rear housing’s walls and roof."]
    [:section [:case :central-housing]
-    "With `reflect`, a central housing occupies the space between the "
-    "user’s hands, providing a rigid mechanical connection and space for "
-    "an MCU."]
+    "A central housing can occupy the space between the key clusters, "
+    "providing a rigid mechanical connection and space for an MCU.\n\n"
+    "When present, a central housing will determine the position of each "
+    "other part of the keyboard, connecting to key clusters on each side."]
    [:parameter [:case :central-housing :include]
     {:default false :parse-fn boolean}
-    "If `true`, add a central housing."]
+    "If this and `reflect` are both true, add a central housing."]
+   [:section [:case :central-housing :shape]
+    "The shape of the central housing determines, in part, how it connects "
+    "to the rest of the keyboard."]
+   [:parameter [:case :central-housing :shape :width]
+    {:default 1 :parse-fn num}
+    "The approximate total horizontal width of the housing in mm."]
+   [:parameter [:case :central-housing :shape :edge]
+    {:default [] :parse-fn vec}
+    "The shape of each outer edge of the housing, at the interface between "
+    "the housing itself and the rest of the case. These edges are "
+    "symmetrical. What you describe here is actually the right-hand side."]
    [:section [:case :rear-housing]
     "The furthest row of a key cluster can be extended into a rear housing "
     "for the MCU and various other features."]
@@ -177,8 +189,9 @@
     {:default 1 :parse-fn num}
     "The vertical thickness in mm of the flat top."]
    [:section [:case :rear-housing :position]
-    "Where to put the rear housing. By default, it sits all along the far "
-    "side of the `main` cluster but has no depth."]
+    "Where to put the rear housing. Unlike a central housing, a rear housing "
+    "is placed in relation to a key cluster. By default, it sits all along "
+    "the far (north) side of the `main` cluster but has no depth."]
    [:parameter [:case :rear-housing :position :cluster]
     {:default :main :parse-fn keyword :validate [::schema/key-cluster]}
     "The key cluster at which to anchor the housing."]

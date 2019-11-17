@@ -20,6 +20,9 @@ Each heading in this document represents a recognized configuration key in the m
     - Parameter <a href="#user-content-case-web-thickness">`web-thickness`</a>
     - Section <a href="#user-content-case-central-housing">`central-housing`</a>
         - Parameter <a href="#user-content-case-central-housing-include">`include`</a>
+        - Section <a href="#user-content-case-central-housing-shape">`shape`</a>
+            - Parameter <a href="#user-content-case-central-housing-shape-width">`width`</a>
+            - Parameter <a href="#user-content-case-central-housing-shape-edge">`edge`</a>
     - Section <a href="#user-content-case-rear-housing">`rear-housing`</a>
         - Parameter <a href="#user-content-case-rear-housing-include">`include`</a>
         - Parameter <a href="#user-content-case-rear-housing-wall-thickness">`wall-thickness`</a>
@@ -258,11 +261,25 @@ The thickness in mm of the webbing between switch key mounting plates, and of th
 
 ### Section <a id="case-central-housing">`central-housing`</a>
 
-With `reflect`, a central housing occupies the space between the user’s hands, providing a rigid mechanical connection and space for an MCU.
+A central housing can occupy the space between the key clusters, providing a rigid mechanical connection and space for an MCU.
+
+When present, a central housing will determine the position of each other part of the keyboard, connecting to key clusters on each side.
 
 #### Parameter <a id="case-central-housing-include">`include`</a>
 
-If `true`, add a central housing.
+If this and `reflect` are both true, add a central housing.
+
+#### Section <a id="case-central-housing-shape">`shape`</a>
+
+The shape of the central housing determines, in part, how it connects to the rest of the keyboard.
+
+##### Parameter <a id="case-central-housing-shape-width">`width`</a>
+
+The approximate total horizontal width of the housing in mm.
+
+##### Parameter <a id="case-central-housing-shape-edge">`edge`</a>
+
+The shape of each outer edge of the housing, at the interface between the housing itself and the rest of the case. These edges are symmetrical. What you describe here is actually the right-hand side.
 
 ### Section <a id="case-rear-housing">`rear-housing`</a>
 
@@ -282,7 +299,7 @@ The vertical thickness in mm of the flat top.
 
 #### Section <a id="case-rear-housing-position">`position`</a>
 
-Where to put the rear housing. By default, it sits all along the far side of the `main` cluster but has no depth.
+Where to put the rear housing. Unlike a central housing, a rear housing is placed in relation to a key cluster. By default, it sits all along the far (north) side of the `main` cluster but has no depth.
 
 ##### Parameter <a id="case-rear-housing-position-cluster">`cluster`</a>
 
