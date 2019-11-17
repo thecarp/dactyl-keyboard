@@ -7,12 +7,48 @@
 ;;; complex shapes from primitive solids.
 
 (ns dactyl-keyboard.cad.poly
-  (:require [clojure.spec.alpha :as spec]
+  (:require [scad-clj.model :as model]
+            [clojure.spec.alpha :as spec]
             [thi.ng.geom.bezier :refer [auto-spline2]]
             [thi.ng.geom.core :refer [tessellate vertices bounds]]
             [thi.ng.geom.polygon :refer [polygon2 inset-polygon]]
-            [thi.ng.geom.vector :refer [vec2]]
+            [thi.ng.geom.vector :refer [vec2 vec3]]
             [scad-tarmi.core :as tarmi]))
+
+
+;;;;;;;;;;;;;;;
+;; Internals ;;
+;;;;;;;;;;;;;;;
+
+(defn- tessellate3
+  "Naïve 3D tesselation: Return 2 triangles for 4 3D points."
+  [points]
+  {:pre [(spec/valid? ::tarmi/point-coll-3d points)
+         (= (count points) 4)]
+   :post [(spec/valid? (spec/coll-of ::tarmi/point-coll-3d) %)
+          (= (count %) 2)]}
+  [(butlast points) (reverse (rest points))])
+
+(defn- bite-tail [coll] (conj coll (first coll)))
+
+(defn- pave-space
+  "Describe a surface between two sequences of points of the same length.
+  Return triangles described with point coordinates."
+  [[a b]]
+  {:pre [(spec/valid? ::tarmi/point-coll-3d a)
+         (spec/valid? ::tarmi/point-coll-3d b)
+         (= (count a) (count b))]
+   :post [(spec/valid? (spec/coll-of ::tarmi/point-coll-3d) %)]}
+  (mapcat tessellate3 (partition 4 2 (interleave (bite-tail a) (bite-tail b)))))
+
+(defn- tuboid-triangles
+  "thi.ng triangles for a hollow tube of sorts."
+  [outer-left inner-left outer-right inner-right]
+  (mapcat pave-space
+    [[outer-left inner-left]      ; Left-hand-side aperture.
+     [inner-right outer-right]    ; Right-hand side aperture, reverse order.
+     [inner-left inner-right]     ; Interior.
+     [outer-right outer-left]]))  ; Exterior. Notice reverse order.
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -57,9 +93,29 @@
   ;; Notice that negative indices, as returned by .indexOf for unrecognized
   ;; inputs, are checked as illegal here, meaning that the inputs must match.
   [points triangles]
-  {:pre [(spec/valid? ::tarmi/point-coll-2d points)
-         (spec/valid? (spec/coll-of ::tarmi/point-coll-2d) triangles)]
+  {:pre [(spec/valid? ::tarmi/point-coll-2-3d points)
+         (spec/valid? (spec/coll-of ::tarmi/point-coll-2-3d) triangles)]
    :post [(spec/valid? (spec/coll-of (spec/coll-of nat-int?)) %)]}
   (letfn [(to-index [coord] (.indexOf points coord))
           (to-face [triangle] (mapv to-index triangle))]
     (mapv to-face triangles)))
+
+(defn tuboid
+  "A polyhedron describing an irregular ring- or tube-like shape.
+  This is based on the naïve assumption that incoming point sequences describe
+  the vertices of the object starting on the low end of all three axes and
+  moving to higher values clockwise for the left-hand side (low x) of the
+  object."
+  ;; Assumptions and the logic of relevant internal functions
+  ;; satisfy OpenSCAD’s requirement that:
+  ;;   “All faces must have points ordered in the same direction. OpenSCAD
+  ;;    prefers clockwise when looking at each face from outside inwards.”
+  ;; Failing to meet this requirement will cause rendering errors on
+  ;; intersection.
+  [& point-seqs]
+  {:pre [(spec/valid? (spec/coll-of ::tarmi/point-coll-3d) point-seqs)]}
+  (let [points (apply concat point-seqs)]
+    (model/polyhedron
+      points
+      (coords-to-indices points (apply tuboid-triangles point-seqs))
+      :convexity 3)))
