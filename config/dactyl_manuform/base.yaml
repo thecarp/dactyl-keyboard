@@ -9,7 +9,7 @@
 # - No wire hooks.
 # - Bottom plating does not project from screw anchors.
 
-split: true
+reflect: true
 keys:
   styles:
     default:  # Rough approximation of SA family.

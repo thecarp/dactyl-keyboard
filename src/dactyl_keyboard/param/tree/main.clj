@@ -36,11 +36,16 @@
     "Each heading in this document represents a recognized configuration key "
     "in the main body of a YAML file for a DMOTE variant. Other documents "
     "cover special sections of this one in more detail."]
-   [:parameter [:split]
+   [:parameter [:reflect]
     {:default false :parse-fn boolean}
-    "If `true`, build two versions of the case: One for the right hand and a "
-    "mirror image for the left hand. Threaded holes and other chiral "
-    "components of the case are exempted from mirroring."]
+    "If `true`, mirror the case, producing one version for the right hand "
+    "and another for the left. The two halves will be almost identical: "
+    "Only chiral parts, such as threaded holes, are exempt from mirroring "
+    "with `reflect`.\n\n"
+    "You can use this option to make a ‘split’ keyboard, though the two "
+    "halves are typically connected by a signalling cable, by a rigid "
+    "`central-housing`, or by one or more rods anchored to "
+    "some feature such as `rear-housing` or `back-plate`."]
    [:section [:keys]
     "Keys, that is keycaps and electrical switches, are not the main focus of "
     "this application, but they influence the shape of the case."]
@@ -150,6 +155,13 @@
     {:default 1 :parse-fn num}
     "The thickness in mm of the webbing between switch key "
     "mounting plates, and of the rear housing’s walls and roof."]
+   [:section [:case :central-housing]
+    "With `reflect`, a central housing occupies the space between the "
+    "user’s hands, providing a rigid mechanical connection and space for "
+    "an MCU."]
+   [:parameter [:case :central-housing :include]
+    {:default false :parse-fn boolean}
+    "If `true`, add a central housing."]
    [:section [:case :rear-housing]
     "The furthest row of a key cluster can be extended into a rear housing "
     "for the MCU and various other features."]
@@ -219,7 +231,7 @@
     {:default 0 :parse-fn num}]
    [:section [:case :back-plate]
     "Given that independent movement of each half of a split keyboard is not "
-    "useful, each half can include a mounting plate for a stabilizing ‘beam’. "
+    "useful, each half can include a mounting plate for a stabilizing rod. "
     "That is a straight piece of wood, aluminium, rigid plastic etc. to "
     "connect the two halves mechanically and possibly carry the wire that "
     "connects them electrically.\n\n"
@@ -230,7 +242,7 @@
    [:parameter [:case :back-plate :include]
     {:default false :parse-fn boolean}
     "If `true`, include a back plate block. This is not contingent upon "
-    "`split`."]
+    "`reflect`."]
    [:parameter [:case :back-plate :beam-height]
     {:default 1 :parse-fn num}
     "The nominal vertical extent of the back plate in mm. "

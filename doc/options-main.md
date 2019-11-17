@@ -5,7 +5,7 @@
 Each heading in this document represents a recognized configuration key in the main body of a YAML file for a DMOTE variant. Other documents cover special sections of this one in more detail.
 
 ## Table of contents
-- Parameter <a href="#user-content-split">`split`</a>
+- Parameter <a href="#user-content-reflect">`reflect`</a>
 - Section <a href="#user-content-keys">`keys`</a>
     - Parameter <a href="#user-content-keys-preview">`preview`</a>
     - Parameter <a href="#user-content-keys-styles">`styles`</a>
@@ -18,6 +18,8 @@ Each heading in this document represents a recognized configuration key in the m
     - Parameter <a href="#user-content-case-key-mount-thickness">`key-mount-thickness`</a>
     - Parameter <a href="#user-content-case-key-mount-corner-margin">`key-mount-corner-margin`</a>
     - Parameter <a href="#user-content-case-web-thickness">`web-thickness`</a>
+    - Section <a href="#user-content-case-central-housing">`central-housing`</a>
+        - Parameter <a href="#user-content-case-central-housing-include">`include`</a>
     - Section <a href="#user-content-case-rear-housing">`rear-housing`</a>
         - Parameter <a href="#user-content-case-rear-housing-include">`include`</a>
         - Parameter <a href="#user-content-case-rear-housing-wall-thickness">`wall-thickness`</a>
@@ -181,9 +183,11 @@ Each heading in this document represents a recognized configuration key in the m
     - Parameter <a href="#user-content-mask-size">`size`</a>
     - Parameter <a href="#user-content-mask-center">`center`</a>
 
-## Parameter <a id="split">`split`</a>
+## Parameter <a id="reflect">`reflect`</a>
 
-If `true`, build two versions of the case: One for the right hand and a mirror image for the left hand. Threaded holes and other chiral components of the case are exempted from mirroring.
+If `true`, mirror the case, producing one version for the right hand and another for the left. The two halves will be almost identical: Only chiral parts, such as threaded holes, are exempt from mirroring with `reflect`.
+
+You can use this option to make a ‘split’ keyboard, though the two halves are typically connected by a signalling cable, by a rigid `central-housing`, or by one or more rods anchored to some feature such as `rear-housing` or `back-plate`.
 
 ## Section <a id="keys">`keys`</a>
 
@@ -251,6 +255,14 @@ The thickness in mm of an imaginary “post” at each corner of each key mount.
 ### Parameter <a id="case-web-thickness">`web-thickness`</a>
 
 The thickness in mm of the webbing between switch key mounting plates, and of the rear housing’s walls and roof.
+
+### Section <a id="case-central-housing">`central-housing`</a>
+
+With `reflect`, a central housing occupies the space between the user’s hands, providing a rigid mechanical connection and space for an MCU.
+
+#### Parameter <a id="case-central-housing-include">`include`</a>
+
+If `true`, add a central housing.
 
 ### Section <a id="case-rear-housing">`rear-housing`</a>
 
@@ -338,13 +350,13 @@ A fastener on the outward-facing end of the rear housing. All parameters are ana
 
 ### Section <a id="case-back-plate">`back-plate`</a>
 
-Given that independent movement of each half of a split keyboard is not useful, each half can include a mounting plate for a stabilizing ‘beam’. That is a straight piece of wood, aluminium, rigid plastic etc. to connect the two halves mechanically and possibly carry the wire that connects them electrically.
+Given that independent movement of each half of a split keyboard is not useful, each half can include a mounting plate for a stabilizing rod. That is a straight piece of wood, aluminium, rigid plastic etc. to connect the two halves mechanically and possibly carry the wire that connects them electrically.
 
 This option is similar to rear housing, but the back plate block provides no interior space for an MCU etc. It is solid, with holes for threaded fasteners including the option of nut bosses. Its footprint is not part of a `bottom-plate`.
 
 #### Parameter <a id="case-back-plate-include">`include`</a>
 
-If `true`, include a back plate block. This is not contingent upon `split`.
+If `true`, include a back plate block. This is not contingent upon `reflect`.
 
 #### Parameter <a id="case-back-plate-beam-height">`beam-height`</a>
 

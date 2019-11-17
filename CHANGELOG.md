@@ -4,10 +4,15 @@ This log follows the conventions of
 version 0.2.0, thus covering only a fraction of the project’s history.
 
 ## [Unreleased]
+### Changed
+- The parameter `split` was **renamed** to `reflect` to avoid misleading the
+  user about how it interacts with the new `central-housing` feature.
+
 ### Added
 - Documentation:
     - An execution guide, as a new document branched off from the introduction.
     - Tables of content in auto-generated documents.
+- Central housing, a new feature.
 - A GNU Make target for the Dactyl-ManuForm.
 
 ### Fixed
@@ -18,6 +23,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 
 ### Developer
 - Improved REPL support.
+- A new `poly` module collecting helper functions for making polyhedra.
 
 ## [Version 0.5.1] - 2019-10-16
 ### Fixed

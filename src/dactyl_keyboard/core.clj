@@ -26,7 +26,8 @@
             [dactyl-keyboard.cad.bottom :as bottom]
             [dactyl-keyboard.cad.key :as key]
             [dactyl-keyboard.cad.place :as place]
-            [dactyl-keyboard.cad.wrist :as wrist])
+            [dactyl-keyboard.cad.wrist :as wrist]
+            [dactyl-keyboard.cad.central :as central])
   (:gen-class :main true))
 
 (defn pprint-settings
@@ -82,7 +83,7 @@
     (when (and (getopt :mcu :include)
                (= (getopt :mcu :support :style) :stop))
       (auxf/mcu-stop getopt))
-    (when (and (getopt :split) (getopt :connection :include))
+    (when (and (getopt :reflect) (getopt :connection :include))
       (auxf/connection-positive getopt))
     (when (getopt :case :back-plate :include)
       (auxf/backplate-block getopt))
@@ -133,7 +134,7 @@
           ;; First-level negatives:
           (key/metacluster key/cluster-cutouts getopt)
           (key/metacluster key/cluster-channels getopt)
-          (when (and (getopt :split) (getopt :connection :include))
+          (when (and (getopt :reflect) (getopt :connection :include))
             (auxf/connection-negative getopt))
           (when (getopt :mcu :include)
             (auxf/mcu-negative getopt))
@@ -219,6 +220,7 @@
    [[:keys] key/derive-style-properties]
    [[:key-clusters] key/derive-cluster-properties]
    [[] collect-anchors]
+   [[:case :central-housing] central/derive-properties]
    [[:case :rear-housing] body/housing-properties]
    [[:mcu] auxf/derive-mcu-properties]
    [[:wrist-rest] wrist/derive-properties]])
@@ -334,7 +336,11 @@
                   "sprue_negative")]
                (get-key-modules getopt :module-keycap :module-switch))
     :model-precursor build-keyboard-right
-    :chiral (getopt :split)}
+    :chiral (getopt :reflect)}
+   (when (and (getopt :reflect)
+              (getopt :case :central-housing :include))
+     {:name "central-housing"
+      :model-precursor (partial central/main-body)})
    (when (and (getopt :mcu :include)
               (= (getopt :mcu :support :style) :lock))
      {:name "mcu-lock-bolt"
@@ -347,13 +353,13 @@
                   "bottom_plate_anchor_positive")]
       :model-precursor build-rubber-casting-mould-right
       :rotation [π 0 0]
-      :chiral (getopt :split)})  ; Chirality is possible but not guaranteed.
+      :chiral (getopt :reflect)})  ; Chirality is possible but not guaranteed.
    (when (getopt :wrist-rest :include)
      {:name "pad-shape"
       :modules [(when (getopt :case :bottom-plate :include)
                   "bottom_plate_anchor_positive")]
       :model-precursor build-rubber-pad-right
-      :chiral (getopt :split)})
+      :chiral (getopt :reflect)})
    (when (and (getopt :wrist-rest :include)
               (not (= (getopt :wrist-rest :style) :solid)))
      {:name "wrist-rest-main"
@@ -364,7 +370,7 @@
                 (when (getopt :wrist-rest :sprues :include)
                   "sprue_negative")]
       :model-precursor build-plinth-right
-      :chiral (getopt :split)})
+      :chiral (getopt :reflect)})
    ;; Bottom plate(s):
    (when (and (getopt :case :bottom-plate :include)
               (not (and (getopt :case :bottom-plate :combine)
@@ -373,7 +379,7 @@
       :modules ["bottom_plate_anchor_negative"]
       :model-precursor bottom/case-complete
       :rotation [0 π 0]
-      :chiral (getopt :split)})
+      :chiral (getopt :reflect)})
    (when (and (getopt :wrist-rest :include)
               (getopt :wrist-rest :bottom-plate :include)
               (not (and (getopt :case :bottom-plate :include)
@@ -382,7 +388,7 @@
       :modules ["bottom_plate_anchor_negative"]
       :model-precursor bottom/wrist-complete
       :rotation [0 π 0]
-      :chiral (getopt :split)})
+      :chiral (getopt :reflect)})
    (when (and (getopt :case :bottom-plate :include)
               (getopt :case :bottom-plate :combine)
               (getopt :wrist-rest :include)
@@ -391,7 +397,7 @@
       :modules ["bottom_plate_anchor_negative"]
       :model-precursor bottom/combined-complete
       :rotation [0 π 0]
-      :chiral (getopt :split)})])
+      :chiral (getopt :reflect)})])
 
 (defn get-all-precursors
   "Add dynamic elements to static precursors.
