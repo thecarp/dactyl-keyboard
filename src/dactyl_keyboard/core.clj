@@ -221,7 +221,7 @@
    [[:key-clusters] key/derive-cluster-properties]
    [[] collect-anchors]
    [[:case :central-housing] central/derive-properties]
-   [[:case :rear-housing] body/housing-properties]
+   [[:case :rear-housing] body/rhousing-properties]
    [[:mcu] auxf/derive-mcu-properties]
    [[:wrist-rest] wrist/derive-properties]])
 

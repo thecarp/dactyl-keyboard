@@ -148,7 +148,7 @@
           (matrix/trace-between
             (getopt :key-clusters :derived :by-cluster cluster :key-requested?)))))))
 
-(defn- housing-floor-polygon
+(defn- rhousing-floor-polygon
   "A polygon describing the area underneath the rear housing.
   A projection of the 3D shape would work but it would require taking care to
   hull the straight and other parts of the housing separately, because the
@@ -158,7 +158,7 @@
     (reduce
       (fn [coll pillar-fn] (conj coll (take 2 (pillar-fn true false))))
       []
-      (body/housing-pillar-functions getopt))))
+      (body/rhousing-pillar-functions getopt))))
 
 (defn- tweak-floor-vertex
   "A corner vertex on a tweak wall, extending from a key mount."
@@ -229,9 +229,9 @@
     ;; it will not slice correctly: The mesh will be broken at the
     ;; intersection.
     (when (getopt :case :rear-housing :include)
-      ;; To work around the problem, the housing-floor-polygon is moved a
+      ;; To work around the problem, the rear housing floor polygon is moved a
       ;; tiny bit toward the origin, preventing the vertex overlap.
-      (model/translate [0 -0.000001] (housing-floor-polygon getopt)))
+      (model/translate [0 -0.000001] (rhousing-floor-polygon getopt)))
     (when (and (getopt :wrist-rest :include)
                (= (getopt :wrist-rest :style) :threaded))
       (model/cut (wrist/all-case-blocks getopt)))))

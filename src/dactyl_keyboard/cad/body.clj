@@ -173,17 +173,17 @@
 ;; Rear Housing ;;
 ;;;;;;;;;;;;;;;;;;
 
-(defn- housing-post [getopt]
+(defn- rhousing-post [getopt]
   (let [xy (getopt :case :rear-housing :wall-thickness)]
     (model/cube xy xy (getopt :case :rear-housing :roof-thickness))))
 
-(defn- housing-height
-  "The precise height of (the center of) each top-level housing-post."
+(defn- rhousing-height
+  "The precise height of (the center of) each top-level rhousing-post."
   [getopt]
   (- (getopt :case :rear-housing :height)
      (/ (getopt :case :rear-housing :roof-thickness) 2)))
 
-(defn housing-properties
+(defn rhousing-properties
   "Derive characteristics from parameters for the rear housing."
   [getopt]
   (let [cluster (getopt :case :rear-housing :position :cluster)
@@ -198,7 +198,7 @@
         getoffset (partial getopt :case :rear-housing :position :offsets)
         y-roof-s (+ y-max (getoffset :south))
         y-roof-n (+ y-roof-s (getoffset :north))
-        z (housing-height getopt)
+        z (rhousing-height getopt)
         roof-sw [(- (first (getpos (first pairs))) (getoffset :west)) y-roof-s z]
         roof-se [(+ (first (getpos (last pairs))) (getoffset :east)) y-roof-s z]
         roof-nw [(first roof-sw) y-roof-n z]
@@ -212,15 +212,15 @@
     :nw roof-nw
     :ne roof-ne}))
 
-(defn- housing-roof
+(defn- rhousing-roof
   "A cuboid shape between the four corners of the rear housing’s roof."
   [getopt]
   (let [getcorner (partial getopt :case :rear-housing :derived)]
     (apply model/hull
-      (map #(maybe/translate (getcorner %) (housing-post getopt))
+      (map #(maybe/translate (getcorner %) (rhousing-post getopt))
            [:nw :ne :se :sw]))))
 
-(defn housing-pillar-functions
+(defn rhousing-pillar-functions
   "Make functions that determine the exact positions of rear housing walls.
   This is an awkward combination of reckoning functions for building the
   bottom plate in 2D and placement functions for building the case walls in
@@ -229,7 +229,7 @@
   [getopt]
   (let [cluster (getopt :case :rear-housing :position :cluster)
         cluster-pillar
-          (fn [coord-key direction housing-turning-fn cluster-turning-fn]
+          (fn [coord-key direction rhousing-turning-fn cluster-turning-fn]
             ;; Make a function for a part of the cluster wall.
             (fn [reckon upper]
               (let [coord (getopt :case :rear-housing :derived coord-key)
@@ -239,8 +239,8 @@
                     picker (if reckon #(first (take-last 2 %)) identity)]
                 (picker
                   (place/wall-edge-sequence getopt cluster upper
-                    [coord direction housing-turning-fn] subject)))))
-        housing-pillar
+                    [coord direction rhousing-turning-fn] subject)))))
+        rhousing-pillar
           (fn [opposite directions]
             ;; Make a function for a part of the rear housing.
             ;; For reckoning, return a 3D coordinate vector.
@@ -248,25 +248,25 @@
             (fn [reckon upper]
               (let [subject
                       (if reckon
-                        (place/housing-vertex-offset getopt
+                        (place/rhousing-vertex-offset getopt
                           (if opposite
                             [(first directions)
                              (matrix/left (matrix/left (second directions)))]
                             directions))
-                        (housing-post getopt))]
+                        (rhousing-post getopt))]
                 (apply (if reckon mean model/hull)
-                  (map #(place/housing-place getopt directions % subject)
+                  (map #(place/rhousing-place getopt directions % subject)
                        (if upper [0 1] [1]))))))]
     [(cluster-pillar :west-end-coord :west matrix/right matrix/left)
-     (housing-pillar true WSW)
-     (housing-pillar false WNW)
-     (housing-pillar false NNW)
-     (housing-pillar false NNE)
-     (housing-pillar false ENE)
-     (housing-pillar true ESE)
+     (rhousing-pillar true WSW)
+     (rhousing-pillar false WNW)
+     (rhousing-pillar false NNW)
+     (rhousing-pillar false NNE)
+     (rhousing-pillar false ENE)
+     (rhousing-pillar true ESE)
      (cluster-pillar :east-end-coord :east matrix/left matrix/right)]))
 
-(defn- housing-wall-shape-level
+(defn- rhousing-wall-shape-level
   "The west, north and east walls of the rear housing with connections to the
   ordinary case wall."
   [getopt is-upper-level joiner]
@@ -274,17 +274,17 @@
     (reduce
       (fn [coll function] (conj coll (joiner (function false is-upper-level))))
       []
-      (housing-pillar-functions getopt))))
+      (rhousing-pillar-functions getopt))))
 
-(defn- housing-outer-wall
+(defn- rhousing-outer-wall
   "The complete walls of the rear housing: Vertical walls and a bevelled upper
   level that meets the roof."
   [getopt]
   (model/union
-    (housing-wall-shape-level getopt true identity)
-    (housing-wall-shape-level getopt false misc/bottom-hull)))
+    (rhousing-wall-shape-level getopt true identity)
+    (rhousing-wall-shape-level getopt false misc/bottom-hull)))
 
-(defn- housing-web
+(defn- rhousing-web
   "An extension of a key cluster’s webbing onto the roof of the rear housing."
   [getopt]
   (let [cluster (getopt :case :rear-housing :position :cluster)
@@ -299,7 +299,7 @@
                  (min (first (pos-corner coord corner))
                       (first se))))
         y (second sw)
-        z (housing-height getopt)]
+        z (rhousing-height getopt)]
    (loft
      (reduce
        (fn [coll [coord corner]]
@@ -308,11 +308,11 @@
              (place/cluster-place getopt cluster coord
                (key/mount-corner-post getopt (key-style coord) corner))
              (model/translate [(x coord corner) y z]
-               (housing-post getopt)))))
+               (rhousing-post getopt)))))
        []
        (getopt :case :rear-housing :derived :coordinate-corner-pairs)))))
 
-(defn- housing-mount-place [getopt side shape]
+(defn- rhousing-mount-place [getopt side shape]
   (let [d (getopt :case :rear-housing :fasteners :diameter)
         offset (getopt :case :rear-housing :fasteners side :offset)
         n (getopt :case :rear-housing :position :offsets :north)
@@ -327,20 +327,20 @@
      (model/translate near shape)
      (model/translate far shape))))
 
-(defn- housing-mount-positive [getopt side]
+(defn- rhousing-mount-positive [getopt side]
   (let [d (getopt :case :rear-housing :fasteners :diameter)
         w (* 2.2 d)]
-   (housing-mount-place getopt side
+   (rhousing-mount-place getopt side
      (model/cube w w (threaded/datum d :hex-nut-height)))))
 
-(defn- housing-mount-negative [getopt side]
+(defn- rhousing-mount-negative [getopt side]
   (let [d (getopt :case :rear-housing :fasteners :diameter)
         compensator (getopt :dfm :derived :compensator)]
    (model/union
-     (housing-mount-place getopt side
+     (rhousing-mount-place getopt side
        (model/cylinder (/ d 2) 20))
      (if (getopt :case :rear-housing :fasteners :bosses)
-       (housing-mount-place getopt side
+       (rhousing-mount-place getopt side
          (threaded/nut :iso-size d :compensator compensator :negative true))))))
 
 (defn rear-housing
@@ -353,11 +353,11 @@
                  (if (prop :east :include) (function getopt :east))))]
    (model/difference
      (model/union
-       (housing-roof getopt)
-       (housing-web getopt)
-       (housing-outer-wall getopt)
-       (if (prop :bosses) (pair housing-mount-positive)))
-     (pair housing-mount-negative))))
+       (rhousing-roof getopt)
+       (rhousing-web getopt)
+       (rhousing-outer-wall getopt)
+       (if (prop :bosses) (pair rhousing-mount-positive)))
+     (pair rhousing-mount-negative))))
 
 
 ;;;;;;;;;;;;;;;;;;;
@@ -372,7 +372,7 @@
   (if (= first-segment last-segment)
     (place/reckon-from-anchor getopt anchor
       {:subject (if (= anchor :rear-housing)
-                  (housing-post getopt)
+                  (rhousing-post getopt)
                   (key/web-post getopt))
        :corner directions
        :segment first-segment})

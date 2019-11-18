@@ -367,7 +367,7 @@
        (model/rotate [0 (/ π 2) 0])
        (model/translate (led-hole-position getopt ordinal))))
 
-(defn led-housing-channel [getopt ordinal]
+(defn lhousing-channel [getopt ordinal]
   (let [h (getopt :case :leds :housing-size)]
    (->> (model/cube 50 h h)
         (model/translate (led-hole-position getopt ordinal)))))
@@ -379,7 +379,7 @@
    (model/union
      (model/intersection
        (west-wall-led-channel getopt)
-       (group led-housing-channel))
+       (group lhousing-channel))
      (group led-emitter-channel))))
 
 

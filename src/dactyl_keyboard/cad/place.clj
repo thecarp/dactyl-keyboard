@@ -227,7 +227,7 @@
 
 ;; Rear housing.
 
-(defn- housing-segment-offset
+(defn- rhousing-segment-offset
   "Compute the [x y z] coordinate offset from a rear housing roof corner."
   [getopt cardinal-direction segment]
   (let [cluster (getopt :case :rear-housing :position :cluster)
@@ -238,16 +238,16 @@
      :east (wall (key :east-end-coord) cardinal-direction segment)
      :north (if (= segment 0) [0 0 0] [0 1 -1]))))
 
-(defn housing-vertex-offset [getopt directions]
+(defn rhousing-vertex-offset [getopt directions]
   (let [t (/ (getopt :case :web-thickness) 2)]
     (matrix/cube-vertex-offset directions [t t t] {})))
 
-(defn housing-place
+(defn rhousing-place
   "Place passed shape in relation to a corner of the rear housing’s roof."
   [getopt corner segment subject]
   (let [offset0 (getopt :case :rear-housing :derived
                   (directions-to-unordered-corner corner))
-        offset1 (housing-segment-offset getopt (first corner) segment)]
+        offset1 (rhousing-segment-offset getopt (first corner) segment)]
     (flex/translate (mapv + offset0 offset1) subject)))
 
 
@@ -356,7 +356,7 @@
   (let [init (flex/translate offset subject)]
     (case type
       :origin init
-      :rear-housing (housing-place getopt corner segment init)
+      :rear-housing (rhousing-place getopt corner segment init)
       :wr-perimeter
         (flex/translate
           (wrist-segment-naive getopt coordinates outline-key segment)
