@@ -25,6 +25,14 @@
 ;; Configuration Interface ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+
+(defn collect-point-aliases
+  "A map of aliases to corresponding indices in the edge array."
+  [getopt]
+  (into {} (map-indexed
+             (fn [idx {:keys [alias]}] (when alias [alias idx]))
+             (getopt :case :central-housing :shape :edge))))
+
 (defn derive-properties
   "Derive certain properties from the base configuration."
   [getopt]

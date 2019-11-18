@@ -8,7 +8,12 @@ case:
       width: 100
       edge:
         - point: [0, -20, -5]
+          alias: central-wip-1
         - point: [0, -20, 30]
+          alias: central-wip-2
         - point: [0, -15, 35]
+          alias: central-wip-3
         - point: [0, 20, 35]
+          alias: central-wip-4
         - point: [0, 20, -5]
+          alias: central-wip-5

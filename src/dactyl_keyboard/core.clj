@@ -208,6 +208,7 @@
   {:anchors (merge {:origin {:type :origin}
                     :rear-housing {:type :rear-housing}}
                    (key/collect-key-aliases getopt)
+                   (central/collect-point-aliases getopt)
                    (wrist/collect-point-aliases getopt)
                    (wrist/collect-block-aliases getopt)
                    (into {} (for [[k v] (getopt :secondaries)]
