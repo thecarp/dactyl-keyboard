@@ -225,6 +225,20 @@
           (spec/valid? ::tarmi-core/point-2-3d subject) (map place-segment [last-upper-segment]))))))
 
 
+;; Central housing.
+
+(defn- chousing-edge-point-coordinates
+  "Retrieve the [x y z] coordinates of a named point on the central housing."
+  [getopt index]
+  {:pre [(nat-int? index)]}
+  (getopt :case :central-housing :derived :points :gabel :right :outer index))
+
+(defn chousing-place
+  "Place passed shape in relation to a vertex of the central housing."
+  [getopt index subject]
+  (flex/translate (chousing-edge-point-coordinates getopt index) subject))
+
+
 ;; Rear housing.
 
 (defn- rhousing-segment-offset
@@ -343,6 +357,7 @@
   [getopt {:keys [type  ; Mandatory in all cases.
                   anchor  ; Secondaries only.
                   cluster  ; Keys only.
+                  index  ; Central housing only.
                   mount-index side-key  ; Wrist-rest mounts only.
                   coordinates  ; Keys and wrist-rest perimeter.
                   outline-key  ; Wrist-rest perimeter only.
@@ -356,6 +371,7 @@
   (let [init (flex/translate offset subject)]
     (case type
       :origin init
+      :central-housing (chousing-place getopt index init)
       :rear-housing (rhousing-place getopt corner segment init)
       :wr-perimeter
         (flex/translate

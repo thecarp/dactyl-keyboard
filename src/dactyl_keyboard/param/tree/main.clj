@@ -170,7 +170,8 @@
     {:default 1 :parse-fn num}
     "The approximate total horizontal width of the housing in mm."]
    [:parameter [:case :central-housing :shape :edge]
-    {:default [] :parse-fn vec}
+    {:default [] :parse-fn schema/central-housing-edge
+     :validate [::schema/central-housing-edge]}
     "The shape of each outer edge of the housing, at the interface between "
     "the housing itself and the rest of the case. These edges are "
     "symmetrical. What you describe here is actually the right-hand side."]

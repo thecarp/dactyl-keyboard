@@ -30,7 +30,9 @@
   "A map of aliases to corresponding indices in the edge array."
   [getopt]
   (into {} (map-indexed
-             (fn [idx {:keys [alias]}] (when alias [alias idx]))
+             (fn [idx {:keys [alias]}]
+               (when alias
+                 [alias {:type :central-housing, :index idx}]))
              (getopt :case :central-housing :shape :edge))))
 
 (defn derive-properties
@@ -39,7 +41,7 @@
   (let [thickness (getopt :case :web-thickness)
         width (getopt :case :central-housing :shape :width)
         edge (getopt :case :central-housing :shape :edge)
-        points-3d (map :point edge)
+        points-3d (map :offset edge)
         base-polygon (mapv rest points-3d)
         inner-polygon (poly/from-outline base-polygon thickness)
         gabel-base (outline-back-to-3d points-3d base-polygon)

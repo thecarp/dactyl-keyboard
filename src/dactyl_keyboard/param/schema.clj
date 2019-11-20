@@ -54,6 +54,12 @@
         (catch java.lang.NumberFormatException _
           (keyword candidate))))))           ; Input like “:first” or “"first"”.
 
+(def central-housing-edge
+  (tuple-of
+    (map-like
+      {:offset vec
+       :alias keyword})))
+
 (defn case-tweak-position
   "Parse notation for a tweak position.
   This is normally a range of wall segments off a specific key corner, but
@@ -138,7 +144,10 @@
 (spec/def ::hull-around (spec/coll-of (spec/or :leaf ::tweak-plate-leaf
                                                :map ::tweak-plate-map)))
 (spec/def ::spline-point
-  (spec/keys :req-un [::position]
+  (spec/keys :req-un [::position]  ; 2D.
+             :opt-un [::alias]))
+(spec/def ::central-housing-point
+  (spec/keys :req-un [::offset]  ; 3D.
              :opt-un [::alias]))
 
 ;; Users thereof:
@@ -151,6 +160,7 @@
                           :opt-un [::corner ::segment ::offset])))
 (spec/def ::anchored-2d-list (spec/coll-of ::anchored-2d-position))
 (spec/def ::points ::anchored-2d-list)
+(spec/def ::central-housing-edge (spec/coll-of ::central-housing-point))
 (spec/def ::tweak-name-map (spec/map-of keyword? ::hull-around))
 (spec/def ::tweak-plate-map
   (spec/keys :req-un [::hull-around]
