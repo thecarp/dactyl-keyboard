@@ -342,6 +342,58 @@
       (flex/translate (prop side-key)))))
 
 
+;; Polymorphic treatment of the properties of aliases.
+;; The by-type multimethod dispatches placement of features in relation to
+;; other features, on the basis of properties associated with each alias,
+;; starting with its :type.
+
+(defmulti by-type (fn [_ {:keys [type]}] type))
+
+(defmethod by-type :origin
+  [_ {:keys [initial]}]
+  initial)
+
+(defmethod by-type :central-housing
+  [getopt {:keys [index initial]}]
+  (chousing-place getopt index initial))
+
+(defmethod by-type :rear-housing
+  [getopt {:keys [corner segment initial] :or {segment 3}}]
+  (rhousing-place getopt corner segment initial))
+
+(defmethod by-type :wr-perimeter
+  [getopt {:keys [coordinates outline-key segment initial] :or {segment 3}}]
+  (flex/translate
+    (wrist-segment-naive getopt coordinates outline-key segment)
+    initial))
+
+(defmethod by-type :wr-block
+  [getopt {:keys [mount-index side-key corner segment initial]
+           :or {segment 3}}]
+  (wrist-block-place getopt mount-index side-key corner segment initial))
+
+(defmethod by-type :key
+  [getopt {:keys [cluster coordinates corner segment initial]
+           :or {segment 3} :as opts}]
+  (cluster-place getopt cluster coordinates
+    (if (some? corner)
+      ;; Corner named. By default, the target feature is the outermost wall.
+      (flex/translate
+        (wall-corner-offset getopt cluster coordinates
+          (merge opts {:directions corner :segment segment}))
+        initial)
+      ;; Else no corner named.
+      ;; The target feature is the middle of the key mounting plate.
+      initial)))
+
+(defmethod by-type :secondary
+  [getopt {:keys [anchor offset] :or {offset [0 0 0]} :as opts}]
+  (let [primary (resolve-anchor getopt anchor)
+        clean (dissoc opts :type :anchor :alias :offset)]
+    (flex/translate
+      (mapv + (get primary :offset [0 0 0]) offset)
+      (reckon-feature getopt (merge clean (dissoc primary :offset))))))
+
 ;; Generalizations.
 
 (defn- reckon-feature
@@ -350,52 +402,13 @@
   Return a scad-clj node or, by default, a vector of three numbers.
   Generally, the vector refers to what would be the middle of the outer wall
   of a feature. For keys, rear housing and wrist-rest mount blocks, this
-  is the middle of a wall post. For the perimeter of the wrist rest, it’s a
-  vertex on the surface and the corner argument is ignored.
+  is the middle of a wall post. For central housing and the perimeter of the
+  wrist rest, it’s a vertex on the surface.
   Any offset passed to this function will be interpreted in the native context
   of each feature placement function, with varying results."
-  [getopt {:keys [type  ; Mandatory in all cases.
-                  anchor  ; Secondaries only.
-                  cluster  ; Keys only.
-                  index  ; Central housing only.
-                  mount-index side-key  ; Wrist-rest mounts only.
-                  coordinates  ; Keys and wrist-rest perimeter.
-                  outline-key  ; Wrist-rest perimeter only.
-                  corner segment offset subject]
-           :or {segment 3, offset [0 0 0], subject [0 0 0]}
+  [getopt {:keys [offset subject] :or {offset [0 0 0], subject [0 0 0]}
            :as opts}]
-  {:pre [(keyword? type)
-         (integer? segment)
-         (vector? offset)
-         (spec/valid? ::tarmi-core/point-3d offset)]}
-  (let [init (flex/translate offset subject)]
-    (case type
-      :origin init
-      :central-housing (chousing-place getopt index init)
-      :rear-housing (rhousing-place getopt corner segment init)
-      :wr-perimeter
-        (flex/translate
-          (wrist-segment-naive getopt coordinates outline-key segment)
-          init)
-      :wr-block
-        (wrist-block-place getopt mount-index side-key corner segment init)
-      :key
-        (cluster-place getopt cluster coordinates
-          (if (some? corner)
-            ;; Corner named. By default, the target feature is the outermost wall.
-            (flex/translate
-              (wall-corner-offset getopt cluster coordinates
-                (merge opts {:directions corner :segment segment}))
-              init)
-            ;; Else no corner named.
-            ;; The target feature is the middle of the key mounting plate.
-            init))
-      :secondary
-        (let [primary (resolve-anchor getopt anchor)
-              clean (dissoc opts :type :anchor :alias :offset)]
-          (flex/translate
-            (mapv + (get primary :offset [0 0 0]) offset)
-            (reckon-feature getopt (merge clean (dissoc primary :offset))))))))
+  (by-type getopt (assoc opts :initial (flex/translate offset subject))))
 
 (defn reckon-from-anchor
   "Find a position corresponding to a named point."
