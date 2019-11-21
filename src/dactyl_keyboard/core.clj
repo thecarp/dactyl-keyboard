@@ -165,6 +165,10 @@
     ;; The remaining elements are visualizations for use in development.
     (when (getopt :keys :preview)
       (key/metacluster key/cluster-keycaps getopt))
+    (when (and (getopt :reflect)
+               (getopt :case :central-housing :include)
+               (getopt :case :central-housing :preview))
+      (central/main-body getopt))
     (when (and (getopt :mcu :include) (getopt :mcu :preview))
       (auxf/mcu-visualization getopt))
     (when (and (getopt :mcu :include)

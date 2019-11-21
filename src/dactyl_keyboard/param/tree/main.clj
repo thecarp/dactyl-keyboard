@@ -163,6 +163,10 @@
    [:parameter [:case :central-housing :include]
     {:default false :parse-fn boolean}
     "If this and `reflect` are both true, add a central housing."]
+   [:parameter [:case :central-housing :preview]
+    {:default false :parse-fn boolean}
+    "If `true`, include the rear housing when rendering each half of the "
+    "main body."]
    [:section [:case :central-housing :shape]
     "The shape of the central housing determines, in part, how it connects "
     "to the rest of the keyboard."]

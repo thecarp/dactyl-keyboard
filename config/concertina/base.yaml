@@ -7,13 +7,24 @@ key-clusters:
       anchor: central-wip-3
       offset: [50, 0, -19.5]
     matrix-columns:
-    - rows-above-home: 1
-      rows-below-home: 1
-    - rows-above-home: 1
-      rows-below-home: 2
+      - rows-above-home: 1
+        rows-below-home: 1
+      - rows-above-home: 1
+    aliases:
+      key-wip-1: [first, -1]
+      key-wip-2: [first, 0]
+      key-wip-3: [first, 1]
+by-key:
+  parameters:
+    wall:
+      west:
+        extent: 1
+        parallel: 5
+        perpendicular: -10
 case:
   central-housing:
     include: true
+    preview: true
     shape:
       width: 100
       edge:
@@ -27,3 +38,15 @@ case:
           alias: central-wip-4
         - offset: [0, 20, -5]
           alias: central-wip-5
+  tweaks:
+    bridge-wip:
+      - chunk-size: 3
+        hull-around:
+        - [key-wip-1, WSW, 0, 4]
+        - [central-wip-1]
+        - [key-wip-1, WSW, 1]
+        - [central-wip-2]
+        - [key-wip-2, WSW, 1]
+        - [central-wip-3]
+        - [key-wip-3, WNW, 1]
+        - [central-wip-4]
