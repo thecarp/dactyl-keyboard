@@ -10,11 +10,13 @@
             [scad-tarmi.threaded :as threaded]
             [scad-tarmi.util :refer [loft]]
             [dactyl-keyboard.generics :refer [NNE ENE ESE WSW WNW NNW colours]]
+            [dactyl-keyboard.cad.central :as central]
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.key :as key]
-            [dactyl-keyboard.param.access :refer [most-specific tweak-data]]))
+            [dactyl-keyboard.param.access :as access :refer [most-specific
+                                                             tweak-data]]))
 
 
 ;;;;;;;;;;;;;
@@ -364,18 +366,27 @@
 ;; Tweak Plating ;;
 ;;;;;;;;;;;;;;;;;;;
 
+
 (defn- tweak-posts
   "(The hull of) one or more corner posts from a single key mount.
+  This function both picks the shape of the post and positions it.
+  For a tweak anchored to the central housing, defer to the central module
+  for both shape and position, because they are closely related in that case.
   For a tweak anchored to the rear housing, use its dimensions for the post.
   Otherwise use a web post."
   [getopt anchor directions first-segment last-segment]
   (if (= first-segment last-segment)
-    (place/reckon-from-anchor getopt anchor
-      {:subject (if (= anchor :rear-housing)
-                  (rhousing-post getopt)
-                  (key/web-post getopt))
-       :corner directions
-       :segment first-segment})
+    (let [type (:type (access/resolve-anchor getopt anchor))]
+      (if (= type :central-housing)
+        ;; High-precision anchor; reckon-from-anchor is inadequate.
+        (central/tweak-post getopt anchor)
+        ;; Low precision.
+        (place/reckon-from-anchor getopt anchor
+          {:subject (if (= type :rear-housing)
+                      (rhousing-post getopt)
+                      (key/web-post getopt))
+           :corner directions
+           :segment first-segment})))
     (apply model/hull (map #(tweak-posts getopt anchor directions %1 %1)
                            (range first-segment (inc last-segment))))))
 

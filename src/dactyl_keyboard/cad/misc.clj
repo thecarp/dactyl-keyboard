@@ -9,6 +9,7 @@
   (:require [scad-clj.model :as model]
             [scad-tarmi.maybe :as maybe]))
 
+(def wafer 0.001)  ; Generic insignificant feature size.
 
 (defn pad-to-3d
   "Pad a coordinate vector to three dimensions."
@@ -31,7 +32,7 @@
     (model/project p)))
 
 (defn bottom-hull [& p]
-  (model/hull p (bottom-extrusion 0.001 p)))
+  (model/hull p (bottom-extrusion wafer p)))
 
 (defn swing-callables
   "Rotate passed object with passed radius, not around its own axes.

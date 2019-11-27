@@ -10,7 +10,7 @@
             [scad-tarmi.maybe :as maybe]
             [scad-tarmi.threaded :as threaded]
             [dactyl-keyboard.generics :refer [colours]]
-            [dactyl-keyboard.cad.misc :as misc]
+            [dactyl-keyboard.cad.misc :as misc :refer [wafer]]
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.key :as key]
@@ -45,10 +45,10 @@
       (let [bottom-diameter (prop :inserts :diameter :bottom)
             top-disc
               (model/translate [0 0 z-top-interior]
-                (model/cylinder (/ walled-top-diameter 2) 0.001))
+                (model/cylinder (/ walled-top-diameter 2) wafer))
             bottom-disc
               (model/translate [0 0 head-height]
-                (model/cylinder (/ (+ bottom-diameter thickness) 2) 0.001))]
+                (model/cylinder (/ (+ bottom-diameter thickness) 2) wafer))]
         (model/union
           dome
           (model/hull top-disc bottom-disc)
@@ -79,9 +79,9 @@
               z0 (threaded/head-height iso-size :countersunk)
               z1 (+ z0 (prop :inserts :length))]
           (misc/bottom-hull (model/translate [0 0 z1]
-                              (model/cylinder (/ d1 2) 0.001))
+                              (model/cylinder (/ d1 2) wafer))
                             (model/translate [0 0 z0]
-                              (model/cylinder (/ d0 2) 0.001))))))))
+                              (model/cylinder (/ d0 2) wafer))))))))
 
 (defn fastener-positions
   "Place instances of named module according to user configuration."

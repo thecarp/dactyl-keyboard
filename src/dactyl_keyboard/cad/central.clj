@@ -7,7 +7,9 @@
   (:require [scad-clj.model :as model]
             [scad-tarmi.maybe :as maybe]
             [scad-tarmi.threaded :as threaded]
-            [dactyl-keyboard.cad.poly :as poly]))
+            [dactyl-keyboard.cad.misc :refer [wafer]]
+            [dactyl-keyboard.cad.poly :as poly]
+            [dactyl-keyboard.param.access :as access]))
 
 
 ;;;;;;;;;;;;;;;
@@ -24,7 +26,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Configuration Interface ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 
 (defn collect-point-aliases
   "A map of aliases to corresponding indices in the edge array."
@@ -58,10 +59,25 @@
                              :inner left-gabel-inner}}}}))
 
 
+;;;;;;;;;;;;;;;;;;;
+;; Model Interop ;;
+;;;;;;;;;;;;;;;;;;;
+
+(defn tweak-post
+  "Place an adapter between the housing polyhedron and a case wall."
+  [getopt alias]
+  {:pre [(keyword? alias)]}
+  (let [index (:index (access/resolve-anchor
+                        getopt alias #(= (:type %) :central-housing)))
+        prop (partial getopt :case :central-housing :derived :points :gabel :right)]
+    (model/hull
+      (model/translate (prop :outer index) (model/cube wafer wafer wafer))
+      (model/translate (prop :inner index) (model/cube wafer wafer wafer)))))
+
+
 ;;;;;;;;;;;;;
 ;; Outputs ;;
 ;;;;;;;;;;;;;
-
 
 (defn main-body
   "An OpenSCAD polyhedron describing the body of the central housing."
