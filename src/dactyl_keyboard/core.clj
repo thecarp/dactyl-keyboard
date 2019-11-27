@@ -92,7 +92,12 @@
     (body/wall-tweaks getopt)
     (when (getopt :case :bottom-plate :include)
       (bottom/case-anchors-positive getopt))
-    (auxf/foot-plates getopt)))
+    (auxf/foot-plates getopt)
+    ;; Visualization for use in development:
+    (when (and (getopt :reflect)
+               (getopt :case :central-housing :include)
+               (getopt :case :central-housing :preview))
+      (central/main-body getopt))))
 
 (defn- midlevel-positive
   "Parts of the keyboard that go outside the mask but should still be subject
@@ -165,10 +170,6 @@
     ;; The remaining elements are visualizations for use in development.
     (when (getopt :keys :preview)
       (key/metacluster key/cluster-keycaps getopt))
-    (when (and (getopt :reflect)
-               (getopt :case :central-housing :include)
-               (getopt :case :central-housing :preview))
-      (central/main-body getopt))
     (when (and (getopt :mcu :include) (getopt :mcu :preview))
       (auxf/mcu-visualization getopt))
     (when (and (getopt :mcu :include)
@@ -345,7 +346,10 @@
    (when (and (getopt :reflect)
               (getopt :case :central-housing :include))
      {:name "central-housing"
-      :model-precursor (partial central/main-body)})
+      :model-precursor
+      (fn [getopt]
+        (body/mask getopt (getopt :case :bottom-plate :include)
+          (central/main-body getopt)))})
    (when (and (getopt :mcu :include)
               (= (getopt :mcu :support :style) :lock))
      {:name "mcu-lock-bolt"
