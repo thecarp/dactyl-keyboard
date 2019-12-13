@@ -7,6 +7,7 @@
 
 (ns dactyl-keyboard.param.schema
   (:require [clojure.spec.alpha :as spec]
+            [scad-tarmi.core :as tarmi]
             [dmote-keycap.schema :as capschema]
             [dactyl-keyboard.generics :as generics]))
 
@@ -54,11 +55,11 @@
         (catch java.lang.NumberFormatException _
           (keyword candidate))))))           ; Input like “:first” or “"first"”.
 
-(def central-housing-edge
+(def central-housing-interface
   (tuple-of
     (map-like
-      {:offset vec
-       :alias keyword})))
+      {:base (map-like {:offset vec, :alias keyword})
+       :adapter (map-like {:offset vec, :alias keyword})})))
 
 (defn case-tweak-position
   "Parse notation for a tweak position.
@@ -146,9 +147,15 @@
 (spec/def ::spline-point
   (spec/keys :req-un [::position]  ; 2D.
              :opt-un [::alias]))
-(spec/def ::central-housing-point
-  (spec/keys :req-un [::offset]  ; 3D.
+(spec/def :central/offset ::tarmi/point-3d)
+(spec/def :central/base
+  (spec/keys :req-un [:central/offset]
              :opt-un [::alias]))
+(spec/def :central/adapter
+  (spec/keys :opt-un [:central/offset ::alias]))
+(spec/def :central/interface-node
+  (spec/keys :req-un [:central/base]
+             :opt-un [:central/adapter]))
 
 ;; Users thereof:
 (spec/def ::foot-plate (spec/keys :req-un [::points]))
@@ -160,7 +167,7 @@
                           :opt-un [::corner ::segment ::offset])))
 (spec/def ::anchored-2d-list (spec/coll-of ::anchored-2d-position))
 (spec/def ::points ::anchored-2d-list)
-(spec/def ::central-housing-edge (spec/coll-of ::central-housing-point))
+(spec/def ::central-housing-interface (spec/coll-of :central/interface-node))
 (spec/def ::tweak-name-map (spec/map-of keyword? ::hull-around))
 (spec/def ::tweak-plate-map
   (spec/keys :req-un [::hull-around]

@@ -25,28 +25,49 @@ case:
   central-housing:
     include: true
     preview: true
+    adapter:
+      include: true
+      width: 10
     shape:
       width: 100
-      edge:
-        - offset: [0, -20, -5]
-          alias: central-wip-1
-        - offset: [0, -20, 30]
-          alias: central-wip-2
-        - offset: [0, -15, 35]
-          alias: central-wip-3
-        - offset: [0, 20, 35]
-          alias: central-wip-4
-        - offset: [0, 20, -5]
-          alias: central-wip-5
+      interface:
+        - base:
+            offset: [0, -20, -5]
+            alias: central-wip-1
+          adapter:
+            offset: [0, 0, 0]
+            alias: central-adapter-wip-1
+        - base:
+            offset: [0, -20, 30]
+            alias: central-wip-2
+          adapter:
+            offset: [10, 0, 0]
+            alias: central-adapter-wip-2
+        - base:
+            offset: [0, -15, 35]
+            alias: central-wip-3
+          adapter:
+            offset: [10, 0, 0]
+            alias: central-adapter-wip-3
+        - base:
+            offset: [0, 20, 35]
+            alias: central-wip-4
+          adapter:
+            alias: central-adapter-wip-4
+        - base:
+            offset: [0, 20, -5]
+            alias: central-wip-5
+          adapter:
+            alias: central-adapter-wip-5
   tweaks:
     bridge-wip:
       - chunk-size: 3
         hull-around:
         - [key-wip-1, WSW, 0, 4]
-        - [central-wip-1]
+        - [central-adapter-wip-1]
         - [key-wip-1, WSW, 1]
-        - [central-wip-2]
+        - [central-adapter-wip-2]
         - [key-wip-2, WSW, 1]
-        - [central-wip-3]
+        - [central-adapter-wip-3]
         - [key-wip-3, WNW, 1]
-        - [central-wip-4]
+        - [central-adapter-wip-4]

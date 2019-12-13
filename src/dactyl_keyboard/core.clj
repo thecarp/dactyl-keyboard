@@ -93,6 +93,10 @@
     (when (getopt :case :bottom-plate :include)
       (bottom/case-anchors-positive getopt))
     (auxf/foot-plates getopt)
+    (when (and (getopt :reflect)
+               (getopt :case :central-housing :include)
+               (getopt :case :central-housing :adapter :include))
+      (central/adapter getopt))
     ;; Visualization for use in development:
     (when (and (getopt :reflect)
                (getopt :case :central-housing :include)

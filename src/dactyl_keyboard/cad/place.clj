@@ -227,16 +227,15 @@
 
 ;; Central housing.
 
-(defn- chousing-edge-point-coordinates
-  "Retrieve the [x y z] coordinates of a named point on the central housing."
-  [getopt index]
-  {:pre [(nat-int? index)]}
-  (getopt :case :central-housing :derived :points :gabel :right :outer index))
-
-(defn chousing-place
+(defn- chousing-place
   "Place passed shape in relation to a vertex of the central housing."
-  [getopt index subject]
-  (flex/translate (chousing-edge-point-coordinates getopt index) subject))
+  [getopt index part side depth subject]
+  {:pre [(nat-int? index), (keyword? part), (keyword? depth)]}
+  (let [prop (partial getopt :case :central-housing :derived :points part)
+        base (case part
+               :gabel (prop side depth index)
+               :adapter (prop depth index))]
+    (flex/translate base subject)))
 
 
 ;; Rear housing.
@@ -354,8 +353,8 @@
   initial)
 
 (defmethod by-type :central-housing
-  [getopt {:keys [index initial]}]
-  (chousing-place getopt index initial))
+  [getopt {:keys [index initial part side depth] :or {depth :outer}}]
+  (chousing-place getopt index part side depth initial))
 
 (defmethod by-type :rear-housing
   [getopt {:keys [corner segment initial] :or {segment 3}}]

@@ -158,8 +158,8 @@
    [:section [:case :central-housing]
     "A central housing can occupy the space between the key clusters, "
     "providing a rigid mechanical connection and space for an MCU.\n\n"
-    "When present, a central housing will determine the position of each "
-    "other part of the keyboard, connecting to key clusters on each side."]
+    "When present, a central housing naturally determines the position of each "
+    "other part of the keyboard: Key clusters on each side should be anchored to points on the central housing, instead of being anchored to the origin."]
    [:parameter [:case :central-housing :include]
     {:default false :parse-fn boolean}
     "If this and `reflect` are both true, add a central housing."]
@@ -167,18 +167,35 @@
     {:default false :parse-fn boolean}
     "If `true`, include the rear housing when rendering each half of the "
     "main body."]
+   [:section [:case :central-housing :adapter]
+    "The central housing can connect to key clusters through an adapter: "
+    "A part that is shaped like the central housing and extends the "
+    "rest of the case to meet the central housing at an interface.\n\n"
+    "Using `tweaks`, points on the adapter should be connected to key "
+    "cluster walls to close the case around the adapter but leave the adapter "
+    "itself open."]
+   [:parameter [:case :central-housing :adapter :include]
+    {:default false :parse-fn boolean}
+    "If this is `true`, add an adapter for the central housing."]
+   [:parameter [:case :central-housing :adapter :width]
+    {:default 1 :parse-fn num}
+    "The approximate width of the adapter on each side of the central housing, "
+    "along its axis (the x axis). Individual points on the adapter can be "
+    "offset from this width."]
    [:section [:case :central-housing :shape]
     "The shape of the central housing determines, in part, how it connects "
-    "to the rest of the keyboard."]
+    "to the rest of the keyboard, including the shape of an adapter."]
    [:parameter [:case :central-housing :shape :width]
     {:default 1 :parse-fn num}
-    "The approximate total horizontal width of the housing in mm."]
-   [:parameter [:case :central-housing :shape :edge]
-    {:default [] :parse-fn schema/central-housing-edge
-     :validate [::schema/central-housing-edge]}
+    "The approximate total horizontal width of the housing itself, in mm."]
+   [:parameter [:case :central-housing :shape :interface]
+    {:default [] :parse-fn schema/central-housing-interface
+     :validate [::schema/central-housing-interface]}
     "The shape of each outer edge of the housing, at the interface between "
-    "the housing itself and the rest of the case. These edges are "
-    "symmetrical. What you describe here is actually the right-hand side."]
+    "the housing itself and the rest of the case. The rest of the case usually "
+    "starts with a central housing adapter. "
+    "These interfaces are symmetrical. What you describe here is actually the "
+    "right-hand side."]
    [:section [:case :rear-housing]
     "The furthest row of a key cluster can be extended into a rear housing "
     "for the MCU and various other features."]

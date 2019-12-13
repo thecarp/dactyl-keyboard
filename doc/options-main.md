@@ -20,9 +20,13 @@ Each heading in this document represents a recognized configuration key in the m
     - Parameter <a href="#user-content-case-web-thickness">`web-thickness`</a>
     - Section <a href="#user-content-case-central-housing">`central-housing`</a>
         - Parameter <a href="#user-content-case-central-housing-include">`include`</a>
+        - Parameter <a href="#user-content-case-central-housing-preview">`preview`</a>
+        - Section <a href="#user-content-case-central-housing-adapter">`adapter`</a>
+            - Parameter <a href="#user-content-case-central-housing-adapter-include">`include`</a>
+            - Parameter <a href="#user-content-case-central-housing-adapter-width">`width`</a>
         - Section <a href="#user-content-case-central-housing-shape">`shape`</a>
             - Parameter <a href="#user-content-case-central-housing-shape-width">`width`</a>
-            - Parameter <a href="#user-content-case-central-housing-shape-edge">`edge`</a>
+            - Parameter <a href="#user-content-case-central-housing-shape-interface">`interface`</a>
     - Section <a href="#user-content-case-rear-housing">`rear-housing`</a>
         - Parameter <a href="#user-content-case-rear-housing-include">`include`</a>
         - Parameter <a href="#user-content-case-rear-housing-wall-thickness">`wall-thickness`</a>
@@ -263,23 +267,41 @@ The thickness in mm of the webbing between switch key mounting plates, and of th
 
 A central housing can occupy the space between the key clusters, providing a rigid mechanical connection and space for an MCU.
 
-When present, a central housing will determine the position of each other part of the keyboard, connecting to key clusters on each side.
+When present, a central housing naturally determines the position of each other part of the keyboard: Key clusters on each side should be anchored to points on the central housing, instead of being anchored to the origin.
 
 #### Parameter <a id="case-central-housing-include">`include`</a>
 
 If this and `reflect` are both true, add a central housing.
 
+#### Parameter <a id="case-central-housing-preview">`preview`</a>
+
+If `true`, include the rear housing when rendering each half of the main body.
+
+#### Section <a id="case-central-housing-adapter">`adapter`</a>
+
+The central housing can connect to key clusters through an adapter: A part that is shaped like the central housing and extends the rest of the case to meet the central housing at an interface.
+
+Using `tweaks`, points on the adapter should be connected to key cluster walls to close the case around the adapter but leave the adapter itself open.
+
+##### Parameter <a id="case-central-housing-adapter-include">`include`</a>
+
+If this is `true`, add an adapter for the central housing.
+
+##### Parameter <a id="case-central-housing-adapter-width">`width`</a>
+
+The approximate width of the adapter on each side of the central housing, along its axis (the x axis). Individual points on the adapter can be offset from this width.
+
 #### Section <a id="case-central-housing-shape">`shape`</a>
 
-The shape of the central housing determines, in part, how it connects to the rest of the keyboard.
+The shape of the central housing determines, in part, how it connects to the rest of the keyboard, including the shape of an adapter.
 
 ##### Parameter <a id="case-central-housing-shape-width">`width`</a>
 
-The approximate total horizontal width of the housing in mm.
+The approximate total horizontal width of the housing itself, in mm.
 
-##### Parameter <a id="case-central-housing-shape-edge">`edge`</a>
+##### Parameter <a id="case-central-housing-shape-interface">`interface`</a>
 
-The shape of each outer edge of the housing, at the interface between the housing itself and the rest of the case. These edges are symmetrical. What you describe here is actually the right-hand side.
+The shape of each outer edge of the housing, at the interface between the housing itself and the rest of the case. The rest of the case usually starts with a central housing adapter. These interfaces are symmetrical. What you describe here is actually the right-hand side.
 
 ### Section <a id="case-rear-housing">`rear-housing`</a>
 
