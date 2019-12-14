@@ -7,6 +7,9 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 ### Changed
 - The parameter `split` was **renamed** to `reflect` to avoid misleading the
   user about how it interacts with the new `central-housing` feature.
+- The two parameters named `prefer-rear-housing` and their associated
+  functionality was **removed**, having been obviated by placement in relation
+  to a wide range of anchors.
 
 ### Added
 - Documentation:

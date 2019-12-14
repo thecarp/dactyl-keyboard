@@ -94,7 +94,6 @@ Each heading in this document represents a recognized configuration key in the m
     - Parameter <a href="#user-content-mcu-type">`type`</a>
     - Parameter <a href="#user-content-mcu-margin">`margin`</a>
     - Section <a href="#user-content-mcu-position">`position`</a>
-        - Parameter <a href="#user-content-mcu-position-prefer-rear-housing">`prefer-rear-housing`</a>
         - Parameter <a href="#user-content-mcu-position-anchor">`anchor`</a>
         - Parameter <a href="#user-content-mcu-position-corner">`corner`</a>
         - Parameter <a href="#user-content-mcu-position-offset">`offset`</a>
@@ -127,7 +126,6 @@ Each heading in this document represents a recognized configuration key in the m
     - Parameter <a href="#user-content-connection-socket-size">`socket-size`</a>
     - Parameter <a href="#user-content-connection-socket-thickness">`socket-thickness`</a>
     - Section <a href="#user-content-connection-position">`position`</a>
-        - Parameter <a href="#user-content-connection-position-prefer-rear-housing">`prefer-rear-housing`</a>
         - Parameter <a href="#user-content-connection-position-anchor">`anchor`</a>
         - Parameter <a href="#user-content-connection-position-corner">`corner`</a>
         - Parameter <a href="#user-content-connection-position-raise">`raise`</a>
@@ -628,13 +626,9 @@ A general measurement in mm of extra space around each part of the PCBA, includi
 
 Where to place the MCU PCBA.
 
-#### Parameter <a id="mcu-position-prefer-rear-housing">`prefer-rear-housing`</a>
-
-If `true` and `rear-housing` is included, place the PCBA in relation to the rear housing. Otherwise, place the PCBA in relation to a named feature identified by `anchor`.
-
 #### Parameter <a id="mcu-position-anchor">`anchor`</a>
 
-The name of a key at which to place the PCBA if `prefer-rear-housing` is `false` or rear housing is not included.
+The name of a feature at which to place the PCBA. Typically a key alias, central housing point or `rear-housing`.
 
 #### Parameter <a id="mcu-position-corner">`corner`</a>
 
@@ -766,10 +760,6 @@ The thickness in mm of the roof, walls and floor of the metasocket, i.e. around 
 ### Section <a id="connection-position">`position`</a>
 
 Where to place the socket. Equivalent to `mcu` → `position`.
-
-#### Parameter <a id="connection-position-prefer-rear-housing">`prefer-rear-housing`</a>
-
-
 
 #### Parameter <a id="connection-position-anchor">`anchor`</a>
 

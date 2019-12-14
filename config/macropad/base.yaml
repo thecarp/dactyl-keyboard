@@ -49,8 +49,7 @@ case:
 mcu:
   include: true
   position:
-    prefer-rear-housing: true
-    anchor: upper-left
+    anchor: rear-housing
     corner: ENE
     offset: [-10, 0, 4]
   support:

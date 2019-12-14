@@ -534,18 +534,10 @@
     "well as inaccuracies in manufacturing the PCBA."]
    [:section [:mcu :position]
     "Where to place the MCU PCBA."]
-   [:parameter [:mcu :position :prefer-rear-housing]
-    {:default true :parse-fn boolean}
-    "If `true` and `rear-housing` is included, place the PCBA in relation to "
-    "the rear housing. Otherwise, place the PCBA in relation to a named feature "
-    "identified by `anchor`."]
    [:parameter [:mcu :position :anchor]
     {:default :origin :parse-fn keyword :validate [::schema/anchor]}
-    "The name of a key at which to place the PCBA if `prefer-rear-housing` "
-    "is `false` or rear housing is not included."]
-    ;; NOTE: The default value here, :origin, is intentionally invalid.
-    ;; The origin of the coordinate system cannot be used as an anchor for an
-    ;; MCU stop. A key alias is required but none are defined by default.
+    "The name of a feature at which to place the PCBA. "
+    "Typically a key alias, central housing point or `rear-housing`."]
    [:parameter [:mcu :position :corner]
     {:default "ENE" :parse-fn schema/string-corner :validate [::schema/corner]}
     "A code for a corner of the `anchor` feature. "
@@ -671,8 +663,6 @@
     "i.e. around the hole in the case."]
    [:section [:connection :position]
     "Where to place the socket. Equivalent to `mcu` → `position`."]
-   [:parameter [:connection :position :prefer-rear-housing]
-    {:default true :parse-fn boolean}]
    [:parameter [:connection :position :anchor]
     {:default :origin :parse-fn keyword :validate [::schema/anchor]}]
    [:parameter [:connection :position :corner]

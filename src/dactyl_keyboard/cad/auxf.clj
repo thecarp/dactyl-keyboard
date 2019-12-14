@@ -46,10 +46,12 @@
     :support-height (* (getopt :mcu :support :height-factor) (:width pcb))}))
 
 (defn mcu-position
-  "Transform passed shape into the reference frame for an MCU holder."
+  "Transform passed shape into the reference frame for an MCU holder.
+  This is mostly special treatment of the rear housing, which could be
+  obviated by improving its construction along the lines of the central
+  housing."
   [getopt shape]
-  (let [use-housing (and (getopt :case :rear-housing :include)
-                         (getopt :mcu :position :prefer-rear-housing))
+  (let [use-housing (= (getopt :mcu :position :anchor) :rear-housing)
         corner (getopt :mcu :position :corner)
         z (getopt :mcu :derived :pcb :width)
         lateral-shim
@@ -204,12 +206,10 @@
 (defn mcu-lock-fasteners-model
   "Negative space for a bolt threading into an MCU lock."
   [getopt]
-  (let [use-housing (and (getopt :case :rear-housing :include)
-                         (getopt :mcu :position :prefer-rear-housing))
-        head-type (getopt :mcu :support :lock :fastener :style)
+  (let [head-type (getopt :mcu :support :lock :fastener :style)
         d (getopt :mcu :support :lock :fastener :diameter)
         l0 (threaded/head-height d head-type)
-        l1 (if use-housing
+        l1 (if (= (getopt :mcu :position :anchor) :rear-housing)
              (getopt :case :rear-housing :wall-thickness)
              (getopt :case :web-thickness))
         {pcb-x :thickness pcb-y :length} (getopt :mcu :derived :pcb)
@@ -391,8 +391,7 @@
   "Move the negative or positive of the connection metasocket into place."
   [getopt shape]
   (let [corner (getopt :connection :position :corner)
-        use-housing (and (getopt :case :rear-housing :include)
-                         (getopt :connection :position :prefer-rear-housing))
+        use-housing (and = (getopt :connection :position :anchor) :rear-housing)
         socket-size (getopt :connection :socket-size)
         socket-depth-offset (/ (second socket-size) -2)
         socket-height-offset (/ (nth socket-size 2) 2)

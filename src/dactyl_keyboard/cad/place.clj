@@ -446,15 +446,11 @@
   This has strict expectations and provides some special treatment for the
   rear housing."
   [getopt field]
-  (let [corner (getopt field :position :corner)
-        use-housing (and (getopt :case :rear-housing :include)
-                         (getopt field :position :prefer-rear-housing))
-        general
-          (reckon-from-anchor getopt
-            (if use-housing :rear-housing (getopt field :position :anchor))
-            {:corner corner})
+  (let [anchor (getopt field :position :anchor)
+        corner (getopt field :position :corner)
+        general (reckon-from-anchor getopt anchor {:corner corner})
         to-nook
-          (if use-housing
+          (if (= anchor :rear-housing)
             ;; Pull the subject from the middle of the rear-housing wall
             ;; to perfect alignment with the outside of that wall.
             (lateral-offset getopt (first corner)

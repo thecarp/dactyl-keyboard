@@ -348,7 +348,6 @@ mcu:
   type: promicro
   margin: 0.25
   position:
-    prefer-rear-housing: true
     anchor: back0
     corner: NNE
     offset: [4, 0, 2]
