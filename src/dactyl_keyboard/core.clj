@@ -70,6 +70,25 @@
     (when (getopt :wrist-rest :bottom-plate :include)
       (bottom/wrist-negative getopt))))
 
+(defn build-central-housing
+  "The central housing model with its accessories."
+  [getopt]
+  (maybe/union
+    (body/mask getopt (getopt :case :bottom-plate :include)
+      (maybe/difference
+        (central/main-body getopt)
+        (when (getopt :mcu :derived :include-centrally)
+          (auxf/mcu-negative-composite getopt)))
+      (when (and (getopt :mcu :derived :include-centrally)
+                 (= (getopt :mcu :support :style) :stop))
+        (auxf/mcu-stop getopt)))
+    (when (and (getopt :mcu :derived :include-centrally)
+               (= (getopt :mcu :support :style) :lock))
+      (auxf/mcu-lock-fixture-composite getopt))
+    (when (and (getopt :mcu :derived :include-centrally)
+               (getopt :mcu :preview))
+      (auxf/mcu-preview-composite getopt))))
+
 (defn- masked-inner-positive
   "Parts of the keyboard that are subject to a mask and all negatives."
   [getopt]
@@ -80,7 +99,7 @@
     (when (and (getopt :wrist-rest :include)
                (= (getopt :wrist-rest :style) :threaded))
       (wrist/all-case-blocks getopt))
-    (when (and (getopt :mcu :include)
+    (when (and (getopt :mcu :derived :include-laterally)
                (= (getopt :mcu :support :style) :stop))
       (auxf/mcu-stop getopt))
     (when (and (getopt :reflect) (getopt :connection :include))
@@ -101,7 +120,7 @@
     (when (and (getopt :reflect)
                (getopt :case :central-housing :include)
                (getopt :case :central-housing :preview))
-      (central/main-body getopt))))
+      (build-central-housing getopt))))
 
 (defn- midlevel-positive
   "Parts of the keyboard that go outside the mask but should still be subject
@@ -145,13 +164,8 @@
           (key/metacluster key/cluster-channels getopt)
           (when (and (getopt :reflect) (getopt :connection :include))
             (auxf/connection-negative getopt))
-          (when (getopt :mcu :include)
-            (auxf/mcu-negative getopt))
-          (when (getopt :mcu :include)
-            (auxf/mcu-alcove getopt))
-          (when (and (getopt :mcu :include)
-                     (= (getopt :mcu :support :style) :lock))
-            (auxf/mcu-lock-sink getopt))
+          (when (getopt :mcu :derived :include-laterally)
+            (auxf/mcu-negative-composite getopt))
           (when (getopt :case :leds :include) (auxf/led-holes getopt))
           (when (getopt :case :back-plate :include)
             (auxf/backplate-fastener-holes getopt))
@@ -160,9 +174,8 @@
             (wrist/all-fasteners getopt))
           (sandbox/negative getopt))
         ;; Outer positives, subject only to outer negatives:
-        (when (and (getopt :mcu :include)
+        (when (and (getopt :mcu :derived :include-laterally)
                    (= (getopt :mcu :support :style) :lock))
-          ;; MCU support features outside the alcove.
           (auxf/mcu-lock-fixture-composite getopt)))
       ;; Outer negatives:
       (when (getopt :case :bottom-plate :include)
@@ -174,12 +187,9 @@
     ;; The remaining elements are visualizations for use in development.
     (when (getopt :keys :preview)
       (key/metacluster key/cluster-keycaps getopt))
-    (when (and (getopt :mcu :include) (getopt :mcu :preview))
-      (auxf/mcu-visualization getopt))
-    (when (and (getopt :mcu :include)
-               (getopt :mcu :support :preview)
-               (= (getopt :mcu :support :style) :lock))
-      (auxf/mcu-lock-bolt getopt))))
+    (when (and (getopt :mcu :derived :include-laterally)
+               (getopt :mcu :preview))
+      (auxf/mcu-preview-composite getopt))))
 
 (defn build-rubber-casting-mould-right
   "A thin shell that fits on top of the right-hand-side wrist-rest model.
@@ -349,11 +359,8 @@
     :chiral (getopt :reflect)}
    (when (and (getopt :reflect)
               (getopt :case :central-housing :include))
-     {:name "central-housing"
-      :model-precursor
-      (fn [getopt]
-        (body/mask getopt (getopt :case :bottom-plate :include)
-          (central/main-body getopt)))})
+     {:name "case-central"
+      :model-precursor build-central-housing})
    (when (and (getopt :mcu :include)
               (= (getopt :mcu :support :style) :lock))
      {:name "mcu-lock-bolt"

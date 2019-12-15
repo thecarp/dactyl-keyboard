@@ -14,7 +14,8 @@
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.key :as key]
             [dactyl-keyboard.cad.place :as place]
-            [dactyl-keyboard.param.access :refer [get-key-alias most-specific]]))
+            [dactyl-keyboard.param.access
+             :refer [get-key-alias most-specific resolve-anchor]]))
 
 
 ;;;;;;;;;;;;;;;;;;;
@@ -34,14 +35,22 @@
 ;;;;;;;;;;;;;;;;;;;;;
 
 
-(defn derive-mcu-properties [getopt]
+(defn derive-mcu-properties
+  "Derive secondary properties of the MCU."
+  [getopt]
   (let [mcu-type (getopt :mcu :type)
         pcb-base {:thickness 1.57 :connector-overshoot 1.9}
         pcb (case mcu-type
               :promicro (merge pcb-base {:width 18 :length 33})
               :teensy (merge pcb-base {:width 17.78 :length 35.56})
               :teensy++ (merge pcb-base {:width 17.78 :length 53}))]
-   {:pcb pcb
+   {:include-centrally (and (getopt :mcu :include)
+                            (getopt :mcu :position :central))
+    :include-laterally (and (getopt :mcu :include)
+                            (not (and (getopt :reflect)
+                                      (getopt :case :central-housing :include)
+                                      (getopt :mcu :position :central))))
+    :pcb pcb
     :connector (:micro usb-a-female-dimensions)
     :support-height (* (getopt :mcu :support :height-factor) (:width pcb))}))
 
@@ -110,12 +119,12 @@
 (defn mcu-visualization [getopt]
   (mcu-position getopt (mcu-model getopt false 0)))
 
-(defn mcu-negative [getopt]
+(defn mcu-pcba-negative [getopt]
   (mcu-position getopt (mcu-model getopt true 10)))
 
 (defn mcu-alcove
   "A block shape at the connector end of the MCU.
-  For use as a complement to mcu-negative, primarily with mcu-stop.
+  For use as a complement to mcu-pcba-negative, primarily with mcu-stop.
   This is provided because a negative of the MCU model itself digging into the
   inside of a wall would create only a narrow notch, which would require
   high printing accuracy or difficult cleanup."
@@ -267,12 +276,28 @@
        (mcu-model getopt true 0)  ; Notch the mount.
        (mcu-lock-fasteners-model getopt)))))
 
-(defn mcu-lock-fixture-composite [getopt]
+(defn mcu-negative-composite [getopt]
+  (model/union
+    (mcu-pcba-negative getopt)
+    (mcu-alcove getopt)
+    (when (getopt :mcu :support :style) :lock
+      (mcu-lock-sink getopt))))
+
+(defn mcu-lock-fixture-composite
+  "MCU support features outside the alcove."
+  [getopt]
   (model/difference
     (mcu-lock-fixture-positive getopt)
     (mcu-lock-bolt getopt)
-    (mcu-negative getopt)
+    (mcu-pcba-negative getopt)
     (mcu-lock-sink getopt)))
+
+(defn mcu-preview-composite
+  [getopt]
+  (maybe/union
+    (mcu-visualization getopt)
+    (when (= (getopt :mcu :support :style) :lock)
+      (mcu-lock-bolt getopt))))
 
 
 ;;;;;;;;;;;;;;;;

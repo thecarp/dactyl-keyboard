@@ -71,3 +71,12 @@ case:
         - [central-adapter-wip-3]
         - [key-wip-3, WNW, 1]
         - [central-adapter-wip-4]
+        - [key-wip-3, WNW, 4]
+        - [central-adapter-wip-5]
+mcu:
+  include: true
+  position:
+    anchor: central-wip-5
+    corner: NNE
+  support:
+    style: stop

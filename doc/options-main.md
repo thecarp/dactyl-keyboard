@@ -94,6 +94,7 @@ Each heading in this document represents a recognized configuration key in the m
     - Parameter <a href="#user-content-mcu-type">`type`</a>
     - Parameter <a href="#user-content-mcu-margin">`margin`</a>
     - Section <a href="#user-content-mcu-position">`position`</a>
+        - Parameter <a href="#user-content-mcu-position-central">`central`</a>
         - Parameter <a href="#user-content-mcu-position-anchor">`anchor`</a>
         - Parameter <a href="#user-content-mcu-position-corner">`corner`</a>
         - Parameter <a href="#user-content-mcu-position-offset">`offset`</a>
@@ -604,11 +605,18 @@ A list describing the horizontal shape, size and position of each mounting plate
 
 ## Section <a id="mcu">`mcu`</a>
 
-This is short for ”micro-controller unit”. Each half has one.
+MCU is short for ”micro-controller unit”. You need at least one of these, it’s assumed to be mounted on a PCB, and you typically want some support for it inside the case.
+
+The total number of MCUs is governed by more than one setting, roughly in the following order:
+
+* If `mcu` → `include` is `false`, there is no MCU.
+* If `mcu` → `include` is `true` but `reflect` is `false`, there is one MCU.
+* If `mcu` → `include` and `reflect` and `mcu` → `position` → `central` are all `true`, there is (again) one MCU.
+* Otherwise, there are two MCUs: One in each half of the case, because of reflection.
 
 ### Parameter <a id="mcu-include">`include`</a>
 
-If `true`, build support for the MCU PCBA.
+If `true`, build support for at least one MCU PCBA.
 
 ### Parameter <a id="mcu-preview">`preview`</a>
 
@@ -626,9 +634,17 @@ A general measurement in mm of extra space around each part of the PCBA, includi
 
 Where to place the MCU PCBA.
 
+#### Parameter <a id="mcu-position-central">`central`</a>
+
+If `true`, treat the MCU as central even on a reflected keyboard. When this setting and `reflect` are both `true` and a central housing is set to be included, MCU support will go in the central housing file, not the main case files.
+
+This setting is related to `central-housing` but, for flexibility, their relationship does not take `anchor` into account.
+
 #### Parameter <a id="mcu-position-anchor">`anchor`</a>
 
 The name of a feature at which to place the PCBA. Typically a key alias, central housing point or `rear-housing`.
+
+To ensure harmony, when you enable `central` (above), you would normally enable both `reflect` and `central-housing` *and* set this `anchor` to `origin` or to a point on the central housing, in such a way that the MCU support will be physically attached to and supported by the central housing wall.
 
 #### Parameter <a id="mcu-position-corner">`corner`</a>
 

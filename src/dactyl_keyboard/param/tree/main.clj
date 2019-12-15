@@ -513,16 +513,28 @@
     "A list describing the horizontal shape, size and "
     "position of each mounting plate as a polygon."]
    [:section [:mcu]
-    "This is short for ”micro-controller unit”. Each half has one."]
+    "MCU is short for ”micro-controller unit”. You need at least one of "
+    "these, it’s assumed to be mounted on a PCB, and you typically want some "
+    "support for it inside the case.\n\n"
+    "The total number of MCUs is governed by more than one setting, roughly "
+    "in the following order:\n\n"
+    "* If `mcu` → `include` is `false`, there is no MCU.\n"
+    "* If `mcu` → `include` is `true` but `reflect` is `false`, there is one "
+    "MCU.\n"
+    "* If `mcu` → `include` and `reflect` and `mcu` → `position` → `central` "
+    "are all `true`, there is (again) one MCU.\n"
+    "* Otherwise, there are two MCUs: One in each half of the case, because "
+    "of reflection."]
    [:parameter [:mcu :include]
     {:default false :parse-fn boolean}
-    "If `true`, build support for the MCU PCBA."]
+    "If `true`, build support for at least one MCU PCBA."]
    [:parameter [:mcu :preview]
     {:default false :parse-fn boolean}
     "If `true`, render a visualization of the MCU PCBA. "
     "For use in development."]
    [:parameter [:mcu :type]
     {:default :promicro :parse-fn keyword :validate [::schema/mcu-type]}
+    ;; Note: Support for Teensy/Teensy++ is not fully implemented.
     "A symbolic name for a commercial product. Currently, only `promicro` is "
     "supported, referring to any MCU PCBA with the dimensions of a "
     "SparkFun Pro Micro, including That-Canadian’s Elite-C."]
@@ -534,10 +546,23 @@
     "well as inaccuracies in manufacturing the PCBA."]
    [:section [:mcu :position]
     "Where to place the MCU PCBA."]
+   [:parameter [:mcu :position :central]
+    {:default false :parse-fn boolean}
+    "If `true`, treat the MCU as central even on a reflected keyboard. "
+    "When this setting and `reflect` are both `true` and a central housing "
+    "is set to be included, MCU support will go in the central housing file, "
+    "not the main case files.\n\n"
+    "This setting is related to `central-housing` but, for flexibility, their "
+    "relationship does not take `anchor` into account."]
    [:parameter [:mcu :position :anchor]
     {:default :origin :parse-fn keyword :validate [::schema/anchor]}
     "The name of a feature at which to place the PCBA. "
-    "Typically a key alias, central housing point or `rear-housing`."]
+    "Typically a key alias, central housing point or `rear-housing`.\n\n"
+    "To ensure harmony, when you enable `central` (above), you would normally "
+    "enable both `reflect` and `central-housing` *and* set this `anchor` to "
+    "`origin` or to a point on the central housing, in such a way that the "
+    "MCU support will be physically attached to and supported by the central "
+    "housing wall."]
    [:parameter [:mcu :position :corner]
     {:default "ENE" :parse-fn schema/string-corner :validate [::schema/corner]}
     "A code for a corner of the `anchor` feature. "
