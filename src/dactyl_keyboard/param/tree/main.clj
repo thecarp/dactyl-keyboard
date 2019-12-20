@@ -585,10 +585,11 @@
     "when the PCB aligns with a long wall of that housing. It has the "
     "advantage that it can hug the connector on the PCB tightly, thus "
     "preventing a fragile surface-mounted connector from breaking off.\n"
-    "- `stop`: A gripper that holds the PCBA in place at its rear end. "
-    "This gripper, in turn, is held up by key mount webbing and is thus "
+    "- `stop`: A notched gripper holds the PCBA in place at its rear end. "
+    "This gripper, in turn, needs to be hooked up to other features, "
+    "such as key mount webbing, using `tweaks`. The gripper is thus "
     "integral to the keyboard, not printed separately like the lock. "
-    "This style does not require rear housing."]
+    "The MCU is squeezed into place. This style does not require rear housing."]
    [:parameter [:mcu :support :preview]
     {:default false :parse-fn boolean}
     "If `true`, render a visualization of the support in place. This applies "
@@ -642,28 +643,21 @@
     "to the threaded portion of your fastener, which should not have a shank."]
    [:section [:mcu :support :stop]
     "Parameters relevant only with a `stop`-style support."]
-   [:parameter [:mcu :support :stop :anchor]
-    {:default :origin :parse-fn keyword :validate [::schema/anchor]}
-    "The name of a key where a stop will start to attach itself."]
-    ;; NOTE: The default value here, :origin, is intentionally invalid.
-    ;; A key alias is required but none are defined by default.
-   [:parameter [:mcu :support :stop :direction]
-    {:default :south :parse-fn keyword :validate [::schema/direction]}
-    "A direction in the matrix from the named key. The stop will attach "
-    "to a hull of four neighbouring key mount corners in this direction."]
-   [:section [:mcu :support :stop :gripper]
-    "The shape of the part that grips the PCB."]
-   [:parameter [:mcu :support :stop :gripper :notch-depth]
+   [:parameter [:mcu :support :stop :alias]
+    {:default ::placeholder :parse-fn keyword :validate [::schema/alias]}
+    "A name for the gripper. The sole use of this feature is to allow the "
+    "gripper to attach to other features, providing the necessary stability."]
+   [:parameter [:mcu :support :stop :notch-depth]
     {:default 1 :parse-fn num}
     "The horizontal depth of the notch in the gripper that holds the PCB. "
     "The larger this number, the more flexible the case has to be to allow "
     "assembly.\n\n"
     "Note that while this is similar in effect to `lock`-style `overshoot`, "
     "it is a separate parameter because of the flexion limit."]
-   [:parameter [:mcu :support :stop :gripper :total-depth]
+   [:parameter [:mcu :support :stop :total-depth]
     {:default 1 :parse-fn num}
     "The horizontal depth of the gripper as a whole in line with the PCB."]
-   [:parameter [:mcu :support :stop :gripper :grip-width]
+   [:parameter [:mcu :support :stop :grip-width]
     {:default 1 :parse-fn num}
     "The width of a protrusion on each side of the notch."]
    [:section [:connection]
