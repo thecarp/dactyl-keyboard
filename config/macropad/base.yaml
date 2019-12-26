@@ -52,6 +52,7 @@ mcu:
     anchor: rear-housing
     corner: ENE
     offset: [-10, 0, 4]
+    rotation: [0, 1.5708, 0]  # Stand on the long edge.
   support:
     style: lock
     lock:

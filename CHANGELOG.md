@@ -10,6 +10,15 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - The two parameters named `prefer-rear-housing` and their associated
   functionality was **removed**, having been obviated by placement in relation
   to a wide range of anchors.
+- MCU supports have changed, gaining more power but losing some ease of use,
+  to work better with the central housing.
+    - The default orientation of the MCU PCB has changed, from standing on its
+      long edge to lying flat. To compensate, add a `rotation` setting for your
+      MCU support, with the approximate value `[0, 1.57, 0]`.
+    - Instead of a `stop` style of MCU support that provides a single grip and
+      requires a key mount as its anchor, any MCU can now be supported by any
+      number of `grip` anchors: Named points in space around the MCU, connected
+      using `tweaks`.
 
 ### Added
 - Documentation:

@@ -75,13 +75,9 @@
   [getopt]
   (maybe/union
     (body/mask getopt (getopt :case :bottom-plate :include)
-      (maybe/difference
-        (central/main-body getopt)
-        (when (getopt :mcu :derived :include-centrally)
-          (auxf/mcu-negative-composite getopt)))
-      (when (and (getopt :mcu :derived :include-centrally)
-                 (= (getopt :mcu :support :style) :stop))
-        (auxf/mcu-stop getopt)))
+      (central/main-body getopt)
+      (when (getopt :mcu :derived :include-centrally)
+        (auxf/mcu-negative-composite getopt)))
     (when (and (getopt :mcu :derived :include-centrally)
                (= (getopt :mcu :support :style) :lock))
       (auxf/mcu-lock-fixture-composite getopt))
@@ -99,9 +95,6 @@
     (when (and (getopt :wrist-rest :include)
                (= (getopt :wrist-rest :style) :threaded))
       (wrist/all-case-blocks getopt))
-    (when (and (getopt :mcu :derived :include-laterally)
-               (= (getopt :mcu :support :style) :stop))
-      (auxf/mcu-stop getopt))
     (when (and (getopt :reflect) (getopt :connection :include))
       (auxf/connection-positive getopt))
     (when (getopt :case :back-plate :include)
@@ -228,6 +221,7 @@
                     :rear-housing {:type :rear-housing}}
                    (key/collect-key-aliases getopt)
                    (central/collect-point-aliases getopt)
+                   (auxf/collect-mcu-grip-aliases getopt)
                    (wrist/collect-point-aliases getopt)
                    (wrist/collect-block-aliases getopt)
                    (into {} (for [[k v] (getopt :secondaries)]
@@ -364,8 +358,8 @@
    (when (and (getopt :mcu :include)
               (= (getopt :mcu :support :style) :lock))
      {:name "mcu-lock-bolt"
-      :model-precursor auxf/mcu-lock-bolt
-      :rotation [(/ π 2) 0 0]})
+      :model-precursor auxf/mcu-lock-bolt-model
+      :rotation [0 π 0]})
    ;; Wrist rest:
    (when (getopt :wrist-rest :include)
      {:name "pad-mould"

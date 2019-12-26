@@ -61,6 +61,13 @@
       {:base (map-like {:offset vec, :alias keyword})
        :adapter (map-like {:offset vec, :alias keyword})})))
 
+(def mcu-grip-anchors
+  (tuple-of
+    (map-like
+      {:corner string-corner
+       :offset vec
+       :alias keyword})))
+
 (defn case-tweak-position
   "Parse notation for a tweak position.
   This is normally a range of wall segments off a specific key corner, but
@@ -133,10 +140,13 @@
 ;;;;;;;;;;;;;;;;
 
 ;; Used with spec/keys, making the names sensitive:
+(spec/def ::corner (set (vals generics/keyword-to-directions)))
 (spec/def ::anchor keyword?)
 (spec/def ::alias (spec/and keyword?
                             #(not (= :origin %))
                             #(not (= :rear-housing %))))
+(spec/def :two/offset ::tarmi/point-2d)    ; Namespaced for spec/keys.
+(spec/def :three/offset ::tarmi/point-3d)  ; Namespaced for spec/keys.
 (spec/def ::segment (spec/int-in 0 5))
 (spec/def ::highlight boolean?)
 (spec/def ::at-ground boolean?)
@@ -160,14 +170,18 @@
 ;; Users thereof:
 (spec/def ::foot-plate (spec/keys :req-un [::points]))
 (spec/def ::anchored-2d-position
-  (spec/keys :opt-un [::anchor ::corner ::offset]))
+  (spec/keys :opt-un [::anchor ::corner :two/offset]))
 (spec/def ::named-secondary-positions
   (spec/map-of ::alias
                (spec/keys :req-un [::anchor]
-                          :opt-un [::corner ::segment ::offset])))
+                          :opt-un [::corner ::segment :three/offset])))
 (spec/def ::anchored-2d-list (spec/coll-of ::anchored-2d-position))
 (spec/def ::points ::anchored-2d-list)
 (spec/def ::central-housing-interface (spec/coll-of :central/interface-node))
+(spec/def ::mcu-grip-anchors
+  (spec/coll-of
+    (spec/keys :req-un [::alias ::corner]
+               :opt-un [:two/offset])))
 (spec/def ::tweak-name-map (spec/map-of keyword? ::hull-around))
 (spec/def ::tweak-plate-map
   (spec/keys :req-un [::hull-around]
@@ -188,7 +202,6 @@
 (spec/def ::flexcoord (spec/or :absolute int? :extreme #{:first :last}))
 (spec/def ::flexcoord-2d (spec/coll-of ::flexcoord :count 2))
 (spec/def ::key-coordinates ::flexcoord-2d)  ; Exposed for unit testing.
-(spec/def ::corner (set (vals generics/keyword-to-directions)))
 (spec/def ::direction (set (map first (vals generics/keyword-to-directions))))
 (spec/def ::wall-segment ::segment)
 (spec/def ::wall-extent (spec/or :partial ::wall-segment :full #{:full}))

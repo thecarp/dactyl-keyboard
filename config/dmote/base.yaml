@@ -741,11 +741,13 @@ mcu:
     anchor: rear-housing
     corner: ENE
     offset: [0, 0, 2]
+    rotation: [0, 1.5708, 0]
   support:
     style: lock
-    stop:
-      anchor: rear-housing
-      direction: east
+    grip:
+      anchors:
+      - alias: grip0
+        corner: SSE
 connection:
   include: true
   socket-size: [10, 11, 17.7]  # 616E minus the vertical bar is 10 mm wide.

@@ -115,13 +115,9 @@ Each heading in this document represents a recognized configuration key in the m
                 - Parameter <a href="#user-content-mcu-support-lock-bolt-overshoot">`overshoot`</a>
                 - Parameter <a href="#user-content-mcu-support-lock-bolt-mount-length">`mount-length`</a>
                 - Parameter <a href="#user-content-mcu-support-lock-bolt-mount-thickness">`mount-thickness`</a>
-        - Section <a href="#user-content-mcu-support-stop">`stop`</a>
-            - Parameter <a href="#user-content-mcu-support-stop-anchor">`anchor`</a>
-            - Parameter <a href="#user-content-mcu-support-stop-direction">`direction`</a>
-            - Section <a href="#user-content-mcu-support-stop-gripper">`gripper`</a>
-                - Parameter <a href="#user-content-mcu-support-stop-gripper-notch-depth">`notch-depth`</a>
-                - Parameter <a href="#user-content-mcu-support-stop-gripper-total-depth">`total-depth`</a>
-                - Parameter <a href="#user-content-mcu-support-stop-gripper-grip-width">`grip-width`</a>
+        - Section <a href="#user-content-mcu-support-grip">`grip`</a>
+            - Parameter <a href="#user-content-mcu-support-grip-size">`size`</a>
+            - Parameter <a href="#user-content-mcu-support-grip-anchors">`anchors`</a>
 - Section <a href="#user-content-connection">`connection`</a>
     - Parameter <a href="#user-content-connection-include">`include`</a>
     - Parameter <a href="#user-content-connection-socket-size">`socket-size`</a>
@@ -656,7 +652,7 @@ A 3D offset in mm, measuring from the `corner`.
 
 #### Parameter <a id="mcu-position-rotation">`rotation`</a>
 
-A vector of 3 angles in radians. This parameter governs the rotation of the PCBA around its anchor point in the front. You would not normally need this for the PCBA.
+A vector of 3 angles in radians. This parameter governs the rotation of the PCBA around its anchor point in the front. For example, to have the PCBA standing on its long edge instead of lying flat, you would give this a value like `[0, 1.5708, 0]`, the middle number being roughly π/2.
 
 ### Section <a id="mcu-support">`support`</a>
 
@@ -667,7 +663,7 @@ The support structure that holds the MCU PCBA in place.
 The style of the support. Available styles are:
 
 - `lock`: A separate physical object that is bolted in place over the MCU. This style is appropriate only with a rear housing, and then only when the PCB aligns with a long wall of that housing. It has the advantage that it can hug the connector on the PCB tightly, thus preventing a fragile surface-mounted connector from breaking off.
-- `stop`: A gripper that holds the PCBA in place at its rear end. This gripper, in turn, is held up by key mount webbing and is thus integral to the keyboard, not printed separately like the lock. This style does not require rear housing.
+- `stop`: A notched gripper holds the PCBA in place at its rear end. This gripper, in turn, needs to be hooked up to other features, such as key mount webbing, using `tweaks`. The gripper is thus integral to the keyboard, not printed separately like the lock. The MCU is squeezed into place. This style does not require rear housing.
 
 #### Parameter <a id="mcu-support-preview">`preview`</a>
 
@@ -675,7 +671,7 @@ If `true`, render a visualization of the support in place. This applies only to 
 
 #### Parameter <a id="mcu-support-height-factor">`height-factor`</a>
 
-A multiplier for the width of the PCB, producing the height of the support actually touching the PCB.
+A multiplier for the width of the PCB, producing the width of the parts touching the PCB in a lock.
 
 #### Parameter <a id="mcu-support-lateral-spacing">`lateral-spacing`</a>
 
@@ -725,35 +721,21 @@ The length of the base containing a threaded channel used to secure the bolt ove
 
 The thickness of the mount. This should have some rough correspondence to the threaded portion of your fastener, which should not have a shank.
 
-#### Section <a id="mcu-support-stop">`stop`</a>
+#### Section <a id="mcu-support-grip">`grip`</a>
 
-Parameters relevant only with a `stop`-style support.
+The case can extend to hold the MCU firmly in place.
 
-##### Parameter <a id="mcu-support-stop-anchor">`anchor`</a>
+Space is reserved for the MCU PCB. This space will cut into each grip that intersects the PCB, as determined by the center of each post (set with `anchors` in this section) and its `size`. These intersections create notches in the grips, which is how they hold onto the PCB. The deeper the notch, the more flexible the case has to be to allow assembly.
 
-The name of a key where a stop will start to attach itself.
+##### Parameter <a id="mcu-support-grip-size">`size`</a>
 
-##### Parameter <a id="mcu-support-stop-direction">`direction`</a>
+The three dimensions of a grip post, in mm.
 
-A direction in the matrix from the named key. The stop will attach to a hull of four neighbouring key mount corners in this direction.
+This parameter determines the size of the object that will occupy an anchor point for a grip when that point is targeted by a tweak. It corresponds to `key-mount-corner-margin` and `web-thickness` but provides more control and is specific to MCU grips.
 
-##### Section <a id="mcu-support-stop-gripper">`gripper`</a>
+##### Parameter <a id="mcu-support-grip-anchors">`anchors`</a>
 
-The shape of the part that grips the PCB.
-
-###### Parameter <a id="mcu-support-stop-gripper-notch-depth">`notch-depth`</a>
-
-The horizontal depth of the notch in the gripper that holds the PCB. The larger this number, the more flexible the case has to be to allow assembly.
-
-Note that while this is similar in effect to `lock`-style `overshoot`, it is a separate parameter because of the flexion limit.
-
-###### Parameter <a id="mcu-support-stop-gripper-total-depth">`total-depth`</a>
-
-The horizontal depth of the gripper as a whole in line with the PCB.
-
-###### Parameter <a id="mcu-support-stop-gripper-grip-width">`grip-width`</a>
-
-The width of a protrusion on each side of the notch.
+A list of named points, positioned relative to the PCB’s corners, in the plane of the PCB. These points are all empty by default. They can be occupied, and connected, using `tweaks`.
 
 ## Section <a id="connection">`connection`</a>
 

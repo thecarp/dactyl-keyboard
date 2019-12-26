@@ -27,6 +27,15 @@
 ;; Functions ;;
 ;;;;;;;;;;;;;;;
 
+;; Primitives.
+
+(defn lateral-offset
+  "Produce a 3D vector for moving something laterally."
+  [getopt direction offset]
+  (let [{:keys [dx dy]} (matrix/compass-to-grid direction)]
+    [(* dx offset) (* dy offset) 0]))
+
+
 ;; Key mounts.
 
 (defn mount-corner-offset
@@ -264,6 +273,50 @@
     (flex/translate (mapv + offset0 offset1) subject)))
 
 
+;; Microcontroller.
+
+(declare into-nook)
+
+(defn mcu-place
+  "Transform passed shape into the reference frame for an MCU PCB
+  This is mostly special treatment of the rear housing, which could be
+  obviated by improving its construction along the lines of the central
+  housing."
+  [getopt subject]
+  (let [use-housing (= (getopt :mcu :position :anchor) :rear-housing)
+        corner (getopt :mcu :position :corner)
+        z (getopt :mcu :derived :pcb :width)
+        lateral-shim
+          (lateral-offset getopt (second corner)
+            (apply +
+              (remove nil?
+                [(when use-housing
+                   1)  ; Compensate for housing wall segment 1 displacement.
+                 (when use-housing
+                   (/ (getopt :case :rear-housing :wall-thickness) -2))
+                 (when use-housing
+                   (/ (getopt :mcu :derived :pcb :thickness) -2))
+                 (- (getopt :mcu :support :lateral-spacing))])))]
+   (->>
+     subject
+     (flex/translate
+       (lateral-offset getopt (second corner)
+         (- (getopt :mcu :derived :pcb :connector-overshoot))))
+     ;; Face the corner’s main direction, plus arbitrary rotation.
+     (flex/rotate
+       (mapv +
+         (getopt :mcu :position :rotation)
+         [0 0 (- (matrix/compass-radians (first corner)))]))
+     (flex/translate
+       (mapv +
+         ;; Move into the requested corner.
+         (into-nook getopt :mcu)
+         ;; Move away from a supporting wall, if any.
+         lateral-shim
+         ;; Raise above the floor.
+         [0 0 (/ z 2)])))))
+
+
 ;; Wrist rests.
 
 (defn wrist-place
@@ -385,6 +438,12 @@
       ;; The target feature is the middle of the key mounting plate.
       initial)))
 
+(defmethod by-type :mcu-grip
+  [getopt {:keys [corner offset initial]}]
+  (mcu-place getopt
+    (flex/translate (mapv + (getopt :mcu :derived :pcb corner) offset)
+      initial)))
+
 (defmethod by-type :secondary
   [getopt {:keys [anchor offset] :or {offset [0 0 0]} :as opts}]
   (let [primary (resolve-anchor getopt anchor)
@@ -434,12 +493,6 @@
         base-nd (subvec base-3d 0 dimensions)
         offset-nd (get opts :offset (take dimensions (repeat 0)))]
     (mapv + base-nd offset-nd)))
-
-(defn lateral-offset
-  "Produce a 3D vector for moving something laterally."
-  [getopt direction offset]
-  (let [{:keys [dx dy]} (matrix/compass-to-grid direction)]
-    [(* dx offset) (* dy offset) 0]))
 
 (defn into-nook
   "Produce coordinates for alignment with an anchor.

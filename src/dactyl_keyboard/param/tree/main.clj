@@ -573,12 +573,14 @@
    [:parameter [:mcu :position :rotation]
     {:default [0 0 0] :parse-fn vec :validate [::tarmi-core/point-3d]}
     "A vector of 3 angles in radians. This parameter governs the rotation of "
-    "the PCBA around its anchor point in the front. You would not normally "
-    "need this for the PCBA."]
+    "the PCBA around its anchor point in the front. For example, to have the "
+    "PCBA standing on its long edge instead of lying flat, you would give "
+    "this a value like `[0, 1.5708, 0]`, the middle number being roughly π/2."]
    [:section [:mcu :support]
     "The support structure that holds the MCU PCBA in place."]
    [:parameter [:mcu :support :style]
     {:default :lock :parse-fn keyword :validate [::schema/mcu-support-style]}
+    ;; FIXME: Remove.
     "The style of the support. Available styles are:\n\n"
     "- `lock`: A separate physical object that is bolted in place over the "
     "MCU. This style is appropriate only with a rear housing, and then only "
@@ -596,10 +598,11 @@
     "only to those parts of the support that are not part of the case model."]
    [:parameter [:mcu :support :height-factor]
     {:default 1 :parse-fn num}
-    "A multiplier for the width of the PCB, producing the height of the "
-    "support actually touching the PCB."]
+    "A multiplier for the width of the PCB, producing the width of the "
+    "parts touching the PCB in a lock."]
    [:parameter [:mcu :support :lateral-spacing]
     {:default 0 :parse-fn num}
+    ;; FIXME: Rename.
     "A lateral 1D offset in mm. With rear housing, this creates space between "
     "the rear housing itself and the back of the PCB’s through-holes, so it "
     "should be roughly matched to the length of wire overshoot. Without rear "
@@ -641,25 +644,26 @@
     {:default 1 :parse-fn num}
     "The thickness of the mount. This should have some rough correspondence "
     "to the threaded portion of your fastener, which should not have a shank."]
-   [:section [:mcu :support :stop]
-    "Parameters relevant only with a `stop`-style support."]
-   [:parameter [:mcu :support :stop :alias]
-    {:default ::placeholder :parse-fn keyword :validate [::schema/alias]}
-    "A name for the gripper. The sole use of this feature is to allow the "
-    "gripper to attach to other features, providing the necessary stability."]
-   [:parameter [:mcu :support :stop :notch-depth]
-    {:default 1 :parse-fn num}
-    "The horizontal depth of the notch in the gripper that holds the PCB. "
-    "The larger this number, the more flexible the case has to be to allow "
-    "assembly.\n\n"
-    "Note that while this is similar in effect to `lock`-style `overshoot`, "
-    "it is a separate parameter because of the flexion limit."]
-   [:parameter [:mcu :support :stop :total-depth]
-    {:default 1 :parse-fn num}
-    "The horizontal depth of the gripper as a whole in line with the PCB."]
-   [:parameter [:mcu :support :stop :grip-width]
-    {:default 1 :parse-fn num}
-    "The width of a protrusion on each side of the notch."]
+   [:section [:mcu :support :grip]
+    "The case can extend to hold the MCU firmly in place.\n\n"
+    "Space is reserved for the MCU PCB. This space will cut into each grip "
+    "that intersects the PCB, as determined by the center of each post (set "
+    "with `anchors` in this section) and its `size`. These intersections "
+    "create notches in the grips, which is how they hold onto the PCB. The "
+    "deeper the notch, the more flexible the case has to be to allow assembly."]
+   [:parameter [:mcu :support :grip :size]
+    {:default [1 1 1] :parse-fn vec :validate [::tarmi-core/point-3d]}
+    "The three dimensions of a grip post, in mm.\n\n"
+    "This parameter determines the size of the object that will occupy an "
+    "anchor point for a grip when that point is targeted by a tweak. It "
+    "corresponds to `key-mount-corner-margin` and `web-thickness` but "
+    "provides more control and is specific to MCU grips."]
+   [:parameter [:mcu :support :grip :anchors]
+    {:default [] :parse-fn schema/mcu-grip-anchors
+     :validate [::schema/mcu-grip-anchors]}
+    "A list of named points, positioned relative to the PCB’s corners, "
+    "in the plane of the PCB. These points are all empty by default. "
+    "They can be occupied, and connected, using `tweaks`."]
    [:section [:connection]
     "There must be a signalling connection between the two halves of a split "
     "keyboard."]

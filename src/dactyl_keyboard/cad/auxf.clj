@@ -34,152 +34,92 @@
 ;; Microcontroller ;;
 ;;;;;;;;;;;;;;;;;;;;;
 
+(defn- descriptor-vec
+  [{:keys [width length thickness height]}]
+  [(or width 1) (or length 1) (or thickness height 1)])
 
 (defn derive-mcu-properties
   "Derive secondary properties of the MCU."
   [getopt]
   (let [mcu-type (getopt :mcu :type)
         pcb-base {:thickness 1.57 :connector-overshoot 1.9}
-        pcb (case mcu-type
-              :promicro (merge pcb-base {:width 18 :length 33})
-              :teensy (merge pcb-base {:width 17.78 :length 35.56})
-              :teensy++ (merge pcb-base {:width 17.78 :length 53}))]
+        pcb-model (case mcu-type
+                    :promicro {:width 18 :length 33}
+                    :teensy {:width 17.78 :length 35.56}
+                    :teensy++ {:width 17.78 :length 53})
+        [x y z] (descriptor-vec (merge pcb-base pcb-model))
+        sw [(/ x -2) (/ y -2) 0]
+        pcb-corners {:nw (mapv + sw [0 y 0])
+                     :ne (mapv + sw [x y 0])
+                     :se (mapv + sw [x 0 0])
+                     :sw sw}]
    {:include-centrally (and (getopt :mcu :include)
                             (getopt :mcu :position :central))
     :include-laterally (and (getopt :mcu :include)
                             (not (and (getopt :reflect)
                                       (getopt :case :central-housing :include)
                                       (getopt :mcu :position :central))))
-    :pcb pcb
+    ;; Add [x y z] coordinates of the four corners of the PCB. No DFM.
+    :pcb (merge pcb-base pcb-model pcb-corners)
     :connector (:micro usb-a-female-dimensions)
-    :support-height (* (getopt :mcu :support :height-factor) (:width pcb))}))
+    :lock-width (* (getopt :mcu :support :height-factor) x)}))
 
-(defn mcu-position
-  "Transform passed shape into the reference frame for an MCU holder.
-  This is mostly special treatment of the rear housing, which could be
-  obviated by improving its construction along the lines of the central
-  housing."
-  [getopt shape]
-  (let [use-housing (= (getopt :mcu :position :anchor) :rear-housing)
-        corner (getopt :mcu :position :corner)
-        z (getopt :mcu :derived :pcb :width)
-        lateral-shim
-          (place/lateral-offset getopt (second corner)
-            (apply +
-              (remove nil?
-                [(when use-housing
-                   1)  ; Compensate for housing wall segment 1 displacement.
-                 (when use-housing
-                   (/ (getopt :case :rear-housing :wall-thickness) -2))
-                 (when use-housing
-                   (/ (getopt :mcu :derived :pcb :thickness) -2))
-                 (- (getopt :mcu :support :lateral-spacing))])))]
-   (->>
-     shape
-     (model/translate
-       (place/lateral-offset getopt (second corner)
-         (- (getopt :mcu :derived :pcb :connector-overshoot))))
-     ;; Face the corner’s main direction, plus arbitrary rotation.
-     (maybe/rotate
-       (mapv +
-         (getopt :mcu :position :rotation)
-         [0 0 (- (matrix/compass-radians (first corner)))]))
-     (model/translate
-       (mapv +
-         ;; Move into the requested corner.
-         (place/into-nook getopt :mcu)
-         ;; Move away from a supporting wall, if any.
-         lateral-shim
-         ;; Raise above the floor.
-         [0 0 (/ z 2)])))))
+(defn collect-mcu-grip-aliases
+  "Collect the names of MCU grip anchors. Convert offsets to 3D."
+  [getopt]
+  (reduce
+    (fn [coll {:keys [corner offset alias] :or {offset [0 0 0]}}]
+      (assoc coll alias
+        {:type :mcu-grip,
+         :corner (generics/directions-to-unordered-corner corner),
+         :offset (conj offset 0)}))
+    {}
+    (getopt :mcu :support :grip :anchors)))
 
 (defn mcu-model
-  "A model of an MCU: PCB and integrated USB connector (if any).
-  The orientation of the model is standing on the long edge, with the connector
-  side of the PCB facing “north” and the middle of the short edge of the PCB
-  centering at the origin of the local cordinate system. The connector itself
-  is placed on the “east” (positive x) side."
+  "A model of an MCU: PCB and integrated USB connector (if any). The
+  orientation of the model is flat with the connector on top, facing “north”.
+  The middle of that short edge of the PCB centers at the origin of the local
+  cordinate system."
   [getopt include-margin connector-elongation]
-  (let [data (partial getopt :mcu :derived)
-        {pcb-x :thickness pcb-y :length pcb-z :width overshoot :connector-overshoot} (data :pcb)
-        {usb-x :height usb-y-base :length usb-z :width} (data :connector)
+  (let [prop (partial getopt :mcu :derived)
+        overshoot (prop :pcb :connector-overshoot)
+        [pcb-x pcb-y pcb-z] (descriptor-vec (prop :pcb))
+        [usb-x usb-y-base usb-z] (descriptor-vec (prop :connector))
         usb-y (+ usb-y-base connector-elongation)
         margin (if include-margin (getopt :mcu :margin) 0)
         mcube (fn [& dimensions] (apply model/cube (map #(+ % margin) dimensions)))]
-   (model/union
-     (model/translate [0 (/ pcb-y -2) 0]
-       (model/color (:pcb generics/colours)
-         (mcube pcb-x pcb-y pcb-z)))
-     (model/translate [(/ (+ pcb-x usb-x) 2)
-                       (+ (/ usb-y -2) (/ connector-elongation 2) overshoot)
-                       0]
-       (model/color (:metal generics/colours)
-         (mcube usb-x usb-y usb-z))))))
+    (model/union
+      (model/translate [0 (/ pcb-y -2) 0]
+        (model/color (:pcb generics/colours)
+          (mcube pcb-x pcb-y pcb-z)))
+      (model/translate [0
+                        (+ (/ usb-y -2) (/ connector-elongation 2) overshoot)
+                        (+ (/ pcb-z 2) (/ usb-z 2))]
+        (model/color (:metal generics/colours)
+          (mcube usb-x usb-y usb-z))))))
 
 (defn mcu-visualization [getopt]
-  (mcu-position getopt (mcu-model getopt false 0)))
+  (place/mcu-place getopt (mcu-model getopt false 0)))
 
 (defn mcu-pcba-negative [getopt]
-  (mcu-position getopt (mcu-model getopt true 10)))
+  (place/mcu-place getopt (mcu-model getopt true 10)))
 
 (defn mcu-alcove
   "A block shape at the connector end of the MCU.
-  For use as a complement to mcu-pcba-negative, primarily with mcu-stop.
+  For use as a complement to mcu-pcba-negative.
   This is provided because a negative of the MCU model itself digging into the
   inside of a wall would create only a narrow notch, which would require
   high printing accuracy or difficult cleanup."
   [getopt]
-  (let [prop (getopt :mcu :derived)
-        {pcb-x :thickness pcb-z :width} (prop :pcb)
-        {usb-x :height} (prop :connector)
+  (let [prop (partial getopt :mcu :derived)
+        [pcb-x _ pcb-z] (descriptor-vec (prop :pcb))
+        [usb-x _ _] (descriptor-vec (prop :connector))
         margin (getopt :mcu :margin)
         x (+ pcb-x usb-x margin)]
-   (mcu-position getopt
+   (place/mcu-place getopt
      (model/translate [(/ x 2) (/ x -2) 0]
        (model/cube x x (+ pcb-z margin))))))
-
-(defn- mcu-gripper
-  "The shape of the gripper in a stop-style MCU holder.
-  The notch in it will be created by its difference with the MCU model.
-  Positioned in the same local coordinate system as the MCU model."
-  [getopt depth-factor]
-  (let [pcb (getopt :mcu :derived :pcb)
-        {pcb-x :thickness pcb-y :length} pcb
-        margin (getopt :mcu :margin)
-        prop (partial getopt :mcu :support :stop :gripper)
-        notch-base (prop :notch-depth)
-        notch-y (- notch-base margin)
-        grip-x (prop :grip-width)
-        x (+ (* 2 grip-x) pcb-x margin)
-        y-base (prop :total-depth)
-        y (* depth-factor y-base)
-        gripper-y-center (/ (- (* 2 y-base) y) 2)
-        z (getopt :mcu :derived :support-height)]
-   (model/translate [0 (- notch-y pcb-y gripper-y-center) 0]
-     (model/cube x y z))))
-
-(defn mcu-stop
-  "The stop style of MCU support, in place."
-  [getopt]
-  (let [alias (getopt :mcu :support :stop :anchor)
-        keyinfo (get-key-alias getopt alias)
-        {cluster :cluster coordinates0 :coordinates} keyinfo
-        direction (getopt :mcu :support :stop :direction)
-        opposite (matrix/left (matrix/left direction))
-        coordinates1 (matrix/walk coordinates0 direction)
-        post (fn [coord corner]
-               (let [key-style (most-specific getopt [:key-style] cluster coord)]
-                 (place/cluster-place getopt cluster coord
-                   (key/mount-corner-post getopt key-style corner))))]
-    (model/union
-      (mcu-position getopt (mcu-gripper getopt 1))
-      (model/hull
-        ;; Connect the back half of the gripper to two key mounts.
-        (mcu-position getopt (mcu-gripper getopt 0.5))
-        (post coordinates0 [direction (matrix/left direction)])
-        (post coordinates0 [direction (matrix/right direction)])
-        (post coordinates1 [opposite (matrix/left direction)])
-        (post coordinates1 [opposite (matrix/right direction)])))))
 
 (defn mcu-lock-fixture-positive
   "Parts of the lock-style MCU support that integrate with the case.
@@ -188,29 +128,29 @@
   USB connectors are usually surface-mounted and therefore fragile."
   [getopt]
   (let [prop (partial getopt :mcu :derived)
-        {pcb-x :thickness pcb-y :length} (prop :pcb)
-        {usb-x :height usb-y :length usb-z :width} (prop :connector)
-        bed-x (getopt :mcu :support :lateral-spacing)
+        [_ pcb-y pcb-z] (descriptor-vec (prop :pcb))
+        [usb-x usb-y usb-z] (descriptor-vec (prop :connector))
+        bed-z (getopt :mcu :support :lateral-spacing)
         bed-y (+ pcb-y (getopt :mcu :support :lock :bolt :mount-length))
         thickness (getopt :mcu :support :lock :socket :thickness)
-        socket-x-thickness (+ (/ usb-x 2) thickness)
-        socket-x-offset (+ (/ pcb-x 2) (* 3/4 usb-x) (/ thickness 2))
-        socket-z (+ usb-z (* 2 thickness))]
-   (mcu-position getopt
+        socket-z-thickness (+ (/ usb-z 2) thickness)
+        socket-z-offset (+ (/ pcb-z 2) (* 3/4 usb-z) (/ thickness 2))
+        socket-x (+ usb-x (* 2 thickness))]
+   (place/mcu-place getopt
      (model/union
-       (model/translate [(+ (/ bed-x -2) (/ pcb-x -2)) (/ bed-y -2) 0]
-         (model/cube bed-x bed-y (getopt :mcu :derived :support-height)))
+       (model/translate [0 (/ bed-y -2) (+ (/ bed-z -2) (/ pcb-z -2))]
+         (model/cube (getopt :mcu :derived :lock-width) bed-y bed-z))
        (model/hull
          ;; Purposely ignore connector overshoot in placing the socket.
          ;; This has the advantages that the lock itself can also be stabilized
          ;; by the socket, while the socket does not protrude outside the case.
-         (model/translate [socket-x-offset (/ usb-y -2) 0]
-           (model/cube socket-x-thickness usb-y socket-z))
+         (model/translate [0 (/ usb-y -2) socket-z-offset]
+           (model/cube socket-x usb-y socket-z-thickness))
          ;; Stabilizers for the socket:
-         (model/translate [10 0 0]
-           (model/cube 1 1 socket-z))
-         (model/translate [socket-x-offset 0 0]
-           (model/cube 1 1 (+ socket-z 6))))))))
+         (model/translate [0 0 10]
+           (model/cube socket-x 1 1))
+         (model/translate [0 0 socket-z-offset]
+           (model/cube (+ socket-x 6) 1 1)))))))
 
 (defn mcu-lock-fasteners-model
   "Negative space for a bolt threading into an MCU lock."
@@ -221,60 +161,61 @@
         l1 (if (= (getopt :mcu :position :anchor) :rear-housing)
              (getopt :case :rear-housing :wall-thickness)
              (getopt :case :web-thickness))
-        {pcb-x :thickness pcb-y :length} (getopt :mcu :derived :pcb)
+        [_ pcb-y pcb-z] (descriptor-vec (getopt :mcu :derived :pcb))
         l2 (getopt :mcu :support :lateral-spacing)
         y1 (getopt :mcu :support :lock :bolt :mount-length)]
     (->>
       (threaded/bolt
-        :iso-size d
-        :head-type head-type
-        :unthreaded-length (max 0 (- (+ l1 l2) l0))
-        :threaded-length (getopt :mcu :support :lock :bolt :mount-thickness)
-        :negative true)
-      (model/rotate [0 (/ π -2) 0])
-      (model/translate [(- (+ (/ pcb-x 2) l1 l2))
-                        (- (+ pcb-y (/ y1 2)))
-                        0]))))
+          :iso-size d
+          :head-type head-type
+          :unthreaded-length (max 0 (- (+ l1 l2) l0))
+          :threaded-length (getopt :mcu :support :lock :bolt :mount-thickness)
+          :negative true)
+      (model/rotate [π 0 0])
+      (model/translate [0 (- (+ pcb-y (/ y1 2))) (- (+ (/ pcb-z 2) l1 l2))]))))
 
 (defn mcu-lock-sink [getopt]
-  (mcu-position getopt
+  (place/mcu-place getopt
     (mcu-lock-fasteners-model getopt)))
 
-(defn mcu-lock-bolt
+(defn mcu-lock-bolt-model
   "Parts of the lock-style MCU support that don’t integrate with the case.
   The bolt as such is supposed to clear PCB components and enter the socket to
   butt up against the USB connector. There are some margins here, intended for
   the user to file down the tip and finalize the fit."
   [getopt]
   (let [prop (partial getopt :mcu :derived)
-        {pcb-x :thickness pcb-y :length usb-overshoot :connector-overshoot} (prop :pcb)
-        {usb-x :height usb-y :length usb-z :width} (prop :connector)
-        mount-x (getopt :mcu :support :lock :bolt :mount-thickness)
+        usb-overshoot (prop :pcb :connector-overshoot)
+        [_ pcb-y pcb-z] (descriptor-vec (prop :pcb))
+        [usb-x usb-y usb-z] (descriptor-vec (prop :connector))
+        mount-z (getopt :mcu :support :lock :bolt :mount-thickness)
         mount-overshoot (getopt :mcu :support :lock :bolt :overshoot)
-        mount-base (getopt :mcu :support :lock :bolt :mount-length)
+        mount-y-base (getopt :mcu :support :lock :bolt :mount-length)
         clearance (getopt :mcu :support :lock :bolt :clearance)
         shave (/ clearance 2)
-        contact-x (- usb-x shave)
-        bolt-x-mount (- mount-x clearance pcb-x)
-        mount-z (getopt :mcu :derived :support-height)
-        bolt-x0 (+ (/ pcb-x 2) clearance (/ bolt-x-mount 2))
-        bolt-x1 (+ (/ pcb-x 2) shave (/ contact-x 2))]
-   (mcu-position getopt
-     (model/difference
-       (model/union
-         (model/translate [(+ (/ pcb-x -2) (/ mount-x 2))
-                           (- (/ mount-overshoot 2) pcb-y (/ mount-base 2))
-                           0]
-           (model/cube mount-x (+ mount-overshoot mount-base) mount-z))
-         (loft
-           [(model/translate [bolt-x0 (- pcb-y) 0]
-              (model/cube bolt-x-mount 10 mount-z))
-            (model/translate [bolt-x0 (/ pcb-y -4) 0]
-              (model/cube bolt-x-mount 1 usb-z))
-            (model/translate [bolt-x1 (- usb-overshoot usb-y) 0]
-              (model/cube contact-x 0.01 usb-z))]))
-       (mcu-model getopt true 0)  ; Notch the mount.
-       (mcu-lock-fasteners-model getopt)))))
+        contact-z (- usb-z shave)
+        bolt-z-mount (- mount-z clearance pcb-z)
+        mount-x (getopt :mcu :derived :lock-width)
+        bolt-z0 (+ (/ pcb-z 2) clearance (/ bolt-z-mount 2))
+        bolt-z1 (+ (/ pcb-z 2) shave (/ contact-z 2))]
+   (model/difference
+     (model/union
+       (model/translate [0
+                         (- (/ mount-overshoot 2) pcb-y (/ mount-y-base 2))
+                         (+ (/ pcb-z -2) (/ mount-z 2))]
+         (model/cube mount-x (+ mount-overshoot mount-y-base) mount-z))
+       (loft
+         [(model/translate [0 (- pcb-y) bolt-z0]
+            (model/cube usb-x 10 bolt-z-mount))
+          (model/translate [0 (/ pcb-y -4) bolt-z0]
+            (model/cube usb-x 1 bolt-z-mount))
+          (model/translate [0 (- usb-overshoot usb-y) bolt-z1]
+            (model/cube usb-x misc/wafer contact-z))]))
+     (mcu-model getopt true 0)  ; Notch the mount.
+     (mcu-lock-fasteners-model getopt))))
+
+(defn mcu-lock-bolt-locked [getopt]
+  (place/mcu-place getopt (mcu-lock-bolt-model getopt)))
 
 (defn mcu-negative-composite [getopt]
   (model/union
@@ -288,7 +229,7 @@
   [getopt]
   (model/difference
     (mcu-lock-fixture-positive getopt)
-    (mcu-lock-bolt getopt)
+    (mcu-lock-bolt-locked getopt)
     (mcu-pcba-negative getopt)
     (mcu-lock-sink getopt)))
 
@@ -297,7 +238,7 @@
   (maybe/union
     (mcu-visualization getopt)
     (when (= (getopt :mcu :support :style) :lock)
-      (mcu-lock-bolt getopt))))
+      (mcu-lock-bolt-locked getopt))))
 
 
 ;;;;;;;;;;;;;;;;

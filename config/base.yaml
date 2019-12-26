@@ -45,11 +45,8 @@ mcu:
         overshoot: 1
         mount-length: 7
         mount-thickness: 6
-    stop:
-      gripper:
-        notch-depth: 0.4
-        total-depth: 5
-        grip-width: 0.6
+    grip:
+      size: [1, 1, 4]
 resolution:
   include: true
 dfm:
