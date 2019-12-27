@@ -440,10 +440,9 @@
       initial)))
 
 (defmethod by-type :mcu-grip
-  [getopt {:keys [corner offset initial]}]
+  [getopt {:keys [corner initial]}]
   (mcu-place getopt
-    (flex/translate (mapv + (getopt :mcu :derived :pcb corner) offset)
-      initial)))
+    (flex/translate (getopt :mcu :derived :pcb corner) initial)))
 
 (defmethod by-type :secondary
   [getopt {:keys [anchor offset] :or {offset [0 0 0]} :as opts}]

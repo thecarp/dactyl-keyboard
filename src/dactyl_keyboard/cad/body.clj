@@ -368,25 +368,26 @@
 
 
 (defn- tweak-posts
-  "(The hull of) one or more corner posts from a single key mount.
+  "(The hull of) one or more corner posts for a case tweak.
   This function both picks the shape of the post and positions it.
   For a tweak anchored to the central housing, defer to the central module
   for both shape and position, because they are closely related in that case.
-  For a tweak anchored to the rear housing, use its dimensions for the post.
-  Otherwise use a web post."
+  Otherwise use the most specific dimensions available for the post, defaulting
+  to a web post."
   [getopt anchor directions first-segment last-segment]
   (if (= first-segment last-segment)
-    (let [type (:type (access/resolve-anchor getopt anchor))]
+    (let [type (:type (access/resolve-anchor getopt anchor))
+          post (case type
+                 :central-housing (central/tweak-post getopt anchor)
+                 :rear-housing (rhousing-post getopt)
+                 :mcu-grip (apply model/cube (getopt :mcu :support :grip :size))
+                 (key/web-post getopt))]
       (if (= type :central-housing)
         ;; High-precision anchor; reckon-from-anchor is inadequate.
-        (central/tweak-post getopt anchor)
-        ;; Low precision.
+        post
+        ;; Low-precision anchor.
         (place/reckon-from-anchor getopt anchor
-          {:subject (if (= type :rear-housing)
-                      (rhousing-post getopt)
-                      (key/web-post getopt))
-           :corner directions
-           :segment first-segment})))
+          {:subject post, :corner directions, :segment first-segment})))
     (apply model/hull (map #(tweak-posts getopt anchor directions %1 %1)
                            (range first-segment (inc last-segment))))))
 

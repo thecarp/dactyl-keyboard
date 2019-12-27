@@ -673,8 +673,26 @@
    [:parameter [:mcu :support :grip :anchors]
     {:default [] :parse-fn schema/mcu-grip-anchors
      :validate [::schema/mcu-grip-anchors]}
-    "A list of named points, positioned relative to the PCB’s corners, "
-    "in the plane of the PCB. These points are all empty by default. "
+    "A list of points in space positioned relative to the PCB’s corners.\n\n"
+    "Each point must have an `alias`, which is a name you can use "
+    "elsewhere to refer to that point, and a `corner`, identifying one "
+    "corner of the PCB. For example, “SSE” identifies the south-east "
+    "corner. “SSE” and “ESE” are interchangeable for this purpose and “SE” "
+    "is not accepted, by analogy with the naming of key-mount corners.\n\n"
+    "Each point may also have an `offset` from the stated corner. These "
+    "offsets must be given in mm, either as a 2-tuple like `[1, 2]` for a "
+    "two-dimensional offset in the plane of the PCB, or as a 3-tuple "
+    "like `[1, 2, 3]` for a three-dimensional offset that can put the point "
+    "above or below the PCB.\n\n"
+    "An example with two-dimensional offsets hugging one corner:\n\n"
+    "```anchors\n"
+    "  - alias: corner-side\n"
+    "    corner: SSE\n"
+    "    offset: [1, 1]\n"
+    "  - alias: corner-back\n"
+    "    corner: SSE\n"
+    "    offset: [-1, -1]```\n\n"
+    "Grip anchor points are all empty by default. "
     "They can be occupied, and connected, using `tweaks`."]
    [:section [:connection]
     "There must be a signalling connection between the two halves of a split "

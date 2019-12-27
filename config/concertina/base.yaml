@@ -63,18 +63,36 @@ case:
     bridge-wip:
       - chunk-size: 3
         hull-around:
-        - [key-wip-1, WSW, 0, 4]
-        - [central-adapter-wip-1]
-        - [key-wip-1, WSW, 1]
-        - [central-adapter-wip-2]
-        - [key-wip-2, WSW, 1]
-        - [central-adapter-wip-3]
-        - [key-wip-3, WNW, 1]
-        - [central-adapter-wip-4]
-        - [key-wip-3, WNW, 4]
-        - [central-adapter-wip-5]
+          - [key-wip-1, WSW, 0, 4]
+          - [central-adapter-wip-1]
+          - [key-wip-1, WSW, 1]
+          - [central-adapter-wip-2]
+          - [key-wip-2, WSW, 1]
+          - [central-adapter-wip-3]
+          - [key-wip-3, WNW, 1]
+          - [central-adapter-wip-4]
+          - [key-wip-3, WNW, 4]
+          - [central-adapter-wip-5]
+    grip-wip:
+      - chunk-size: 3
+        hull-around:
+          - [grip-wip-east]
+          - [central-wip-2]
+          - [grip-wip-west]
+          - [central-wip-3]
 mcu:
   include: true
+  preview: true
   position:
     anchor: central-wip-5
     corner: NNE
+    offset: [0, -2, 0]
+  support:
+    grip:
+      anchors:
+        - alias: grip-wip-east
+          corner: SSE
+          offset: [-1, 0]
+        - alias: grip-wip-west
+          corner: SSW
+          offset: [1, 0]

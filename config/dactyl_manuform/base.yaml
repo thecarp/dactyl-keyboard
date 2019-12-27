@@ -48,6 +48,7 @@ key-clusters:
       m01: [1, first]
       m02: [2, first]
       m03: [3, first]
+      mcu-base-key: [0, 0]
       back0: [0, last]
       back1: [1, last]
       back2: [2, last]
@@ -343,18 +344,82 @@ case:
         - [thumb-mr, SSE, 0, 4]
         - [thumb-tr, SSE, 0, 4]
         - [m03, SSW, 0, 4]
+    # MCU-related tweaks correspond to nothing in the upstream.
+    # They should be moved into a variant YAML file when Short’s
+    # MCU shelf is supported by the DMOTE application.
+    mcu-grip:
+      - chunk-size: 2
+        hull-around:
+        - [grip-west-corner-forward]
+        - [grip-west-corner-backward]
+        - [grip-west-center-outermost]
+      - chunk-size: 2
+        hull-around:
+        - [grip-east-corner-forward]
+        - [grip-east-corner-backward]
+        - [grip-east-center-outermost]
+      - hull-around:
+        - [grip-west-center-outermost]
+        - [grip-west-center-innermost]
+        - [grip-east-center-innermost]
+        - [grip-east-center-outermost]
+    grip-to-web:
+      - hull-around:
+        - [grip-west-center-outermost]
+        - [grip-east-center-outermost]
+        - [grip-rear-west]
+        - [grip-rear-east]
+      - hull-around:
+        - [grip-rear-west]
+        - [grip-rear-east]
+        - [back0, ESE, 0]
+        - [mcu-base-key, ENE, 0]
 mcu:
   include: true
   type: promicro
   position:
     anchor: back0
     corner: NNE
-    offset: [4, 0, -4]
+    offset: [4, 0, -6]
   support:
+    # There is none of the
     grip:
+      size: [2, 2, 5]
       anchors:
-        - alias: grip0
+        # One group of anchors goes round the south-west corner.
+        - alias: grip-west-corner-forward
+          corner: SSW
+          offset: [-1, -0.5]
+        - alias: grip-west-corner-backward
+          corner: SSW
+          offset: [-1, -1]
+        - alias: grip-west-center-outermost
+          corner: SSW
+          offset: [4, -1]
+        - alias: grip-west-center-innermost
+          corner: SSW
+          offset: [8, 0.5]
+        # A corresponding group goes round the south-east corner.
+        - alias: grip-east-corner-forward
           corner: SSE
+          offset: [1, -0.5]
+        - alias: grip-east-corner-backward
+          corner: SSE
+          offset: [1, -1]
+        - alias: grip-east-center-outermost
+          corner: SSE
+          offset: [-4, -1]
+        - alias: grip-east-center-innermost
+          corner: SSE
+          offset: [-8, 0.5]
+        # A pair of anchors above and further behind the PCB.
+        # These serve as a bridge to the key webbing.
+        - alias: grip-rear-west
+          corner: SSW
+          offset: [10, -5, 5]
+        - alias: grip-rear-east
+          corner: SSE
+          offset: [-10, -5, 5]
 connection:
   include: true
   socket-size: [10.78, 9, 18.38]

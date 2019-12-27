@@ -56,12 +56,3 @@ mcu:
   support:
     lock:
       include: true
-      fastener:
-        diameter: 4
-      socket:
-        thickness: 1.5
-      bolt:
-        clearance: 2.5
-        overshoot: 1
-        mount-length: 7
-        mount-thickness: 6

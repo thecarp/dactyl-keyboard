@@ -147,6 +147,7 @@
                             #(not (= :rear-housing %))))
 (spec/def :two/offset ::tarmi/point-2d)    ; Namespaced for spec/keys.
 (spec/def :three/offset ::tarmi/point-3d)  ; Namespaced for spec/keys.
+(spec/def :flexible/offset ::tarmi/point-2-3d)
 (spec/def ::segment (spec/int-in 0 5))
 (spec/def ::highlight boolean?)
 (spec/def ::at-ground boolean?)
@@ -181,7 +182,7 @@
 (spec/def ::mcu-grip-anchors
   (spec/coll-of
     (spec/keys :req-un [::alias ::corner]
-               :opt-un [:two/offset])))
+               :opt-un [:flexible/offset])))
 (spec/def ::tweak-name-map (spec/map-of keyword? ::hull-around))
 (spec/def ::tweak-plate-map
   (spec/keys :req-un [::hull-around]

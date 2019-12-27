@@ -12,10 +12,7 @@
             [dactyl-keyboard.generics :as generics]
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.cad.matrix :as matrix]
-            [dactyl-keyboard.cad.key :as key]
-            [dactyl-keyboard.cad.place :as place]
-            [dactyl-keyboard.param.access
-             :refer [get-key-alias most-specific resolve-anchor]]))
+            [dactyl-keyboard.cad.place :as place]))
 
 
 ;;;;;;;;;;;;;;;;;;;
@@ -47,8 +44,8 @@
                     :promicro {:width 18 :length 33}
                     :teensy {:width 17.78 :length 35.56}
                     :teensy++ {:width 17.78 :length 53})
-        [x y z] (descriptor-vec (merge pcb-base pcb-model))
-        sw [(/ x -2) (/ y -2) 0]
+        [x y _] (descriptor-vec (merge pcb-base pcb-model))
+        sw [(/ x -2) (- y) 0]
         pcb-corners {:nw (mapv + sw [0 y 0])
                      :ne (mapv + sw [x y 0])
                      :se (mapv + sw [x 0 0])
@@ -65,14 +62,14 @@
     :lock-width (* (getopt :mcu :support :lock :width-factor) x)}))
 
 (defn collect-mcu-grip-aliases
-  "Collect the names of MCU grip anchors. Convert offsets to 3D."
+  "Collect the names of MCU grip anchors. Expand 2D offsets to 3D."
   [getopt]
   (reduce
-    (fn [coll {:keys [corner offset alias] :or {offset [0 0 0]}}]
+    (fn [coll {:keys [corner offset alias] :or {offset [0 0]}}]
       (assoc coll alias
         {:type :mcu-grip,
          :corner (generics/directions-to-unordered-corner corner),
-         :offset (conj offset 0)}))
+         :offset (subvec (conj offset 0) 0 3)}))
     {}
     (getopt :mcu :support :grip :anchors)))
 
