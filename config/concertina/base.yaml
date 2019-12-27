@@ -78,5 +78,3 @@ mcu:
   position:
     anchor: central-wip-5
     corner: NNE
-  support:
-    style: stop

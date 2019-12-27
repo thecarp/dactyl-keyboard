@@ -54,8 +54,8 @@ mcu:
     offset: [-10, 0, 4]
     rotation: [0, 1.5708, 0]  # Stand on the long edge.
   support:
-    style: lock
     lock:
+      include: true
       fastener:
         diameter: 4
       socket:

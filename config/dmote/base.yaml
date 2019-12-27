@@ -743,11 +743,8 @@ mcu:
     offset: [0, 0, 2]
     rotation: [0, 1.5708, 0]
   support:
-    style: lock
-    grip:
-      anchors:
-      - alias: grip0
-        corner: SSE
+    lock:
+      include: true
 connection:
   include: true
   socket-size: [10, 11, 17.7]  # 616E minus the vertical bar is 10 mm wide.

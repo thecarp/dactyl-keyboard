@@ -92,7 +92,6 @@ Each heading in this document represents a recognized configuration key in the m
     - Parameter <a href="#user-content-mcu-include">`include`</a>
     - Parameter <a href="#user-content-mcu-preview">`preview`</a>
     - Parameter <a href="#user-content-mcu-type">`type`</a>
-    - Parameter <a href="#user-content-mcu-margin">`margin`</a>
     - Section <a href="#user-content-mcu-position">`position`</a>
         - Parameter <a href="#user-content-mcu-position-central">`central`</a>
         - Parameter <a href="#user-content-mcu-position-anchor">`anchor`</a>
@@ -100,14 +99,15 @@ Each heading in this document represents a recognized configuration key in the m
         - Parameter <a href="#user-content-mcu-position-offset">`offset`</a>
         - Parameter <a href="#user-content-mcu-position-rotation">`rotation`</a>
     - Section <a href="#user-content-mcu-support">`support`</a>
-        - Parameter <a href="#user-content-mcu-support-style">`style`</a>
         - Parameter <a href="#user-content-mcu-support-preview">`preview`</a>
-        - Parameter <a href="#user-content-mcu-support-height-factor">`height-factor`</a>
-        - Parameter <a href="#user-content-mcu-support-lateral-spacing">`lateral-spacing`</a>
         - Section <a href="#user-content-mcu-support-lock">`lock`</a>
+            - Parameter <a href="#user-content-mcu-support-lock-include">`include`</a>
+            - Parameter <a href="#user-content-mcu-support-lock-width-factor">`width-factor`</a>
             - Section <a href="#user-content-mcu-support-lock-fastener">`fastener`</a>
                 - Parameter <a href="#user-content-mcu-support-lock-fastener-style">`style`</a>
                 - Parameter <a href="#user-content-mcu-support-lock-fastener-diameter">`diameter`</a>
+            - Section <a href="#user-content-mcu-support-lock-plate">`plate`</a>
+                - Parameter <a href="#user-content-mcu-support-lock-plate-clearance">`clearance`</a>
             - Section <a href="#user-content-mcu-support-lock-socket">`socket`</a>
                 - Parameter <a href="#user-content-mcu-support-lock-socket-thickness">`thickness`</a>
             - Section <a href="#user-content-mcu-support-lock-bolt">`bolt`</a>
@@ -612,7 +612,7 @@ The total number of MCUs is governed by more than one setting, roughly in the fo
 
 ### Parameter <a id="mcu-include">`include`</a>
 
-If `true`, build support for at least one MCU PCBA.
+If `true`, make space for at least one MCU PCBA.
 
 ### Parameter <a id="mcu-preview">`preview`</a>
 
@@ -622,13 +622,11 @@ If `true`, render a visualization of the MCU PCBA. For use in development.
 
 A symbolic name for a commercial product. Currently, only `promicro` is supported, referring to any MCU PCBA with the dimensions of a SparkFun Pro Micro, including That-Canadian’s Elite-C.
 
-### Parameter <a id="mcu-margin">`margin`</a>
-
-A general measurement in mm of extra space around each part of the PCBA, including PCB and USB connector. This is applied to DMOTE components meant to hold the PCBA in place, accounting for printing inaccuracy as well as inaccuracies in manufacturing the PCBA.
-
 ### Section <a id="mcu-position">`position`</a>
 
 Where to place the MCU PCBA.
+
+By default, the PCBA appears lying flat, with the MCU side up and the connector end facing “north” (i.e. away from the user).
 
 #### Parameter <a id="mcu-position-central">`central`</a>
 
@@ -656,30 +654,34 @@ A vector of 3 angles in radians. This parameter governs the rotation of the PCBA
 
 ### Section <a id="mcu-support">`support`</a>
 
-The support structure that holds the MCU PCBA in place.
+This section offers a couple of different, mutually compatible ways to hold an MCU PCBA in place. Without such support, the MCU will be rattling around inside the case.
 
-#### Parameter <a id="mcu-support-style">`style`</a>
+Support is especially important if connector(s) on the PCBA will be exposed to animals, such as people. Take care that the user can plug in a USB cable, which requires the female USB connector to be both reachable through the case *and* held there firmly enough that the force of the user’s interaction will neither damage nor displace the board.
 
-The style of the support. Available styles are:
-
-- `lock`: A separate physical object that is bolted in place over the MCU. This style is appropriate only with a rear housing, and then only when the PCB aligns with a long wall of that housing. It has the advantage that it can hug the connector on the PCB tightly, thus preventing a fragile surface-mounted connector from breaking off.
-- `stop`: A notched gripper holds the PCBA in place at its rear end. This gripper, in turn, needs to be hooked up to other features, such as key mount webbing, using `tweaks`. The gripper is thus integral to the keyboard, not printed separately like the lock. The MCU is squeezed into place. This style does not require rear housing.
+Despite the importance of support in most use cases, no MCU support is included by default.
 
 #### Parameter <a id="mcu-support-preview">`preview`</a>
 
 If `true`, render a visualization of the support in place. This applies only to those parts of the support that are not part of the case model.
 
-#### Parameter <a id="mcu-support-height-factor">`height-factor`</a>
-
-A multiplier for the width of the PCB, producing the width of the parts touching the PCB in a lock.
-
-#### Parameter <a id="mcu-support-lateral-spacing">`lateral-spacing`</a>
-
-A lateral 1D offset in mm. With rear housing, this creates space between the rear housing itself and the back of the PCB’s through-holes, so it should be roughly matched to the length of wire overshoot. Without rear housing, it isn’t so useful but it does work analogously.
-
 #### Section <a id="mcu-support-lock">`lock`</a>
 
-Parameters relevant only with a `lock`-style support.
+An MCU lock is a support feature made up of three parts:
+
+* A fixture printed as part of the case. This fixture includes a plate for the PCB and a socket. The socket holds a USB connector on the PCB in place.
+* The bolt of the lock, printed separately.
+* A threaded fastener, not printed.
+The fastener connects the bolt to the fixture as the lock closes over the PCB.
+
+A lock is most appropriate when the PCB aligns with a long, flat wall; typically the wall of a rear housing. It has the advantage that it can hug the connector on the PCB tightly from four sides, thus preventing a fragile surface-mounted connector from snapping off.
+
+##### Parameter <a id="mcu-support-lock-include">`include`</a>
+
+If `true`, include a lock.
+
+##### Parameter <a id="mcu-support-lock-width-factor">`width-factor`</a>
+
+A multiplier for the width of the PCB. This determines the width of the parts touching the PCB in a lock: The plate and the base of the bolt.
 
 ##### Section <a id="mcu-support-lock-fastener">`fastener`</a>
 
@@ -693,6 +695,16 @@ A style of bolt head (cap) supported by `scad-tarmi`.
 
 The ISO metric diameter of the fastener.
 
+##### Section <a id="mcu-support-lock-plate">`plate`</a>
+
+In the lock, the MCU PCBA sits on a plate, as part of the fixture. This plate is named by analogy with a door lock. The feature looks more like a bed for the PCB, though it is typically more narrow than the PCB.
+
+###### Parameter <a id="mcu-support-lock-plate-clearance">`clearance`</a>
+
+The height of the plate, in mm, growing onto and displacing the back of the PCB.
+
+When the PCB is anchored along a straight wall (typically the rear housing), this feature adds space between the wall and the PCB’s through-holes, so it should be roughly matched to the length of wire overshoot through the PCB.
+
 ##### Section <a id="mcu-support-lock-socket">`socket`</a>
 
 A housing around the USB connector on the MCU PCBA.
@@ -703,7 +715,7 @@ The wall thickness of the socket.
 
 ##### Section <a id="mcu-support-lock-bolt">`bolt`</a>
 
-The part of a `lock`-style support that does not print with the keyboard case. This bolt, named by analogy with a lock, is not to be confused with the threaded fastener (also a bolt) holding it in place.
+The bolt, named by analogy with a lock, is not to be confused with the threaded fastener (also a bolt) holding it in place.
 
 ###### Parameter <a id="mcu-support-lock-bolt-clearance">`clearance`</a>
 

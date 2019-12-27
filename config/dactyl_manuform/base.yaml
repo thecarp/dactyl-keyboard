@@ -346,18 +346,15 @@ case:
 mcu:
   include: true
   type: promicro
-  margin: 0.25
   position:
     anchor: back0
     corner: NNE
-    offset: [4, 0, 2]
+    offset: [4, 0, -4]
   support:
-    style: stop
-    height-factor: 0.45
-    lateral-spacing: 2.5
-    stop:
-      anchor: m00
-      direction: north
+    grip:
+      anchors:
+        - alias: grip0
+          corner: SSE
 connection:
   include: true
   socket-size: [10.78, 9, 18.38]

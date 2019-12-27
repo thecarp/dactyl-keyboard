@@ -159,7 +159,9 @@
     "A central housing can occupy the space between the key clusters, "
     "providing a rigid mechanical connection and space for an MCU.\n\n"
     "When present, a central housing naturally determines the position of each "
-    "other part of the keyboard: Key clusters on each side should be anchored to points on the central housing, instead of being anchored to the origin."]
+    "other part of the keyboard: Key clusters on each side should be anchored "
+    "to points on the central housing, instead of being anchored to the "
+    "origin."]
    [:parameter [:case :central-housing :include]
     {:default false :parse-fn boolean}
     "If this and `reflect` are both true, add a central housing."]
@@ -527,7 +529,7 @@
     "of reflection."]
    [:parameter [:mcu :include]
     {:default false :parse-fn boolean}
-    "If `true`, build support for at least one MCU PCBA."]
+    "If `true`, make space for at least one MCU PCBA."]
    [:parameter [:mcu :preview]
     {:default false :parse-fn boolean}
     "If `true`, render a visualization of the MCU PCBA. "
@@ -538,14 +540,10 @@
     "A symbolic name for a commercial product. Currently, only `promicro` is "
     "supported, referring to any MCU PCBA with the dimensions of a "
     "SparkFun Pro Micro, including That-Canadian’s Elite-C."]
-   [:parameter [:mcu :margin]
-    {:default 0 :parse-fn num}
-    "A general measurement in mm of extra space around each part of the PCBA, "
-    "including PCB and USB connector. This is applied to DMOTE components "
-    "meant to hold the PCBA in place, accounting for printing inaccuracy as "
-    "well as inaccuracies in manufacturing the PCBA."]
    [:section [:mcu :position]
-    "Where to place the MCU PCBA."]
+    "Where to place the MCU PCBA.\n\n"
+    "By default, the PCBA appears lying flat, with the MCU side up and the "
+    "connector end facing “north” (i.e. away from the user)."]
    [:parameter [:mcu :position :central]
     {:default false :parse-fn boolean}
     "If `true`, treat the MCU as central even on a reflected keyboard. "
@@ -577,38 +575,40 @@
     "PCBA standing on its long edge instead of lying flat, you would give "
     "this a value like `[0, 1.5708, 0]`, the middle number being roughly π/2."]
    [:section [:mcu :support]
-    "The support structure that holds the MCU PCBA in place."]
-   [:parameter [:mcu :support :style]
-    {:default :lock :parse-fn keyword :validate [::schema/mcu-support-style]}
-    ;; FIXME: Remove.
-    "The style of the support. Available styles are:\n\n"
-    "- `lock`: A separate physical object that is bolted in place over the "
-    "MCU. This style is appropriate only with a rear housing, and then only "
-    "when the PCB aligns with a long wall of that housing. It has the "
-    "advantage that it can hug the connector on the PCB tightly, thus "
-    "preventing a fragile surface-mounted connector from breaking off.\n"
-    "- `stop`: A notched gripper holds the PCBA in place at its rear end. "
-    "This gripper, in turn, needs to be hooked up to other features, "
-    "such as key mount webbing, using `tweaks`. The gripper is thus "
-    "integral to the keyboard, not printed separately like the lock. "
-    "The MCU is squeezed into place. This style does not require rear housing."]
+    "This section offers a couple of different, mutually compatible ways to "
+    "hold an MCU PCBA in place. Without such support, the MCU will be "
+    "rattling around inside the case.\n\n"
+    "Support is especially important if connector(s) on the PCBA will be "
+    "exposed to animals, such as people. Take care that the user can plug in "
+    "a USB cable, which requires the female USB connector to be both reachable "
+    "through the case *and* held there firmly enough that the force of the "
+    "user’s interaction will neither damage nor displace the board.\n\n"
+    "Despite the importance of support in most use cases, no MCU support is "
+    "included by default."]
    [:parameter [:mcu :support :preview]
     {:default false :parse-fn boolean}
     "If `true`, render a visualization of the support in place. This applies "
     "only to those parts of the support that are not part of the case model."]
-   [:parameter [:mcu :support :height-factor]
-    {:default 1 :parse-fn num}
-    "A multiplier for the width of the PCB, producing the width of the "
-    "parts touching the PCB in a lock."]
-   [:parameter [:mcu :support :lateral-spacing]
-    {:default 0 :parse-fn num}
-    ;; FIXME: Rename.
-    "A lateral 1D offset in mm. With rear housing, this creates space between "
-    "the rear housing itself and the back of the PCB’s through-holes, so it "
-    "should be roughly matched to the length of wire overshoot. Without rear "
-    "housing, it isn’t so useful but it does work analogously."]
    [:section [:mcu :support :lock]
-    "Parameters relevant only with a `lock`-style support."]
+    "An MCU lock is a support feature made up of three parts:\n\n"
+    "* A fixture printed as part of the case. This fixture includes a plate for "
+    "the PCB and a socket. The socket holds a USB connector on the PCB in "
+    "place.\n"
+    "* The bolt of the lock, printed separately.\n"
+    "* A threaded fastener, not printed.\n"
+    "The fastener connects the bolt to the fixture as the lock closes over "
+    "the PCB.\n\n"
+    "A lock is most appropriate when the PCB aligns with a long, flat wall; "
+    "typically the wall of a rear housing. It has the advantage that it can "
+    "hug the connector on the PCB tightly from four sides, thus preventing "
+    "a fragile surface-mounted connector from snapping off."]
+   [:parameter [:mcu :support :lock :include]
+    {:default false :parse-fn boolean}
+    "If `true`, include a lock."]
+   [:parameter [:mcu :support :lock :width-factor]
+    {:default 1 :parse-fn num}
+    "A multiplier for the width of the PCB. This determines the width of the "
+    "parts touching the PCB in a lock: The plate and the base of the bolt."]
    [:section [:mcu :support :lock :fastener]
     "A threaded bolt connects the lock to the case."]
    [:parameter [:mcu :support :lock :fastener :style]
@@ -617,15 +617,27 @@
    [:parameter [:mcu :support :lock :fastener :diameter]
     {:default 6 :parse-fn num :validate [::threaded/iso-nominal]}
     "The ISO metric diameter of the fastener."]
+   [:section [:mcu :support :lock :plate]
+    "In the lock, the MCU PCBA sits on a plate, as part of the fixture. "
+    "This plate is named by analogy with a door lock. The feature looks "
+    "more like a bed for the PCB, though it is typically more narrow than "
+    "the PCB."]
+   [:parameter [:mcu :support :lock :plate :clearance]
+    {:default 1 :parse-fn num}
+    "The height of the plate, in mm, growing onto and displacing the back of "
+    "the PCB.\n\n"
+    "When the PCB is anchored along a straight wall (typically the rear "
+    "housing), this feature adds space between the wall and the PCB’s "
+    "through-holes, so it should be roughly matched to the length of wire "
+    "overshoot through the PCB."]
    [:section [:mcu :support :lock :socket]
     "A housing around the USB connector on the MCU PCBA."]
    [:parameter [:mcu :support :lock :socket :thickness]
     {:default 1 :parse-fn num}
     "The wall thickness of the socket."]
    [:section [:mcu :support :lock :bolt]
-    "The part of a `lock`-style support that does not print with the "
-    "keyboard case. This bolt, named by analogy with a lock, is not to be "
-    "confused with the threaded fastener (also a bolt) holding it in place."]
+    "The bolt, named by analogy with a lock, is not to be confused with the "
+    "threaded fastener (also a bolt) holding it in place."]
    [:parameter [:mcu :support :lock :bolt :clearance]
     {:default 1 :parse-fn num}
     "The distance of the bolt from the populated side of the PCB. "

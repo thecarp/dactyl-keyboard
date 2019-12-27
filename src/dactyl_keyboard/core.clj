@@ -79,7 +79,7 @@
       (when (getopt :mcu :derived :include-centrally)
         (auxf/mcu-negative-composite getopt)))
     (when (and (getopt :mcu :derived :include-centrally)
-               (= (getopt :mcu :support :style) :lock))
+               (getopt :mcu :support :lock :include))
       (auxf/mcu-lock-fixture-composite getopt))
     (when (and (getopt :mcu :derived :include-centrally)
                (getopt :mcu :preview))
@@ -168,7 +168,7 @@
           (sandbox/negative getopt))
         ;; Outer positives, subject only to outer negatives:
         (when (and (getopt :mcu :derived :include-laterally)
-                   (= (getopt :mcu :support :style) :lock))
+                   (getopt :mcu :support :lock :include))
           (auxf/mcu-lock-fixture-composite getopt)))
       ;; Outer negatives:
       (when (getopt :case :bottom-plate :include)
@@ -356,7 +356,7 @@
      {:name "case-central"
       :model-precursor build-central-housing})
    (when (and (getopt :mcu :include)
-              (= (getopt :mcu :support :style) :lock))
+              (getopt :mcu :support :lock :include))
      {:name "mcu-lock-bolt"
       :model-precursor auxf/mcu-lock-bolt-model
       :rotation [0 π 0]})

@@ -11,14 +11,23 @@ version 0.2.0, thus covering only a fraction of the project’s history.
   functionality was **removed**, having been obviated by placement in relation
   to a wide range of anchors.
 - MCU supports have changed, gaining more power but losing some ease of use,
-  to work better with the central housing.
+  to work better with the option of central housing.
     - The default orientation of the MCU PCB has changed, from standing on its
-      long edge to lying flat. To compensate, add a `rotation` setting for your
-      MCU support, with the approximate value `[0, 1.57, 0]`.
-    - Instead of a `stop` style of MCU support that provides a single grip and
-      requires a key mount as its anchor, any MCU can now be supported by any
-      number of `grip` anchors: Named points in space around the MCU, connected
-      using `tweaks`.
+      long edge to lying flat.
+        - To compensate, use the `rotation` setting for your MCU support, with
+          the approximate value `[0, 1.5708, 0]`.
+    - The MCU support style parameter was **removed**.
+        - Instead of `lock` and `stop` existing as mutually exclusive styles,
+          with a single grip and the requirement of a key mount as the anchor
+          of that grip for a stop, any MCU can now be supported by any number
+          of `grip` anchors: Named points in space around the MCU, connected
+          using `tweaks`. These grips can be freely combined with a lock.
+    - `mcu` → `support` → `height-factor` was moved to
+      `mcu` → `support` → `lock` → `width-factor`.
+    - `mcu` → `support` → `lateral-spacing` was moved to
+      `mcu` → `support` → `lock` → `plate` → `clearance`.
+- The alcove generated for the front end of an MCU PCBA now uses the general
+  DFM setting (`error-general`). The `mcu` → `margin` setting was removed.
 
 ### Added
 - Documentation:

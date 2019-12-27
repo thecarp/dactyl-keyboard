@@ -62,7 +62,7 @@
     ;; Add [x y z] coordinates of the four corners of the PCB. No DFM.
     :pcb (merge pcb-base pcb-model pcb-corners)
     :connector (:micro usb-a-female-dimensions)
-    :lock-width (* (getopt :mcu :support :height-factor) x)}))
+    :lock-width (* (getopt :mcu :support :lock :width-factor) x)}))
 
 (defn collect-mcu-grip-aliases
   "Collect the names of MCU grip anchors. Convert offsets to 3D."
@@ -87,8 +87,8 @@
         [pcb-x pcb-y pcb-z] (descriptor-vec (prop :pcb))
         [usb-x usb-y-base usb-z] (descriptor-vec (prop :connector))
         usb-y (+ usb-y-base connector-elongation)
-        margin (if include-margin (getopt :mcu :margin) 0)
-        mcube (fn [& dimensions] (apply model/cube (map #(+ % margin) dimensions)))]
+        margin (if include-margin (getopt :dfm :error-general) 0)
+        mcube (fn [& dimensions] (apply model/cube (map #(- % margin) dimensions)))]
     (model/union
       (model/translate [0 (/ pcb-y -2) 0]
         (model/color (:pcb generics/colours)
@@ -106,7 +106,7 @@
   (place/mcu-place getopt (mcu-model getopt true 10)))
 
 (defn mcu-alcove
-  "A block shape at the connector end of the MCU.
+  "A blocky shape at the connector end of the MCU.
   For use as a complement to mcu-pcba-negative.
   This is provided because a negative of the MCU model itself digging into the
   inside of a wall would create only a narrow notch, which would require
@@ -114,32 +114,37 @@
   [getopt]
   (let [prop (partial getopt :mcu :derived)
         [pcb-x _ pcb-z] (descriptor-vec (prop :pcb))
-        [usb-x _ _] (descriptor-vec (prop :connector))
-        margin (getopt :mcu :margin)
-        x (+ pcb-x usb-x margin)]
-   (place/mcu-place getopt
-     (model/translate [(/ x 2) (/ x -2) 0]
-       (model/cube x x (+ pcb-z margin))))))
+        usb-z (prop :connector :height)
+        error (getopt :dfm :error-general)
+        x (- pcb-x error)]
+    (place/mcu-place getopt
+      (model/hull
+        (model/translate [0 (/ x -2) 0]
+          (model/cube x x (- pcb-z error)))
+        (model/translate [0 (/ x -2) (/ (+ pcb-z usb-z) 2)]
+          (model/cube (dec x) x (- usb-z error)))))))
 
 (defn mcu-lock-fixture-positive
   "Parts of the lock-style MCU support that integrate with the case.
-  These comprise a bed for the bare side of the PCB to lay against and a socket
+  These comprise a plate for the bare side of the PCB to lay against and a socket
   that encloses the USB connector on the MCU to stabilize it, since integrated
   USB connectors are usually surface-mounted and therefore fragile."
   [getopt]
   (let [prop (partial getopt :mcu :derived)
         [_ pcb-y pcb-z] (descriptor-vec (prop :pcb))
         [usb-x usb-y usb-z] (descriptor-vec (prop :connector))
-        bed-z (getopt :mcu :support :lateral-spacing)
-        bed-y (+ pcb-y (getopt :mcu :support :lock :bolt :mount-length))
+        plate-z (getopt :mcu :support :lock :plate :clearance)
+        plate-y (+ pcb-y (getopt :mcu :support :lock :bolt :mount-length))
         thickness (getopt :mcu :support :lock :socket :thickness)
         socket-z-thickness (+ (/ usb-z 2) thickness)
         socket-z-offset (+ (/ pcb-z 2) (* 3/4 usb-z) (/ thickness 2))
         socket-x (+ usb-x (* 2 thickness))]
    (place/mcu-place getopt
      (model/union
-       (model/translate [0 (/ bed-y -2) (+ (/ bed-z -2) (/ pcb-z -2))]
-         (model/cube (getopt :mcu :derived :lock-width) bed-y bed-z))
+       ;; The plate:
+       (model/translate [0 (/ plate-y -2) (+ (/ plate-z -2) (/ pcb-z -2))]
+         (model/cube (getopt :mcu :derived :lock-width) plate-y plate-z))
+       ;; The socket:
        (model/hull
          ;; Purposely ignore connector overshoot in placing the socket.
          ;; This has the advantages that the lock itself can also be stabilized
@@ -162,7 +167,7 @@
              (getopt :case :rear-housing :wall-thickness)
              (getopt :case :web-thickness))
         [_ pcb-y pcb-z] (descriptor-vec (getopt :mcu :derived :pcb))
-        l2 (getopt :mcu :support :lateral-spacing)
+        l2 (getopt :mcu :support :lock :plate :clearance)
         y1 (getopt :mcu :support :lock :bolt :mount-length)]
     (->>
       (threaded/bolt
@@ -221,7 +226,7 @@
   (model/union
     (mcu-pcba-negative getopt)
     (mcu-alcove getopt)
-    (when (getopt :mcu :support :style) :lock
+    (when (getopt :mcu :support :lock :include)
       (mcu-lock-sink getopt))))
 
 (defn mcu-lock-fixture-composite
@@ -237,7 +242,7 @@
   [getopt]
   (maybe/union
     (mcu-visualization getopt)
-    (when (= (getopt :mcu :support :style) :lock)
+    (when (getopt :mcu :support :lock :include)
       (mcu-lock-bolt-locked getopt))))
 
 

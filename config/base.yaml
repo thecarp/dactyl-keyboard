@@ -31,13 +31,13 @@ case:
     wall-thickness: 2.5
 mcu:
   type: promicro
-  margin: 0.25
   support:
-    height-factor: 0.45
-    lateral-spacing: 0.9
     lock:
+      width-factor: 0.45
       fastener:
         diameter: 4
+      plate:
+        clearance: 0.9
       socket:
         thickness: 1.5
       bolt:

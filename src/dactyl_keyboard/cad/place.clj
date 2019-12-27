@@ -296,7 +296,8 @@
                    (/ (getopt :case :rear-housing :wall-thickness) -2))
                  (when use-housing
                    (/ (getopt :mcu :derived :pcb :thickness) -2))
-                 (- (getopt :mcu :support :lateral-spacing))])))]
+                 (when (getopt :mcu :support :lock :include)
+                   (- (getopt :mcu :support :lock :plate :clearance)))])))]
    (->>
      subject
      (flex/translate
