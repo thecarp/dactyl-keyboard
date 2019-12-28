@@ -32,9 +32,11 @@
 
 (defn pprint-settings
   "Show settings as assembled from (possibly multiple) files."
-  [header raws]
+  [header settings]
   (println header)
-  (pprint raws)
+  (if (fn? settings)
+    (pprint (settings))  ; Option accessor.
+    (pprint settings))   ; Raw data.
   (println))
 
 (defn document-settings
@@ -266,24 +268,47 @@
   (try
     (yaml/parse-string (slurp filepath))
     (catch java.io.FileNotFoundException _
-      (do (println (format "Failed to load file “%s”." filepath))
-          (System/exit 1)))))
+      (println (format "Failed to load file “%s”." filepath))
+      (System/exit 1))))
 
-(defn- output-filepath-fn
-  [base suffix]
-  "Produce a relative file path for e.g. SCAD or STL."
-  (io/file generics/output-directory suffix (str base "." suffix)))
+(defn- merge-opt-file
+  "Merge a single configuration file into a configuration."
+  [raws filepath]
+  (try
+    (generics/soft-merge (from-file filepath) raws)
+    (catch Exception e
+      ;; Most likely a java.lang.ClassCastException or
+      ;; java.lang.IllegalArgumentException from a structural problem.
+      ;; When such problems do not affect a merge, they are caught on
+      ;; parsing or access, i.e. later.
+      (println (format "Error while merging options in file “%s”." filepath))
+      (throw e))))
 
-(defn- parse-build-opts
+(defn- merge-raw-opts
+  "Merge all configuration files."
+  [filepaths]
+  (try
+    (reduce merge-opt-file {} filepaths)
+    (catch Exception e
+      (println
+        (format (str "There may be a structural problem in any of "
+                     "%s, such as a dictionary (map) in place of a list, "
+                     "or vice versa.")
+                filepaths))
+      (throw e))))
+
+(defn- get-accessor
   "Parse model parameters. Return an accessor for them."
-  [{:keys [debug configuration-file]}]
-  (let [raws (apply generics/soft-merge
-               (conj (map from-file configuration-file) {}))]
-   (if debug
-     (pprint-settings "Received settings without built-in defaults:" raws))
-   (let [validated (access/checked-configuration raws)]
-     (if debug (pprint-settings "Resolved and validated settings:" validated))
-     (access/option-accessor (enrich-option-metadata validated)))))
+  [{:keys [configuration-file debug]}]
+  (let [checkpoint (fn [a b] (when debug (pprint-settings a b)) b)]
+    (->>
+      (merge-raw-opts configuration-file)
+      (checkpoint "Received settings without built-in defaults:")
+      (access/checked-configuration)
+      (checkpoint "Resolved and validated settings:")
+      enrich-option-metadata
+      access/option-accessor
+      (checkpoint "Enriched settings:"))))
 
 (def module-asset-list
   "OpenSCAD modules and the functions that make them."
@@ -445,14 +470,17 @@
     (map (partial get module-map) (remove nil? modules))))
 
 (defn- finalize-all
-  [{:keys [debug] :as cli-options}]
-  (let [getopt (parse-build-opts cli-options)
-        precursors (get-all-precursors getopt)
+  [cli-options]
+  (let [getopt (get-accessor cli-options)
         module-map (module-asset-map getopt)
-        requested (remove nil? precursors)]
-    (if debug (pprint-settings "Enriched settings:" (getopt)))
+        requested (remove nil? (get-all-precursors getopt))]
     (refine-all requested
       {:refine-fn (partial finalize-asset getopt module-map)})))
+
+(defn- output-filepath-fn
+  [base suffix]
+  "Produce a relative file path for e.g. SCAD or STL."
+  (io/file generics/output-directory suffix (str base "." suffix)))
 
 (defn run
   "Build all models, authoring files in parallel. Easily used from a REPL."

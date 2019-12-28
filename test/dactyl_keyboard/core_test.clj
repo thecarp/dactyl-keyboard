@@ -1,7 +1,15 @@
 (ns dactyl-keyboard.core-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest testing is]]
             [flatland.ordered.map :refer [ordered-map]]
             [dactyl-keyboard.generics :as generics]))
+
+(deftest test-soft-merge-disparate
+  (testing "list in place of a dictionary"
+    (is (thrown? java.lang.ClassCastException
+          (generics/soft-merge {:a 1} [:a 2]))))
+  (testing "dictionary in place of a list"
+    (is (thrown? java.lang.IllegalArgumentException
+          (generics/soft-merge [:a 1] {:a 2})))))
 
 (deftest test-soft-merge-unordered-maps
   (testing "1 deep, leaf replacement."

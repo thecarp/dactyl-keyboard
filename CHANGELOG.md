@@ -41,6 +41,8 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - A more categorical fix for `dmote-keycap` parameter support, achieved by
   migrating of that library’s parsing logic into the library itself.
   See version 0.5.1.
+- Slightly improved user feedback when configuration files contain structural
+  problems.
 
 ### Developer
 - Improved REPL support.
