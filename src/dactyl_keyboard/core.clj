@@ -14,7 +14,7 @@
             [scad-tarmi.core :refer [π]]
             [scad-tarmi.maybe :as maybe]
             [scad-tarmi.dfm :refer [error-fn]]
-            [dactyl-keyboard.generics :as generics]
+            [dactyl-keyboard.misc :refer [output-directory soft-merge]]
             [dactyl-keyboard.sandbox :as sandbox]
             [dactyl-keyboard.param.access :as access]
             [dactyl-keyboard.param.doc :refer [print-markdown-section]]
@@ -26,6 +26,7 @@
             [dactyl-keyboard.cad.bottom :as bottom]
             [dactyl-keyboard.cad.key :as key]
             [dactyl-keyboard.cad.place :as place]
+            [dactyl-keyboard.cad.mcu :as mcu]
             [dactyl-keyboard.cad.wrist :as wrist]
             [dactyl-keyboard.cad.central :as central])
   (:gen-class :main true))
@@ -79,13 +80,13 @@
     (body/mask getopt (getopt :case :bottom-plate :include)
       (central/main-body getopt)
       (when (getopt :mcu :derived :include-centrally)
-        (auxf/mcu-negative-composite getopt)))
+        (mcu/negative-composite getopt)))
     (when (and (getopt :mcu :derived :include-centrally)
                (getopt :mcu :support :lock :include))
-      (auxf/mcu-lock-fixture-composite getopt))
+      (mcu/lock-fixture-composite getopt))
     (when (and (getopt :mcu :derived :include-centrally)
                (getopt :mcu :preview))
-      (auxf/mcu-preview-composite getopt))))
+      (mcu/preview-composite getopt))))
 
 (defn- masked-inner-positive
   "Parts of the keyboard that are subject to a mask and all negatives."
@@ -160,7 +161,7 @@
           (when (and (getopt :reflect) (getopt :connection :include))
             (auxf/connection-negative getopt))
           (when (getopt :mcu :derived :include-laterally)
-            (auxf/mcu-negative-composite getopt))
+            (mcu/negative-composite getopt))
           (when (getopt :case :leds :include) (auxf/led-holes getopt))
           (when (getopt :case :back-plate :include)
             (auxf/backplate-fastener-holes getopt))
@@ -171,7 +172,7 @@
         ;; Outer positives, subject only to outer negatives:
         (when (and (getopt :mcu :derived :include-laterally)
                    (getopt :mcu :support :lock :include))
-          (auxf/mcu-lock-fixture-composite getopt)))
+          (mcu/lock-fixture-composite getopt)))
       ;; Outer negatives:
       (when (getopt :case :bottom-plate :include)
         (bottom/case-negative getopt))
@@ -184,7 +185,7 @@
       (key/metacluster key/cluster-keycaps getopt))
     (when (and (getopt :mcu :derived :include-laterally)
                (getopt :mcu :preview))
-      (auxf/mcu-preview-composite getopt))))
+      (mcu/preview-composite getopt))))
 
 (defn build-rubber-casting-mould-right
   "A thin shell that fits on top of the right-hand-side wrist-rest model.
@@ -225,7 +226,7 @@
                     {:type :mcu-lock-plate}}
                    (key/collect-key-aliases getopt)
                    (central/collect-point-aliases getopt)
-                   (auxf/collect-mcu-grip-aliases getopt)
+                   (mcu/collect-grip-aliases getopt)
                    (wrist/collect-point-aliases getopt)
                    (wrist/collect-block-aliases getopt)
                    (into {} (for [[k v] (getopt :secondaries)]
@@ -240,7 +241,7 @@
    [[] collect-anchors]
    [[:case :central-housing] central/derive-properties]
    [[:case :rear-housing] body/rhousing-properties]
-   [[:mcu] auxf/derive-mcu-properties]
+   [[:mcu] mcu/derive-properties]
    [[:wrist-rest] wrist/derive-properties]])
 
 (defn derivers-dynamic
@@ -256,7 +257,7 @@
   [build-options]
   (reduce
     (fn [coll [path callable]]
-      (generics/soft-merge
+      (soft-merge
         coll
         (assoc-in coll (conj path :derived)
                        (callable (access/option-accessor coll)))))
@@ -277,7 +278,7 @@
   "Merge a single configuration file into a configuration."
   [raws filepath]
   (try
-    (generics/soft-merge (from-file filepath) raws)
+    (soft-merge (from-file filepath) raws)
     (catch Exception e
       ;; Most likely a java.lang.ClassCastException or
       ;; java.lang.IllegalArgumentException from a structural problem.
@@ -385,7 +386,7 @@
    (when (and (getopt :mcu :include)
               (getopt :mcu :support :lock :include))
      {:name "mcu-lock-bolt"
-      :model-precursor auxf/mcu-lock-bolt-model
+      :model-precursor mcu/lock-bolt-model
       :rotation [0 π 0]})
    ;; Wrist rest:
    (when (getopt :wrist-rest :include)
@@ -482,7 +483,7 @@
 (defn- output-filepath-fn
   [base suffix]
   "Produce a relative file path for e.g. SCAD or STL."
-  (io/file generics/output-directory suffix (str base "." suffix)))
+  (io/file output-directory suffix (str base "." suffix)))
 
 (defn run
   "Build all models, authoring files in parallel. Easily used from a REPL."

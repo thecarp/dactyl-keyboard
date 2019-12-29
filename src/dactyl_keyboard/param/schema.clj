@@ -9,7 +9,7 @@
   (:require [clojure.spec.alpha :as spec]
             [scad-tarmi.core :as tarmi]
             [dmote-keycap.schema :as capschema]
-            [dactyl-keyboard.generics :as generics]))
+            [dactyl-keyboard.compass :as compass]))
 
 
 ;;;;;;;;;;;;;
@@ -19,7 +19,7 @@
 (defn string-to-corner-tuple
   "For use with YAML, where string values are not automatically converted."
   [string]
-  ((keyword string) generics/keyword-to-directions))
+  ((keyword string) compass/keyword-to-directions))
 
 (defn tuple-of
   "A maker of parsers for vectors."
@@ -166,10 +166,10 @@
 
 ;; Also used with spec/keys, with closer competition, hence non-local,
 ;; non-module namespacing.
-(spec/def :unordered-key/corner (set generics/unordered-corner))
-(spec/def :ordered-key/corner (set (keys generics/keyword-to-directions)))
-(spec/def :any-key/corner (set generics/all-corner-keywords))
-(spec/def :tuple/corner (set (vals generics/keyword-to-directions)))
+(spec/def :unordered-key/corner (set compass/unordered-corners))
+(spec/def :ordered-key/corner (set (keys compass/keyword-to-directions)))
+(spec/def :any-key/corner (set compass/all-corner-keywords))
+(spec/def :tuple/corner (set (vals compass/keyword-to-directions)))
 (spec/def :two/offset ::tarmi/point-2d)
 (spec/def :three/offset ::tarmi/point-3d)
 (spec/def :flexible/offset ::tarmi/point-2-3d)
@@ -209,7 +209,7 @@
 (spec/def ::flexcoord (spec/or :absolute int? :extreme #{:first :last}))
 (spec/def ::flexcoord-2d (spec/coll-of ::flexcoord :count 2))
 (spec/def ::key-coordinates ::flexcoord-2d)  ; Exposed for unit testing.
-(spec/def ::direction (set (map first (vals generics/keyword-to-directions))))
+(spec/def ::direction (set (map first (vals compass/keyword-to-directions))))
 (spec/def ::wall-segment ::segment)
 (spec/def ::wall-extent (spec/or :partial ::wall-segment :full #{:full}))
 (spec/def ::tweak-plate-leaf

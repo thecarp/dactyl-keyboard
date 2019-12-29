@@ -16,7 +16,7 @@
             [scad-tarmi.flex :as flex]
             [dmote-keycap.data :as capdata]
             [dmote-keycap.measure :as measure]
-            [dactyl-keyboard.generics :refer [directions-to-unordered-corner]]
+            [dactyl-keyboard.compass :refer [directions-to-unordered-corner]]
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.param.access
@@ -443,7 +443,7 @@
   [getopt {:keys [corner initial]}]
   (mcu-place getopt
     ;; WIP: Separate placer for the plate for non-tweak uses of alias.
-    (flex/translate ... initial)))
+    (flex/translate [0 0 0] initial)))
 
 (defmethod by-type :mcu-grip
   [getopt {:keys [corner initial]}]

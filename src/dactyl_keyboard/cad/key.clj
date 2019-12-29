@@ -12,7 +12,7 @@
             [dmote-keycap.data :as capdata]
             [dmote-keycap.measure :as measure]
             [dmote-keycap.models :refer [keycap]]
-            [dactyl-keyboard.generics :as generics]
+            [dactyl-keyboard.misc :as misc]
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.param.access :refer [most-specific
@@ -113,9 +113,9 @@
           (merge
             capdata/option-defaults
             {:importable-filepath-fn
-               #(str (io/file generics/output-directory "scad" %))
-             :module-keycap (str "keycap_" (generics/key-to-scadstr style-key))
-             :module-switch (str "switch_" (generics/key-to-scadstr switch-type))
+               #(str (io/file misc/output-directory "scad" %))
+             :module-keycap (str "keycap_" (misc/key-to-scadstr style-key))
+             :module-switch (str "switch_" (misc/key-to-scadstr switch-type))
              :skirt-length (measure/default-skirt-length switch-type)
              :vertical-offset (measure/plate-to-stem-end switch-type)
              :error-stem-positive (getopt :dfm :keycaps :error-stem-positive)
@@ -175,7 +175,7 @@
         [wx wy] (measure/skirt-footprint prop)
         h1 (measure/pressed-clearance switch-type skirt-length)
         h2 (measure/resting-clearance switch-type skirt-length)]
-    (model/color (:cap-negative generics/colours)
+    (model/color (:cap-negative misc/colours)
       (model/translate [0 0 (getopt :case :key-mount-thickness)]
         (loft
           [(step (+ sx m) (+ sy m) (/ t 2)) ; A bottom plate for ease of mounting a switch.
@@ -197,7 +197,7 @@
     (model/translate
       [0 0 (+ (getopt :case :key-mount-thickness)
               (getopt :keys :derived key-style :vertical-offset))])
-    (model/color (:cap-body generics/colours))))
+    (model/color (:cap-body misc/colours))))
 
 (defn cap-positive
   "Recall of the results of single-cap for a particular coordinate."

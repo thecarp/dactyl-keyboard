@@ -10,10 +10,11 @@
             [scad-tarmi.threaded :as threaded]
             [thi.ng.geom.core :refer [tessellate vertices bounds]]
             [thi.ng.geom.polygon :refer [polygon2 inset-polygon]]
-            [dactyl-keyboard.generics :refer [ESE SSE SSW colours]]
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.cad.place :as place]
-            [dactyl-keyboard.cad.poly :as poly]))
+            [dactyl-keyboard.cad.poly :as poly]
+            [dactyl-keyboard.compass :refer [ESE SSE SSW]]
+            [dactyl-keyboard.misc :refer [colours]]))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

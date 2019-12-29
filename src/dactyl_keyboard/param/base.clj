@@ -6,7 +6,7 @@
 (ns dactyl-keyboard.param.base
   (:require [clojure.spec.alpha :as spec]
             [flatland.ordered.map :refer [ordered-map]]
-            [dactyl-keyboard.generics :as generics]
+            [dactyl-keyboard.misc :refer [soft-merge]]
             [dactyl-keyboard.param.schema :as schema]))
 
 
@@ -74,9 +74,9 @@
   This is an alternate method for resolving overlap, intended for use with
   defaults that are so complicated the user will not want to write a complete,
   explicit replacement every time."
-  ;; WARNING: Unused as of v0.3.0 but preserved for possible reuse.
+  ;; WARNING: Unused as of v0.6.0 but preserved for possible reuse.
   [nominal candidate]
-  (generics/soft-merge (:default nominal) candidate))
+  (soft-merge (:default nominal) candidate))
 
 (defn inflate
   "Recursively assemble a tree from flat specifications.

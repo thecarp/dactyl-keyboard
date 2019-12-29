@@ -9,14 +9,15 @@
             [scad-tarmi.maybe :as maybe]
             [scad-tarmi.threaded :as threaded]
             [scad-tarmi.util :refer [loft]]
-            [dactyl-keyboard.generics :refer [NNE ENE ESE WSW WNW NNW colours]]
             [dactyl-keyboard.cad.central :as central]
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.key :as key]
+            [dactyl-keyboard.compass :refer [NNE ENE ESE WSW WNW NNW]]
             [dactyl-keyboard.param.access :as access :refer [most-specific
-                                                             tweak-data]]))
+                                                             tweak-data]]
+            [dactyl-keyboard.misc :refer [colours]]))
 
 
 ;;;;;;;;;;;;;

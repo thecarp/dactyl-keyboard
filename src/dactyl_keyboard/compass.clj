@@ -1,28 +1,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; The Dactyl-ManuForm Keyboard — Opposable Thumb Edition              ;;
-;; Constants and Minor Utility Functions                               ;;
+;; The Compass Metaphor                                                ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; These are potentially useful in parameters and have very little to do
-;;; with CAD or the keyboard.
+;;; This module defines the metaphor of a compass as a user-friendly way
+;;; to refer to parts of and directions away from features of the keyboard,
+;;; in the plane of each feature.
 
-(ns dactyl-keyboard.generics
-  (:require [clojure.string :as string]))
+(ns dactyl-keyboard.compass)
 
-(def output-directory
-  "Uphold Dactyl tradition with “things” over the scad-app default directory."
-  "things")
-
-(def colours
-  "OpenSCAD preview colours."
-  {:cap-body [220/255 163/255 163/255 1]
-   :cap-negative [0.5 0.5 1 1]
-   :pcb [26/255, 90/255, 160/255 1]
-   :metal [0.5 0.5 0.5 1]
-   :bottom-plate [0.25 0.25 0.25 1]
-   :rubber [0.5 0.5 1 1]})
-
-(def unorderered-corners
+(def unordered-corners
   "Keywords are provided for the four corners of a feature in the compass-based
   metaphor describing the plane of that feature."
   [:NE :SE :SW :NW])
@@ -72,12 +59,3 @@
   to an ordered corner keyword."
   {:NE :ENE, :SE :ESE, :SW :WSW, :NW :WNW})
 
-(defn soft-merge
-  "Merge mappings depth-first so as to retain leaves except where specifically
-  overridden."
-  [& maps]
-  (apply (partial merge-with
-           (fn [old new] (if (map? old) (soft-merge old new) new)))
-         maps))
-
-(defn key-to-scadstr [k] (string/replace (name k) "-" "_"))

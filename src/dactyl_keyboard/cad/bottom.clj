@@ -9,7 +9,7 @@
             [scad-tarmi.core :refer [π] :as tarmi-core]
             [scad-tarmi.maybe :as maybe]
             [scad-tarmi.threaded :as threaded]
-            [dactyl-keyboard.generics :refer [colours]]
+            [dactyl-keyboard.misc :refer [colours]]
             [dactyl-keyboard.cad.misc :as misc :refer [wafer]]
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.place :as place]
