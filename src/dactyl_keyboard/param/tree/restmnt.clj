@@ -73,7 +73,8 @@
     {:default :origin :parse-fn keyword :validate [::schema/anchor]}
     "An alias referring to a feature that anchors the block."]
    [:parameter [:blocks :case-side :position :corner]
-    {:default "SSE" :parse-fn schema/string-corner :validate [::schema/corner]}
+    {:default "SSE" :parse-fn schema/string-to-corner-tuple
+     :validate [::schema/corner]}
     "A corner of the anchor. By default: `SSE` for south-by-southeast."]
    [:parameter [:blocks :case-side :position :offset]
     {:default [0 0] :parse-fn vec}

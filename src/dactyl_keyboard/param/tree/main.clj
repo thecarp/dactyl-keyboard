@@ -562,7 +562,8 @@
     "MCU support will be physically attached to and supported by the central "
     "housing wall."]
    [:parameter [:mcu :position :corner]
-    {:default "ENE" :parse-fn schema/string-corner :validate [::schema/corner]}
+    {:default "ENE" :parse-fn schema/string-to-corner-tuple
+     :validate [::schema/corner]}
     "A code for a corner of the `anchor` feature. "
     "This determines both the location and facing of the PCBA."]
    [:parameter [:mcu :position :offset]
@@ -625,7 +626,7 @@
     "determined by `width-factor`. Its total height is the sum of this "
     "section’s `base-thickness` and `clearance`."]
    [:parameter [:mcu :support :lock :plate :alias]
-    {:default ::placeholder :parse-fn keyword}
+    {:default ::placeholder :parse-fn keyword :validate [::schema/alias]}
     "A name you can use to target the base of the plate for `tweaks`. "
     "This is useful mainly when there isn’t a flat wall behind the lock."]
    [:parameter [:mcu :support :lock :plate :base-thickness]
@@ -730,7 +731,8 @@
    [:parameter [:connection :position :anchor]
     {:default :origin :parse-fn keyword :validate [::schema/anchor]}]
    [:parameter [:connection :position :corner]
-    {:default "ENE" :parse-fn schema/string-corner :validate [::schema/corner]}]
+    {:default "ENE" :parse-fn schema/string-to-corner-tuple
+     :validate [::schema/corner]}]
    [:parameter [:connection :position :raise]
     {:default false :parse-fn boolean}
     "If `true`, and the socket is being placed in relation to the rear "
@@ -763,7 +765,8 @@
     "The name of a feature where the wrist rest will attach. "
     "The vertical component of its position will be ignored."]
    [:parameter [:wrist-rest :position :corner]
-    {:default "ENE" :parse-fn schema/string-corner :validate [::schema/corner]}
+    {:default "ENE" :parse-fn schema/string-to-corner-tuple
+     :validate [::schema/corner]}
     "A corner of the feature named in `anchor`."]
    [:parameter [:wrist-rest :position :offset]
     {:default [0 0] :parse-fn vec :validate [::tarmi-core/point-2d]}

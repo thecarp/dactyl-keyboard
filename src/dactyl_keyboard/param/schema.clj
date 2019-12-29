@@ -16,7 +16,7 @@
 ;; Parsers ;;
 ;;;;;;;;;;;;;
 
-(defn string-corner
+(defn string-to-corner-tuple
   "For use with YAML, where string values are not automatically converted."
   [string]
   ((keyword string) generics/keyword-to-directions))
@@ -64,7 +64,7 @@
 (def mcu-grip-anchors
   (tuple-of
     (map-like
-      {:corner string-corner
+      {:corner string-to-corner-tuple
        :offset vec
        :alias keyword})))
 
@@ -79,7 +79,7 @@
   ([alias corner segment]
    (case-tweak-position alias corner segment segment))
   ([alias corner s0 s1]
-   [(keyword alias) (string-corner corner) (int s0) (int s1)]))
+   [(keyword alias) (string-to-corner-tuple corner) (int s0) (int s1)]))
 
 (defn case-tweaks [candidate]
   "Parse a tweak. This can be a lazy sequence describing a single
@@ -112,7 +112,7 @@
     keyword
     (map-like
       {:anchor keyword
-       :corner string-corner
+       :corner string-to-corner-tuple
        :segment int
        :offset vec})))
 
@@ -120,7 +120,7 @@
   (tuple-of
     (map-like
       {:anchor keyword
-       :corner string-corner
+       :corner string-to-corner-tuple
        :offset vec})))
 
 (def anchored-polygons
@@ -140,14 +140,10 @@
 ;;;;;;;;;;;;;;;;
 
 ;; Used with spec/keys, making the names sensitive:
-(spec/def ::corner (set (vals generics/keyword-to-directions)))
 (spec/def ::anchor keyword?)
 (spec/def ::alias (spec/and keyword?
                             #(not (= :origin %))
                             #(not (= :rear-housing %))))
-(spec/def :two/offset ::tarmi/point-2d)    ; Namespaced for spec/keys.
-(spec/def :three/offset ::tarmi/point-3d)  ; Namespaced for spec/keys.
-(spec/def :flexible/offset ::tarmi/point-2-3d)
 (spec/def ::segment (spec/int-in 0 5))
 (spec/def ::highlight boolean?)
 (spec/def ::at-ground boolean?)
@@ -168,6 +164,16 @@
   (spec/keys :req-un [:central/base]
              :opt-un [:central/adapter]))
 
+;; Also used with spec/keys, with closer competition, hence non-local,
+;; non-module namespacing.
+(spec/def :unordered-key/corner (set generics/unordered-corner))
+(spec/def :ordered-key/corner (set (keys generics/keyword-to-directions)))
+(spec/def :any-key/corner (set generics/all-corner-keywords))
+(spec/def :tuple/corner (set (vals generics/keyword-to-directions)))
+(spec/def :two/offset ::tarmi/point-2d)
+(spec/def :three/offset ::tarmi/point-3d)
+(spec/def :flexible/offset ::tarmi/point-2-3d)
+
 ;; Users thereof:
 (spec/def ::foot-plate (spec/keys :req-un [::points]))
 (spec/def ::anchored-2d-position
@@ -181,7 +187,7 @@
 (spec/def ::central-housing-interface (spec/coll-of :central/interface-node))
 (spec/def ::mcu-grip-anchors
   (spec/coll-of
-    (spec/keys :req-un [::alias ::corner]
+    (spec/keys :req-un [::alias :unordered/corner]
                :opt-un [:flexible/offset])))
 (spec/def ::tweak-name-map (spec/map-of keyword? ::hull-around))
 (spec/def ::tweak-plate-map

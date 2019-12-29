@@ -22,7 +22,13 @@
    :bottom-plate [0.25 0.25 0.25 1]
    :rubber [0.5 0.5 1 1]})
 
-;; Each switch mount has four corners with offsets in two directions.
+(def unorderered-corners
+  "Keywords are provided for the four corners of a feature in the compass-based
+  metaphor describing the plane of that feature."
+  [:NE :SE :SW :NW])
+
+;; Each switch mount has four corners with offsets in two directions,
+;; but these corners need to be more specific than the unordered corners above.
 ;; Capitals in symbol names are reserved for these shorthand definitions
 ;; of the four corners. In each case, the cardinal direction naming the side
 ;; of the key comes first. The second item names one end of that side.
@@ -46,6 +52,11 @@
    :NNW NNW
    :WNW WNW})
 
+(def all-corner-keywords
+  "The union of unordered and ordered corner identifiers as a vector of
+  keywords, clockwise around the compass."
+  [:NNE :NE :ENE :ESE :SE :SSE :SSW :SW :WSW :WNW :NW :NNW])
+
 (defn directions-to-unordered-corner
   "Reduce directional corner code to non-directional corner code, as
   used for rear housing."
@@ -55,6 +66,11 @@
     (#{SSE ESE} tuple) :SE
     (#{SSW WSW} tuple) :SW
     (#{NNW WNW} tuple) :NW))
+
+(def unordered-corner-to-x-ordered
+  "Favor the x axis when converting up from an unordered corner keyword
+  to an ordered corner keyword."
+  {:NE :ENE, :SE :ESE, :SW :WSW, :NW :WNW})
 
 (defn soft-merge
   "Merge mappings depth-first so as to retain leaves except where specifically
