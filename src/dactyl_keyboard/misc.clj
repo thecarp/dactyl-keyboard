@@ -29,4 +29,6 @@
            (fn [old new] (if (map? old) (soft-merge old new) new)))
          maps))
 
-(defn key-to-scadstr [k] (string/replace (name k) "-" "_"))
+(defn key-to-scadstr [k]
+  {:pre [(keyword? k)]}
+  (string/replace (name k) "-" "_"))

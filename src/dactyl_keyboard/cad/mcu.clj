@@ -65,7 +65,7 @@
     (fn [coll {:keys [corner offset alias] :or {offset [0 0]}}]
       (assoc coll alias
         {:type :mcu-grip,
-         :corner (compass/directions-to-unordered-corner corner),
+         :corner corner,
          :offset (subvec (conj offset 0) 0 3)}))
     {}
     (getopt :mcu :support :grip :anchors)))

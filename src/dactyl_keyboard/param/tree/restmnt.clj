@@ -6,7 +6,8 @@
 (ns dactyl-keyboard.param.tree.restmnt
   (:require [clojure.spec.alpha :as spec]
             [scad-tarmi.threaded :as threaded]
-            [dactyl-keyboard.param.schema :as schema]))
+            [dactyl-keyboard.param.schema :as schema]
+            [dactyl-keyboard.compass :as compass]))
 
 
 (def raws
@@ -73,8 +74,7 @@
     {:default :origin :parse-fn keyword :validate [::schema/anchor]}
     "An alias referring to a feature that anchors the block."]
    [:parameter [:blocks :case-side :position :corner]
-    {:default "SSE" :parse-fn schema/string-to-corner-tuple
-     :validate [::schema/corner]}
+    {:default :SSE :parse-fn keyword :validate [compass/noncardinals]}
     "A corner of the anchor. By default: `SSE` for south-by-southeast."]
    [:parameter [:blocks :case-side :position :offset]
     {:default [0 0] :parse-fn vec}

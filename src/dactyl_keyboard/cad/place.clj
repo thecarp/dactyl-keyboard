@@ -16,7 +16,7 @@
             [scad-tarmi.flex :as flex]
             [dmote-keycap.data :as capdata]
             [dmote-keycap.measure :as measure]
-            [dactyl-keyboard.compass :refer [directions-to-unordered-corner]]
+            [dactyl-keyboard.compass :as compass :refer [sharp-left sharp-right]]
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.param.access
@@ -32,7 +32,7 @@
 (defn lateral-offset
   "Produce a 3D vector for moving something laterally."
   [getopt direction offset]
-  (let [{:keys [dx dy]} (matrix/compass-to-grid direction)]
+  (let [{:keys [dx dy]} (compass/to-grid direction)]
     [(* dx offset) (* dy offset) 0]))
 
 
@@ -40,13 +40,15 @@
 
 (defn mount-corner-offset
   "Produce a mm coordinate offset for a corner of a switch mount."
-  [getopt key-style directions]
+  [getopt key-style corner]
+  {:pre [(compass/intermediates corner)]}
   (let [style-data (getopt :keys :derived key-style)
         [subject-x subject-y] (map measure/key-length
                                 (get style-data :unit-size [1 1]))
-        m (getopt :case :key-mount-corner-margin)]
-    [(* (apply matrix/compass-dx directions) (- (/ subject-x 2) (/ m 2)))
-     (* (apply matrix/compass-dy directions) (- (/ subject-y 2) (/ m 2)))
+        m (getopt :case :key-mount-corner-margin)
+        directions (corner compass/intermediate-to-tuple)]
+    [(* (apply compass/delta-x directions) (- (/ subject-x 2) (/ m 2)))
+     (* (apply compass/delta-y directions) (- (/ subject-y 2) (/ m 2)))
      (/ (getopt :case :web-thickness) -2)]))
 
 (defn- curver
@@ -131,13 +133,15 @@
 
 (defn- wall-segment-offset
   "Compute a 3D offset from one corner of a switch mount to a part of its wall."
-  [getopt cluster coord cardinal-direction segment]
+  [getopt cluster coord direction segment]
+  {:pre [(compass/cardinals direction)]}
   (let [most #(most-specific getopt (concat [:wall] %) cluster coord)
         thickness (most [:thickness])
         bevel-factor (most [:bevel])
-        parallel (most [cardinal-direction :parallel])
-        perpendicular (most [cardinal-direction :perpendicular])
-        {dx :dx dy :dy} (cardinal-direction matrix/compass-to-grid)
+        long-dir (compass/short-to-long direction)
+        parallel (most [long-dir :parallel])
+        perpendicular (most [long-dir :perpendicular])
+        {dx :dx dy :dy} (direction compass/to-grid)
         bevel
           (if (zero? perpendicular)
             bevel-factor
@@ -150,36 +154,35 @@
      3 [(* dx (+ parallel thickness))
         (* dy (+ parallel thickness))
         perpendicular]
-     4 [(* dx (+ parallel))
-        (* dy (+ parallel))
-        (+ perpendicular bevel)])))
+     4 [(* dx parallel) (* dy parallel) (+ perpendicular bevel)])))
 
 (defn- wall-vertex-offset
   "Compute a 3D offset from the center of a web post to a vertex on it."
-  [getopt directions keyopts]
+  [getopt corner keyopts]
   (let [xy (/ (getopt :case :key-mount-corner-margin) 2)
         z (/ (getopt :case :key-mount-thickness) 2)]
-    (matrix/cube-vertex-offset directions [xy xy z] keyopts)))
+    (matrix/cube-vertex-offset corner [xy xy z] keyopts)))
 
 (defn wall-corner-offset
   "Combined [x y z] offset from the center of a switch mount.
   By default, this goes to one corner of the hem of the mount’s skirt of
   walling and therefore finds the base of full walls."
   [getopt cluster coordinates
-   {:keys [directions segment vertex]
+   {:keys [directions corner segment vertex]
     :or {segment 3, vertex false} :as keyopts}]
+  (:pre [(or (nil? corner) (compass/intermediates corner))])
   (mapv +
-    (if directions
+    (if corner
       (mount-corner-offset getopt
         (most-specific getopt [:key-style] cluster coordinates)
-        directions)
+        corner)
       [0 0 0])
-    (if directions
-      (wall-segment-offset
-        getopt cluster coordinates (first directions) segment)
+    (if corner
+      (wall-segment-offset getopt cluster coordinates
+        (first (compass/intermediate-to-tuple corner)) segment)
       [0 0 0])
-    (if (and directions vertex)
-      (wall-vertex-offset getopt directions keyopts)
+    (if (and corner vertex)
+      (wall-vertex-offset getopt corner keyopts)
       [0 0 0])))
 
 (defn wall-corner-place
@@ -200,16 +203,20 @@
   [getopt cluster coordinates direction]
   (letfn [(c [turning-fn]
             (wall-corner-offset getopt cluster coordinates
-              {:directions [direction (turning-fn direction)]}))]
-    (vec (map / (vec (map + (c matrix/left) (c matrix/right))) [2 2 2]))))
+              {:corner (compass/tuple-to-intermediate
+                         [direction (turning-fn direction)])}))]
+    (vec (map / (vec (map + (c sharp-left) (c sharp-right))) [2 2 2]))))
 
 (defn wall-edge-sequence
   "Corner posts for the upper or lower part of the edge of one case wall slab.
   Return a sequence of transformations on the subject, or nil.
-  Return nil when no wall is requested (extent zero) and when the lower portion of the wall is requested _and_ the wall in question is not full (i.e. should
+  Return nil when no wall is requested (extent zero) and when the lower portion
+  of the wall is requested _and_ the wall in question is not full (i.e. should
   not reach the floor) _and_ the subject is not a coordinate."
   [getopt cluster upper [coord direction turning-fn] subject]
-  (let [extent (most-specific getopt [:wall direction :extent] cluster coord)
+  {:pre [(compass/cardinals direction)]}
+  (let [keyseq [:wall (compass/short-to-long direction) :extent]
+        extent (most-specific getopt keyseq cluster coord)
         last-upper-segment (case extent :full 4, extent)
         place-segment
           (fn [segment]
@@ -217,7 +224,8 @@
               subject
               (flex/translate
                 (wall-corner-offset getopt cluster coord
-                  {:directions [direction (turning-fn direction)],
+                  {:corner (compass/tuple-to-intermediate
+                             [direction (turning-fn direction)])
                    :vertex (spec/valid? ::tarmi-core/point-2-3d subject)
                    :segment segment}))
               (cluster-place getopt cluster coord)))]
@@ -251,25 +259,30 @@
 
 (defn- rhousing-segment-offset
   "Compute the [x y z] coordinate offset from a rear housing roof corner."
-  [getopt cardinal-direction segment]
+  [getopt direction segment]
+  {:pre [(compass/cardinals direction)]}
   (let [cluster (getopt :case :rear-housing :position :cluster)
-        key (partial getopt :case :rear-housing :derived)
+        keyfn (partial getopt :case :rear-housing :derived)
         wall (partial wall-segment-offset getopt cluster)]
-   (case cardinal-direction
-     :west (wall (key :west-end-coord) cardinal-direction segment)
-     :east (wall (key :east-end-coord) cardinal-direction segment)
-     :north (if (= segment 0) [0 0 0] [0 1 -1]))))
+   (case direction
+     :W (wall (keyfn :west-end-coord) direction segment)
+     :E (wall (keyfn :east-end-coord) direction segment)
+     :N (if (zero? segment) [0 0 0] [0 1 -1]))))
 
-(defn rhousing-vertex-offset [getopt directions]
+(defn rhousing-vertex-offset
+  [getopt corner]
+  {:pre [(compass/noncardinals corner)]}
   (let [t (/ (getopt :case :web-thickness) 2)]
-    (matrix/cube-vertex-offset directions [t t t] {})))
+    (matrix/cube-vertex-offset corner [t t t] {})))
 
 (defn rhousing-place
   "Place passed shape in relation to a corner of the rear housing’s roof."
   [getopt corner segment subject]
+  {:pre [(compass/noncardinals corner)]}
   (let [offset0 (getopt :case :rear-housing :derived
-                  (directions-to-unordered-corner corner))
-        offset1 (rhousing-segment-offset getopt (first corner) segment)]
+                  (compass/convert-to-intercardinal corner))
+        offset1 (rhousing-segment-offset getopt
+                  (first (compass/keyword-to-tuple corner)) segment)]
     (flex/translate (mapv + offset0 offset1) subject)))
 
 
@@ -284,10 +297,10 @@
   housing."
   [getopt subject]
   (let [use-housing (= (getopt :mcu :position :anchor) :rear-housing)
-        corner (getopt :mcu :position :corner)
+        directions (compass/keyword-to-tuple (getopt :mcu :position :corner))
         z (getopt :mcu :derived :pcb :width)
         lateral-shim
-          (lateral-offset getopt (second corner)
+          (lateral-offset getopt (second directions)
             (apply +
               (remove nil?
                 [(when use-housing
@@ -301,13 +314,13 @@
    (->>
      subject
      (flex/translate
-       (lateral-offset getopt (second corner)
+       (lateral-offset getopt (second directions)
          (- (getopt :mcu :derived :pcb :connector-overshoot))))
      ;; Face the corner’s main direction, plus arbitrary rotation.
      (flex/rotate
        (mapv +
          (getopt :mcu :position :rotation)
-         [0 0 (- (matrix/compass-radians (first corner)))]))
+         [0 0 (- (compass/radians (first directions)))]))
      (flex/translate
        (mapv +
          ;; Move into the requested corner.
@@ -387,7 +400,9 @@
   ;; TODO: Rework the block model to provide meaningful support for corner and
   ;; segment. Those parameters are currently ignored.
   [getopt mount-index side-key corner segment obj]
-  {:pre [(integer? mount-index) (keyword? side-key)]}
+  {:pre [(integer? mount-index)
+         (keyword? side-key)
+         (or (nil? corner) (compass/intercardinals corner))]}
   (let [prop (partial getopt :wrist-rest :mounts mount-index :derived)]
     (->>
       obj
@@ -412,6 +427,7 @@
 
 (defmethod by-type :rear-housing
   [getopt {:keys [corner segment initial] :or {segment 3}}]
+  {:pre [(compass/noncardinals corner)]}
   (rhousing-place getopt corner segment initial))
 
 (defmethod by-type :wr-perimeter
@@ -423,17 +439,24 @@
 (defmethod by-type :wr-block
   [getopt {:keys [mount-index side-key corner segment initial]
            :or {segment 3}}]
-  (wrist-block-place getopt mount-index side-key corner segment initial))
+  {:pre [(or (nil? corner) (compass/noncardinals corner))]}
+  (wrist-block-place getopt mount-index side-key
+    (compass/convert-to-intercardinal corner) segment initial))
 
 (defmethod by-type :key
   [getopt {:keys [cluster coordinates corner segment initial]
            :or {segment 3} :as opts}]
+  {:pre [(or (nil? corner) (compass/noncardinals corner))]}
+  (when (and (some? corner) (not (compass/intermediates corner)))
+    (throw (ex-info "Diagonal corner specified for key mount."
+              (:configured-corner corner
+               :available-corners compass/intermediates))))
   (cluster-place getopt cluster coordinates
     (if (some? corner)
       ;; Corner named. By default, the target feature is the outermost wall.
       (flex/translate
         (wall-corner-offset getopt cluster coordinates
-          (merge opts {:directions corner :segment segment}))
+          (merge opts {:corner corner :segment segment}))
         initial)
       ;; Else no corner named.
       ;; The target feature is the middle of the key mounting plate.
@@ -441,14 +464,19 @@
 
 (defmethod by-type :mcu-lock-plate
   [getopt {:keys [corner initial]}]
+  {:pre [(or (nil? corner) (compass/noncardinals corner))]}
+  ;; WIP: Convert corner to intercardinal for use.
   (mcu-place getopt
     ;; WIP: Separate placer for the plate for non-tweak uses of alias.
     (flex/translate [0 0 0] initial)))
 
 (defmethod by-type :mcu-grip
   [getopt {:keys [corner initial]}]
+  {:pre [(compass/noncardinals corner)]}
   (mcu-place getopt
-    (flex/translate (getopt :mcu :derived :pcb corner) initial)))
+    (flex/translate
+      (getopt :mcu :derived :pcb (compass/convert-to-intercardinal corner))
+      initial)))
 
 (defmethod by-type :secondary
   [getopt {:keys [anchor offset] :or {offset [0 0 0]} :as opts}]
@@ -507,12 +535,13 @@
   [getopt field]
   (let [anchor (getopt field :position :anchor)
         corner (getopt field :position :corner)
+        directions (compass/keyword-to-tuple corner)
         general (reckon-from-anchor getopt anchor {:corner corner})
         to-nook
           (if (= anchor :rear-housing)
             ;; Pull the subject from the middle of the rear-housing wall
             ;; to perfect alignment with the outside of that wall.
-            (lateral-offset getopt (first corner)
+            (lateral-offset getopt (first directions)
               (/ (getopt :case :rear-housing :wall-thickness) 2))
             ;; Else don’t bother.
             [0 0 0])

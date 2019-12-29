@@ -1,59 +1,24 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; The Dactyl-ManuForm Keyboard — Opposable Thumb Edition              ;;
-;; Matrix Utilities                                                    ;;
+;; Key Matrix Utilities                                                ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns dactyl-keyboard.cad.matrix
-  (:require [scad-tarmi.core :refer [π]]))
+  (:require [dactyl-keyboard.compass :as compass :refer [sharp-left sharp-right]]))
 
 (defn coordinate-pairs
   ([columns rows] (for [column columns row rows] [column row]))
   ([columns rows selector] (filter selector (coordinate-pairs columns rows))))
 
-(def compass-to-grid
-  "Translation particles for each cardinal direction."
-  (array-map
-   :north {:dx 0,  :dy 1},
-   :east  {:dx 1,  :dy 0},
-   :south {:dx 0,  :dy -1},
-   :west  {:dx -1, :dy 0}))
-
-(def compass-radians
-  {:north 0,
-   :east  (/ π 2),
-   :south π,
-   :west  (/ π -2)})
-
-(defn compass-delta
-  "Find a coordinate axis delta for movement in any of the stated directions."
-  [axis & directions]
-  (let [value (get-in compass-to-grid [(first directions) axis])]
-    (if (or (not (zero? value)) (= (count directions) 1))
-      value
-      (apply compass-delta axis (rest directions)))))
-
-(defn compass-dx [& directions] (apply compass-delta :dx directions))
-(defn compass-dy [& directions] (apply compass-delta :dy directions))
-
-(defn left
-  "Retrieve a direction keyword for turning left from ‘direction’."
-  [direction]
-  (ffirst (filter #(= direction (second %))
-                  (partition 2 1 '(:north) (keys compass-to-grid)))))
-
-(defn right [direction]
-  (second (first (filter #(= direction (first %))
-                         (partition 2 1 '(:north) (keys compass-to-grid))))))
-
 (defn next-column
   "Each column runs along the y axis; changing columns changes x."
   [column direction]
-  (+ column (compass-dx direction)))
+  (+ column (compass/delta-x direction)))
 
 (defn next-row
   "Each row runs along the x axis; changing rows changes y."
   [row direction]
-  (+ row (compass-dy direction)))
+  (+ row (compass/delta-y direction)))
 
 (defn walk
   "A tuple describing the position an arbitrary orthogonal walk would lead to."
@@ -72,9 +37,9 @@
   permitted."
   [occlusion-fn {:keys [coordinates direction] :as position}]
   {:pre [(occlusion-fn coordinates)]}
-  (let [on-left (walk coordinates (left direction))
+  (let [on-left (walk coordinates (sharp-left direction))
         ahead (walk coordinates direction)
-        ahead-left (walk coordinates direction (left direction))
+        ahead-left (walk coordinates direction (sharp-left direction))
         landscape (vec (map occlusion-fn [on-left ahead-left ahead]))]
     (case landscape
       [false false false] :outer
@@ -90,10 +55,10 @@
   In an inner corner, jump diagonally ahead-left while also turning left."
   [occlusion-fn {:keys [coordinates direction] :as position}]
   (case (classify-corner occlusion-fn position)
-    :outer (merge position {:direction (right direction)})
+    :outer (merge position {:direction (sharp-right direction)})
     nil    (merge position {:coordinates (walk coordinates direction)})
-    :inner {:coordinates (walk coordinates direction (left direction))
-            :direction (left direction)}))
+    :inner {:coordinates (walk coordinates direction (sharp-left direction))
+            :direction (sharp-left direction)}))
 
 (defn trace-edge
   "Walk the edge of a matrix, clockwise. Return a lazy, infinite sequence.
@@ -108,7 +73,7 @@
   one complete lap starting at [0 0]. As in an exclusive range, the final
   position will not be part of the output."
   ([occlusion-fn]
-   (trace-between occlusion-fn {:coordinates [0 0], :direction :north}))
+   (trace-between occlusion-fn {:coordinates [0 0], :direction :N}))
   ([occlusion-fn start-position]
    (trace-between occlusion-fn start-position start-position))
   ([occlusion-fn start-position stop-position]
@@ -120,7 +85,9 @@
 
 (defn cube-vertex-offset
   "Compute a 3D offset from the center of a cube to a vertex on it."
-  [directions [x y z] {:keys [bottom] :or {bottom true}}]
-  [(* (apply compass-dx directions) x)
-   (* (apply compass-dy directions) y)
-   ((if bottom - +) z)])
+  [corner [x y z] {:keys [bottom] :or {bottom true}}]
+  {:pre [(compass/noncardinals corner)]}
+  (let [directions (compass/keyword-to-tuple corner)]
+    [(* (apply compass/delta-x directions) x)
+     (* (apply compass/delta-y directions) y)
+     ((if bottom - +) z)]))

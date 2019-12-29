@@ -15,7 +15,8 @@
             [dactyl-keyboard.param.schema :as schema]
             [dactyl-keyboard.param.tree.cluster :as cluster]
             [dactyl-keyboard.param.tree.nested :as nested]
-            [dactyl-keyboard.param.tree.restmnt :as restmnt]))
+            [dactyl-keyboard.param.tree.restmnt :as restmnt]
+            [dactyl-keyboard.compass :as compass]))
 
 
 ;; Though this module describes the main body of parameters, it contains
@@ -562,8 +563,7 @@
     "MCU support will be physically attached to and supported by the central "
     "housing wall."]
    [:parameter [:mcu :position :corner]
-    {:default "ENE" :parse-fn schema/string-to-corner-tuple
-     :validate [::schema/corner]}
+    {:default :ENE :parse-fn keyword :validate [compass/noncardinals]}
     "A code for a corner of the `anchor` feature. "
     "This determines both the location and facing of the PCBA."]
    [:parameter [:mcu :position :offset]
@@ -688,9 +688,7 @@
     "A list of points in space positioned relative to the PCB’s corners.\n\n"
     "Each point must have an `alias`, which is a name you can use "
     "elsewhere to refer to that point, and a `corner`, identifying one "
-    "corner of the PCB. For example, “SSE” identifies the south-east "
-    "corner. “SSE” and “ESE” are interchangeable for this purpose and “SE” "
-    "is not accepted, by analogy with the naming of key-mount corners.\n\n"
+    "corner of the PCB, e.g. `SE` for the south-east corner.\n\n"
     "Each point may also have an `offset` from the stated corner. These "
     "offsets must be given in mm, either as a 2-tuple like `[1, 2]` for a "
     "two-dimensional offset in the plane of the PCB, or as a 3-tuple "
@@ -699,10 +697,10 @@
     "An example with two-dimensional offsets hugging one corner:\n\n"
     "```anchors\n"
     "  - alias: corner-side\n"
-    "    corner: SSE\n"
+    "    corner: SE\n"
     "    offset: [1, 1]\n"
     "  - alias: corner-back\n"
-    "    corner: SSE\n"
+    "    corner: SE\n"
     "    offset: [-1, -1]```\n\n"
     "Grip anchor points are all empty by default. "
     "They can be occupied, and connected, using `tweaks`."]
@@ -731,8 +729,7 @@
    [:parameter [:connection :position :anchor]
     {:default :origin :parse-fn keyword :validate [::schema/anchor]}]
    [:parameter [:connection :position :corner]
-    {:default "ENE" :parse-fn schema/string-to-corner-tuple
-     :validate [::schema/corner]}]
+    {:default :ENE :parse-fn keyword :validate [compass/noncardinals]}]
    [:parameter [:connection :position :raise]
     {:default false :parse-fn boolean}
     "If `true`, and the socket is being placed in relation to the rear "
@@ -765,8 +762,7 @@
     "The name of a feature where the wrist rest will attach. "
     "The vertical component of its position will be ignored."]
    [:parameter [:wrist-rest :position :corner]
-    {:default "ENE" :parse-fn schema/string-to-corner-tuple
-     :validate [::schema/corner]}
+    {:default :ENE :parse-fn keyword :validate [compass/noncardinals]}
     "A corner of the feature named in `anchor`."]
    [:parameter [:wrist-rest :position :offset]
     {:default [0 0] :parse-fn vec :validate [::tarmi-core/point-2d]}

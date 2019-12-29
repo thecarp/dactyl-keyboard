@@ -16,11 +16,6 @@
 ;; Parsers ;;
 ;;;;;;;;;;;;;
 
-(defn string-to-corner-tuple
-  "For use with YAML, where string values are not automatically converted."
-  [string]
-  ((keyword string) compass/keyword-to-directions))
-
 (defn tuple-of
   "A maker of parsers for vectors."
   [item-parser]
@@ -64,7 +59,7 @@
 (def mcu-grip-anchors
   (tuple-of
     (map-like
-      {:corner string-to-corner-tuple
+      {:corner keyword
        :offset vec
        :alias keyword})))
 
@@ -79,7 +74,7 @@
   ([alias corner segment]
    (case-tweak-position alias corner segment segment))
   ([alias corner s0 s1]
-   [(keyword alias) (string-to-corner-tuple corner) (int s0) (int s1)]))
+   [(keyword alias) (keyword corner) (int s0) (int s1)]))
 
 (defn case-tweaks [candidate]
   "Parse a tweak. This can be a lazy sequence describing a single
@@ -112,7 +107,7 @@
     keyword
     (map-like
       {:anchor keyword
-       :corner string-to-corner-tuple
+       :corner keyword
        :segment int
        :offset vec})))
 
@@ -120,7 +115,7 @@
   (tuple-of
     (map-like
       {:anchor keyword
-       :corner string-to-corner-tuple
+       :corner keyword
        :offset vec})))
 
 (def anchored-polygons
@@ -166,10 +161,9 @@
 
 ;; Also used with spec/keys, with closer competition, hence non-local,
 ;; non-module namespacing.
-(spec/def :unordered-key/corner (set compass/unordered-corners))
-(spec/def :ordered-key/corner (set (keys compass/keyword-to-directions)))
-(spec/def :any-key/corner (set compass/all-corner-keywords))
-(spec/def :tuple/corner (set (vals compass/keyword-to-directions)))
+(spec/def :intercardinal/corner compass/intercardinals)
+(spec/def :intermediate/corner compass/intermediates)
+(spec/def :flexible/corner compass/noncardinals)
 (spec/def :two/offset ::tarmi/point-2d)
 (spec/def :three/offset ::tarmi/point-3d)
 (spec/def :flexible/offset ::tarmi/point-2-3d)
@@ -177,17 +171,17 @@
 ;; Users thereof:
 (spec/def ::foot-plate (spec/keys :req-un [::points]))
 (spec/def ::anchored-2d-position
-  (spec/keys :opt-un [::anchor ::corner :two/offset]))
+  (spec/keys :opt-un [::anchor :flexible/corner :two/offset]))
 (spec/def ::named-secondary-positions
   (spec/map-of ::alias
                (spec/keys :req-un [::anchor]
-                          :opt-un [::corner ::segment :three/offset])))
+                          :opt-un [:flexible/corner ::segment :three/offset])))
 (spec/def ::anchored-2d-list (spec/coll-of ::anchored-2d-position))
 (spec/def ::points ::anchored-2d-list)
 (spec/def ::central-housing-interface (spec/coll-of :central/interface-node))
 (spec/def ::mcu-grip-anchors
   (spec/coll-of
-    (spec/keys :req-un [::alias :unordered/corner]
+    (spec/keys :req-un [::alias :intercardinal/corner]
                :opt-un [:flexible/offset])))
 (spec/def ::tweak-name-map (spec/map-of keyword? ::hull-around))
 (spec/def ::tweak-plate-map
@@ -209,11 +203,10 @@
 (spec/def ::flexcoord (spec/or :absolute int? :extreme #{:first :last}))
 (spec/def ::flexcoord-2d (spec/coll-of ::flexcoord :count 2))
 (spec/def ::key-coordinates ::flexcoord-2d)  ; Exposed for unit testing.
-(spec/def ::direction (set (map first (vals compass/keyword-to-directions))))
 (spec/def ::wall-segment ::segment)
 (spec/def ::wall-extent (spec/or :partial ::wall-segment :full #{:full}))
 (spec/def ::tweak-plate-leaf
-  (spec/tuple keyword? (spec/nilable ::corner) ::wall-segment ::wall-segment))
+  (spec/tuple keyword? (spec/nilable :flexible/corner) ::wall-segment ::wall-segment))
 (spec/def ::foot-plate-polygons (spec/coll-of ::foot-plate))
 
 (spec/def ::descriptor  ; Parameter metadata descriptor.

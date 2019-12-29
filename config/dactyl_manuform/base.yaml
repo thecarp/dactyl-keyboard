@@ -388,37 +388,37 @@ mcu:
       anchors:
         # One group of anchors goes round the south-west corner.
         - alias: grip-west-corner-forward
-          corner: SSW
+          corner: SW
           offset: [-1, -0.5]
         - alias: grip-west-corner-backward
-          corner: SSW
+          corner: SW
           offset: [-1, -1]
         - alias: grip-west-center-outermost
-          corner: SSW
+          corner: SW
           offset: [4, -1]
         - alias: grip-west-center-innermost
-          corner: SSW
+          corner: SW
           offset: [8, 0.5]
         # A corresponding group goes round the south-east corner.
         - alias: grip-east-corner-forward
-          corner: SSE
+          corner: SE
           offset: [1, -0.5]
         - alias: grip-east-corner-backward
-          corner: SSE
+          corner: SE
           offset: [1, -1]
         - alias: grip-east-center-outermost
-          corner: SSE
+          corner: SE
           offset: [-4, -1]
         - alias: grip-east-center-innermost
-          corner: SSE
+          corner: SE
           offset: [-8, 0.5]
         # A pair of anchors above and further behind the PCB.
         # These serve as a bridge to the key webbing.
         - alias: grip-rear-west
-          corner: SSW
+          corner: SW
           offset: [10, -5, 5]
         - alias: grip-rear-east
-          corner: SSE
+          corner: SE
           offset: [-10, -5, 5]
 connection:
   include: true

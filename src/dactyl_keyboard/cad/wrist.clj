@@ -13,7 +13,6 @@
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.poly :as poly]
-            [dactyl-keyboard.compass :refer [ESE SSE SSW]]
             [dactyl-keyboard.misc :refer [colours]]))
 
 

@@ -76,7 +76,7 @@
         column 0
         rows (getopt :key-clusters :derived :by-cluster cluster
                :row-indices-by-column column)]
-    (for [row rows, corner [compass/WSW compass/WNW]]
+    (for [row rows, corner [:WSW :WNW]]
      (let [[x y _] (place/wall-corner-place
                      getopt cluster [column row] {:directions corner})]
       [(+ x (getopt :by-key :parameters :wall :thickness)) y]))))
@@ -97,7 +97,7 @@
                  :row-indices-by-column column)
         row (first rows)
         [x0 y0 _] (place/wall-corner-place
-                    getopt cluster [column row] {:directions compass/WNW})
+                    getopt cluster [column row] {:directions [:W :N]})
         h (+ 5 (/ (getopt :case :leds :housing-size) 2))]
    [x0 (+ y0 (* (getopt :case :leds :interval) ordinal)) h]))
 
@@ -130,6 +130,7 @@
   "Move the negative or positive of the connection metasocket into place."
   [getopt shape]
   (let [corner (getopt :connection :position :corner)
+        directions (compass/keyword-to-tuple corner)
         use-housing (and = (getopt :connection :position :anchor) :rear-housing)
         socket-size (getopt :connection :socket-size)
         socket-depth-offset (/ (second socket-size) -2)
@@ -147,7 +148,7 @@
             (+ socket-thickness socket-height-offset))
         shim
           (if use-housing
-            (place/lateral-offset getopt (second corner)
+            (place/lateral-offset getopt (second directions)
               (/ (first socket-size) -2))
             [0 0 0])]
    (->> shape
@@ -157,7 +158,7 @@
         (maybe/rotate
           (mapv +
             (getopt :connection :position :rotation)
-            [0 0 (- (matrix/compass-radians (first corner)))]))
+            [0 0 (- (compass/radians (first directions)))]))
         ;; Bring snugly to the requested corner.
         (model/translate (mapv + shim (place/into-nook getopt :connection))))))
 

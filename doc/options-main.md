@@ -763,7 +763,7 @@ This parameter determines the size of the object that will occupy an anchor poin
 
 A list of points in space positioned relative to the PCB’s corners.
 
-Each point must have an `alias`, which is a name you can use elsewhere to refer to that point, and a `corner`, identifying one corner of the PCB. For example, “SSE” identifies the south-east corner. “SSE” and “ESE” are interchangeable for this purpose and “SE” is not accepted, by analogy with the naming of key-mount corners.
+Each point must have an `alias`, which is a name you can use elsewhere to refer to that point, and a `corner`, identifying one corner of the PCB, e.g. `SE` for the south-east corner.
 
 Each point may also have an `offset` from the stated corner. These offsets must be given in mm, either as a 2-tuple like `[1, 2]` for a two-dimensional offset in the plane of the PCB, or as a 3-tuple like `[1, 2, 3]` for a three-dimensional offset that can put the point above or below the PCB.
 
@@ -771,10 +771,10 @@ An example with two-dimensional offsets hugging one corner:
 
 ```anchors
   - alias: corner-side
-    corner: SSE
+    corner: SE
     offset: [1, 1]
   - alias: corner-back
-    corner: SSE
+    corner: SE
     offset: [-1, -1]```
 
 Grip anchor points are all empty by default. They can be occupied, and connected, using `tweaks`.

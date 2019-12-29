@@ -8,20 +8,24 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - The parameter `split` was **renamed** to `reflect` to avoid misleading the
   user about how it interacts with the new `central-housing` feature.
 - The two parameters named `prefer-rear-housing` and their associated
-  functionality was **removed**, having been obviated by placement in relation
-  to a wide range of anchors.
+  functionality was all **removed**, having been obviated by placement in
+  relation to a wide range of anchors.
 - MCU supports have changed, gaining more power but losing some ease of use,
   to work better with the option of central housing.
     - The default orientation of the MCU PCB has changed, from standing on its
       long edge to lying flat.
         - To compensate, use the `rotation` setting for your MCU support, with
           the approximate value `[0, 1.5708, 0]`.
+        - In the Dactyl-ManuForm model, the MCU now lies flat, whereas in other
+          pre-v0.6.0 bundled build targets, it’s still on its long edge because
+          of accompanying changes to the configurations.
     - The MCU support style parameter was **removed**.
         - Instead of `lock` and `stop` existing as mutually exclusive styles,
           with a single grip and the requirement of a key mount as the anchor
           of that grip for a stop, any MCU can now be supported by any number
           of `grip` anchors: Named points in space around the MCU, connected
           using `tweaks`. These grips can be freely combined with a lock.
+          See the Dactyl-ManuForm base file for an example.
     - `mcu` → `support` → `height-factor` was moved to
       `mcu` → `support` → `lock` → `width-factor`.
     - `mcu` → `support` → `lateral-spacing` was moved to
@@ -39,14 +43,24 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 ### Fixed
 - Made `transpile.sh` sensitive to configuration changes again.
 - A more categorical fix for `dmote-keycap` parameter support, achieved by
-  migrating of that library’s parsing logic into the library itself.
+  migrating that library’s parsing logic into the library itself.
   See version 0.5.1.
 - Slightly improved user feedback when configuration files contain structural
   problems.
 
 ### Developer
 - Improved REPL support.
-- A new `poly` module collecting helper functions for making polyhedra.
+- New modules:
+  - `poly`, collecting helper functions for making polyhedra.
+  - `mcu`, breaking MCU features out of `auxf`.
+  - `compass`, gathering code from `generics` and `matrix` with refactoring
+    to improve the compass metaphor for feature placement. For example, the new
+    MCU grip anchors are created with a corner such as `SW`, and this maps to a
+    keyword (`:SW`), not to a tuple of cardinal-direction keywords (`[:south
+    :west]`). Corner keywords are translated to tuples at need. Note that
+    the new direction keywords are not yet namespaced to the compass module.
+  - `misc`, which collects everything that remained of `generics` after
+    compass code moved out.
 
 ## [Version 0.5.1] - 2019-10-16
 ### Fixed

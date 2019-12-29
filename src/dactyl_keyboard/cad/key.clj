@@ -12,6 +12,7 @@
             [dmote-keycap.data :as capdata]
             [dmote-keycap.measure :as measure]
             [dmote-keycap.models :refer [keycap]]
+            [dactyl-keyboard.compass :as compass]
             [dactyl-keyboard.misc :as misc]
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.place :as place]
@@ -108,7 +109,7 @@
   (reduce
     (fn [coll [style-key explicit]]
       (let [safe-get #(get explicit %1 (%1 capdata/option-defaults))
-            switch-type (safe-get :SWitch-type)]
+            switch-type (safe-get :switch-type)]
         (assoc coll style-key
           (merge
             capdata/option-defaults
@@ -297,9 +298,10 @@
 
 (defn mount-corner-post
   "A post shape that comes offset for one corner of a key mount."
-  [getopt key-style directions]
+  [getopt key-style corner]
+  {:pre [(compass/intermediates corner)]}
   (->> (web-post getopt)
-       (model/translate (place/mount-corner-offset getopt key-style directions))))
+       (model/translate (place/mount-corner-offset getopt key-style corner))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;

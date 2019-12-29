@@ -9,6 +9,7 @@
             [scad-tarmi.core :refer [π] :as tarmi-core]
             [scad-tarmi.maybe :as maybe]
             [scad-tarmi.threaded :as threaded]
+            [dactyl-keyboard.compass :as compass]
             [dactyl-keyboard.misc :refer [colours]]
             [dactyl-keyboard.cad.misc :as misc :refer [wafer]]
             [dactyl-keyboard.cad.matrix :as matrix]
@@ -126,7 +127,7 @@
   [getopt cluster edges]
   (map
     (fn [[coord direction turning-fn]]
-      (let [key [:wall direction :extent]
+      (let [key [:wall (compass/short-to-long direction) :extent]
             extent (most-specific getopt key cluster coord)]
         (when (= extent :full)
           (take 2
