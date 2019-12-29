@@ -220,7 +220,9 @@
   to one another."
   [getopt]
   {:anchors (merge {:origin {:type :origin}
-                    :rear-housing {:type :rear-housing}}
+                    :rear-housing {:type :rear-housing}
+                    (getopt :mcu :support :lock :plate :alias)
+                    {:type :mcu-lock-plate}}
                    (key/collect-key-aliases getopt)
                    (central/collect-point-aliases getopt)
                    (auxf/collect-mcu-grip-aliases getopt)

@@ -455,7 +455,7 @@
     "but this section gives you greater freedom in how to combine them. "
     "The elements of a leaf are, in order:\n"
     "\n"
-    "1. Mandatory: The name of a feature, such as a key alias.\n"
+    "1. Mandatory: The name of a feature, such as a key by its `alias`.\n"
     "2. Optional: A corner ID, such as `NNE` for north by north-east. "
     "If this is omitted, i.e. if only the mandatory element is given, the "
     "tweak will use the middle of the named feature.\n"
@@ -619,17 +619,28 @@
     "The ISO metric diameter of the fastener."]
    [:section [:mcu :support :lock :plate]
     "In the lock, the MCU PCBA sits on a plate, as part of the fixture. "
-    "This plate is named by analogy with a door lock. The feature looks "
-    "more like a bed for the PCB, though it is typically more narrow than "
-    "the PCB."]
+    "This plate is named by analogy with a roughly corresponding part in a "
+    "door lock. The plate actually looks like a bed for the PCB.\n\n"
+    "The plate is typically more narrow than the PCB, its width being "
+    "determined by `width-factor`. Its total height is the sum of this "
+    "section’s `base-thickness` and `clearance`."]
+   [:parameter [:mcu :support :lock :plate :alias]
+    {:default ::placeholder :parse-fn keyword}
+    "A name you can use to target the base of the plate for `tweaks`. "
+    "This is useful mainly when there isn’t a flat wall behind the lock."]
+   [:parameter [:mcu :support :lock :plate :base-thickness]
+    {:default 1 :parse-fn num}
+    "The thickness of the base of the plate, in mm."]
    [:parameter [:mcu :support :lock :plate :clearance]
     {:default 1 :parse-fn num}
-    "The height of the plate, in mm, growing onto and displacing the back of "
-    "the PCB.\n\n"
-    "When the PCB is anchored along a straight wall (typically the rear "
-    "housing), this feature adds space between the wall and the PCB’s "
-    "through-holes, so it should be roughly matched to the length of wire "
-    "overshoot through the PCB."]
+    "The distance between the MCU PCB and the base of the plate, in mm.\n\n"
+    "Unlike the base of the plate, its clearance displaces the PCB and cannot "
+    "be targeted by `tweaks`, but both parts of the plate have the same "
+    "length and width.\n\n"
+    "The main use for `clearance` is to leave room between a wall supporting "
+    "the lock and the PCB’s through-holes, so its height should be roughly "
+    "matched to the length of wire overshoot through the PCB, with a safety "
+    "margin for air."]
    [:section [:mcu :support :lock :socket]
     "A housing around the USB connector on the MCU PCBA."]
    [:parameter [:mcu :support :lock :socket :thickness]

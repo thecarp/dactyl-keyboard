@@ -44,12 +44,14 @@
                     :promicro {:width 18 :length 33}
                     :teensy {:width 17.78 :length 35.56}
                     :teensy++ {:width 17.78 :length 53})
-        [x y _] (descriptor-vec (merge pcb-base pcb-model))
+        [x y z] (descriptor-vec (merge pcb-base pcb-model))
         sw [(/ x -2) (- y) 0]
         pcb-corners {:nw (mapv + sw [0 y 0])
                      :ne (mapv + sw [x y 0])
                      :se (mapv + sw [x 0 0])
-                     :sw sw}]
+                     :sw sw}
+        plate-transition (- (+ (getopt :mcu :support :lock :plate :clearance)
+                               (/ z 2)))]
    {:include-centrally (and (getopt :mcu :include)
                             (getopt :mcu :position :central))
     :include-laterally (and (getopt :mcu :include)
@@ -121,6 +123,23 @@
         (model/translate [0 (/ x -2) (/ (+ pcb-z usb-z) 2)]
           (model/cube (dec x) x (- usb-z error)))))))
 
+(defn mcu-lock-plate-base
+  "The model of the plate upon which an MCU PCBA rests in a lock.
+  This is intended for use in the lock model itself (complete)
+  and in tweaks (base only, not complete)."
+  [getopt complete]
+  (let [[_ pcb-y pcb-z] (descriptor-vec (getopt :mcu :derived :pcb))
+        plate-y (+ pcb-y (getopt :mcu :support :lock :bolt :mount-length))
+        clearance (getopt :mcu :support :lock :plate :clearance)
+        base-thickness (getopt :mcu :support :lock :plate :base-thickness)
+        full-z (+ (/ pcb-z 2) clearance base-thickness)]
+    (model/translate [0
+                      (/ plate-y -2)
+                      (+ (- full-z) (/ (if complete full-z base-thickness) 2))]
+      (model/cube (getopt :mcu :derived :lock-width)
+                  plate-y
+                  (if complete full-z base-thickness)))))
+
 (defn mcu-lock-fixture-positive
   "Parts of the lock-style MCU support that integrate with the case.
   These comprise a plate for the bare side of the PCB to lay against and a socket
@@ -138,9 +157,7 @@
         socket-x (+ usb-x (* 2 thickness))]
    (place/mcu-place getopt
      (model/union
-       ;; The plate:
-       (model/translate [0 (/ plate-y -2) (+ (/ plate-z -2) (/ pcb-z -2))]
-         (model/cube (getopt :mcu :derived :lock-width) plate-y plate-z))
+       (mcu-lock-plate-base getopt true)
        ;; The socket:
        (model/hull
          ;; Purposely ignore connector overshoot in placing the socket.

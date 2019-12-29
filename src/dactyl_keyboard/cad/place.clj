@@ -439,6 +439,12 @@
       ;; The target feature is the middle of the key mounting plate.
       initial)))
 
+(defmethod by-type :mcu-lock-plate
+  [getopt {:keys [corner initial]}]
+  (mcu-place getopt
+    ;; WIP: Separate placer for the plate for non-tweak uses of alias.
+    (flex/translate ... initial)))
+
 (defmethod by-type :mcu-grip
   [getopt {:keys [corner initial]}]
   (mcu-place getopt

@@ -107,6 +107,8 @@ Each heading in this document represents a recognized configuration key in the m
                 - Parameter <a href="#user-content-mcu-support-lock-fastener-style">`style`</a>
                 - Parameter <a href="#user-content-mcu-support-lock-fastener-diameter">`diameter`</a>
             - Section <a href="#user-content-mcu-support-lock-plate">`plate`</a>
+                - Parameter <a href="#user-content-mcu-support-lock-plate-alias">`alias`</a>
+                - Parameter <a href="#user-content-mcu-support-lock-plate-base-thickness">`base-thickness`</a>
                 - Parameter <a href="#user-content-mcu-support-lock-plate-clearance">`clearance`</a>
             - Section <a href="#user-content-mcu-support-lock-socket">`socket`</a>
                 - Parameter <a href="#user-content-mcu-support-lock-socket-thickness">`thickness`</a>
@@ -558,7 +560,7 @@ Below the names, each item in each list can follow one of the following patterns
 
 Each leaf node identifies a particular named feature of the keyboard. It’s usually a set of corner posts on a named (aliased) key mount. These are identical to the posts used to build the walls, but this section gives you greater freedom in how to combine them. The elements of a leaf are, in order:
 
-1. Mandatory: The name of a feature, such as a key alias.
+1. Mandatory: The name of a feature, such as a key by its `alias`.
 2. Optional: A corner ID, such as `NNE` for north by north-east. If this is omitted, i.e. if only the mandatory element is given, the tweak will use the middle of the named feature.
 3. Optional: A starting wall segment ID, which is an integer from 0 to 4 inclusive. If this is omitted, but a corner is named, the default value is 0.
 4. Optional: A second wall segment ID. If this is provided, the leaf will represent the convex hull of the two indicated segments plus all segments between them. If this is omitted, only one wall post will be placed.
@@ -697,13 +699,25 @@ The ISO metric diameter of the fastener.
 
 ##### Section <a id="mcu-support-lock-plate">`plate`</a>
 
-In the lock, the MCU PCBA sits on a plate, as part of the fixture. This plate is named by analogy with a door lock. The feature looks more like a bed for the PCB, though it is typically more narrow than the PCB.
+In the lock, the MCU PCBA sits on a plate, as part of the fixture. This plate is named by analogy with a roughly corresponding part in a door lock. The plate actually looks like a bed for the PCB.
+
+The plate is typically more narrow than the PCB, its width being determined by `width-factor`. Its total height is the sum of this section’s `base-thickness` and `clearance`.
+
+###### Parameter <a id="mcu-support-lock-plate-alias">`alias`</a>
+
+A name you can use to target the base of the plate for `tweaks`. This is useful mainly when there isn’t a flat wall behind the lock.
+
+###### Parameter <a id="mcu-support-lock-plate-base-thickness">`base-thickness`</a>
+
+The thickness of the base of the plate, in mm.
 
 ###### Parameter <a id="mcu-support-lock-plate-clearance">`clearance`</a>
 
-The height of the plate, in mm, growing onto and displacing the back of the PCB.
+The distance between the MCU PCB and the base of the plate, in mm.
 
-When the PCB is anchored along a straight wall (typically the rear housing), this feature adds space between the wall and the PCB’s through-holes, so it should be roughly matched to the length of wire overshoot through the PCB.
+Unlike the base of the plate, its clearance displaces the PCB and cannot be targeted by `tweaks`, but both parts of the plate have the same length and width.
+
+The main use for `clearance` is to leave room between a wall supporting the lock and the PCB’s through-holes, so its height should be roughly matched to the length of wire overshoot through the PCB, with a safety margin for air.
 
 ##### Section <a id="mcu-support-lock-socket">`socket`</a>
 
