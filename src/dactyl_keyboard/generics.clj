@@ -51,10 +51,10 @@
   used for rear housing."
   [tuple]
   (cond
-    (#{NNE ENE} tuple) :ne
-    (#{SSE ESE} tuple) :se
-    (#{SSW WSW} tuple) :sw
-    (#{NNW WNW} tuple) :nw))
+    (#{NNE ENE} tuple) :NE
+    (#{SSE ESE} tuple) :SE
+    (#{SSW WSW} tuple) :SW
+    (#{NNW WNW} tuple) :NW))
 
 (defn soft-merge
   "Merge mappings depth-first so as to retain leaves except where specifically

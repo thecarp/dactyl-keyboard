@@ -209,10 +209,10 @@
     :east-end-coord (last coords)
     :coordinate-corner-pairs pairs
     ;; [x y z] coordinates of the corners of the topmost part of the roof:
-    :sw roof-sw
-    :se roof-se
-    :nw roof-nw
-    :ne roof-ne}))
+    :SW roof-sw
+    :SE roof-se
+    :NW roof-nw
+    :NE roof-ne}))
 
 (defn- rhousing-roof
   "A cuboid shape between the four corners of the rear housing’s roof."
@@ -220,7 +220,7 @@
   (let [getcorner (partial getopt :case :rear-housing :derived)]
     (apply model/hull
       (map #(maybe/translate (getcorner %) (rhousing-post getopt))
-           [:nw :ne :se :sw]))))
+           [:NW :NE :SE :SW]))))
 
 (defn rhousing-pillar-functions
   "Make functions that determine the exact positions of rear housing walls.
@@ -294,8 +294,8 @@
         pos-corner (fn [coord corner]
                      (place/cluster-place getopt cluster coord
                        (place/mount-corner-offset getopt (key-style coord) corner)))
-        sw (getopt :case :rear-housing :derived :sw)
-        se (getopt :case :rear-housing :derived :se)
+        sw (getopt :case :rear-housing :derived :SW)
+        se (getopt :case :rear-housing :derived :SE)
         x (fn [coord corner]
             (max (first sw)
                  (min (first (pos-corner coord corner))
@@ -321,8 +321,8 @@
         t (getopt :case :rear-housing :roof-thickness)
         h (threaded/datum d :hex-nut-height)
         [sign base] (case side
-                      :west [+ (getopt :case :rear-housing :derived :sw)]
-                      :east [- (getopt :case :rear-housing :derived :se)])
+                      :west [+ (getopt :case :rear-housing :derived :SW)]
+                      :east [- (getopt :case :rear-housing :derived :SE)])
         near (mapv + base [(+ (- (sign offset)) (sign d)) d (/ (+ t h) -2)])
         far (mapv + near [0 (- n d d) 0])]
    (model/hull

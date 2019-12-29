@@ -46,10 +46,10 @@
                     :teensy++ {:width 17.78 :length 53})
         [x y z] (descriptor-vec (merge pcb-base pcb-model))
         sw [(/ x -2) (- y) 0]
-        pcb-corners {:nw (mapv + sw [0 y 0])
-                     :ne (mapv + sw [x y 0])
-                     :se (mapv + sw [x 0 0])
-                     :sw sw}
+        pcb-corners {:NW (mapv + sw [0 y 0])
+                     :NE (mapv + sw [x y 0])
+                     :SE (mapv + sw [x 0 0])
+                     :SW sw}
         plate-transition (- (+ (getopt :mcu :support :lock :plate :clearance)
                                (/ z 2)))]
    {:include-centrally (and (getopt :mcu :include)

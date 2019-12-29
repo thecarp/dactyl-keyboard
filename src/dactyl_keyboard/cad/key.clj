@@ -108,7 +108,7 @@
   (reduce
     (fn [coll [style-key explicit]]
       (let [safe-get #(get explicit %1 (%1 capdata/option-defaults))
-            switch-type (safe-get :switch-type)]
+            switch-type (safe-get :SWitch-type)]
         (assoc coll style-key
           (merge
             capdata/option-defaults
