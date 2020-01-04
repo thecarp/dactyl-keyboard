@@ -278,7 +278,7 @@
   "Merge a single configuration file into a configuration."
   [raws filepath]
   (try
-    (soft-merge (from-file filepath) raws)
+    (soft-merge raws (from-file filepath))
     (catch Exception e
       ;; Most likely a java.lang.ClassCastException or
       ;; java.lang.IllegalArgumentException from a structural problem.
