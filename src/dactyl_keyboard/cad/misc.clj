@@ -10,6 +10,7 @@
             [scad-tarmi.maybe :as maybe]))
 
 (def wafer 0.001)  ; Generic insignificant feature size.
+(def nodule (apply model/cube (repeat 3 wafer)))
 
 (defn pad-to-3d
   "Pad a coordinate vector to three dimensions."

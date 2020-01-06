@@ -39,14 +39,19 @@
                     :promicro {:width 18 :length 33}
                     :teensy {:width 17.78 :length 35.56}
                     :teensy++ {:width 17.78 :length 53})
-        [x y z] (descriptor-vec (merge pcb-base pcb-model))
-        sw [(/ x -2) (- y) 0]
-        pcb-corners {:NW (mapv + sw [0 y 0])
-                     :NE (mapv + sw [x y 0])
-                     :SE (mapv + sw [x 0 0])
-                     :SW sw}
-        plate-transition (- (+ (getopt :mcu :support :lock :plate :clearance)
-                               (/ z 2)))]
+        [xₚ yₚ zₚ] (descriptor-vec (merge pcb-base pcb-model))
+        pcb-sw [(/ xₚ -2) (- yₚ) 0]
+        pcb-corners {:NW (mapv + pcb-sw [0 yₚ 0])
+                     :NE (mapv + pcb-sw [xₚ yₚ 0])
+                     :SE (mapv + pcb-sw [xₚ 0 0])
+                     :SW pcb-sw}
+        xₜ (* (getopt :mcu :support :lock :width-factor) xₚ)
+        yₜ (+ yₚ (getopt :mcu :support :lock :bolt :mount-length))
+        plate-sw [(/ xₜ -2) (- yₜ) 0]
+        plate-corners {:NW (mapv + plate-sw [0 yₜ 0])
+                       :NE (mapv + plate-sw [xₜ yₜ 0])
+                       :SE (mapv + plate-sw [xₜ 0 0])
+                       :SW plate-sw}]
    {:include-centrally (and (getopt :mcu :include)
                             (getopt :mcu :position :central))
     :include-laterally (and (getopt :mcu :include)
@@ -56,7 +61,13 @@
     ;; Add [x y z] coordinates of the four corners of the PCB. No DFM.
     :pcb (merge pcb-base pcb-model pcb-corners)
     :connector (:micro usb-a-female-dimensions)
-    :lock-width (* (getopt :mcu :support :lock :width-factor) x)}))
+    :plate (merge
+             {:width xₜ
+              :length yₜ
+              :thickness (getopt :mcu :support :lock :plate :base-thickness)
+              :transition (- (+ (getopt :mcu :support :lock :plate :clearance)
+                                (/ zₚ 2)))}
+             plate-corners)}))
 
 (defn collect-grip-aliases
   "Collect the names of MCU grip anchors. Expand 2D offsets to 3D."
@@ -121,19 +132,14 @@
 (defn lock-plate-base
   "The model of the plate upon which an MCU PCBA rests in a lock.
   This is intended for use in the lock model itself (complete)
-  and in tweaks (base only, not complete)."
-  [getopt complete]
-  (let [[_ pcb-y pcb-z] (descriptor-vec (getopt :mcu :derived :pcb))
-        plate-y (+ pcb-y (getopt :mcu :support :lock :bolt :mount-length))
-        clearance (getopt :mcu :support :lock :plate :clearance)
-        base-thickness (getopt :mcu :support :lock :plate :base-thickness)
-        full-z (+ (/ pcb-z 2) clearance base-thickness)]
-    (model/translate [0
-                      (/ plate-y -2)
-                      (+ (- full-z) (/ (if complete full-z base-thickness) 2))]
-      (model/cube (getopt :mcu :derived :lock-width)
-                  plate-y
-                  (if complete full-z base-thickness)))))
+  and in tweaks (include-clearance set to false)."
+  [getopt include-clearance]
+  (let [[plate-x plate-y plate-z] (descriptor-vec (getopt :mcu :derived :plate))
+        transition (getopt :mcu :derived :plate :transition)
+        full-z (- plate-z transition)
+        main-z (if include-clearance full-z plate-z)]
+   (model/translate [0 (/ plate-y -2) (+ (- full-z) (/ main-z 2))]
+     (model/cube plate-x plate-y main-z))))
 
 (defn lock-fixture-positive
   "Parts of the lock-style MCU support that integrate with the case.
@@ -142,10 +148,8 @@
   USB connectors are usually surface-mounted and therefore fragile."
   [getopt]
   (let [prop (partial getopt :mcu :derived)
-        [_ pcb-y pcb-z] (descriptor-vec (prop :pcb))
+        pcb-z (prop :pcb :thickness)
         [usb-x usb-y usb-z] (descriptor-vec (prop :connector))
-        plate-z (getopt :mcu :support :lock :plate :clearance)
-        plate-y (+ pcb-y (getopt :mcu :support :lock :bolt :mount-length))
         thickness (getopt :mcu :support :lock :socket :thickness)
         socket-z-thickness (+ (/ usb-z 2) thickness)
         socket-z-offset (+ (/ pcb-z 2) (* 3/4 usb-z) (/ thickness 2))
@@ -209,7 +213,7 @@
         shave (/ clearance 2)
         contact-z (- usb-z shave)
         bolt-z-mount (- mount-z clearance pcb-z)
-        mount-x (getopt :mcu :derived :lock-width)
+        mount-x (getopt :mcu :derived :plate :width)
         bolt-z0 (+ (/ pcb-z 2) clearance (/ bolt-z-mount 2))
         bolt-z1 (+ (/ pcb-z 2) shave (/ contact-z 2))]
    (model/difference

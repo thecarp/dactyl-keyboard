@@ -561,8 +561,8 @@ Below the names, each item in each list can follow one of the following patterns
 Each leaf node identifies a particular named feature of the keyboard. It’s usually a set of corner posts on a named (aliased) key mount. These are identical to the posts used to build the walls, but this section gives you greater freedom in how to combine them. The elements of a leaf are, in order:
 
 1. Mandatory: The name of a feature, such as a key by its `alias`.
-2. Optional: A corner ID, such as `NNE` for north by north-east. If this is omitted, i.e. if only the mandatory element is given, the tweak will use the middle of the named feature.
-3. Optional: A starting wall segment ID, which is an integer from 0 to 4 inclusive. If this is omitted, but a corner is named, the default value is 0.
+2. Optional: A corner ID, such as `SW` for south-west or `NNE` for north by north-east. If this is omitted, i.e. if only the mandatory element is given, the tweak will use the middle of the named feature.
+3. Optional: A starting wall segment ID, which is an integer from 0 to at most 4 inclusive (2 is the maximum for an MCU lock plate, 4 for a key mount). If this is omitted, but a corner is named, the default value is 0.
 4. Optional: A second wall segment ID. If this is provided, the leaf will represent the convex hull of the two indicated segments plus all segments between them. If this is omitted, only one wall post will be placed.
 
 By default, a map node will create a convex hull around its child nodes. However, this behaviour can be modified. The following keys are recognized:

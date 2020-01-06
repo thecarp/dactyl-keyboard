@@ -38,6 +38,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
     - An execution guide, as a new document branched off from the introduction.
     - Tables of content in auto-generated documents.
 - Central housing, a new feature.
+- The ability to target the plate of an MCU lock for case `tweaks`.
 - A GNU Make target for the Dactyl-ManuForm.
 
 ### Fixed

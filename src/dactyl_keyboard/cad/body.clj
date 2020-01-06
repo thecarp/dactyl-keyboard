@@ -10,6 +10,7 @@
             [scad-tarmi.threaded :as threaded]
             [scad-tarmi.util :refer [loft]]
             [dactyl-keyboard.cad.central :as central]
+            [dactyl-keyboard.cad.mcu :as mcu]
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.place :as place]
@@ -378,21 +379,26 @@
   for both shape and position, because they are closely related in that case.
   Otherwise use the most specific dimensions available for the post, defaulting
   to a web post."
-  [getopt anchor directions first-segment last-segment]
+  [getopt anchor corner first-segment last-segment]
   (if (= first-segment last-segment)
     (let [type (:type (access/resolve-anchor getopt anchor))
           post (case type
                  :central-housing (central/tweak-post getopt anchor)
                  :rear-housing (rhousing-post getopt)
                  :mcu-grip (apply model/cube (getopt :mcu :support :grip :size))
+                 ;; If a corner of the MCU plate is specifed, put a nodule there,
+                 ;; else use the entire base of the plate.
+                 :mcu-lock-plate (if corner
+                                   misc/nodule
+                                   (mcu/lock-plate-base getopt false))
                  (key/web-post getopt))]
       (if (= type :central-housing)
         ;; High-precision anchor; reckon-from-anchor is inadequate.
         post
         ;; Low-precision anchor.
         (place/reckon-from-anchor getopt anchor
-          {:subject post, :corner directions, :segment first-segment})))
-    (apply model/hull (map #(tweak-posts getopt anchor directions %1 %1)
+          {:subject post, :corner corner, :segment first-segment})))
+    (apply model/hull (map #(tweak-posts getopt anchor corner %1 %1)
                            (range first-segment (inc last-segment))))))
 
 (declare tweak-plating)

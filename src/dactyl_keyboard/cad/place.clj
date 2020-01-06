@@ -449,8 +449,8 @@
   {:pre [(or (nil? corner) (compass/noncardinals corner))]}
   (when (and (some? corner) (not (compass/intermediates corner)))
     (throw (ex-info "Diagonal corner specified for key mount."
-              (:configured-corner corner
-               :available-corners compass/intermediates))))
+              {:configured-corner corner
+               :available-corners compass/intermediates})))
   (cluster-place getopt cluster coordinates
     (if (some? corner)
       ;; Corner named. By default, the target feature is the outermost wall.
@@ -463,12 +463,31 @@
       initial)))
 
 (defmethod by-type :mcu-lock-plate
-  [getopt {:keys [corner initial]}]
+  [getopt {:keys [corner segment initial] :or {segment 0}}]
   {:pre [(or (nil? corner) (compass/noncardinals corner))]}
-  ;; WIP: Convert corner to intercardinal for use.
   (mcu-place getopt
-    ;; WIP: Separate placer for the plate for non-tweak uses of alias.
-    (flex/translate [0 0 0] initial)))
+    (if corner
+      ;; One corner of the lock plate.
+      ;; Typically, this means that “initial” is either a nodule object
+      ;; for a tweak or else some coordinate being used as an anchor.
+      (let [corner (compass/convert-to-intercardinal corner)]
+        ;; Here, segment 0 describes the plane of the PCB,
+        ;; segment 1 the transition to the base of the lock plate,
+        ;; and segment 2 the bottom of the lock plate.
+        (flex/translate
+          (conj (subvec (getopt :mcu :derived :plate corner) 0 2)
+                (case segment
+                  0 0
+                  1 (getopt :mcu :derived :plate :transition)
+                  2 (- (getopt :mcu :derived :plate :transition)
+                       (getopt :mcu :support :lock :plate :base-thickness))
+                  (throw (ex-info "Invalid segment ID specified for lock plate."
+                            {:configured-segment segment
+                             :available-segments #{0 1 2}}))))
+          initial))
+      ;; Else the midpoint of the plate.
+      ;; Typically, “initial” is the entire lock plate for a tweak.
+      initial)))
 
 (defmethod by-type :mcu-grip
   [getopt {:keys [corner initial]}]
