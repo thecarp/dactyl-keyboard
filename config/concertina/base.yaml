@@ -1,4 +1,8 @@
-# WIP.
+# Sandbox version. Work in progress.
+# Configuration fragment for the base of a Concertina.
+# This resembles the DMOTE but the hands are vertically oriented,
+# and for this reason, the keyboard is joined by a central housing
+# rather than fully split.
 
 reflect: true
 key-clusters:
@@ -50,12 +54,12 @@ case:
             offset: [10, 0, 0]
             alias: central-adapter-wip-3
         - base:
-            offset: [0, 20, 35]
+            offset: [0, 25, 35]
             alias: central-wip-4
           adapter:
             alias: central-adapter-wip-4
         - base:
-            offset: [0, 20, -5]
+            offset: [0, 25, -5]
             alias: central-wip-5
           adapter:
             alias: central-adapter-wip-5
@@ -73,26 +77,28 @@ case:
           - [central-adapter-wip-4]
           - [key-wip-3, WNW, 4]
           - [central-adapter-wip-5]
-    grip-wip:
-      - chunk-size: 3
-        hull-around:
-          - [grip-wip-east]
-          - [central-wip-2]
-          - [grip-wip-west]
-          - [central-wip-3]
+    mcu-holder-wip:
+      - hull-around:
+          - [mcu-plate, SE, 0, 2]
+          - [mcu-plate, SW, 0, 2]
+          - [sec-wip-2]
+          - [sec-wip-1]
 mcu:
   include: true
-  preview: true
+  #preview: true
   position:
     anchor: central-wip-5
     corner: NNE
     offset: [0, -2, 0]
   support:
-    grip:
-      anchors:
-        - alias: grip-wip-east
-          corner: SSE
-          offset: [-1, 0]
-        - alias: grip-wip-west
-          corner: SSW
-          offset: [1, 0]
+    lock:
+      include: true
+      plate:
+        alias: mcu-plate
+secondaries:
+  sec-wip-1:
+    anchor: central-wip-1
+    offset: [-6, 2, 12.5]
+  sec-wip-2:
+    anchor: sec-wip-1
+    offset: [7, 0, 0]
