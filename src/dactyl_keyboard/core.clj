@@ -108,15 +108,8 @@
     (when (getopt :case :bottom-plate :include)
       (bottom/case-anchors-positive getopt))
     (auxf/foot-plates getopt)
-    (when (and (getopt :reflect)
-               (getopt :case :central-housing :include)
-               (getopt :case :central-housing :adapter :include))
-      (central/adapter getopt))
-    ;; Visualization for use in development:
-    (when (and (getopt :reflect)
-               (getopt :case :central-housing :include)
-               (getopt :case :central-housing :preview))
-      (build-central-housing getopt))))
+    (when (getopt :case :central-housing :derived :include-adapter)
+      (central/adapter getopt))))
 
 (defn- midlevel-positive
   "Parts of the keyboard that go outside the mask but should still be subject
@@ -158,6 +151,10 @@
           ;; First-level negatives:
           (key/metacluster key/cluster-cutouts getopt)
           (key/metacluster key/cluster-channels getopt)
+          (when (getopt :case :central-housing :derived :include-lip)
+            ;; Space for an adapter lip, in case the adapter itself is too
+            ;; thin.
+            (central/lip-body-right getopt))
           (when (and (getopt :reflect) (getopt :connection :include))
             (auxf/connection-negative getopt))
           (when (getopt :mcu :derived :include-laterally)
@@ -185,7 +182,11 @@
       (key/metacluster key/cluster-keycaps getopt))
     (when (and (getopt :mcu :derived :include-laterally)
                (getopt :mcu :preview))
-      (mcu/preview-composite getopt))))
+      (mcu/preview-composite getopt))
+    (when (and (getopt :reflect)
+               (getopt :case :central-housing :include)
+               (getopt :case :central-housing :preview))
+      (build-central-housing getopt))))
 
 (defn build-rubber-casting-mould-right
   "A thin shell that fits on top of the right-hand-side wrist-rest model.

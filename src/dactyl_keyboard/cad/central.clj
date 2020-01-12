@@ -44,53 +44,58 @@
     (apply concat)
     (into {})))
 
-(defn- inset-interface
-  "Inset a 3D sequence via 2D. Return a vector for indexability."
-  ([base]
-   (inset-interface base 0))
+(defn- shift-points
+  "Manipulate a series of 3D points forming a perimeter.
+  Inset (contract) the points in the yz plane (in 2D) and/or shift each point
+  on the x axis (back in 3D). Return a vector for indexability."
+  ([base]  ; Presumably called for vector conversion.
+   (shift-points base 0))
   ([base inset]
+   (shift-points base inset 0))
+  ([base inset delta-x]
+   (shift-points base inset + delta-x))
+  ([base inset x-operator delta-x]
    (as-> base subject
      (mapv rest subject)
      (poly/from-outline subject inset)
      (outline-back-to-3d base subject)
-     (vec subject)))
-  ([base inset delta-x]
-   (mapv (horizontal-shifter #(+ % delta-x)) (inset-interface base inset))))
+     (mapv (horizontal-shifter #(x-operator % delta-x)) subject))))
 
 (defn derive-properties
   "Derive certain properties from the base configuration."
   [getopt]
   (let [thickness (getopt :case :web-thickness)
-        body-width (getopt :case :central-housing :shape :width)
+        half-width (/ (getopt :case :central-housing :shape :width) 2)
         adapter-width (getopt :case :central-housing :adapter :width)
         interface (getopt :case :central-housing :shape :interface)
-        gabel-points-3d (map #(get-in % [:base :offset]) interface)
-        gabel-base (inset-interface gabel-points-3d 0)
-        gabel-inner (inset-interface gabel-points-3d thickness)
-        shift-right (horizontal-shifter #(+ (/ body-width 2) %))
-        shift-left (horizontal-shifter #(- (/ body-width -2) %))
-        right-gabel-outer (mapv shift-right gabel-base)
-        left-gabel-outer (mapv shift-left gabel-base)
-        right-gabel-inner (mapv shift-right gabel-inner)
-        left-gabel-inner (mapv shift-left gabel-inner)
+        base-points (map #(get-in % [:base :offset]) interface)
+        gabel-out (shift-points base-points 0 half-width)
+        gabel-in (shift-points base-points thickness half-width)
         adapter-points-3d (map #(get-in % [:adapter :offset] [0 0 0]) interface)
-        adapter-intrinsic (inset-interface adapter-points-3d 0)
+        adapter-intrinsic (shift-points adapter-points-3d)
         adapter-outer (mapv (partial map + [adapter-width 0 0])
-                            right-gabel-outer adapter-intrinsic)
-        adapter-inner (inset-interface adapter-outer thickness)
-        lip-thickness (getopt :case :central-housing :adapter :lip :thickness)
-        lip-prop (partial getopt :case :central-housing :adapter :lip :width)]
-    {:points
-      {:gabel {:right {:outer right-gabel-outer
-                       :inner right-gabel-inner}
-               :left {:outer left-gabel-outer
-                      :inner left-gabel-inner}}
+                            gabel-out adapter-intrinsic)
+        lip-t (getopt :case :central-housing :adapter :lip :thickness)
+        lip-w (partial getopt :case :central-housing :adapter :lip :width)]
+    {:include-adapter (and (getopt :reflect)
+                           (getopt :case :central-housing :include)
+                           (getopt :case :central-housing :adapter :include))
+     :include-lip (and (getopt :reflect)
+                       (getopt :case :central-housing :include)
+                       (getopt :case :central-housing :adapter :include)
+                       (getopt :case :central-housing :adapter :lip :include))
+     :points
+      {:gabel {:right {:outer gabel-out
+                       :inner gabel-in}
+               :left {:outer (shift-points base-points 0 - half-width)
+                      :inner (shift-points base-points thickness - half-width)}}
        :adapter {:outer adapter-outer
-                 :inner adapter-inner}
-       :lip {:outside {:outer (inset-interface right-gabel-inner 0 (lip-prop :outer))
-                       :inner (inset-interface right-gabel-inner lip-thickness (lip-prop :outer))}
-             :inside {:outer (inset-interface right-gabel-inner 0 (- (+ (lip-prop :taper) (lip-prop :inner))))
-                      :inner (inset-interface right-gabel-inner lip-thickness (- (lip-prop :inner)))}}}}))
+                 :inner (shift-points adapter-outer thickness)}
+       :lip {:outside {:outer (shift-points gabel-in 0 (lip-w :outer))
+                       :inner (shift-points gabel-in lip-t (lip-w :outer))}
+             :inside {:outer (shift-points gabel-in 0 - (+ (lip-w :taper)
+                                                           (lip-w :inner)))
+                      :inner (shift-points gabel-in lip-t - (lip-w :inner))}}}}))
 
 
 ;;;;;;;;;;;;;;;;;;;
@@ -120,10 +125,6 @@
       (vertices :inside :outer)
       (vertices :inside :inner))))
 
-(defn- lip-body-left
-  [getopt]
-  (model/mirror [-1 0 0] (lip-body-right getopt)))
-
 (defn adapter
   "An OpenSCAD polyhedron describing an adapter for the central housing."
   [getopt]
@@ -144,7 +145,7 @@
         (vertices :gabel :left :inner)
         (vertices :gabel :right :outer)
         (vertices :gabel :right :inner))
-      (when (getopt :case :central-housing :adapter :lip :include)
-        (lip-body-right getopt))
-      (when (getopt :case :central-housing :adapter :lip :include)
-        (lip-body-left getopt)))))
+      (when (getopt :case :central-housing :derived :include-lip)
+        (model/union
+          (lip-body-right getopt)
+          (model/mirror [-1 0 0] (lip-body-right getopt)))))))

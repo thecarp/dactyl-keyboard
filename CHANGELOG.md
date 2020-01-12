@@ -8,7 +8,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - The parameter `split` was **renamed** to `reflect` to avoid misleading the
   user about how it interacts with the new `central-housing` feature.
 - The two parameters named `prefer-rear-housing` and their associated
-  functionality was all **removed**, having been obviated by placement in
+  functionality were all **removed**, having been obviated by placement in
   relation to a wide range of anchors.
 - MCU supports have changed, gaining more power but losing some ease of use,
   to work better with the option of central housing.
@@ -25,7 +25,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
           of that grip for a stop, any MCU can now be supported by any number
           of `grip` anchors: Named points in space around the MCU, connected
           using `tweaks`. These grips can be freely combined with a lock.
-          See the Dactyl-ManuForm base file for an example.
+          See the Dactyl-ManuForm base file for an example of how to use grips.
     - `mcu` → `support` → `height-factor` was moved to
       `mcu` → `support` → `lock` → `width-factor`.
     - `mcu` → `support` → `lateral-spacing` was moved to

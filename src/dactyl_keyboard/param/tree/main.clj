@@ -195,20 +195,24 @@
     {:default 1 :parse-fn num}
     "The thickness of the lip at each point along it, in mm."]
    [:section [:case :central-housing :adapter :lip :width]
-    "The total width of the lip is the sum of its visible part "
-    "and its base inside the housing."]
+    "The lip extends in both directions from the edge of the central housing: "
+    "Both into the adapter (the “outer” part) and into the housing itself "
+    "(the “inner” part), where it grows out of the inner wall with an optional "
+    "taper. The total width of the lip is the sum of all these sections."]
    [:parameter [:case :central-housing :adapter :lip :width :outer]
     {:default 1 :parse-fn num}
     "The distance the lip protrudes outside the central housing and thence "
     "into the adapter, in mm."]
    [:parameter [:case :central-housing :adapter :lip :width :inner]
     {:default 1 :parse-fn num}
-    "The width of the lip at full thickness, all inside the central housing "
-    "and starting from its outer edge, in mm."]
+    "The width of the lip inside the central housing, before it starts to "
+    "taper, in mm."]
    [:parameter [:case :central-housing :adapter :lip :width :taper]
-    {:default 1 :parse-fn num}
+    {:default 0 :parse-fn num}
     "The width of a taper from the inner portion of the lip to the inner "
-    "wall of the central housing, in mm."]
+    "wall of the central housing, in mm.\n\n"
+    "The default value, zero, produces a right-angled transition. The higher "
+    "the value, the more gentle the transition becomes."]
    [:section [:case :central-housing :shape]
     "The shape of the central housing determines, in part, how it connects "
     "to the rest of the keyboard, including the shape of an adapter."]

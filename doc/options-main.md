@@ -24,6 +24,13 @@ Each heading in this document represents a recognized configuration key in the m
         - Section <a href="#user-content-case-central-housing-adapter">`adapter`</a>
             - Parameter <a href="#user-content-case-central-housing-adapter-include">`include`</a>
             - Parameter <a href="#user-content-case-central-housing-adapter-width">`width`</a>
+            - Section <a href="#user-content-case-central-housing-adapter-lip">`lip`</a>
+                - Parameter <a href="#user-content-case-central-housing-adapter-lip-include">`include`</a>
+                - Parameter <a href="#user-content-case-central-housing-adapter-lip-thickness">`thickness`</a>
+                - Section <a href="#user-content-case-central-housing-adapter-lip-width">`width`</a>
+                    - Parameter <a href="#user-content-case-central-housing-adapter-lip-width-outer">`outer`</a>
+                    - Parameter <a href="#user-content-case-central-housing-adapter-lip-width-inner">`inner`</a>
+                    - Parameter <a href="#user-content-case-central-housing-adapter-lip-width-taper">`taper`</a>
         - Section <a href="#user-content-case-central-housing-shape">`shape`</a>
             - Parameter <a href="#user-content-case-central-housing-shape-width">`width`</a>
             - Parameter <a href="#user-content-case-central-housing-shape-interface">`interface`</a>
@@ -288,13 +295,43 @@ If this is `true`, add an adapter for the central housing.
 
 The approximate width of the adapter on each side of the central housing, along its axis (the x axis). Individual points on the adapter can be offset from this width.
 
+##### Section <a id="case-central-housing-adapter-lip">`lip`</a>
+
+To stabilize the connection between the central housing and the adapter, the interface between them can include an interior lip.
+
+###### Parameter <a id="case-central-housing-adapter-lip-include">`include`</a>
+
+If `true`, attach a lip to the central housing.
+
+###### Parameter <a id="case-central-housing-adapter-lip-thickness">`thickness`</a>
+
+The thickness of the lip at each point along it, in mm.
+
+###### Section <a id="case-central-housing-adapter-lip-width">`width`</a>
+
+The lip extends in both directions from the edge of the central housing: Both into the adapter (the “outer” part) and into the housing itself (the “inner” part), where it grows out of the inner wall with an optional taper. The total width of the lip is the sum of all these sections.
+
+###### Parameter <a id="case-central-housing-adapter-lip-width-outer">`outer`</a> at level 7
+
+The distance the lip protrudes outside the central housing and thence into the adapter, in mm.
+
+###### Parameter <a id="case-central-housing-adapter-lip-width-inner">`inner`</a> at level 7
+
+The width of the lip inside the central housing, before it starts to taper, in mm.
+
+###### Parameter <a id="case-central-housing-adapter-lip-width-taper">`taper`</a> at level 7
+
+The width of a taper from the inner portion of the lip to the inner wall of the central housing, in mm.
+
+The default value, zero, produces a right-angled transition. The higher the value, the more gentle the transition becomes.
+
 #### Section <a id="case-central-housing-shape">`shape`</a>
 
 The shape of the central housing determines, in part, how it connects to the rest of the keyboard, including the shape of an adapter.
 
 ##### Parameter <a id="case-central-housing-shape-width">`width`</a>
 
-The approximate total horizontal width of the housing itself, in mm.
+The approximate extent of the housing itself, on the x axis, in mm.
 
 ##### Parameter <a id="case-central-housing-shape-interface">`interface`</a>
 
