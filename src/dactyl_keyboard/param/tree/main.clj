@@ -185,12 +185,36 @@
     "The approximate width of the adapter on each side of the central housing, "
     "along its axis (the x axis). Individual points on the adapter can be "
     "offset from this width."]
+   [:section [:case :central-housing :adapter :lip]
+    "To stabilize the connection between the central housing and the adapter, "
+    "the interface between them can include an interior lip."]
+   [:parameter [:case :central-housing :adapter :lip :include]
+    {:default false :parse-fn boolean}
+    "If `true`, attach a lip to the central housing."]
+   [:parameter [:case :central-housing :adapter :lip :thickness]
+    {:default 1 :parse-fn num}
+    "The thickness of the lip at each point along it, in mm."]
+   [:section [:case :central-housing :adapter :lip :width]
+    "The total width of the lip is the sum of its visible part "
+    "and its base inside the housing."]
+   [:parameter [:case :central-housing :adapter :lip :width :outer]
+    {:default 1 :parse-fn num}
+    "The distance the lip protrudes outside the central housing and thence "
+    "into the adapter, in mm."]
+   [:parameter [:case :central-housing :adapter :lip :width :inner]
+    {:default 1 :parse-fn num}
+    "The width of the lip at full thickness, all inside the central housing "
+    "and starting from its outer edge, in mm."]
+   [:parameter [:case :central-housing :adapter :lip :width :taper]
+    {:default 1 :parse-fn num}
+    "The width of a taper from the inner portion of the lip to the inner "
+    "wall of the central housing, in mm."]
    [:section [:case :central-housing :shape]
     "The shape of the central housing determines, in part, how it connects "
     "to the rest of the keyboard, including the shape of an adapter."]
    [:parameter [:case :central-housing :shape :width]
     {:default 1 :parse-fn num}
-    "The approximate total horizontal width of the housing itself, in mm."]
+    "The approximate extent of the housing itself, on the x axis, in mm."]
    [:parameter [:case :central-housing :shape :interface]
     {:default [] :parse-fn schema/central-housing-interface
      :validate [::schema/central-housing-interface]}

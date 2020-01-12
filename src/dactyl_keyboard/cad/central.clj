@@ -46,12 +46,16 @@
 
 (defn- inset-interface
   "Inset a 3D sequence via 2D. Return a vector for indexability."
-  [base inset]
-  (as-> base subject
-    (mapv rest subject)
-    (poly/from-outline subject inset)
-    (outline-back-to-3d base subject)
-    (vec subject)))
+  ([base]
+   (inset-interface base 0))
+  ([base inset]
+   (as-> base subject
+     (mapv rest subject)
+     (poly/from-outline subject inset)
+     (outline-back-to-3d base subject)
+     (vec subject)))
+  ([base inset delta-x]
+   (mapv (horizontal-shifter #(+ % delta-x)) (inset-interface base inset))))
 
 (defn derive-properties
   "Derive certain properties from the base configuration."
@@ -73,13 +77,20 @@
         adapter-intrinsic (inset-interface adapter-points-3d 0)
         adapter-outer (mapv (partial map + [adapter-width 0 0])
                             right-gabel-outer adapter-intrinsic)
-        adapter-inner (inset-interface adapter-outer thickness)]
-    {:points {:gabel {:right {:outer right-gabel-outer
-                              :inner right-gabel-inner}
-                      :left {:outer left-gabel-outer
-                             :inner left-gabel-inner}}
-              :adapter {:outer adapter-outer
-                        :inner adapter-inner}}}))
+        adapter-inner (inset-interface adapter-outer thickness)
+        lip-thickness (getopt :case :central-housing :adapter :lip :thickness)
+        lip-prop (partial getopt :case :central-housing :adapter :lip :width)]
+    {:points
+      {:gabel {:right {:outer right-gabel-outer
+                       :inner right-gabel-inner}
+               :left {:outer left-gabel-outer
+                      :inner left-gabel-inner}}
+       :adapter {:outer adapter-outer
+                 :inner adapter-inner}
+       :lip {:outside {:outer (inset-interface right-gabel-inner 0 (lip-prop :outer))
+                       :inner (inset-interface right-gabel-inner lip-thickness (lip-prop :outer))}
+             :inside {:outer (inset-interface right-gabel-inner 0 (- (+ (lip-prop :taper) (lip-prop :inner))))
+                      :inner (inset-interface right-gabel-inner lip-thickness (- (lip-prop :inner)))}}}}))
 
 
 ;;;;;;;;;;;;;;;;;;;
@@ -100,20 +111,40 @@
 ;; Outputs ;;
 ;;;;;;;;;;;;;
 
+(defn lip-body-right
+  [getopt]
+  (let [vertices (partial getopt :case :central-housing :derived :points :lip)]
+    (poly/tuboid
+      (vertices :outside :outer)
+      (vertices :outside :inner)
+      (vertices :inside :outer)
+      (vertices :inside :inner))))
+
+(defn- lip-body-left
+  [getopt]
+  (model/mirror [-1 0 0] (lip-body-right getopt)))
+
 (defn adapter
   "An OpenSCAD polyhedron describing an adapter for the central housing."
   [getopt]
-  (poly/tuboid
-    (getopt :case :central-housing :derived :points :gabel :right :outer)
-    (getopt :case :central-housing :derived :points :gabel :right :inner)
-    (getopt :case :central-housing :derived :points :adapter :outer)
-    (getopt :case :central-housing :derived :points :adapter :inner)))
+  (let [vertices (partial getopt :case :central-housing :derived :points)]
+    (poly/tuboid
+      (vertices :gabel :right :outer)
+      (vertices :gabel :right :inner)
+      (vertices :adapter :outer)
+      (vertices :adapter :inner))))
 
 (defn main-body
   "An OpenSCAD polyhedron describing the body of the central housing."
   [getopt]
-  (poly/tuboid
-    (getopt :case :central-housing :derived :points :gabel :left :outer)
-    (getopt :case :central-housing :derived :points :gabel :left :inner)
-    (getopt :case :central-housing :derived :points :gabel :right :outer)
-    (getopt :case :central-housing :derived :points :gabel :right :inner)))
+  (let [vertices (partial getopt :case :central-housing :derived :points)]
+    (maybe/union
+      (poly/tuboid
+        (vertices :gabel :left :outer)
+        (vertices :gabel :left :inner)
+        (vertices :gabel :right :outer)
+        (vertices :gabel :right :inner))
+      (when (getopt :case :central-housing :adapter :lip :include)
+        (lip-body-right getopt))
+      (when (getopt :case :central-housing :adapter :lip :include)
+        (lip-body-left getopt)))))

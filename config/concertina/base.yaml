@@ -32,6 +32,11 @@ case:
     adapter:
       include: true
       width: 10
+      lip:
+        include: true
+        width:
+          outer: 3
+          taper: 2
     shape:
       width: 100
       interface:
