@@ -170,6 +170,68 @@
     {:default false :parse-fn boolean}
     "If `true`, include the rear housing when rendering each half of the "
     "main body."]
+   [:section [:case :central-housing :shape]
+    "The shape of the central housing determines, in part, how it connects "
+    "to the rest of the keyboard, including the general shape of an adapter. "
+    "The adapter is also influenced, in part, by settings devoted to it, "
+    "in the next section."]
+   [:parameter [:case :central-housing :shape :width]
+    {:default 1 :parse-fn num}
+    "The approximate extent of the housing itself, on the x axis, in mm."]
+   [:parameter [:case :central-housing :shape :interface]
+    {:default [] :parse-fn schema/central-housing-interface
+     :validate [::schema/central-housing-interface]}
+    "The shape of each outer edge of the housing, at the interface between "
+    "the housing itself and the rest of the case.\n"
+    "\n"
+    "The `interface` setting describes the right-hand side of the housing "
+    "as a list of vertices. Each vertex is defined primarily by a "
+    "three-dimensional `offset` in mm from a point that is displaced from "
+    "the origin of the coordinate system by exactly one half of the `width` "
+    "set above. Thus, a minimal, triangular profile can be achieved like so:\n"
+    "\n"
+    "```interface:\n"
+    "  - base:\n"
+    "      offset: [0, -10, 0]\n"
+    "  - base:\n"
+    "      offset: [4, 0, 10]\n"
+    "  - base:\n"
+    "      offset: [0, 10, 0]\n```"
+    "\n"
+    "In this example, the high point in the middle is offset on the x axis, "
+    "giving the edge of the central housing a slant. Notice also that the "
+    "lowest z coordinate is 0, which places this central housing on the "
+    "floor, inside the `mask`. Lower z coordinate will cause the `mask` to "
+    "open the bottom of the central housing, which is usually more "
+    "practical.\n"
+    "\n"
+    "The series of vertices placed this way is conceptually similar to the "
+    "outline of a house’s gable, up against which another house is built. "
+    "Here, this other house usually starts with a central housing adapter, "
+    "a feature which fits precisely onto each side of the housing. "
+    "The basic form of the adapter is determined as part of the interface "
+    "itself: Each `base` vertex of the interface has a corresponding vertex "
+    "on the adapter, and each can be named with an `alias` for use as an "
+    "anchor of other features.\n"
+    "\n"
+    "The following example covers only one vertex on the housing and one "
+    "corresponding outer point on its adapter, and is therefore not a complete "
+    "interface. That said, it does show all of the properties one item in "
+    "the `interface` list can have.\n"
+    "\n"
+    "```interface:\n"
+    "  - base:\n"
+    "      offset: [0, 20, 40]\n"
+    "      alias: housing-side-1\n"
+    "    adapter:\n"
+    "      offset: [10, 0, 0]\n"
+    "      alias: adapter-side-1\n```"
+    "\n"
+    "In this example, the vertex named `adapter-side-1` will be placed 10 mm "
+    "plus the overall width of the adapter away from `housing-side-1`, with "
+    "the body of the adapter covering the intervening distance, so that the "
+    "outer shell of the adapter touches both vertices, and the housing only "
+    "one."]
    [:section [:case :central-housing :adapter]
     "The central housing can connect to key clusters through an adapter: "
     "A part that is shaped like the central housing and extends the "
@@ -213,20 +275,6 @@
     "wall of the central housing, in mm.\n\n"
     "The default value, zero, produces a right-angled transition. The higher "
     "the value, the more gentle the transition becomes."]
-   [:section [:case :central-housing :shape]
-    "The shape of the central housing determines, in part, how it connects "
-    "to the rest of the keyboard, including the shape of an adapter."]
-   [:parameter [:case :central-housing :shape :width]
-    {:default 1 :parse-fn num}
-    "The approximate extent of the housing itself, on the x axis, in mm."]
-   [:parameter [:case :central-housing :shape :interface]
-    {:default [] :parse-fn schema/central-housing-interface
-     :validate [::schema/central-housing-interface]}
-    "The shape of each outer edge of the housing, at the interface between "
-    "the housing itself and the rest of the case. The rest of the case usually "
-    "starts with a central housing adapter. "
-    "These interfaces are symmetrical. What you describe here is actually the "
-    "right-hand side."]
    [:section [:case :rear-housing]
     "The furthest row of a key cluster can be extended into a rear housing "
     "for the MCU and various other features."]
