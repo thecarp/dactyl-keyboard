@@ -34,6 +34,10 @@ Each heading in this document represents a recognized configuration key in the m
                     - Parameter <a href="#user-content-case-central-housing-adapter-lip-width-outer">`outer`</a>
                     - Parameter <a href="#user-content-case-central-housing-adapter-lip-width-inner">`inner`</a>
                     - Parameter <a href="#user-content-case-central-housing-adapter-lip-width-taper">`taper`</a>
+            - Section <a href="#user-content-case-central-housing-adapter-fasteners">`fasteners`</a>
+                - Parameter <a href="#user-content-case-central-housing-adapter-fasteners-diameter">`diameter`</a>
+                - Parameter <a href="#user-content-case-central-housing-adapter-fasteners-length">`length`</a>
+                - Parameter <a href="#user-content-case-central-housing-adapter-fasteners-positions">`positions`</a>
     - Section <a href="#user-content-case-rear-housing">`rear-housing`</a>
         - Parameter <a href="#user-content-case-rear-housing-include">`include`</a>
         - Parameter <a href="#user-content-case-rear-housing-wall-thickness">`wall-thickness`</a>
@@ -362,6 +366,22 @@ The width of the lip inside the central housing, before it starts to taper, in m
 The width of a taper from the inner portion of the lip to the inner wall of the central housing, in mm.
 
 The default value, zero, produces a right-angled transition. The higher the value, the more gentle the transition becomes.
+
+##### Section <a id="case-central-housing-adapter-fasteners">`fasteners`</a>
+
+To connect the central housing and the adapter, threaded fasteners can be driven through the wall of either, into receivers extending from the other.
+
+###### Parameter <a id="case-central-housing-adapter-fasteners-diameter">`diameter`</a>
+
+The ISO metric diameter of each fastener.
+
+###### Parameter <a id="case-central-housing-adapter-fasteners-length">`length`</a>
+
+The length of each fastener in mm.
+
+###### Parameter <a id="case-central-housing-adapter-fasteners-positions">`positions`</a>
+
+A list of places where threaded fasteners will go through the wall.
 
 ### Section <a id="case-rear-housing">`rear-housing`</a>
 

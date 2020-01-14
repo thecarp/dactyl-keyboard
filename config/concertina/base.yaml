@@ -68,6 +68,12 @@ case:
         width:
           outer: 3
           taper: 2
+      fasteners:
+        positions:
+          - starting-point: central-wip-2
+            #direction-point: central-wip-3
+            lateral-offset: 5
+            radial-offset: 2
   tweaks:
     bridge-wip:
       - chunk-size: 3

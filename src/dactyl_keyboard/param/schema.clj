@@ -56,6 +56,14 @@
       {:base (map-like {:offset vec, :alias keyword})
        :adapter (map-like {:offset vec, :alias keyword})})))
 
+(def central-housing-normal-positions
+  (tuple-of
+    (map-like
+      {:starting-point keyword
+       :direction-point keyword
+       :lateral-offset num
+       :radial-offset num})))
+
 (def mcu-grip-anchors
   (tuple-of
     (map-like
@@ -158,6 +166,15 @@
 (spec/def :central/interface-node
   (spec/keys :req-un [:central/base]
              :opt-un [:central/adapter]))
+(spec/def :central/starting-point keyword?)
+(spec/def :central/direction-point keyword?)
+(spec/def :central/lateral-offset #(not (zero? %)))
+(spec/def :central/radial-offset #(not (zero? %)))
+(spec/def :central/fastener-node
+  (spec/keys :req-un [:central/starting-point
+                      :central/lateral-offset
+                      :central/radial-offset]
+             :opt-un [:central/direction-point]))
 
 ;; Also used with spec/keys, with closer competition, hence non-local,
 ;; non-module namespacing.
@@ -179,6 +196,7 @@
 (spec/def ::anchored-2d-list (spec/coll-of ::anchored-2d-position))
 (spec/def ::points ::anchored-2d-list)
 (spec/def ::central-housing-interface (spec/coll-of :central/interface-node))
+(spec/def ::central-housing-normal-positions (spec/coll-of :central/fastener-node))
 (spec/def ::mcu-grip-anchors
   (spec/coll-of
     (spec/keys :req-un [::alias :intercardinal/corner]

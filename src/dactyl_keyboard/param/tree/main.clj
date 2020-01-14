@@ -275,6 +275,21 @@
     "wall of the central housing, in mm.\n\n"
     "The default value, zero, produces a right-angled transition. The higher "
     "the value, the more gentle the transition becomes."]
+   [:section [:case :central-housing :adapter :fasteners]
+    "To connect the central housing and the adapter, threaded fasteners "
+    "can be driven through the wall of either, into receivers extending "
+    "from the other."]
+   [:parameter [:case :central-housing :adapter :fasteners :diameter]
+    {:default 6 :parse-fn num :validate [::threaded/iso-nominal]}
+    "The ISO metric diameter of each fastener."]
+   [:parameter [:case :central-housing :adapter :fasteners :length]
+    {:default 1 :parse-fn num}
+    "The length of each fastener in mm."]
+   [:parameter [:case :central-housing :adapter :fasteners :positions]
+    {:default []
+     :parse-fn schema/central-housing-normal-positions
+     :validate [::schema/central-housing-normal-positions]}
+    "A list of places where threaded fasteners will go through the wall."]
    [:section [:case :rear-housing]
     "The furthest row of a key cluster can be extended into a rear housing "
     "for the MCU and various other features."]

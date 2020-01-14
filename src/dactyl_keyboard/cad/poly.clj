@@ -12,7 +12,7 @@
             [thi.ng.geom.bezier :refer [auto-spline2]]
             [thi.ng.geom.core :refer [tessellate vertices bounds]]
             [thi.ng.geom.polygon :refer [polygon2 inset-polygon]]
-            [thi.ng.geom.vector :refer [vec2 vec3]]
+            [thi.ng.geom.vector :refer [vec2]]
             [scad-tarmi.core :as tarmi]))
 
 
