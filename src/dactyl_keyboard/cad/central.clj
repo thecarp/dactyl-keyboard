@@ -22,19 +22,36 @@
 
 (defn- horizontal-shifter [x-fn] (fn [[x y z]] [(x-fn x) y z]))
 
-(defn- fastener
+;; Predicates for sorting fasteners by the object they penetrate.
+(defn- adapter-side [{:keys [lateral-offset]}] (pos? lateral-offset))
+(defn- housing-side [{:keys [lateral-offset]}] (neg? lateral-offset))
+
+(defn- bilateral
+  ([achiral-subject]
+   (bilateral achiral-subject achiral-subject))
+  ([right-handed left-handed]
+   (model/union right-handed (model/mirror [-1 0 0] left-handed))))
+
+(defn- fastener-feature
+  "The union of all features produced by a given model function at the sites of
+  all adapter fasteners matching a predicate function, on the right-hand side."
+  [getopt pred subject]
+  (let [positions (getopt :case :central-housing :adapter :fasteners :positions)
+        subject-fn #(place/chousing-fastener getopt % subject)]
+    (apply model/union (map subject-fn (filter pred positions)))))
+
+(defn- single-fastener
   "A fastener for attaching the central housing to the rest of the case.
   In place."
-  [getopt index]
+  [getopt]
   (let [prop (partial getopt :case :central-housing :adapter :fasteners)]
-    (place/chousing-fastener getopt index
-      (threaded/bolt
-       :iso-size (prop :diameter),
-       :head-type :countersunk,
-       :point-type :cone,
-       :total-length (prop :length),
-       :compensator (getopt :dfm :derived :compensator)
-       :negative true))))
+    (threaded/bolt
+      :iso-size (prop :diameter),
+      :head-type :countersunk,
+      :point-type :cone,
+      :total-length (prop :length),
+      :compensator (getopt :dfm :derived :compensator)
+      :negative true)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -137,14 +154,10 @@
       (vertices :inside :outer)
       (vertices :inside :inner))))
 
-(defn fasteners
-  [getopt]
-  (let [positions (getopt :case :central-housing :adapter :fasteners :positions)]
-    (apply model/union
-      (map (partial fastener getopt) positions))))
-
-(defn adapter
-  "An OpenSCAD polyhedron describing an adapter for the central housing."
+(defn adapter-shell
+  "An OpenSCAD polyhedron describing an adapter for the central housing.
+  This is just the basic shape, excluding secondary features like fasteners,
+  because those may affect other parts of the adapted case."
   [getopt]
   (let [vertices (partial getopt :case :central-housing :derived :points)]
     (poly/tuboid
@@ -153,17 +166,23 @@
       (vertices :adapter :outer)
       (vertices :adapter :inner))))
 
+(defn adapter-fasteners
+  [getopt]
+  (fastener-feature getopt adapter-side (single-fastener getopt)))
+
 (defn main-body
   "An OpenSCAD polyhedron describing the body of the central housing."
   [getopt]
   (let [vertices (partial getopt :case :central-housing :derived :points)]
-    (maybe/union
-      (poly/tuboid
-        (vertices :gabel :left :outer)
-        (vertices :gabel :left :inner)
-        (vertices :gabel :right :outer)
-        (vertices :gabel :right :inner))
-      (when (getopt :case :central-housing :derived :include-lip)
-        (model/union
-          (lip-body-right getopt)
-          (model/mirror [-1 0 0] (lip-body-right getopt)))))))
+    (maybe/difference
+      (maybe/union
+        (poly/tuboid
+          (vertices :gabel :left :outer)
+          (vertices :gabel :left :inner)
+          (vertices :gabel :right :outer)
+          (vertices :gabel :right :inner))
+        (when (getopt :case :central-housing :derived :include-lip)
+          (bilateral (lip-body-right getopt))))
+      (when (getopt :case :central-housing :derived :include-adapter)
+        (bilateral
+          (fastener-feature getopt housing-side (single-fastener getopt)))))))

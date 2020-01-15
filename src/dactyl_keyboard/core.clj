@@ -109,7 +109,7 @@
       (bottom/case-anchors-positive getopt))
     (auxf/foot-plates getopt)
     (when (getopt :case :central-housing :derived :include-adapter)
-      (central/adapter getopt))))
+      (central/adapter-shell getopt))))
 
 (defn- midlevel-positive
   "Parts of the keyboard that go outside the mask but should still be subject
@@ -172,7 +172,7 @@
           (mcu/lock-fixture-composite getopt)))
       ;; Outer negatives:
       (when (getopt :case :central-housing :derived :include-adapter)
-        (central/fasteners getopt))
+        (central/adapter-fasteners getopt))
       (when (getopt :case :bottom-plate :include)
         (bottom/case-negative getopt))
       (when (and (getopt :wrist-rest :include)
