@@ -5,13 +5,8 @@
 
 (ns dactyl-keyboard.cad.central
   (:require [scad-clj.model :as model]
-            [scad-tarmi.core :refer [π]]
             [scad-tarmi.maybe :as maybe]
             [scad-tarmi.threaded :as threaded]
-            [thi.ng.geom.vector :refer [vec3]]
-            [thi.ng.geom.core :as geom]
-            [thi.ng.math.core :as math]
-            [dactyl-keyboard.param.access :as access]
             [dactyl-keyboard.cad.misc :refer [wafer]]
             [dactyl-keyboard.cad.poly :as poly]
             [dactyl-keyboard.cad.place :as place]))
@@ -27,42 +22,19 @@
 
 (defn- horizontal-shifter [x-fn] (fn [[x y z]] [(x-fn x) y z]))
 
-(defn- coord-from-index
-  [getopt index]
-  ;; TODO: Wrap around if index is bad.
-  ;; TODO: Handle left/right side of housing.
-  (let [prop (partial getopt :case :central-housing :shape)]
-    (mapv + [(/ (prop :width) 2) 0 0] (prop :interface index :base :offset))))
-
-(defn- fastener-landmark
-  [getopt name base-index distance]
-  (vec3 (if name
-          (place/reckon-from-anchor getopt name {})
-          (coord-from-index getopt (+ base-index (math/sign distance))))))
-
 (defn- fastener
   "A fastener for attaching the central housing to the rest of the case.
   In place."
-  [getopt {:keys [starting-point direction-point lateral-offset radial-offset]}]
-  (let [prop (partial getopt :case :central-housing :adapter :fasteners)
-        pred (fn [{:keys [type part]}]
-               (and (= type :central-housing) (= part :gabel)))
-        anchor (access/resolve-anchor getopt starting-point pred)
-        starting-coord (vec3 (place/reckon-from-anchor getopt starting-point {}))
-        target-coord (fastener-landmark getopt direction-point (:index anchor) radial-offset)
-        nonlocal (math/- target-coord starting-coord)
-        multiplier (/ radial-offset (math/mag nonlocal))
-        ;; There’s likely a simpler way to scale a thi.ng vector by a scalar.
-        displacement (geom/scale (vec3 (repeat 3 multiplier)) nonlocal)]
-    (model/translate (vec (math/+ starting-coord displacement))
-      (model/rotate [(geom/angle-between (vec3 [0 1 0]) nonlocal) 0 0]
-        (threaded/bolt
-         :iso-size (prop :diameter),
-         :head-type :countersunk,
-         :point-type :cone,
-         :total-length (prop :length),
-         :compensator (getopt :dfm :derived :compensator)
-         :negative true)))))
+  [getopt index]
+  (let [prop (partial getopt :case :central-housing :adapter :fasteners)]
+    (place/chousing-fastener getopt index
+      (threaded/bolt
+       :iso-size (prop :diameter),
+       :head-type :countersunk,
+       :point-type :cone,
+       :total-length (prop :length),
+       :compensator (getopt :dfm :derived :compensator)
+       :negative true))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

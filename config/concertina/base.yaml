@@ -69,9 +69,13 @@ case:
           outer: 3
           taper: 2
       fasteners:
+        diameter: 4
+        length: 8
         positions:
+          - starting-point: central-wip-1
+            lateral-offset: -5
+            radial-offset: 5
           - starting-point: central-wip-2
-            #direction-point: central-wip-3
             lateral-offset: 5
             radial-offset: 2
   tweaks:

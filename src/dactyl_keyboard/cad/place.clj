@@ -10,6 +10,9 @@
 
 (ns dactyl-keyboard.cad.place
   (:require [clojure.spec.alpha :as spec]
+            [thi.ng.geom.vector :refer [vec3]]
+            [thi.ng.geom.core :as geom]
+            [thi.ng.math.core :as math]
             [scad-clj.model :as model]
             [scad-tarmi.core :refer [abs π] :as tarmi-core]
             [scad-tarmi.maybe :as maybe]
@@ -35,6 +38,7 @@
   (let [{:keys [dx dy]} (compass/to-grid direction)]
     [(* dx offset) (* dy offset) 0]))
 
+(declare reckon-from-anchor)
 
 ;; Key mounts.
 
@@ -254,6 +258,34 @@
                :adapter (prop depth index))]
     (flex/translate base subject)))
 
+(defn- chousing-fastener-coord
+  [getopt index]
+  ;; TODO: Wrap around if index is bad.
+  ;; TODO: Handle left/right side of housing.
+  (let [prop (partial getopt :case :central-housing :shape)]
+    (mapv + [(/ (prop :width) 2) 0 0] (prop :interface index :base :offset))))
+
+(defn- chousing-fastener-landmark
+  [getopt name base-index distance]
+  (vec3 (if name
+          (reckon-from-anchor getopt name {})
+          (chousing-fastener-coord getopt (+ base-index (math/sign distance))))))
+
+(defn chousing-fastener
+  "Placement function for an arbitrary object in relation to the site of a
+  fastener connecting the central housing to the main body on one side."
+  [getopt {:keys [starting-point direction-point lateral-offset radial-offset]} subject]
+  (let [pred (fn [{:keys [type part]}] (and (= type :central-housing) (= part :gabel)))
+        anchor (resolve-anchor getopt starting-point pred)
+        starting-coord (vec3 (reckon-from-anchor getopt starting-point {}))
+        target-coord (chousing-fastener-landmark getopt direction-point (:index anchor) radial-offset)
+        nonlocal (math/- target-coord starting-coord)
+        multiplier (/ radial-offset (math/mag nonlocal))
+        ;; There’s likely a simpler way to scale a thi.ng vector by a scalar.
+        displacement (geom/scale (vec3 (repeat 3 multiplier)) nonlocal)]
+    (flex/translate (mapv + starting-coord displacement [lateral-offset 0 0])
+      (flex/rotate [(geom/angle-between (vec3 [0 1 0]) nonlocal) 0 0]
+        subject))))
 
 ;; Rear housing.
 
