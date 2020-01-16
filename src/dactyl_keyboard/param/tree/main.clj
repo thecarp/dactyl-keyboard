@@ -284,12 +284,38 @@
     "The ISO metric diameter of each fastener."]
    [:parameter [:case :central-housing :adapter :fasteners :length]
     {:default 1 :parse-fn num}
-    "The length of each fastener in mm."]
+    "The length of each fastener in mm. This should be longer than the "
+    "thickness of the housing wall."]
    [:parameter [:case :central-housing :adapter :fasteners :positions]
     {:default []
      :parse-fn schema/central-housing-normal-positions
      :validate [::schema/central-housing-normal-positions]}
     "A list of places where threaded fasteners will go through the wall."]
+   [:section [:case :central-housing :adapter :receivers]
+    "One receiver is created for each of the `fasteners`. Each of these "
+    "has a threaded hole to keep the fastener in place. Like the adapter lip, "
+    "receivers extend from the inside wall, but receivers are anchored across "
+    "the interface from their respective fasteners."]
+   [:section [:case :central-housing :adapter :receivers :thickness]
+    "The thickness of material in various parts of each receiver."]
+   [:parameter [:case :central-housing :adapter :receivers :thickness :rim]
+    {:default 1 :parse-fn num}
+    "The maximum thickness of the loop of each receiver where it grabs the "
+    "fastener, in mm."]
+   [:parameter [:case :central-housing :adapter :receivers :thickness :bridge]
+    {:default 1 :parse-fn num}
+    "The thickness of the main body of each receiver where it extends across "
+    "the interface, in the plane of the housing wall, in mm."]
+   [:section [:case :central-housing :adapter :receivers :width]
+    "This section is analogous to lip `width`. The “outer” width of "
+    "each receiver is a function of its fastener’s lateral offset and cannot "
+    "be configured here."]
+   [:parameter [:case :central-housing :adapter :receivers :width :inner]
+    {:default 1 :parse-fn num}
+    "The width of the receiver at its base, before it starts to taper, in mm."]
+   [:parameter [:case :central-housing :adapter :receivers :width :taper]
+    {:default 0 :parse-fn num}
+    "The width of a taper, as with the lip."]
    [:section [:case :rear-housing]
     "The furthest row of a key cluster can be extended into a rear housing "
     "for the MCU and various other features."]

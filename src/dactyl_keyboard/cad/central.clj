@@ -4,9 +4,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns dactyl-keyboard.cad.central
-  (:require [scad-clj.model :as model]
+  (:require [thi.ng.math.core :as math]
+            [scad-clj.model :as model]
+            [scad-tarmi.core :refer [abs]]
             [scad-tarmi.maybe :as maybe]
             [scad-tarmi.threaded :as threaded]
+            [scad-tarmi.util :refer [loft]]
             [dactyl-keyboard.cad.misc :refer [wafer]]
             [dactyl-keyboard.cad.poly :as poly]
             [dactyl-keyboard.cad.place :as place]))
@@ -23,8 +26,8 @@
 (defn- horizontal-shifter [x-fn] (fn [[x y z]] [(x-fn x) y z]))
 
 ;; Predicates for sorting fasteners by the object they penetrate.
-(defn- adapter-side [{:keys [lateral-offset]}] (pos? lateral-offset))
-(defn- housing-side [{:keys [lateral-offset]}] (neg? lateral-offset))
+(defn- adapter-side [{:keys [lateral-offset]}] (neg? lateral-offset))
+(defn- housing-side [{:keys [lateral-offset]}] (pos? lateral-offset))
 
 (defn- bilateral
   ([achiral-subject]
@@ -35,15 +38,15 @@
 (defn- fastener-feature
   "The union of all features produced by a given model function at the sites of
   all adapter fasteners matching a predicate function, on the right-hand side."
-  [getopt pred subject]
+  [getopt pred model-fn]
   (let [positions (getopt :case :central-housing :adapter :fasteners :positions)
-        subject-fn #(place/chousing-fastener getopt % subject)]
+        subject-fn #(place/chousing-fastener getopt % (model-fn getopt %))]
     (apply model/union (map subject-fn (filter pred positions)))))
 
 (defn- single-fastener
   "A fastener for attaching the central housing to the rest of the case.
-  In place."
-  [getopt]
+  In place. Properties do not depend on the individual position."
+  [getopt _]
   (let [prop (partial getopt :case :central-housing :adapter :fasteners)]
     (threaded/bolt
       :iso-size (prop :diameter),
@@ -52,6 +55,43 @@
       :total-length (prop :length),
       :compensator (getopt :dfm :derived :compensator)
       :negative true)))
+
+(defn- single-receiver
+  "An extension through the central-housing gable to receive a single fastener.
+  This design is a bit rough. More parameters would be needed to account for the
+  possibility of sloping surfaces."
+  [getopt {:keys [lateral-offset]}]
+  (let [rprop (partial getopt :case :central-housing :adapter :receivers)
+        fprop (partial getopt :case :central-housing :adapter :fasteners)
+        z-wall (getopt :case :web-thickness)
+        diameter (fprop :diameter)
+        width (+ diameter (* 2 (rprop :thickness :rim)))
+        z-hole (- (fprop :length) z-wall)
+        z-bridge (min z-hole (rprop :thickness :bridge))
+        x-gabel (abs lateral-offset)
+        x-inner (+ x-gabel (rprop :width :inner))
+        x-taper (+ x-inner (rprop :width :taper))
+        signed (fn [x] (* (- x) (math/sign lateral-offset)))]
+    (loft
+      ;; The furthermost taper sinks into a straight wall.
+      [(model/translate [(signed x-taper) 0 (/ z-wall -2)]
+         (model/cube wafer (dec diameter) wafer))
+       ;; The thicker base of the anchor.
+       (model/translate [(signed x-inner) 0 (- (+ z-wall (/ z-bridge 2)))]
+         (model/union
+           (model/cube wafer (inc diameter) z-bridge)
+           (model/cube wafer diameter (inc z-bridge))))
+       (model/translate [(signed x-gabel) 0 (- (+ z-wall (/ z-bridge 2)))]
+         (model/union
+           (model/cube wafer (inc diameter) z-bridge)
+           (model/translate [0 0 -1]
+             (model/cube wafer diameter z-bridge))))
+       ;; Finally the bridge extending past the base>
+       (model/translate [0 0 (- (+ z-wall (/ z-hole 2)))]
+         (model/hull  ; Soft edges, more material in the middle.
+           (model/cylinder (/ (inc diameter) 2) z-hole)
+           (model/translate [0 0 (/ z-hole 8)]
+             (model/cylinder (/ width 2) (/ z-hole 3)))))])))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -156,19 +196,21 @@
 
 (defn adapter-shell
   "An OpenSCAD polyhedron describing an adapter for the central housing.
-  This is just the basic shape, excluding secondary features like fasteners,
+  This is just the positive shape, excluding secondary features like fasteners,
   because those may affect other parts of the adapted case."
   [getopt]
-  (let [vertices (partial getopt :case :central-housing :derived :points)]
-    (poly/tuboid
-      (vertices :gabel :right :outer)
-      (vertices :gabel :right :inner)
-      (vertices :adapter :outer)
-      (vertices :adapter :inner))))
+  (maybe/union
+    (let [vertices (partial getopt :case :central-housing :derived :points)]
+      (poly/tuboid
+        (vertices :gabel :right :outer)
+        (vertices :gabel :right :inner)
+        (vertices :adapter :outer)
+        (vertices :adapter :inner)))
+    (fastener-feature getopt adapter-side single-receiver)))
 
 (defn adapter-fasteners
   [getopt]
-  (fastener-feature getopt adapter-side (single-fastener getopt)))
+  (fastener-feature getopt adapter-side single-fastener))
 
 (defn main-body
   "An OpenSCAD polyhedron describing the body of the central housing."
@@ -182,7 +224,10 @@
           (vertices :gabel :right :outer)
           (vertices :gabel :right :inner))
         (when (getopt :case :central-housing :derived :include-lip)
-          (bilateral (lip-body-right getopt))))
+          (bilateral (lip-body-right getopt)))
+        (when (getopt :case :central-housing :derived :include-adapter)
+          (bilateral
+            (fastener-feature getopt housing-side single-receiver))))
       (when (getopt :case :central-housing :derived :include-adapter)
         (bilateral
-          (fastener-feature getopt housing-side (single-fastener getopt)))))))
+          (fastener-feature getopt housing-side single-fastener))))))

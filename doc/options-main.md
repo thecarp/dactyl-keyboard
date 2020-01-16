@@ -38,6 +38,13 @@ Each heading in this document represents a recognized configuration key in the m
                 - Parameter <a href="#user-content-case-central-housing-adapter-fasteners-diameter">`diameter`</a>
                 - Parameter <a href="#user-content-case-central-housing-adapter-fasteners-length">`length`</a>
                 - Parameter <a href="#user-content-case-central-housing-adapter-fasteners-positions">`positions`</a>
+            - Section <a href="#user-content-case-central-housing-adapter-receivers">`receivers`</a>
+                - Section <a href="#user-content-case-central-housing-adapter-receivers-thickness">`thickness`</a>
+                    - Parameter <a href="#user-content-case-central-housing-adapter-receivers-thickness-rim">`rim`</a>
+                    - Parameter <a href="#user-content-case-central-housing-adapter-receivers-thickness-bridge">`bridge`</a>
+                - Section <a href="#user-content-case-central-housing-adapter-receivers-width">`width`</a>
+                    - Parameter <a href="#user-content-case-central-housing-adapter-receivers-width-inner">`inner`</a>
+                    - Parameter <a href="#user-content-case-central-housing-adapter-receivers-width-taper">`taper`</a>
     - Section <a href="#user-content-case-rear-housing">`rear-housing`</a>
         - Parameter <a href="#user-content-case-rear-housing-include">`include`</a>
         - Parameter <a href="#user-content-case-rear-housing-wall-thickness">`wall-thickness`</a>
@@ -377,11 +384,39 @@ The ISO metric diameter of each fastener.
 
 ###### Parameter <a id="case-central-housing-adapter-fasteners-length">`length`</a>
 
-The length of each fastener in mm.
+The length of each fastener in mm. This should be longer than the thickness of the housing wall.
 
 ###### Parameter <a id="case-central-housing-adapter-fasteners-positions">`positions`</a>
 
 A list of places where threaded fasteners will go through the wall.
+
+##### Section <a id="case-central-housing-adapter-receivers">`receivers`</a>
+
+One receiver is created for each of the `fasteners`. Each of these has a threaded hole to keep the fastener in place. Like the adapter lip, receivers extend from the inside wall, but receivers are anchored across the interface from their respective fasteners.
+
+###### Section <a id="case-central-housing-adapter-receivers-thickness">`thickness`</a>
+
+The thickness of material in various parts of each receiver.
+
+###### Parameter <a id="case-central-housing-adapter-receivers-thickness-rim">`rim`</a> at level 7
+
+The maximum thickness of the loop of each receiver where it grabs the fastener, in mm.
+
+###### Parameter <a id="case-central-housing-adapter-receivers-thickness-bridge">`bridge`</a> at level 7
+
+The thickness of the main body of each receiver where it extends across the interface, in the plane of the housing wall, in mm.
+
+###### Section <a id="case-central-housing-adapter-receivers-width">`width`</a>
+
+This section is analogous to lip `width`. The “outer” width of each receiver is a function of its fastener’s lateral offset and cannot be configured here.
+
+###### Parameter <a id="case-central-housing-adapter-receivers-width-inner">`inner`</a> at level 7
+
+The width of the receiver at its base, before it starts to taper, in mm.
+
+###### Parameter <a id="case-central-housing-adapter-receivers-width-taper">`taper`</a> at level 7
+
+The width of a taper, as with the lip.
 
 ### Section <a id="case-rear-housing">`rear-housing`</a>
 

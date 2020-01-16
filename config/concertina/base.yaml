@@ -72,12 +72,19 @@ case:
         diameter: 4
         length: 8
         positions:
-          - starting-point: central-wip-1
+          - starting-point: central-wip-4
             lateral-offset: -5
-            radial-offset: 5
+            radial-offset: 2
           - starting-point: central-wip-2
             lateral-offset: 5
             radial-offset: 2
+      receivers:
+        thickness:
+          rim: 1.5
+          bridge: 3
+        width:
+          inner: 4
+          taper: 5
   tweaks:
     bridge-wip:
       - chunk-size: 3
@@ -100,7 +107,6 @@ case:
           - [sec-wip-1]
 mcu:
   include: true
-  #preview: true
   position:
     anchor: central-wip-5
     corner: NNE
