@@ -258,33 +258,39 @@
                :adapter (prop depth index))]
     (flex/translate base subject)))
 
-(defn- chousing-fastener-coord
-  [getopt index]
-  ;; TODO: Wrap around if index is bad.
-  ;; TODO: Handle left/right side of housing.
-  (let [prop (partial getopt :case :central-housing :shape)]
-    (mapv + [(/ (prop :width) 2) 0 0] (prop :interface index :base :offset))))
-
 (defn- chousing-fastener-landmark
+  "Find a 3-tuple of coordinates for a fastener element for the central
+  housing adapter."
   [getopt name base-index distance]
-  (vec3 (if name
-          (reckon-from-anchor getopt name {})
-          (chousing-fastener-coord getopt (+ base-index (math/sign distance))))))
+  {:pre [(or (keyword? name) (nil? name))]
+   :post [(spec/valid? ::tarmi-core/point-3d %)]}
+  (if name
+    (reckon-from-anchor getopt name {})
+    (let [prop (partial getopt :case :central-housing :shape)
+          index (misc/shallow-wrap (prop :interface)
+                                   (+ base-index (math/sign distance)))]
+      (mapv + [(/ (prop :width) 2) 0 0] (prop :interface index :base :offset)))))
 
 (defn chousing-fastener
   "Placement function for an arbitrary object in relation to the site of a
   fastener connecting the central housing to the main body on one side."
+  ;; This assumes the wall is planar, and will therefore work poorly with
+  ;; complex central-housing adapters and wall tweaks. Custom offsets and
+  ;; angles may need to be added to the parameter set.
   [getopt {:keys [starting-point direction-point lateral-offset radial-offset]} subject]
-  (let [pred (fn [{:keys [type part]}] (and (= type :central-housing) (= part :gabel)))
+  (let [pred (fn [{:keys [type part]}] (and (= type :central-housing)
+                                            (= part :gabel)))
         anchor (resolve-anchor getopt starting-point pred)
         starting-coord (vec3 (reckon-from-anchor getopt starting-point {}))
-        target-coord (chousing-fastener-landmark getopt direction-point (:index anchor) radial-offset)
-        nonlocal (math/- target-coord starting-coord)
-        multiplier (/ radial-offset (math/mag nonlocal))
+        target-coord (chousing-fastener-landmark
+                       getopt direction-point (:index anchor) radial-offset)
+        nonlocal (math/- (vec3 target-coord) starting-coord)
         ;; There’s likely a simpler way to scale a thi.ng vector by a scalar.
-        displacement (geom/scale (vec3 (repeat 3 multiplier)) nonlocal)]
+        multiplier (* (math/sign radial-offset) (/ radial-offset (math/mag nonlocal)))
+        displacement (geom/scale (vec3 (repeat 3 multiplier)) nonlocal)
+        angle (- (geom/heading-yz nonlocal) (if (neg? radial-offset) π 0))]
     (flex/translate (mapv + starting-coord displacement [lateral-offset 0 0])
-      (flex/rotate [(geom/angle-between (vec3 [0 1 0]) nonlocal) 0 0]
+      (flex/rotate [angle 0 0]
         subject))))
 
 ;; Rear housing.

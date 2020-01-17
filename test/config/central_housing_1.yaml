@@ -1,0 +1,94 @@
+# Complete configuration for testing the correct placement of central-housing
+# adapter fasteners on both sides of each of the eight corners of an irregular
+# octagon.
+#
+# This is intended to be passed to the application as its only configuration
+# file, as a manual regression test of the code.
+#
+# All sixteen receivers for fasteners should form a regular pattern on the
+# adapter in the main case file output(s).
+
+reflect: true
+case:
+  central-housing:
+    include: true
+    shape:
+      interface:
+        - base:
+            offset: [0, -20, 0]
+            alias: point1
+        - base:
+            offset: [0, -30, 20]
+            alias: point2
+        - base:
+            offset: [0, -30, 50]
+            alias: point3
+        - base:
+            offset: [0, -20, 70]
+            alias: point4
+        - base:
+            offset: [0, 20, 70]
+            alias: point5
+        - base:
+            offset: [0, 30, 50]
+            alias: point6
+        - base:
+            offset: [0, 30, 20]
+            alias: point7
+        - base:
+            offset: [0, 20, 0]
+            alias: point8
+    adapter:
+      include: true
+      fasteners:
+        diameter: 3
+        length: 2
+        positions:
+          - starting-point: point1
+            lateral-offset: -4
+            radial-offset: -4
+          - starting-point: point1
+            lateral-offset: -4
+            radial-offset: 4
+          - starting-point: point2
+            lateral-offset: -4
+            radial-offset: -4
+          - starting-point: point2
+            lateral-offset: -4
+            radial-offset: 4
+          - starting-point: point3
+            lateral-offset: -4
+            radial-offset: -4
+          - starting-point: point3
+            lateral-offset: -4
+            radial-offset: 4
+          - starting-point: point4
+            lateral-offset: -4
+            radial-offset: -4
+          - starting-point: point4
+            lateral-offset: -4
+            radial-offset: 4
+          - starting-point: point5
+            lateral-offset: -4
+            radial-offset: -4
+          - starting-point: point5
+            lateral-offset: -4
+            radial-offset: 4
+          - starting-point: point6
+            lateral-offset: -4
+            radial-offset: -4
+          - starting-point: point6
+            lateral-offset: -4
+            radial-offset: 4
+          - starting-point: point7
+            lateral-offset: -4
+            radial-offset: -4
+          - starting-point: point7
+            lateral-offset: -4
+            radial-offset: 4
+          - starting-point: point8
+            lateral-offset: -4
+            radial-offset: -4
+          - starting-point: point8
+            lateral-offset: -4
+            radial-offset: 4

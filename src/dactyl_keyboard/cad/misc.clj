@@ -12,6 +12,15 @@
 (def wafer 0.001)  ; Generic insignificant feature size.
 (def nodule (apply model/cube (repeat 3 wafer)))
 
+(defn shallow-wrap
+  "Return a permissible index to a list-like collection.
+  This function does not wrap around completely so that e.g. -2 indexes
+  the second-to-last-element, but it does pick the opposite end of the
+  collection when out of bounds."
+  [array index]
+  (let [n (count array)]
+    (cond (< index 0) (dec n), (>= index n) 0, :default index)))
+
 (defn pad-to-3d
   "Pad a coordinate vector to three dimensions."
   ([coordinates] (pad-to-3d coordinates 0))

@@ -62,6 +62,8 @@ version 0.2.0, thus covering only a fraction of the project’s history.
     the new direction keywords are not yet namespaced to the compass module.
   - `misc`, which collects everything that remained of `generics` after
     compass code moved out.
+- A folder of configuration files under `test/config` for manual regression
+  testing.
 
 ## [Version 0.5.1] - 2019-10-16
 ### Fixed
