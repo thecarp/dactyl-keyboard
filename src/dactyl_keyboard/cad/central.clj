@@ -45,16 +45,10 @@
 
 (defn- single-fastener
   "A fastener for attaching the central housing to the rest of the case.
-  In place. Properties do not depend on the individual position."
-  [getopt _]
-  (let [prop (partial getopt :case :central-housing :adapter :fasteners)]
-    (threaded/bolt
-      :iso-size (prop :diameter),
-      :head-type :countersunk,
-      :point-type :cone,
-      :total-length (prop :length),
-      :compensator (getopt :dfm :derived :compensator)
-      :negative true)))
+  Because threaded fasteners are chiral, the model is generated elsewhere
+  and invoked here through scad-app’s module system."
+  [_ _]
+  (model/call-module "central_housing_adapter_fastener"))
 
 (defn- single-receiver
   "An extension through the central-housing gable to receive a single fastener.
@@ -185,7 +179,21 @@
 ;; Outputs ;;
 ;;;;;;;;;;;;;
 
+(defn build-fastener
+  "A threaded fastener for attaching a central housing to its adapter.
+  For the left-hand-side adapter, this needs to be mirrored, being chiral."
+  [getopt]
+  (let [prop (partial getopt :case :central-housing :adapter :fasteners)]
+    (threaded/bolt
+      :iso-size (prop :diameter),
+      :head-type :countersunk,
+      :point-type :cone,
+      :total-length (prop :length),
+      :compensator (getopt :dfm :derived :compensator)
+      :negative true)))
+
 (defn lip-body-right
+  "A lip for an adapter."
   [getopt]
   (let [vertices (partial getopt :case :central-housing :derived :points :lip)]
     (poly/tuboid

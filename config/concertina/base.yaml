@@ -77,39 +77,12 @@ case:
         diameter: 4
         length: 8
         positions:
-          - starting-point: central-wip-1
-            lateral-offset: 10
-            radial-offset: -10
-          - starting-point: central-wip-1
-            lateral-offset: 13
-            radial-offset: -1
-          - starting-point: central-wip-1
-            lateral-offset: 13
-            radial-offset: 1
-          - starting-point: central-wip-1
-            lateral-offset: 5
-            radial-offset: 20
           - starting-point: central-wip-2
             lateral-offset: 5
             radial-offset: 2
           - starting-point: central-wip-3
-            lateral-offset: 5
+            lateral-offset: -5
             radial-offset: 10
-          - starting-point: central-wip-4
-            lateral-offset: 5
-            radial-offset: 2
-          - starting-point: central-wip-5
-            lateral-offset: 5
-            radial-offset: 10
-          - starting-point: central-wip-6
-            lateral-offset: 9
-            radial-offset: 1
-          - starting-point: central-wip-6
-            lateral-offset: 18
-            radial-offset: -1
-          - starting-point: central-wip-6
-            lateral-offset: 22
-            radial-offset: -10
       receivers:
         thickness:
           rim: 1.5

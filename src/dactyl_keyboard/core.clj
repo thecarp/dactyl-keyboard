@@ -318,7 +318,10 @@
 
 (def module-asset-list
   "OpenSCAD modules and the functions that make them."
-  [{:name "sprue_negative"
+  [{:name "central_housing_adapter_fastener"
+    :model-precursor central/build-fastener,
+    :chiral true}
+   {:name "sprue_negative"
     :model-precursor wrist/sprue-negative}
    {:name "bottom_plate_anchor_positive"
     :model-precursor bottom/anchor-positive}
@@ -373,7 +376,9 @@
     :model-precursor (partial key/metacluster key/cluster-keycaps)}
    {:name "case-main"
     :modules (concat
-               [(when (getopt :case :bottom-plate :include)
+               [(when (getopt :case :central-housing :derived :include-adapter)
+                  "central_housing_adapter_fastener")
+                (when (getopt :case :bottom-plate :include)
                   "bottom_plate_anchor_positive")
                 (when (getopt :case :bottom-plate :include)
                   "bottom_plate_anchor_negative")
@@ -385,6 +390,8 @@
    (when (and (getopt :reflect)
               (getopt :case :central-housing :include))
      {:name "case-central"
+      :modules [(when (getopt :case :central-housing :derived :include-adapter)
+                  "central_housing_adapter_fastener")]
       :model-precursor build-central-housing})
    (when (and (getopt :mcu :include)
               (getopt :mcu :support :lock :include))
