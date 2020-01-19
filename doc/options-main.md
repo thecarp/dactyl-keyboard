@@ -304,7 +304,7 @@ The approximate extent of the housing itself, on the x axis, in mm.
 
 The shape of each outer edge of the housing, at the interface between the housing itself and the rest of the case.
 
-The `interface` setting describes the right-hand side of the housing as a list of vertices. Each vertex is defined primarily by a three-dimensional `offset` in mm from a point that is displaced from the origin of the coordinate system by exactly one half of the `width` set above. Thus, a minimal, triangular profile can be achieved like so:
+The `interface` setting describes the right-hand side of the housing as a list of vertices. Each vertex is defined primarily by a three-dimensional `offset` in mm from a point that is displaced from the origin of the coordinate system by exactly one half of the `width` set above. Thus, a minimal, triangular profile can be achieved like so, moving clockwise from the point of view of positive infinite x:
 
 ```interface:
   - base:
@@ -314,7 +314,7 @@ The `interface` setting describes the right-hand side of the housing as a list o
   - base:
       offset: [0, 10, 0]
 ```
-In this example, the high point in the middle is offset on the x axis, giving the edge of the central housing a slant. Notice also that the lowest z coordinate is 0, which places this central housing on the floor, inside the `mask`. Lower z coordinate will cause the `mask` to open the bottom of the central housing, which is usually more practical.
+In this example, the high point in the middle is offset on the x axis, giving the edge of the central housing a slant. Notice also that the lowest z coordinate is 0, which places this central housing on the floor, inside the `mask`; this is not required. A lower z coordinate will cause the `mask` to open the bottom of the central housing, which is usually more practical.
 
 The series of vertices placed this way is conceptually similar to the outline of a house’s gable, up against which another house is built. Here, this other house usually starts with a central housing adapter, a feature which fits precisely onto each side of the housing. The basic form of the adapter is determined as part of the interface itself: Each `base` vertex of the interface has a corresponding vertex on the adapter, and each can be named with an `alias` for use as an anchor of other features.
 
@@ -390,9 +390,29 @@ The length of each fastener in mm. This should be longer than the thickness of t
 
 A list of places where threaded fasteners will go through the wall.
 
+Each item in this list is a map with three mandatory keys:
+
+* `starting-point`: The name of a vertex on the interface. This must be a `base` point, not a point on the far side of the adapter.
+* `radial-offset`: A distance in mm from the starting point, along the interface.
+* `lateral-offset`: A distance in mm from the starting point, along the axis of the central housing, which is the x axis.
+
+Both of the two offsets are numbers: Simple scalars. Each of them can be either positive or negative, but not zero. Zero is not allowed because these numbers have side effects:
+
+* The radial offset follows the interface in the original order of its definition. A positive radial offset moves along the interface in the direction of that original order and a negative number moves the other way around, “against” the interface. A non-zero offset is needed here to identify that direction of travel itself, which in turn is used to identify the next vertex on the interface. Take care not to enter a number larger than the distance to the next vertex.
+* The lateral offset determines which model the fastener will be a part of, as negative space. A positive lateral offset puts the hole through the wall of the adapter, and a negative offset puts the hole through the wall of the central housing. A non-zero offset is needed to pick a side, and it has to be large enough to secure the fastener on that side, so it won’t intersect the oppsite side.
+
+The following example map will start from a vertex named `apex` and proceed from there, 5 mm forward toward the next point after `apex` and 4 mm to the side, where a hole for a fastener will be left in the wall of each end of the central housing.
+
+```positions:
+  - starting-point: apex
+    radial-offset: 5
+    lateral-offset: -4
+```
+In addition to these mandatory properties, each fastener position can include a more advanced property: `direction-point`. This allows you to name an arbitrary anchor point anywhere on the keyboard, overriding the side effect of `radial-offset` in choosing a neighbouring point on the interface. This feature may help resolve problems with sloping adapters or other obstacles, but consider it experimental. More detailed overrides for placement may be introduced in a future version, if they are needed.
+
 ##### Section <a id="case-central-housing-adapter-receivers">`receivers`</a>
 
-One receiver is created for each of the `fasteners`. Each of these has a threaded hole to keep the fastener in place. Like the adapter lip, receivers extend from the inside wall, but receivers are anchored across the interface from their respective fasteners.
+One receiver is created for each of the `fasteners`. Each of these has a threaded hole to keep the fastener in place. Like the adapter lip, receivers extend from the inside wall, but receivers are anchored across the interface from their respective fasteners: A positive `lateral-offset`, above, extends a receiver from the central housing into the adapter.
 
 ###### Section <a id="case-central-housing-adapter-receivers-thickness">`thickness`</a>
 
