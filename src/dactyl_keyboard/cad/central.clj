@@ -28,6 +28,7 @@
 ;; Predicates for sorting fasteners by the object they penetrate.
 (defn- adapter-side [{:keys [lateral-offset]}] (neg? lateral-offset))
 (defn- housing-side [{:keys [lateral-offset]}] (pos? lateral-offset))
+(defn- any-side [_] true)
 
 (defn- bilateral
   ([achiral-subject]
@@ -218,7 +219,7 @@
 
 (defn adapter-fasteners
   [getopt]
-  (fastener-feature getopt adapter-side single-fastener))
+  (fastener-feature getopt any-side single-fastener))
 
 (defn main-body
   "An OpenSCAD polyhedron describing the body of the central housing."
@@ -238,4 +239,4 @@
             (fastener-feature getopt housing-side single-receiver))))
       (when (getopt :case :central-housing :derived :include-adapter)
         (bilateral
-          (fastener-feature getopt housing-side single-fastener))))))
+          (fastener-feature getopt any-side single-fastener))))))
