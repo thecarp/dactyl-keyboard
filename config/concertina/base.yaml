@@ -28,7 +28,6 @@ by-key:
 case:
   central-housing:
     include: true
-    #preview: true
     shape:
       width: 100
       interface:
@@ -90,6 +89,9 @@ case:
         width:
           inner: 4
           taper: 5
+  bottom-plate:
+    include: true
+    thickness: 2
   tweaks:
     bridge-wip:
       - chunk-size: 3

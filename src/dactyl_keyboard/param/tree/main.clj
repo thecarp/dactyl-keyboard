@@ -365,6 +365,15 @@
    [:parameter [:case :central-housing :adapter :receivers :width :taper]
     {:default 0 :parse-fn num}
     "The width of a taper, as with the lip."]
+   [:section [:case :central-housing :bottom-plate]
+    "Any bottom plating for the case will extend to the midpoint of the "
+    "central housing, on the assumption that bottom-plating anchors will "
+    "be used to attach it there."]
+   [:parameter [:case :central-housing :bottom-plate :fastener-positions]
+    {:default [] :parse-fn schema/anchored-2d-positions
+     :validate [::schema/anchored-2d-list]}
+    "The positions of threaded fasteners used to attach the bottom plate to "
+    "the body of the central housing."]
    [:section [:case :rear-housing]
     "The furthest row of a key cluster can be extended into a rear housing "
     "for the MCU and various other features."]

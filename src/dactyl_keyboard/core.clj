@@ -73,21 +73,6 @@
     (when (getopt :wrist-rest :bottom-plate :include)
       (bottom/wrist-negative getopt))))
 
-(defn build-central-housing
-  "The central housing model with its accessories."
-  [getopt]
-  (maybe/union
-    (body/mask getopt (getopt :case :bottom-plate :include)
-      (central/main-body getopt)
-      (when (getopt :mcu :derived :include-centrally)
-        (mcu/negative-composite getopt)))
-    (when (and (getopt :mcu :derived :include-centrally)
-               (getopt :mcu :support :lock :include))
-      (mcu/lock-fixture-composite getopt))
-    (when (and (getopt :mcu :derived :include-centrally)
-               (getopt :mcu :preview))
-      (mcu/preview-composite getopt))))
-
 (defn- masked-inner-positive
   "Parts of the keyboard that are subject to a mask and all negatives."
   [getopt]
@@ -106,7 +91,7 @@
       (body/rear-housing getopt))
     (body/wall-tweaks getopt)
     (when (getopt :case :bottom-plate :include)
-      (bottom/case-anchors-positive getopt))
+      (bottom/main-case-anchors-positive getopt))
     (auxf/foot-plates getopt)
     (when (getopt :case :central-housing :derived :include-adapter)
       (central/adapter-shell getopt))))
@@ -140,7 +125,39 @@
             (bottom/wrist-positive getopt)))))
     (sandbox/positive getopt)))
 
-(defn build-keyboard-right
+(defn build-central-housing
+  "The body of the central housing. Not subject to reflection, but
+  generally bilaterally symmetrical."
+  [getopt]
+  (let [bilateral (fn [subject] (maybe/union subject
+                                             (model/mirror [-1 0 0] subject)))]
+    (maybe/union
+      (body/mask getopt (getopt :case :bottom-plate :include)
+        (maybe/difference
+          (maybe/union
+            (central/main-shell getopt)
+            (bottom/central-housing-anchors-positive getopt)
+            (when (getopt :case :central-housing :derived :include-lip)
+              (bilateral (central/lip-body-right getopt)))
+            (when (getopt :case :central-housing :derived :include-adapter)
+              (bilateral (central/adapter-fastener-receivers getopt))))
+          (when (getopt :case :central-housing :derived :include-adapter)
+            (bilateral (central/adapter-fasteners getopt)))
+          (when (getopt :mcu :derived :include-centrally)
+            (mcu/negative-composite getopt)))
+        (when (and (getopt :mcu :derived :include-centrally)
+                   (getopt :mcu :support :lock :include))
+          (mcu/lock-fixture-composite getopt)))
+      ;; Visualizations follow. Note the preview of the bottom plate for this
+      ;; purpose is not sensitive to wrist-rest settings.
+      (when (and (getopt :case :bottom-plate :include)
+                 (getopt :case :bottom-plate :preview))
+        (bottom/combined-positive getopt))
+      (when (and (getopt :mcu :derived :include-centrally)
+                 (getopt :mcu :preview))
+        (mcu/preview-composite getopt)))))
+
+(defn build-main-body-right
   "Right-hand-side keyboard model."
   [getopt]
   (maybe/union
@@ -185,8 +202,7 @@
     (when (and (getopt :mcu :derived :include-laterally)
                (getopt :mcu :preview))
       (mcu/preview-composite getopt))
-    (when (and (getopt :reflect)
-               (getopt :case :central-housing :include)
+    (when (and (getopt :case :central-housing :derived :include-main)
                (getopt :case :central-housing :preview))
       (build-central-housing getopt))))
 
@@ -385,10 +401,9 @@
                 (when (getopt :wrist-rest :sprues :include)
                   "sprue_negative")]
                (get-key-modules getopt :module-keycap :module-switch))
-    :model-precursor build-keyboard-right
+    :model-precursor build-main-body-right
     :chiral (getopt :reflect)}
-   (when (and (getopt :reflect)
-              (getopt :case :central-housing :include))
+   (when (getopt :case :central-housing :derived :include-main)
      {:name "case-central"
       :modules [(when (getopt :case :central-housing :derived :include-adapter)
                   "central_housing_adapter_fastener")]

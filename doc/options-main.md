@@ -45,6 +45,8 @@ Each heading in this document represents a recognized configuration key in the m
                 - Section <a href="#user-content-case-central-housing-adapter-receivers-width">`width`</a>
                     - Parameter <a href="#user-content-case-central-housing-adapter-receivers-width-inner">`inner`</a>
                     - Parameter <a href="#user-content-case-central-housing-adapter-receivers-width-taper">`taper`</a>
+        - Section <a href="#user-content-case-central-housing-bottom-plate">`bottom-plate`</a>
+            - Parameter <a href="#user-content-case-central-housing-bottom-plate-fastener-positions">`fastener-positions`</a>
     - Section <a href="#user-content-case-rear-housing">`rear-housing`</a>
         - Parameter <a href="#user-content-case-rear-housing-include">`include`</a>
         - Parameter <a href="#user-content-case-rear-housing-wall-thickness">`wall-thickness`</a>
@@ -437,6 +439,14 @@ The width of the receiver at its base, before it starts to taper, in mm.
 ###### Parameter <a id="case-central-housing-adapter-receivers-width-taper">`taper`</a> at level 7
 
 The width of a taper, as with the lip.
+
+#### Section <a id="case-central-housing-bottom-plate">`bottom-plate`</a>
+
+Any bottom plating for the case will extend to the midpoint of the central housing, on the assumption that bottom-plating anchors will be used to attach it there.
+
+##### Parameter <a id="case-central-housing-bottom-plate-fastener-positions">`fastener-positions`</a>
+
+The positions of threaded fasteners used to attach the bottom plate to the body of the central housing.
 
 ### Section <a id="case-rear-housing">`rear-housing`</a>
 

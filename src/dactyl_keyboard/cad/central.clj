@@ -46,11 +46,6 @@
 (defn- housing-side [{:keys [lateral-offset]}] (pos? lateral-offset))
 (defn- any-side [_] true)
 
-(defn- bilateral
-  "Place subject feature at both ends of the central housing."
-  [subject]
-  (maybe/union subject (model/mirror [-1 0 0] subject)))
-
 (defn- fastener-feature
   "The union of all features produced by a given model function at the sites of
   all adapter fasteners matching a predicate function, on the right-hand side."
@@ -103,16 +98,6 @@
            (model/translate [0 0 (/ z-hole 8)]
              (model/cylinder (/ width 2) (/ z-hole 3)))))])))
 
-(defn- adapter-fasteners
-  "All of the screws (negative space) for one side of the housing and adapter."
-  [getopt]
-  (fastener-feature getopt any-side single-fastener))
-
-(defn- adapter-fastener-receivers
-  "Receivers for screws, extending from the central housing into the adapter."
-  [getopt]
-  (fastener-feature getopt housing-side single-receiver))
-
 (defn- collect-point-pair
   "Collect any aliases noted in the user configuration for one item in the
   interface array."
@@ -152,10 +137,12 @@
                             gabel-out adapter-intrinsic)
         lip-t (getopt :case :central-housing :adapter :lip :thickness)
         lip-w (partial getopt :case :central-housing :adapter :lip :width)
-        include-adapter (and (getopt :reflect)
-                             (getopt :case :central-housing :include)
+        include-main (and (getopt :reflect)
+                          (getopt :case :central-housing :include))
+        include-adapter (and include-main
                              (getopt :case :central-housing :adapter :include))]
-    {:include-adapter include-adapter
+    {:include-main include-main
+     :include-adapter include-adapter
      :include-lip (and include-adapter
                        (getopt :case :central-housing :adapter :lip :include))
      :points
@@ -176,6 +163,16 @@
 ;; Model Interop ;;
 ;;;;;;;;;;;;;;;;;;;
 
+(defn adapter-fasteners
+  "All of the screws (negative space) for one side of the housing and adapter."
+  [getopt]
+  (fastener-feature getopt any-side single-fastener))
+
+(defn adapter-fastener-receivers
+  "Receivers for screws, extending from the central housing into the adapter."
+  [getopt]
+  (fastener-feature getopt housing-side single-receiver))
+
 (defn tweak-post
   "Place an adapter between the housing polyhedron and a case wall."
   [getopt alias]
@@ -184,25 +181,6 @@
     (model/hull
       (place/reckon-from-anchor getopt alias {:depth :outer, :subject shape})
       (place/reckon-from-anchor getopt alias {:depth :inner, :subject shape}))))
-
-
-;;;;;;;;;;;;;
-;; Outputs ;;
-;;;;;;;;;;;;;
-
-(defn build-fastener
-  "A threaded fastener for attaching a central housing to its adapter.
-  For the left-hand-side adapter, this needs to be mirrored, being chiral.
-  Hence it is written for use an OpenSCAD module."
-  [getopt]
-  (let [prop (partial getopt :case :central-housing :adapter :fasteners)]
-    (threaded/bolt
-      :iso-size (prop :diameter),
-      :head-type :countersunk,
-      :point-type :cone,
-      :total-length (prop :length),
-      :compensator (getopt :dfm :derived :compensator)
-      :negative true)))
 
 (defn lip-body-right
   "A lip for an adapter."
@@ -228,23 +206,15 @@
         (vertices :adapter :inner)))
     (fastener-feature getopt adapter-side single-receiver)))
 
-(defn main-body
+(defn main-shell
   "An OpenSCAD polyhedron describing the body of the central housing."
   [getopt]
   (let [vertices (partial getopt :case :central-housing :derived :points)]
-    (maybe/difference
-      (maybe/union
-        (poly/tuboid
-          (vertices :gabel :left :outer)
-          (vertices :gabel :left :inner)
-          (vertices :gabel :right :outer)
-          (vertices :gabel :right :inner))
-        (when (getopt :case :central-housing :derived :include-lip)
-          (bilateral (lip-body-right getopt)))
-        (when (getopt :case :central-housing :derived :include-adapter)
-          (bilateral (adapter-fastener-receivers getopt))))
-      (when (getopt :case :central-housing :derived :include-adapter)
-        (bilateral (adapter-fasteners getopt))))))
+    (poly/tuboid
+      (vertices :gabel :left :outer)
+      (vertices :gabel :left :inner)
+      (vertices :gabel :right :outer)
+      (vertices :gabel :right :inner))))
 
 (defn negatives
   "Collected negative space for the keyboard case model beyond the adapter."
@@ -252,3 +222,22 @@
   (maybe/union
     (adapter-fastener-receivers getopt)
     (adapter-fasteners getopt)))
+
+
+;;;;;;;;;;;;;
+;; Outputs ;;
+;;;;;;;;;;;;;
+
+(defn build-fastener
+  "A threaded fastener for attaching a central housing to its adapter.
+  For the left-hand-side adapter, this needs to be mirrored, being chiral.
+  Hence it is written for use an OpenSCAD module."
+  [getopt]
+  (let [prop (partial getopt :case :central-housing :adapter :fasteners)]
+    (threaded/bolt
+      :iso-size (prop :diameter),
+      :head-type :countersunk,
+      :point-type :cone,
+      :total-length (prop :length),
+      :compensator (getopt :dfm :derived :compensator)
+      :negative true)))

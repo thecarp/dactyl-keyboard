@@ -11,6 +11,7 @@
             [scad-tarmi.threaded :as threaded]
             [dactyl-keyboard.compass :as compass]
             [dactyl-keyboard.misc :refer [colours]]
+            [dactyl-keyboard.cad.central :as central]
             [dactyl-keyboard.cad.misc :as misc :refer [wafer]]
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.place :as place]
@@ -86,12 +87,18 @@
 
 (defn fastener-positions
   "Place instances of named module according to user configuration."
-  [getopt part module-name]
-  (apply maybe/union
-    (map (place/wrist-module-placer getopt :bottom module-name)
-         (case part
-           :case (getopt :case :bottom-plate :installation :fasteners :positions)
-           :wrist-rest (getopt :wrist-rest :bottom-plate :fastener-positions)))))
+  [getopt part valence]
+  (let [main (getopt :case :bottom-plate :installation :fasteners :positions)
+        centre (getopt :case :central-housing :bottom-plate :fastener-positions)]
+    (apply maybe/union
+      (map (place/wrist-module-placer getopt :bottom
+             (if valence "bottom_plate_anchor_positive"
+                         "bottom_plate_anchor_negative"))
+           (case part
+             ::main-case main
+             ::central-housing centre
+             ::full-case (concat main centre)
+             ::wrist-rest (getopt :wrist-rest :bottom-plate :fastener-positions))))))
 
 (defn- to-3d
   "Build a 3D bottom plate from a 2D block."
@@ -105,7 +112,7 @@
 ;; Case ;;
 ;;;;;;;;;;
 
-(defn- mask
+(defn- mask-3d
   "A shape akin to the body mask but restricted to bottom-plate height."
   [getopt]
   (let [[x y _] (getopt :mask :size)
@@ -113,11 +120,21 @@
     (maybe/translate [0 0 (/ z 2)]
       (model/cube x y z))))
 
+(defn- mask-2d
+  "A 2D mask. This takes the central housing into account, for restricting that
+  feature to the centre line."
+  [getopt]
+  (let [[x y _] (getopt :mask :size)]
+    (if (and (getopt :case :central-housing :derived :include-main))
+      (maybe/translate [(/ x 4) 0]
+        (model/square (/ x 2) y))
+      (model/square x y))))
+
 (defn- wall-base-3d
   "A sliver cut from the case wall."
   [getopt]
   (model/intersection
-    (mask getopt)
+    (mask-3d getopt)
     (maybe/union
       (key/metacluster body/cluster-wall getopt)
       (body/wall-tweaks getopt))))
@@ -207,17 +224,30 @@
   (apply maybe/union (map #(tweak-plate-shadows getopt (:hull-around %))
                           (filter :at-ground (tweak-data getopt)))))
 
-(defn case-anchors-positive
-  "The parts of the case body that receive bottom-plate fasteners."
+(defn main-case-anchors-positive
+  "The parts of the main case body that receive bottom-plate fasteners."
   [getopt]
-  (fastener-positions getopt :case "bottom_plate_anchor_positive"))
+  (fastener-positions getopt ::main-case true))
+
+(defn central-housing-anchors-positive
+  "The parts of the central housing that receive bottom-plate fasteners."
+  [getopt]
+  (fastener-positions getopt ::central-housing true))
 
 (defn- case-positive-2d
   "A union of polygons representing the interior of the case."
+  ;; Built for maintainability rather than rendering speed.
   [getopt]
   (maybe/union
     (key/metacluster cluster-floor-polygon getopt)
     (all-tweak-shadows getopt)
+    (when (getopt :case :central-housing :derived :include-main)
+      (->> (central/main-shell getopt)
+        model/cut
+        model/hull
+        (model/intersection (mask-2d getopt))))
+    (when (getopt :case :central-housing :derived :include-adapter)
+      (model/hull (model/cut (central/adapter-shell getopt))))
     ;; With a rear housing that connects to a regular key cluster wall, there
     ;; is a distinct possibility that two polygons (one for the housing, one
     ;; for the cluster wall) will overlap at one vertex, forming a union where
@@ -232,7 +262,7 @@
     (when (getopt :case :rear-housing :include)
       ;; To work around the problem, the rear housing floor polygon is moved a
       ;; tiny bit toward the origin, preventing the vertex overlap.
-      (model/translate [0 -0.000001] (rhousing-floor-polygon getopt)))
+      (model/translate [0 (- wafer)] (rhousing-floor-polygon getopt)))
     (when (and (getopt :wrist-rest :include)
                (= (getopt :wrist-rest :style) :threaded))
       (model/cut (wrist/all-case-blocks getopt)))))
@@ -248,7 +278,7 @@
 (defn case-negative
   "Just the holes that go into both the case bottom plate and the case body."
   [getopt]
-  (fastener-positions getopt :case "bottom_plate_anchor_negative"))
+  (fastener-positions getopt ::full-case false))
 
 (defn case-complete
   "A printable model of a case bottom plate in one piece."
@@ -258,7 +288,6 @@
       (case-positive getopt)
       (maybe/translate [0 0 (getopt :dfm :bottom-plate :fastener-plate-offset)]
         (case-negative getopt)))))
-
 
 ;;;;;;;;;;;;;;;;;
 ;; Wrist Rests ;;
@@ -270,7 +299,7 @@
   (let [with-plate (getopt :wrist-rest :bottom-plate :include)
         thickness (if with-plate (getopt :case :bottom-plate :thickness) 0)]
     (maybe/translate [0 0 thickness]
-      (fastener-positions getopt :wrist-rest "bottom_plate_anchor_positive"))))
+      (fastener-positions getopt ::wrist-rest true))))
 
 (defn- wrist-positive-2d [getopt]
   (model/cut (wrist/unified-preview getopt)))
@@ -283,7 +312,7 @@
 (defn wrist-negative
   "Wrist-rest screw holes."
   [getopt]
-  (fastener-positions getopt :wrist-rest "bottom_plate_anchor_negative"))
+  (fastener-positions getopt ::wrist-rest false))
 
 (defn wrist-complete
   "A printable model of a wrist-rest bottom plate in one piece."

@@ -4,6 +4,8 @@
 keys:
   preview: true
 case:
+  central-housing:
+    preview: true
   bottom-plate:
     preview: true
 mcu:
