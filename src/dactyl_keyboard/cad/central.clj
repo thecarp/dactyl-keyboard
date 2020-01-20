@@ -19,11 +19,27 @@
 ;; Internals ;;
 ;;;;;;;;;;;;;;;
 
+;; Geometry.
 (defn- outline-back-to-3d
   [base-3d outline]
   (map (fn [[x _ _] [y1 z1]] [x y1 z1]) base-3d outline))
-
 (defn- horizontal-shifter [x-fn] (fn [[x y z]] [(x-fn x) y z]))
+(defn- shift-points
+  "Manipulate a series of 3D points forming a perimeter.
+  Inset (contract) the points in the yz plane (in 2D) and/or shift each point
+  on the x axis (back in 3D). Return a vector for indexability."
+  ([base]  ; Presumably called for vector conversion.
+   (shift-points base 0))
+  ([base inset]
+   (shift-points base inset 0))
+  ([base inset delta-x]
+   (shift-points base inset + delta-x))
+  ([base inset x-operator delta-x]
+   (as-> base subject
+     (mapv rest subject)
+     (poly/from-outline subject inset)
+     (outline-back-to-3d base subject)
+     (mapv (horizontal-shifter #(x-operator % delta-x)) subject))))
 
 ;; Predicates for sorting fasteners by the object they penetrate.
 (defn- adapter-side [{:keys [lateral-offset]}] (neg? lateral-offset))
@@ -31,10 +47,9 @@
 (defn- any-side [_] true)
 
 (defn- bilateral
-  ([achiral-subject]
-   (bilateral achiral-subject achiral-subject))
-  ([right-handed left-handed]
-   (model/union right-handed (model/mirror [-1 0 0] left-handed))))
+  "Place subject feature at both ends of the central housing."
+  [subject]
+  (maybe/union subject (model/mirror [-1 0 0] subject)))
 
 (defn- fastener-feature
   "The union of all features produced by a given model function at the sites of
@@ -42,19 +57,19 @@
   [getopt pred model-fn]
   (let [positions (getopt :case :central-housing :adapter :fasteners :positions)
         subject-fn #(place/chousing-fastener getopt % (model-fn getopt %))]
-    (apply model/union (map subject-fn (filter pred positions)))))
+    (apply maybe/union (map subject-fn (filter pred positions)))))
 
 (defn- single-fastener
   "A fastener for attaching the central housing to the rest of the case.
   Because threaded fasteners are chiral, the model is generated elsewhere
-  and invoked here through scad-app’s module system."
+  and invoked here as a module, so scad-app can mirror it."
   [_ _]
   (model/call-module "central_housing_adapter_fastener"))
 
 (defn- single-receiver
-  "An extension through the central-housing gable to receive a single fastener.
-  This design is a bit rough. More parameters would be needed to account for the
-  possibility of sloping surfaces."
+  "An extension through the central-housing interface array to receive a
+  single fastener. This design is a bit rough; more parameters would be
+  needed to account for the possibility of sloping surfaces."
   [getopt {:keys [lateral-offset]}]
   (let [rprop (partial getopt :case :central-housing :adapter :receivers)
         fprop (partial getopt :case :central-housing :adapter :fasteners)
@@ -88,18 +103,30 @@
            (model/translate [0 0 (/ z-hole 8)]
              (model/cylinder (/ width 2) (/ z-hole 3)))))])))
 
+(defn- adapter-fasteners
+  "All of the screws (negative space) for one side of the housing and adapter."
+  [getopt]
+  (fastener-feature getopt any-side single-fastener))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Configuration Interface ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defn- adapter-fastener-receivers
+  "Receivers for screws, extending from the central housing into the adapter."
+  [getopt]
+  (fastener-feature getopt housing-side single-receiver))
 
 (defn- collect-point-pair
+  "Collect any aliases noted in the user configuration for one item in the
+  interface array."
   [idx {:keys [base adapter]}]
   (let [props {:type :central-housing, :index idx}
         pluck (fn [alias part extra]
                 (when alias [alias (merge props {:part part} extra)]))]
     [(pluck (:alias base) :gabel {:side :right})
      (pluck (:alias adapter) :adapter {})]))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Configuration Interface ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn collect-point-aliases
   "A map of aliases to corresponding indices in the interface array."
@@ -108,23 +135,6 @@
     (map-indexed collect-point-pair)
     (apply concat)
     (into {})))
-
-(defn- shift-points
-  "Manipulate a series of 3D points forming a perimeter.
-  Inset (contract) the points in the yz plane (in 2D) and/or shift each point
-  on the x axis (back in 3D). Return a vector for indexability."
-  ([base]  ; Presumably called for vector conversion.
-   (shift-points base 0))
-  ([base inset]
-   (shift-points base inset 0))
-  ([base inset delta-x]
-   (shift-points base inset + delta-x))
-  ([base inset x-operator delta-x]
-   (as-> base subject
-     (mapv rest subject)
-     (poly/from-outline subject inset)
-     (outline-back-to-3d base subject)
-     (mapv (horizontal-shifter #(x-operator % delta-x)) subject))))
 
 (defn derive-properties
   "Derive certain properties from the base configuration."
@@ -182,7 +192,8 @@
 
 (defn build-fastener
   "A threaded fastener for attaching a central housing to its adapter.
-  For the left-hand-side adapter, this needs to be mirrored, being chiral."
+  For the left-hand-side adapter, this needs to be mirrored, being chiral.
+  Hence it is written for use an OpenSCAD module."
   [getopt]
   (let [prop (partial getopt :case :central-housing :adapter :fasteners)]
     (threaded/bolt
@@ -217,10 +228,6 @@
         (vertices :adapter :inner)))
     (fastener-feature getopt adapter-side single-receiver)))
 
-(defn adapter-fasteners
-  [getopt]
-  (fastener-feature getopt any-side single-fastener))
-
 (defn main-body
   "An OpenSCAD polyhedron describing the body of the central housing."
   [getopt]
@@ -235,8 +242,13 @@
         (when (getopt :case :central-housing :derived :include-lip)
           (bilateral (lip-body-right getopt)))
         (when (getopt :case :central-housing :derived :include-adapter)
-          (bilateral
-            (fastener-feature getopt housing-side single-receiver))))
+          (bilateral (adapter-fastener-receivers getopt))))
       (when (getopt :case :central-housing :derived :include-adapter)
-        (bilateral
-          (fastener-feature getopt any-side single-fastener))))))
+        (bilateral (adapter-fasteners getopt))))))
+
+(defn negatives
+  "Collected negative space for the keyboard case model beyond the adapter."
+  [getopt]
+  (maybe/union
+    (adapter-fastener-receivers getopt)
+    (adapter-fasteners getopt)))

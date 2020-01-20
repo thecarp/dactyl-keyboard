@@ -172,7 +172,7 @@
           (mcu/lock-fixture-composite getopt)))
       ;; Outer negatives:
       (when (getopt :case :central-housing :derived :include-adapter)
-        (central/adapter-fasteners getopt))
+        (central/negatives getopt))
       (when (getopt :case :bottom-plate :include)
         (bottom/case-negative getopt))
       (when (and (getopt :wrist-rest :include)
