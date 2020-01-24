@@ -62,9 +62,9 @@
   (model/call-module "central_housing_adapter_fastener"))
 
 (defn- single-receiver
-  "An extension through the central-housing interface array to receive a
-  single fastener. This design is a bit rough; more parameters would be
-  needed to account for the possibility of sloping surfaces."
+  "An extension through the central-housing interface array to receive a single
+  fastener. This design is a bit rough; more parameters would be needed to
+  account for the possibility of wall surfaces angled on the x or y axes."
   [getopt {:keys [lateral-offset]}]
   (let [rprop (partial getopt :case :central-housing :adapter :receivers)
         fprop (partial getopt :case :central-housing :adapter :fasteners)
@@ -163,6 +163,20 @@
 ;; Model Interop ;;
 ;;;;;;;;;;;;;;;;;;;
 
+(defn build-fastener
+  "A threaded fastener for attaching a central housing to its adapter.
+  This needs to be mirrored for the left-hand-side adapter, being chiral.
+  Hence it is written for use as an OpenSCAD module."
+  [getopt]
+  (let [prop (partial getopt :case :central-housing :adapter :fasteners)]
+    (threaded/bolt
+      :iso-size (prop :diameter),
+      :head-type :countersunk,
+      :point-type :cone,
+      :total-length (prop :length),
+      :compensator (getopt :dfm :derived :compensator)
+      :negative true)))
+
 (defn adapter-fasteners
   "All of the screws (negative space) for one side of the housing and adapter."
   [getopt]
@@ -207,7 +221,9 @@
     (fastener-feature getopt adapter-side single-receiver)))
 
 (defn main-shell
-  "An OpenSCAD polyhedron describing the body of the central housing."
+  "An OpenSCAD polyhedron describing the body of the central housing.
+  For use in building both the central housing itself as a program output
+  and a bottom plate at floor level."
   [getopt]
   (let [vertices (partial getopt :case :central-housing :derived :points)]
     (poly/tuboid
@@ -223,21 +239,3 @@
     (adapter-fastener-receivers getopt)
     (adapter-fasteners getopt)))
 
-
-;;;;;;;;;;;;;
-;; Outputs ;;
-;;;;;;;;;;;;;
-
-(defn build-fastener
-  "A threaded fastener for attaching a central housing to its adapter.
-  For the left-hand-side adapter, this needs to be mirrored, being chiral.
-  Hence it is written for use an OpenSCAD module."
-  [getopt]
-  (let [prop (partial getopt :case :central-housing :adapter :fasteners)]
-    (threaded/bolt
-      :iso-size (prop :diameter),
-      :head-type :countersunk,
-      :point-type :cone,
-      :total-length (prop :length),
-      :compensator (getopt :dfm :derived :compensator)
-      :negative true)))
