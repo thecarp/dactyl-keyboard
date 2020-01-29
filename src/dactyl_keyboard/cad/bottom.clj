@@ -178,17 +178,18 @@
       (body/wall-tweaks getopt))))
 
 (defn- floor-finder
-  "Return a sequence of xy-coordinate pairs for exterior wall vertices."
-  [getopt cluster edges]
-  (map
-    (fn [[coord direction turning-fn]]
-      (let [key [:wall (compass/short-to-long direction) :extent]
-            extent (most-specific getopt key cluster coord)]
-        (when (= extent :full)
-          (take 2
-            (place/wall-corner-place getopt cluster coord
-              {:directions [direction (turning-fn direction)] :vertex true})))))
-    edges))
+  "Make a function that takes a key mount and returns a 2D vertex
+  (xy-coordinate pair) for the exterior wall of the case extending from
+  that key mount."
+  [getopt cluster]
+  (fn [[coord direction turning-fn]]
+    (let [key [:wall (compass/short-to-long direction) :extent]
+          extent (most-specific getopt key cluster coord)
+          corner (compass/tuple-to-intermediate
+                   [direction (turning-fn direction)])]
+      (when (= extent :full)  ; Ignore partial walls.
+        (take 2 (place/wall-corner-place getopt cluster coord
+                  {:corner corner, :vertex true}))))))
 
 (defn- cluster-floor-polygon
   "A polygon approximating a floor-level projection of a key clusters’s wall."
@@ -199,7 +200,8 @@
         (reduce
           (fn [coll position]
             (conj coll
-              (floor-finder getopt cluster (body/connecting-wall position))))
+              (map (floor-finder getopt cluster)
+                   (body/connecting-wall position))))
           []
           (matrix/trace-between
             (getopt :key-clusters :derived :by-cluster cluster :key-requested?)))))))

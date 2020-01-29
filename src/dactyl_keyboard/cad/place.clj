@@ -172,9 +172,9 @@
   By default, this goes to one corner of the hem of the mount’s skirt of
   walling and therefore finds the base of full walls."
   [getopt cluster coordinates
-   {:keys [directions corner segment vertex]
+   {:keys [corner segment vertex]
     :or {segment 3, vertex false} :as keyopts}]
-  (:pre [(or (nil? corner) (compass/intermediates corner))])
+  {:pre [(or (nil? corner) (compass/intermediates corner))]}
   (mapv +
     (if corner
       (mount-corner-offset getopt
