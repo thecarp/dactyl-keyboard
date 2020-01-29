@@ -27,8 +27,19 @@ by-key:
 case:
   key-mount-thickness: 2.5
   web-thickness: 2.5
+  central-housing:
+    adapter:
+      fasteners:
+        diameter: 4
+        length: 8.5
   rear-housing:
     wall-thickness: 2.5
+  bottom-plate:
+    installation:
+      thickness: 2.5
+      fasteners:
+        diameter: 4
+        length: 8.5
 mcu:
   type: promicro
   support:

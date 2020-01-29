@@ -85,27 +85,65 @@
                             (model/translate [0 0 z0]
                               (model/cylinder (/ d0 2) wafer))))))))
 
-(defn fastener-positions
-  "Place instances of named module according to user configuration."
-  [getopt part valence]
-  (let [main (getopt :case :bottom-plate :installation :fasteners :positions)
-        centre (getopt :case :central-housing :bottom-plate :fastener-positions)]
-    (apply maybe/union
-      (map (place/wrist-module-placer getopt :bottom
-             (if valence "bottom_plate_anchor_positive"
-                         "bottom_plate_anchor_negative"))
-           (case part
-             ::main-case main
-             ::central-housing centre
-             ::full-case (concat main centre)
-             ::wrist-rest (getopt :wrist-rest :bottom-plate :fastener-positions))))))
-
 (defn- to-3d
   "Build a 3D bottom plate from a 2D block."
   [getopt block]
   (model/extrude-linear
     {:height (getopt :case :bottom-plate :thickness), :center false}
     block))
+
+
+;;;;;;;;;;;;;;;
+;; Fasteners ;;
+;;;;;;;;;;;;;;;
+
+;; The proper selection of fasteners varies with the program output.
+;; For example, as long as the bottom plate for the main body also
+;; covers half of the central housing, the screw holes for the bottom
+;; plate must include positions from two sources.
+
+(defn- all-fastener-positions
+  "Collate the various sources of fastener positions for filtering.
+  Return a vector of fastener positions where each position is annotated
+  with a locally namespaced keyword corresponding to its source."
+  [getopt]
+  (mapcat
+    (fn [[source-type raw-path]]
+      (map #(assoc % ::type source-type) (apply getopt raw-path)))
+    (concat
+      [[::main
+        [:case :bottom-plate :installation :fasteners :positions]]]
+      (when (getopt :case :central-housing :derived :include-main)
+        [[::centre
+          [:case :central-housing :bottom-plate :fastener-positions]]])
+      (when (getopt :wrist-rest :bottom-plate :include)
+        [[::wrist
+          [:wrist-rest :bottom-plate :fastener-positions]]]))))
+
+(defn- fasteners
+  "Place instances of a predefined module according to user configuration.
+  The passed predicate function is used to select positions, while the
+  “valence” Boolean selects an OpenSCAD module."
+  [getopt pred valence]
+  (apply maybe/union
+    (map (place/wrist-module-placer getopt :bottom
+           (if valence "bottom_plate_anchor_positive"
+                       "bottom_plate_anchor_negative"))
+         (filter pred (all-fastener-positions getopt)))))
+
+(defn- any-type
+  "Return a predicate function for filtering fasteners.
+  The filter will exclude those fastener positions that do not have are not sourced
+  from any of the "
+  [& types]
+  (fn [position] (some (set types) #{(::type position)})))
+
+(def anchors-in-main-body #(fasteners % (any-type ::main) true))
+(def anchors-in-central-housing #(fasteners % (any-type ::centre) true))
+(def anchors-in-wrist-rest #(fasteners % (any-type ::wrist) true))
+(def holes-in-main-plate #(fasteners % (any-type ::main ::centre) false))
+(def holes-in-wrist-plate #(fasteners % (any-type ::wrist) false))
+(def holes-in-combo #(fasteners % (any-type ::main ::wrist) false))
 
 
 ;;;;;;;;;;
@@ -224,16 +262,6 @@
   (apply maybe/union (map #(tweak-plate-shadows getopt (:hull-around %))
                           (filter :at-ground (tweak-data getopt)))))
 
-(defn main-case-anchors-positive
-  "The parts of the main case body that receive bottom-plate fasteners."
-  [getopt]
-  (fastener-positions getopt ::main-case true))
-
-(defn central-housing-anchors-positive
-  "The parts of the central housing that receive bottom-plate fasteners."
-  [getopt]
-  (fastener-positions getopt ::central-housing true))
-
 (defn- case-positive-2d
   "A union of polygons representing the interior of the case."
   ;; Built for maintainability rather than rendering speed.
@@ -275,11 +303,6 @@
     (wall-base-3d getopt)
     (to-3d getopt (case-positive-2d getopt))))
 
-(defn case-negative
-  "Just the holes that go into both the case bottom plate and the case body."
-  [getopt]
-  (fastener-positions getopt ::full-case false))
-
 (defn case-complete
   "A printable model of a case bottom plate in one piece."
   [getopt]
@@ -287,7 +310,7 @@
     (maybe/difference
       (case-positive getopt)
       (maybe/translate [0 0 (getopt :dfm :bottom-plate :fastener-plate-offset)]
-        (case-negative getopt)))))
+        (holes-in-main-plate getopt)))))
 
 ;;;;;;;;;;;;;;;;;
 ;; Wrist Rests ;;
@@ -299,7 +322,7 @@
   (let [with-plate (getopt :wrist-rest :bottom-plate :include)
         thickness (if with-plate (getopt :case :bottom-plate :thickness) 0)]
     (maybe/translate [0 0 thickness]
-      (fastener-positions getopt ::wrist-rest true))))
+      (anchors-in-wrist-rest getopt))))
 
 (defn- wrist-positive-2d [getopt]
   (model/cut (wrist/unified-preview getopt)))
@@ -309,11 +332,6 @@
   [getopt]
   (to-3d getopt (wrist-positive-2d getopt)))
 
-(defn wrist-negative
-  "Wrist-rest screw holes."
-  [getopt]
-  (fastener-positions getopt ::wrist-rest false))
-
 (defn wrist-complete
   "A printable model of a wrist-rest bottom plate in one piece."
   [getopt]
@@ -321,7 +339,7 @@
     (maybe/difference
       (wrist-positive getopt)
       (maybe/translate [0 0 (getopt :dfm :bottom-plate :fastener-plate-offset)]
-        (wrist-negative getopt)))))
+        (holes-in-wrist-plate getopt)))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -348,15 +366,9 @@
             (wrist/block-pairs getopt)))
         (wrist-positive-2d getopt)))))
 
-(defn combined-negative
-  [getopt]
-  (model/union
-    (case-negative getopt)
-    (wrist-negative getopt)))
-
 (defn combined-complete
   [getopt]
   (model/color (:bottom-plate colours)
     (maybe/difference
       (combined-positive getopt)
-      (combined-negative getopt))))
+      (holes-in-combo getopt))))

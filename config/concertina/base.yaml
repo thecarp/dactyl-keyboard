@@ -73,8 +73,6 @@ case:
           outer: 3
           taper: 2
       fasteners:
-        diameter: 4
-        length: 8
         positions:
           - starting-point: central-wip-2
             lateral-offset: 5
@@ -89,9 +87,17 @@ case:
         width:
           inner: 4
           taper: 5
+    bottom-plate:
+      fastener-positions:
+        - anchor: central-wip-1
+          offset: [4, 4]
   bottom-plate:
     include: true
     thickness: 2
+    installation:
+      fasteners:
+        positions:
+          - anchor: key-wip-1
   tweaks:
     bridge-wip:
       - chunk-size: 3

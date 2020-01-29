@@ -462,10 +462,7 @@ case:
     include: true
     thickness: 0.8
     installation:
-      thickness: 2.5
       fasteners:
-        diameter: 4
-        length: 8.5
         positions:
         - anchor: rear-housing
           corner: NNW
