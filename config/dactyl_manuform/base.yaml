@@ -3,11 +3,10 @@
 # The long-term goal with this file is to have it produce Short’s design
 # through the DMOTE application for upstream compatibility.
 
-# As of DMOTE v0.5.0, that is not yet possible, because:
+# As of DMOTE v0.6.0-SNAPSHOT, that is not yet possible, because:
 # - No internal shelf for the MCU.
 # - No USB A.
 # - No wire hooks.
-# - Bottom plating does not project from screw anchors.
 
 reflect: true
 keys:

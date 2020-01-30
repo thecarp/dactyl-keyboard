@@ -111,9 +111,13 @@
     (fn [[source-type raw-path]]
       (map #(assoc % ::type source-type) (apply getopt raw-path)))
     (concat
-      [[::main
-        [:case :bottom-plate :installation :fasteners :positions]]]
-      (when (getopt :case :central-housing :derived :include-main)
+      ;; Be sensitive to the relevant inclusion switches, so that the
+      ;; higher-level model functions don’t always need to be.
+      (when (getopt :case :bottom-plate :include)
+        [[::main
+          [:case :bottom-plate :installation :fasteners :positions]]])
+      (when (and (getopt :case :bottom-plate :include)
+                 (getopt :case :central-housing :derived :include-main))
         [[::centre
           [:case :central-housing :bottom-plate :fastener-positions]]])
       (when (getopt :wrist-rest :bottom-plate :include)
@@ -140,6 +144,7 @@
 
 (def anchors-in-main-body #(fasteners % (any-type ::main) true))
 (def anchors-in-central-housing #(fasteners % (any-type ::centre) true))
+(def anchors-for-main-plate #(fasteners % (any-type ::main ::centre) true))
 (def anchors-in-wrist-rest #(fasteners % (any-type ::wrist) true))
 (def holes-in-main-plate #(fasteners % (any-type ::main ::centre) false))
 (def holes-in-wrist-plate #(fasteners % (any-type ::wrist) false))
@@ -167,6 +172,16 @@
       (maybe/translate [(/ x 4) 0]
         (model/square (/ x 2) y))
       (model/square x y))))
+
+(defn- masked-cut
+  "A slice of a 3D object at z=0, restricted by the mask, not hulled."
+  [getopt shape]
+  (->> shape model/cut (model/intersection (mask-2d getopt))))
+
+(defn- masked-hull
+  "A hulled slice of a 3D object at z=0, restricted by the mask."
+  [getopt shape]
+  (->> shape model/cut model/hull (model/intersection (mask-2d getopt))))
 
 (defn- wall-base-3d
   "A sliver cut from the case wall."
@@ -265,19 +280,18 @@
                           (filter :at-ground (tweak-data getopt)))))
 
 (defn- case-positive-2d
-  "A union of polygons representing the interior of the case."
+  "A union of polygons representing the interior of the case, including the
+  central housing, when configured to appear."
   ;; Built for maintainability rather than rendering speed.
   [getopt]
   (maybe/union
     (key/metacluster cluster-floor-polygon getopt)
+    (masked-cut getopt (anchors-for-main-plate getopt))
     (all-tweak-shadows getopt)
     (when (getopt :case :central-housing :derived :include-main)
-      (->> (central/main-shell getopt)
-        model/cut
-        model/hull
-        (model/intersection (mask-2d getopt))))
+      (masked-hull getopt (central/main-shell getopt)))
     (when (getopt :case :central-housing :derived :include-adapter)
-      (model/hull (model/cut (central/adapter-shell getopt))))
+      (masked-cut getopt (central/adapter-shell getopt)))
     ;; With a rear housing that connects to a regular key cluster wall, there
     ;; is a distinct possibility that two polygons (one for the housing, one
     ;; for the cluster wall) will overlap at one vertex, forming a union where
@@ -327,7 +341,9 @@
       (anchors-in-wrist-rest getopt))))
 
 (defn- wrist-positive-2d [getopt]
-  (model/cut (wrist/unified-preview getopt)))
+  (maybe/union
+    (model/cut (wrist/unified-preview getopt))
+    (model/cut (anchors-in-wrist-rest getopt))))
 
 (defn wrist-positive
   "3D wrist-rest bottom plate without screw holes."

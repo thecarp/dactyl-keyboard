@@ -14,8 +14,6 @@ version 0.2.0, thus covering only a fraction of the project’s history.
   to work better with the option of central housing.
     - The default orientation of the MCU PCB has changed, from standing on its
       long edge to lying flat.
-        - To compensate, use the `rotation` setting for your MCU support, with
-          the approximate value `[0, 1.5708, 0]`.
         - In the Dactyl-ManuForm model, the MCU now lies flat, whereas in other
           pre-v0.6.0 bundled build targets, it’s still on its long edge because
           of accompanying changes to the configurations.
@@ -33,11 +31,18 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - The alcove generated for the front end of an MCU PCBA now uses the general
   DFM setting (`error-general`). The `mcu` → `margin` setting was removed.
 
+Migration guide: To compensate for the changed default orientation of the MCU
+in an existing custom configuration, use the `rotation` setting for your MCU
+support, with the approximate value `[0, 1.5708, 0]`.
+
 ### Added
 - Documentation:
     - An execution guide, as a new document branched off from the introduction.
     - Tables of content in auto-generated documents.
 - Central housing, a new feature.
+- Extensions to bottom plates for projections of the anchors used to fasten
+  such plates to the case. This restores a feature of the upstream
+  Dactyl-ManuForm.
 - The ability to target the plate of an MCU lock for case `tweaks`.
 - A GNU Make target for the Dactyl-ManuForm.
 
@@ -61,7 +66,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
     :west]`). Corner keywords are translated to tuples at need. Note that
     the new direction keywords are not yet namespaced to the compass module.
   - `misc`, which collects everything that remained of `generics` after
-    compass code moved out.
+    compass code moved out. This makes two `misc` modules.
 - A folder of configuration files under `test/config` for manual regression
   testing.
 

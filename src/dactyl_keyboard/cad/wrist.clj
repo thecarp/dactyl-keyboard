@@ -524,7 +524,7 @@
   (all-mounts getopt mount-fasteners))
 
 (defn plinth-positive
-  "A maquette of the plastic, rigid portion of wrist rest."
+  "A maquette of the plastic, rigid portion of a wrist rest."
   [getopt]
   (maybe/union
     (model/difference

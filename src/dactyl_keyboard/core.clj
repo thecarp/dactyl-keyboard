@@ -384,6 +384,13 @@
         #{}
         (vals (getopt :keys :derived))))))
 
+(defn- conditional-bottom-plate-modules
+  [getopt]
+  (if (getopt :case :bottom-plate :include)
+    ["bottom_plate_anchor_positive"
+     "bottom_plate_anchor_negative"]
+    []))
+
 (defn get-static-precursors
   "Make the central roster of files and the models that go into each.
   The schema used to describe them is a superset of the scad-app
@@ -398,23 +405,18 @@
     :modules (concat
                [(when (getopt :case :central-housing :derived :include-adapter)
                   "central_housing_adapter_fastener")
-                (when (getopt :case :bottom-plate :include)
-                  "bottom_plate_anchor_positive")
-                (when (getopt :case :bottom-plate :include)
-                  "bottom_plate_anchor_negative")
                 (when (getopt :wrist-rest :sprues :include)
                   "sprue_negative")]
+               (conditional-bottom-plate-modules getopt)
                (get-key-modules getopt :module-keycap :module-switch))
     :model-precursor build-main-body-right
     :chiral (getopt :reflect)}
    (when (getopt :case :central-housing :derived :include-main)
      {:name "case-central"
-      :modules [(when (getopt :case :central-housing :derived :include-adapter)
-                  "central_housing_adapter_fastener")
-                (when (getopt :case :bottom-plate :include)
-                  "bottom_plate_anchor_positive")
-                (when (getopt :case :bottom-plate :include)
-                  "bottom_plate_anchor_negative")]
+      :modules (concat
+                 [(when (getopt :case :central-housing :derived :include-adapter)
+                    "central_housing_adapter_fastener")]
+                 (conditional-bottom-plate-modules getopt))
       :model-precursor build-central-housing})
    (when (and (getopt :mcu :include)
               (getopt :mcu :support :lock :include))
@@ -424,26 +426,21 @@
    ;; Wrist rest:
    (when (getopt :wrist-rest :include)
      {:name "pad-mould"
-      :modules [(when (getopt :case :bottom-plate :include)
-                  "bottom_plate_anchor_positive")]
+      :modules (conditional-bottom-plate-modules getopt)
       :model-precursor build-rubber-casting-mould-right
       :rotation [π 0 0]
       :chiral (getopt :reflect)})  ; Chirality is possible but not guaranteed.
    (when (getopt :wrist-rest :include)
      {:name "pad-shape"
-      :modules [(when (getopt :case :bottom-plate :include)
-                  "bottom_plate_anchor_positive")]
+      :modules (conditional-bottom-plate-modules getopt)
       :model-precursor build-rubber-pad-right
       :chiral (getopt :reflect)})
    (when (and (getopt :wrist-rest :include)
               (not (= (getopt :wrist-rest :style) :solid)))
      {:name "wrist-rest-main"
-      :modules [(when (getopt :case :bottom-plate :include)
-                  "bottom_plate_anchor_positive")
-                (when (getopt :wrist-rest :bottom-plate :include)
-                  "bottom_plate_anchor_negative")
-                (when (getopt :wrist-rest :sprues :include)
-                  "sprue_negative")]
+      :modules (concat (conditional-bottom-plate-modules getopt)
+                       (when (getopt :wrist-rest :sprues :include)
+                         ["sprue_negative"]))
       :model-precursor build-plinth-right
       :chiral (getopt :reflect)})
    ;; Bottom plate(s):
@@ -451,7 +448,7 @@
               (not (and (getopt :case :bottom-plate :combine)
                         (getopt :wrist-rest :bottom-plate :include))))
      {:name "bottom-plate-case"
-      :modules ["bottom_plate_anchor_negative"]
+      :modules (conditional-bottom-plate-modules getopt)
       :model-precursor bottom/case-complete
       :rotation [0 π 0]
       :chiral (getopt :reflect)})
@@ -460,7 +457,7 @@
               (not (and (getopt :case :bottom-plate :include)
                         (getopt :case :bottom-plate :combine))))
      {:name "bottom-plate-wrist-rest"
-      :modules ["bottom_plate_anchor_negative"]
+      :modules (conditional-bottom-plate-modules getopt)
       :model-precursor bottom/wrist-complete
       :rotation [0 π 0]
       :chiral (getopt :reflect)})
@@ -469,7 +466,7 @@
               (getopt :wrist-rest :include)
               (getopt :wrist-rest :bottom-plate :include))
      {:name "bottom-plate-combined"
-      :modules ["bottom_plate_anchor_negative"]
+      :modules (conditional-bottom-plate-modules getopt)
       :model-precursor bottom/combined-complete
       :rotation [0 π 0]
       :chiral (getopt :reflect)})])
