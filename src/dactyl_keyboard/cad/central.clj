@@ -24,6 +24,7 @@
   [base-3d outline]
   (map (fn [[x _ _] [y1 z1]] [x y1 z1]) base-3d outline))
 (defn- horizontal-shifter [x-fn] (fn [[x y z]] [(x-fn x) y z]))
+(defn- mirror-shift [points] (map (horizontal-shifter -) points))
 (defn- shift-points
   "Manipulate a series of 3D points forming a perimeter.
   Inset (contract) the points in the yz plane (in 2D) and/or shift each point
@@ -91,7 +92,7 @@
            (model/cube wafer (inc diameter) z-bridge)
            (model/translate [0 0 -1]
              (model/cube wafer diameter z-bridge))))
-       ;; Finally the bridge extending past the base>
+       ;; Finally the bridge extending past the base.
        (model/translate [0 0 (- (+ z-wall (/ z-hole 2)))]
          (model/hull  ; Soft edges, more material in the middle.
            (model/cylinder (/ (inc diameter) 2) z-hole)
@@ -129,6 +130,7 @@
         adapter-width (getopt :case :central-housing :adapter :width)
         interface (getopt :case :central-housing :shape :interface)
         base-points (map #(get-in % [:base :offset]) interface)
+        left-points (mirror-shift base-points)
         gabel-out (shift-points base-points 0 half-width)
         gabel-in (shift-points base-points thickness half-width)
         adapter-points-3d (map #(get-in % [:adapter :offset] [0 0 0]) interface)
@@ -148,8 +150,8 @@
      :points
       {:gabel {:right {:outer gabel-out
                        :inner gabel-in}
-               :left {:outer (shift-points base-points 0 - half-width)
-                      :inner (shift-points base-points thickness - half-width)}}
+               :left {:outer (shift-points left-points 0 - half-width)
+                      :inner (shift-points left-points thickness - half-width)}}
        :adapter {:outer adapter-outer
                  :inner (shift-points adapter-outer thickness)}
        :lip {:outside {:outer (shift-points gabel-in 0 (lip-w :outer))
