@@ -261,9 +261,13 @@
         (vertex-fn node)))))
 
 (defn- tweak-plate-polygon
-  "A single version of the footprint of a tweak."
+  "A single version of the footprint of a tweak.
+  Tweaks so small that they amount to fewer than three vertices are ignored
+  because they wouldn’t have any area."
   [getopt pickers node-list]
-  (model/polygon (reduce (partial tweak-floor-pairs getopt pickers) [] node-list)))
+  (let [points (reduce (partial tweak-floor-pairs getopt pickers) [] node-list)]
+    (when (> (count points) 2)
+      (model/polygon points))))
 
 (defn- tweak-plate-shadows
   "Versions of a tweak footprint.
@@ -271,9 +275,10 @@
   identify which vertices shape the outside of the case at z = 0."
   [getopt node-list]
   (apply maybe/union
-    (for
-      [post [first last], segment [first last], bottom [false true]]
-      (tweak-plate-polygon getopt [post segment bottom] node-list))))
+    (distinct
+      (for
+        [post [first last], segment [first last], bottom [false true]]
+        (tweak-plate-polygon getopt [post segment bottom] node-list)))))
 
 (defn- all-tweak-shadows
   "The footprint of all user-requested additional shapes that go to the floor."
