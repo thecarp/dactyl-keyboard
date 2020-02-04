@@ -55,12 +55,17 @@
         subject-fn #(place/chousing-fastener getopt % (model-fn getopt %))]
     (apply maybe/union (map subject-fn (filter pred positions)))))
 
-(defn- single-fastener
+(defn- single-right-side-fastener
   "A fastener for attaching the central housing to the rest of the case.
   Because threaded fasteners are chiral, the model is generated elsewhere
   and invoked here as a module, so scad-app can mirror it."
   [_ _]
-  (model/call-module "central_housing_adapter_fastener"))
+  (model/call-module "housing_adapter_fastener"))
+
+(defn- single-left-side-fastener
+  "The same model, pre-emptively mirrored to get the right threading."
+  [_ _]
+  (model/mirror [-1 0 0] (model/call-module "housing_adapter_fastener")))
 
 (defn- single-receiver
   "An extension through the central-housing interface array to receive a single
@@ -179,10 +184,17 @@
       :compensator (getopt :dfm :derived :compensator)
       :negative true)))
 
-(defn adapter-fasteners
+(defn adapter-right-fasteners
   "All of the screws (negative space) for one side of the housing and adapter."
   [getopt]
-  (fastener-feature getopt any-side single-fastener))
+  (fastener-feature getopt any-side single-right-side-fastener))
+
+(defn adapter-left-fasteners
+  "All of the screws for the other side. Due to a curiosity of the way bilateral
+  symmetry is currently implemented for the central housing, this function does
+  not mirror the positions of adapter-right-fasteners."
+  [getopt]
+  (fastener-feature getopt any-side single-left-side-fastener))
 
 (defn adapter-fastener-receivers
   "Receivers for screws, extending from the central housing into the adapter."
@@ -239,5 +251,5 @@
   [getopt]
   (maybe/union
     (adapter-fastener-receivers getopt)
-    (adapter-fasteners getopt)))
+    (adapter-right-fasteners getopt)))
 

@@ -126,27 +126,37 @@
     (sandbox/positive getopt)))
 
 (defn build-central-housing
-  "The body of the central housing. Not subject to reflection, but
-  generally bilaterally symmetrical."
+  "The body of the central housing. Not subject to reflection, but generally
+  bilaterally symmetrical. Chiral modules are an exception to this symmetry:
+  Their positions are mirrored on the left-hand side, but their individual
+  models are mirrored again to “undo” the local effects at each new position."
   [getopt]
-  (let [bilateral (fn [subject] (maybe/union subject
-                                             (model/mirror [-1 0 0] subject)))]
+  (let [bilateral
+        (fn ([subject]  ; Non-chiral.
+             (maybe/union subject (maybe/mirror [-1 0 0] subject)))
+            ([subject-right subject-left]  ; Chiral.
+             (maybe/union subject-right (maybe/mirror [-1 0 0] subject-left))))]
     (maybe/union
       (body/mask getopt (getopt :case :bottom-plate :include)
         (maybe/difference
           (maybe/union
             (central/main-shell getopt)
-            (bottom/anchors-in-central-housing getopt)
+            (when (getopt :case :bottom-plate :include)
+              (bilateral (bottom/anchors-in-central-housing getopt)))
             (when (getopt :case :central-housing :derived :include-lip)
               (bilateral (central/lip-body-right getopt)))
             (when (getopt :case :central-housing :derived :include-adapter)
               (bilateral (central/adapter-fastener-receivers getopt))))
           (when (getopt :case :central-housing :derived :include-adapter)
-            (bilateral (central/adapter-fasteners getopt)))
+            (bilateral
+              (central/adapter-right-fasteners getopt)
+              (central/adapter-left-fasteners getopt)))
           (when (getopt :mcu :derived :include-centrally)
             (mcu/negative-composite getopt))
           (when (getopt :case :bottom-plate :include)
-            (bottom/holes-in-main-plate getopt)))
+            (bilateral
+              (bottom/holes-in-main-plate getopt)
+              (bottom/holes-in-left-housing getopt))))
         (when (and (getopt :mcu :derived :include-centrally)
                    (getopt :mcu :support :lock :include))
           (mcu/lock-fixture-composite getopt)))
@@ -336,18 +346,25 @@
       access/option-accessor
       (checkpoint "Enriched settings:"))))
 
+(defn- mirror-within-scene
+  "Preface a model precursor function for a module."
+  [precursor]
+  (fn [getopt] (model/mirror [0 -1 0] (precursor getopt))))
+
 (def module-asset-list
   "OpenSCAD modules and the functions that make them."
-  [{:name "central_housing_adapter_fastener"
+  [{:name "housing_adapter_fastener"
     :model-precursor central/build-fastener,
     :chiral true}
    {:name "sprue_negative"
     :model-precursor wrist/sprue-negative}
    {:name "bottom_plate_anchor_positive"
     :model-precursor bottom/anchor-positive}
-   {:name "bottom_plate_anchor_negative"
+   {:name "bottom_plate_anchor_mirrored"
     :model-precursor bottom/anchor-negative,
-    :chiral true}])
+    :chiral true}
+   {:name "bottom_plate_central_anchor_negative"
+    :model-precursor (mirror-within-scene bottom/anchor-negative)}])
 
 (defn module-asset-map
   "Convert module-asset-list to a hash map with fully resolved models.
@@ -388,7 +405,7 @@
   [getopt]
   (if (getopt :case :bottom-plate :include)
     ["bottom_plate_anchor_positive"
-     "bottom_plate_anchor_negative"]
+     "bottom_plate_anchor_mirrored"]
     []))
 
 (defn get-static-precursors
@@ -404,7 +421,7 @@
    {:name "case-main"
     :modules (concat
                [(when (getopt :case :central-housing :derived :include-adapter)
-                  "central_housing_adapter_fastener")
+                  "housing_adapter_fastener")
                 (when (getopt :wrist-rest :sprues :include)
                   "sprue_negative")]
                (conditional-bottom-plate-modules getopt)
@@ -415,7 +432,9 @@
      {:name "case-central"
       :modules (concat
                  [(when (getopt :case :central-housing :derived :include-adapter)
-                    "central_housing_adapter_fastener")]
+                    "housing_adapter_fastener")
+                  (when (getopt :case :bottom-plate :include)
+                    "bottom_plate_central_anchor_negative")]
                  (conditional-bottom-plate-modules getopt))
       :model-precursor build-central-housing})
    (when (and (getopt :mcu :include)
