@@ -50,6 +50,7 @@ key-clusters:
       m4F: [4, first]
       m5F: [5, first]
       m00: [0, 0]
+      m5M: [5, -1]
       m0L: [0, last]
       m1L: [1, last]
       m2L: [2, last]
@@ -272,7 +273,7 @@ by-key:
                 mid: [0, -2, 3]
             wall:
               north:
-                extent: 1
+                extent: 0
               south:
                 parallel: 6
                 perpendicular: -3
@@ -288,10 +289,9 @@ by-key:
                 mid: [0, -2, 7]
             wall:
               north:
-                extent: 1
+                extent: 0
               east:
-                parallel: 5
-                perpendicular: -2
+                extent: 0
               south:
                 parallel: 2
                 perpendicular: -6
@@ -366,7 +366,7 @@ case:
         adapter:
           alias: ca-near-lower-2
       - base:
-          offset: [42, -55, 63]
+          offset: [42, -55, 62]
         adapter:
           alias: ca-near-upper-1
       - base:
@@ -478,11 +478,6 @@ case:
           offset: [-5, -13]
   tweaks:
     near-wall:  # Up the south side of the main key cluster:
-    - at-ground: true
-      hull-around:
-      - [m5F, ESE, 3]
-      - [m5F, SSE, 3]
-      - [ca-near-base]
     - hull-around:
       - [ca-near-base]
       - [m5F, SSE, 3]
@@ -632,24 +627,17 @@ case:
       - [ca-near-upper-4]
       - [t0F1]
     far-wall:  # The far side of the main cluster.
-    # A thin strip along the ground.
-    - at-ground: true
-      chunk-size: 2
-      hull-around:
-      - [m5L, NNE, 1]
-      - [m5L1]
-      - [ca-far-base]
     # A fairly rectangular plate past m5L and a larger plate for m4L, up to
     # the side of m3L.
     - chunk-size: 3
       hull-around:
-      - [m5L, NNE, 1]
+      - [m5L, NNE, 0]
       - [m5L1]
-      - [m5L, NNW, 1]
+      - [m5L, NNW, 0]
       - [m5L2]
-      - [m4L, NNE, 1]
+      - [m4L, NNE, 0]
       - [m5L2]
-      - [m4L, NNW, 1]
+      - [m4L, NNW, 0]
       - hull-around:
         - [m3L, ESE, 0, 1]
         - [m3L, ENE, 1]
@@ -672,9 +660,35 @@ case:
       - [m2L, NNW, 3]
       - [m1L, NNE, 3]
       - [m1L, NNW, 3]
+    bottom:  # A thin strip along the east side of the main cluster.
+             # This comes in two parts because hulling the entire strip
+             # would extend the bottom plate outside the case.
+    - at-ground: true
+      chunk-size: 2
+      hull-around:
+      - [ci-near-base]
+      - [ca-near-base]
+      - [m5F, SSE, 0, 3]
+      - [m5F, ESE, 0]
+      - [m5F, ENE, 0]
+    - at-ground: true
+      chunk-size: 2
+      hull-around:
+      - [m5F, ENE, 0]
+      - [m5M, ESE, 0]
+      - [m5M, ENE, 0]
+    - at-ground: true
+      chunk-size: 2
+      hull-around:
+      - [m5M, ENE, 0]
+      - [m5L, ESE, 0]
+      - [m5L, ENE, 0]
+      - [m5L1]
+      - [ca-far-base]
+      - [ci-far-base]
     mcu-holder:
-      - at-ground: true
-        hull-around: [[mcu-plate]]
+    - at-ground: true
+      hull-around: [[mcu-plate]]
 mcu:
   include: true
   position:
@@ -695,7 +709,7 @@ secondaries:
   m5L2:
     anchor: m5L
     corner: NNW
-    offset: [6, 21, 2]
+    offset: [10, 23, 2]
   t0F1:  # To organize the transition from thumb cluster to central housing.
     anchor: t0F
     corner: SSE
