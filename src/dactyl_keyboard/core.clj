@@ -89,7 +89,7 @@
       (auxf/backplate-block getopt))
     (when (getopt :case :rear-housing :include)
       (body/rear-housing getopt))
-    (body/wall-tweaks getopt)
+    (body/main-body-tweaks getopt)
     (when (getopt :case :bottom-plate :include)
       (bottom/anchors-in-main-body getopt))
     (auxf/foot-plates getopt)
@@ -146,7 +146,8 @@
             (when (getopt :case :central-housing :derived :include-lip)
               (bilateral (central/lip-body-right getopt)))
             (when (getopt :case :central-housing :derived :include-adapter)
-              (bilateral (central/adapter-fastener-receivers getopt))))
+              (bilateral (central/adapter-fastener-receivers getopt)))
+            (body/central-tweaks getopt))
           (when (getopt :case :central-housing :derived :include-adapter)
             (bilateral
               (central/adapter-right-fasteners getopt)
@@ -234,7 +235,7 @@
       (wrist/unified-preview getopt)
       (bottom/wrist-anchors-positive getopt)
       (when (= (getopt :wrist-rest :style) :solid)
-        (body/wall-tweaks getopt)))))
+        (body/main-body-tweaks getopt)))))
 
 (defn build-rubber-pad-right
   "Right-hand-side wrist-rest pad model. Useful in visualization and
@@ -247,7 +248,7 @@
         (wrist/rubber-insert-positive getopt))
       (bottom/wrist-anchors-positive getopt)
       (when (= (getopt :wrist-rest :style) :solid)
-        (body/wall-tweaks getopt)))))
+        (body/main-body-tweaks getopt)))))
 
 (defn- collect-anchors
   "Gather names and properties for the placement of keyboard features relative

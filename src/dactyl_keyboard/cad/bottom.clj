@@ -19,7 +19,7 @@
             [dactyl-keyboard.cad.body :as body]
             [dactyl-keyboard.cad.wrist :as wrist]
             [dactyl-keyboard.param.access
-             :refer [most-specific get-key-alias tweak-data]]))
+             :refer [most-specific get-key-alias main-body-tweak-data]]))
 
 
 ;;;;;;;;;;;
@@ -194,7 +194,7 @@
     (mask-3d getopt)
     (maybe/union
       (key/metacluster body/cluster-wall getopt)
-      (body/wall-tweaks getopt))))
+      (body/main-body-tweaks getopt))))
 
 (defn- floor-finder
   "Make a function that takes a key mount and returns a 2D vertex
@@ -286,7 +286,7 @@
   "The footprint of all user-requested additional shapes that go to the floor."
   [getopt]
   (apply maybe/union (map #(tweak-plate-shadows getopt (:hull-around %))
-                          (filter :at-ground (tweak-data getopt)))))
+                          (filter :at-ground (main-body-tweak-data getopt)))))
 
 (defn- case-positive-2d
   "A union of polygons representing the interior of the case, including the

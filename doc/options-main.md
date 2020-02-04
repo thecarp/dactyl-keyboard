@@ -47,6 +47,7 @@ Each heading in this document represents a recognized configuration key in the m
                     - Parameter <a href="#user-content-case-central-housing-adapter-receivers-width-taper">`taper`</a>
         - Section <a href="#user-content-case-central-housing-bottom-plate">`bottom-plate`</a>
             - Parameter <a href="#user-content-case-central-housing-bottom-plate-fastener-positions">`fastener-positions`</a>
+        - Parameter <a href="#user-content-case-central-housing-tweaks">`tweaks`</a>
     - Section <a href="#user-content-case-rear-housing">`rear-housing`</a>
         - Parameter <a href="#user-content-case-rear-housing-include">`include`</a>
         - Parameter <a href="#user-content-case-rear-housing-wall-thickness">`wall-thickness`</a>
@@ -448,6 +449,10 @@ Any bottom plating for the case will extend to the midpoint of the central housi
 
 The positions of threaded fasteners used to attach the bottom plate to the body of the central housing.
 
+#### Parameter <a id="case-central-housing-tweaks">`tweaks`</a>
+
+Precisely like `case` → `tweaks` but just for the central housing.
+
 ### Section <a id="case-rear-housing">`rear-housing`</a>
 
 The furthest row of a key cluster can be extended into a rear housing for the MCU and various other features.
@@ -732,6 +737,8 @@ In the following example, `A` and `B` are key aliases that would be defined else
         - [B, NNE]
         - [A, SSW, 0, 4]
 ```
+
+Note that tweaks listed here will be considered part of the main body of the keyboard. A separate parameter is available for tweaking the central housing.
 
 ### Section <a id="case-foot-plates">`foot-plates`</a>
 

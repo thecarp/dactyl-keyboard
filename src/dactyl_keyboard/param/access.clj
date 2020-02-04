@@ -145,7 +145,12 @@
   [getopt cluster coord]
   (getopt :keys :derived (most-specific getopt [:key-style] cluster coord)))
 
-(defn tweak-data
+(defn main-body-tweak-data
   "Retrieve payload data for case tweaks without their names."
   [getopt]
   (apply concat (vals (getopt :case :tweaks))))
+
+(defn central-tweak-data
+  "Same for the central housing."
+  [getopt]
+  (apply concat (vals (getopt :case :central-housing :tweaks))))

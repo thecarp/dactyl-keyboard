@@ -374,6 +374,10 @@
      :validate [::schema/anchored-2d-list]}
     "The positions of threaded fasteners used to attach the bottom plate to "
     "the body of the central housing."]
+   [:parameter [:case :central-housing :tweaks]
+    {:default [] :parse-fn schema/case-tweak-map
+     :validate [::schema/tweak-name-map]}
+    "Precisely like `case` → `tweaks` but just for the central housing."]
    [:section [:case :rear-housing]
     "The furthest row of a key cluster can be extended into a rear housing "
     "for the MCU and various other features."]
@@ -677,7 +681,11 @@
     "        hull-around:\n"
     "        - [A, SSE]\n"
     "        - [B, NNE]\n"
-    "        - [A, SSW, 0, 4]\n```"]
+    "        - [A, SSW, 0, 4]\n```\n"
+    "\n"
+    "Note that tweaks listed here will be considered part of the main body "
+    "of the keyboard. A separate parameter is available for tweaking the "
+    "central housing."]
    [:section [:case :foot-plates]
     "Optional flat surfaces at ground level for adding silicone rubber feet "
     "or cork strips etc. to the bottom of the keyboard to increase friction "

@@ -17,7 +17,8 @@
             [dactyl-keyboard.cad.key :as key]
             [dactyl-keyboard.compass :as compass :refer [sharp-left sharp-right]]
             [dactyl-keyboard.param.access :as access :refer [most-specific
-                                                             tweak-data]]))
+                                                             main-body-tweak-data
+                                                             central-tweak-data]]))
 
 
 ;;;;;;;;;;;;;
@@ -426,8 +427,12 @@
       (tweak-map getopt node)
       (apply (partial tweak-posts getopt) node))))
 
-(defn wall-tweaks
-  "User-requested additional shapes."
+(defn- tweak-union
+  [getopt data-fn]
+  "User-requested additional shapes from some data."
   [getopt]
-  (apply model/union
-    (reduce (partial tweak-plating getopt) [] (tweak-data getopt))))
+  (apply maybe/union
+    (reduce (partial tweak-plating getopt) [] (data-fn getopt))))
+
+(defn main-body-tweaks [getopt] (tweak-union getopt main-body-tweak-data))
+(defn central-tweaks [getopt] (tweak-union getopt central-tweak-data))

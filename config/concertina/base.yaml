@@ -442,9 +442,10 @@ case:
       width: 3
       lip:
         include: true
+        thickness: 2
         width:
-          outer: 3
-          taper: 2
+          outer: 2
+          taper: 4
       fasteners:
         positions:
         - starting-point: ci-thumb-1
@@ -468,6 +469,14 @@ case:
         offset: [15, -50]
       - anchor: ci-near-base
         offset: [-15, 5]
+    tweaks:  # Tweaks for the central housing.
+      mcu-holder:
+      - at-ground: true
+        hull-around:
+        - [mcu-plate, NE]
+        - [mcu-SE]
+        - [mcu-SW]
+        - [mcu-plate, NW]
   bottom-plate:
     include: true
     thickness: 2
@@ -686,16 +695,13 @@ case:
       - [m5L1]
       - [ca-far-base]
       - [ci-far-base]
-    mcu-holder:
-    - at-ground: true
-      hull-around: [[mcu-plate]]
 mcu:
   include: true
   position:
     central: true
     anchor: ci-far-base
     corner: NNE
-    offset: [-18, -2, 0]
+    offset: [-18, -2, -3]
   support:
     lock:
       include: true
@@ -715,3 +721,15 @@ secondaries:
     corner: SSE
     segment: 4
     offset: [5, 13, -8]
+  # A couple of offsets from the inner corners of the MCU plate, designed to
+  # get out of the way of the screw that attaches the MCU lock bolt.
+  mcu-SE:
+    anchor: mcu-plate
+    corner: SE
+    segment: 2
+    offset: [-2, 8, 0]
+  mcu-SW:
+    anchor: mcu-plate
+    corner: SW
+    segment: 2
+    offset: [2, 8, 0]
