@@ -176,12 +176,14 @@
 (defn- masked-cut
   "A slice of a 3D object at z=0, restricted by the mask, not hulled."
   [getopt shape]
-  (->> shape model/cut (model/intersection (mask-2d getopt))))
+  (when-not (empty? shape)
+    (->> shape model/cut (model/intersection (mask-2d getopt)))))
 
 (defn- masked-hull
   "A hulled slice of a 3D object at z=0, restricted by the mask."
   [getopt shape]
-  (->> shape model/cut model/hull (model/intersection (mask-2d getopt))))
+  (when-not (empty? shape)
+    (->> shape model/cut model/hull (model/intersection (mask-2d getopt)))))
 
 (defn- wall-base-3d
   "A sliver cut from the case wall."
