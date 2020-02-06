@@ -137,30 +137,33 @@
             ([subject-right subject-left]  ; Chiral.
              (maybe/union subject-right (maybe/mirror [-1 0 0] subject-left))))]
     (maybe/union
-      (body/mask getopt (getopt :case :bottom-plate :include)
-        (maybe/difference
-          (maybe/union
-            (central/main-shell getopt)
-            (when (getopt :case :bottom-plate :include)
-              (bilateral (bottom/anchors-in-central-housing getopt)))
-            (when (getopt :case :central-housing :derived :include-lip)
-              (bilateral (central/lip-body-right getopt)))
+      (maybe/difference
+        (body/mask getopt (getopt :case :bottom-plate :include)
+          (maybe/difference
+            (maybe/union
+              (central/main-shell getopt)
+              (when (getopt :case :bottom-plate :include)
+                (bilateral (bottom/anchors-in-central-housing getopt)))
+              (when (getopt :case :central-housing :derived :include-lip)
+                (bilateral (central/lip-body-right getopt)))
+              (when (getopt :case :central-housing :derived :include-adapter)
+                (bilateral (central/adapter-fastener-receivers getopt)))
+              (body/central-tweaks getopt))
             (when (getopt :case :central-housing :derived :include-adapter)
-              (bilateral (central/adapter-fastener-receivers getopt)))
-            (body/central-tweaks getopt))
-          (when (getopt :case :central-housing :derived :include-adapter)
-            (bilateral
-              (central/adapter-right-fasteners getopt)
-              (central/adapter-left-fasteners getopt)))
-          (when (getopt :mcu :derived :include-centrally)
-            (mcu/negative-composite getopt))
-          (when (getopt :case :bottom-plate :include)
-            (bilateral
-              (bottom/holes-in-main-plate getopt)
-              (bottom/holes-in-left-housing getopt))))
-        (when (and (getopt :mcu :derived :include-centrally)
-                   (getopt :mcu :support :lock :include))
-          (mcu/lock-fixture-composite getopt)))
+              (bilateral
+                (central/adapter-right-fasteners getopt)
+                (central/adapter-left-fasteners getopt)))
+            (when (getopt :mcu :derived :include-centrally)
+              (mcu/negative-composite getopt))
+            (when (getopt :case :bottom-plate :include)
+              (bilateral
+                (bottom/holes-in-main-plate getopt)
+                (bottom/holes-in-left-housing getopt))))
+          (when (and (getopt :mcu :derived :include-centrally)
+                     (getopt :mcu :support :lock :include))
+            (mcu/lock-fixture-composite getopt))
+          (sandbox/positive getopt))
+        (sandbox/negative getopt))
       (when (and (getopt :case :bottom-plate :include)
                  (getopt :case :bottom-plate :preview))
         (if (and (getopt :wrist-rest :include)
