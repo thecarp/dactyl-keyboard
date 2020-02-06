@@ -16,28 +16,28 @@ case:
       interface:
         - base:
             offset: [0, -20, 0]
-            alias: point1
+            right-hand-alias: point1
         - base:
             offset: [0, -30, 20]
-            alias: point2
+            right-hand-alias: point2
         - base:
             offset: [0, -30, 50]
-            alias: point3
+            right-hand-alias: point3
         - base:
             offset: [0, -20, 70]
-            alias: point4
+            right-hand-alias: point4
         - base:
             offset: [0, 20, 70]
-            alias: point5
+            right-hand-alias: point5
         - base:
             offset: [0, 30, 50]
-            alias: point6
+            right-hand-alias: point6
         - base:
             offset: [0, 30, 20]
-            alias: point7
+            right-hand-alias: point7
         - base:
             offset: [0, 20, 0]
-            alias: point8
+            right-hand-alias: point8
     adapter:
       include: true
       fasteners:

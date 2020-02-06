@@ -293,11 +293,13 @@ If this and `reflect` are both true, add a central housing.
 
 #### Parameter <a id="case-central-housing-preview">`preview`</a>
 
-If `true`, include the rear housing when rendering each half of the main body.
+If `true`, include the central housing when rendering each half of the main body of the keyboard.
 
 #### Section <a id="case-central-housing-shape">`shape`</a>
 
-The shape of the central housing determines, in part, how it connects to the rest of the keyboard, including the general shape of an adapter. The adapter is also influenced, in part, by settings devoted to it, in the next section.
+The shape of the central housing determines, in part, how it connects to the rest of the keyboard, including the general shape of an optional adapter. The adapter is also influenced, in part, by settings devoted to it, in the next section.
+
+Assuming that adapters are included, you can think of a keyboard with a central housing as a row of buildings: Terraced housing, also known as row houses. In this metaphor, the series of vertices placed with the `interface` parameter in this section, and the `width`, determine the shape of each house. The adapters are the gables on either side of a particular house, up against which two others house are built: The two mirrored halves of the main body.
 
 ##### Parameter <a id="case-central-housing-shape-width">`width`</a>
 
@@ -307,9 +309,36 @@ The approximate extent of the housing itself, on the x axis, in mm.
 
 The shape of each outer edge of the housing, at the interface between the housing itself and the rest of the case.
 
-The `interface` setting describes the right-hand side of the housing as a list of vertices. Each vertex is defined primarily by a three-dimensional `offset` in mm from a point that is displaced from the origin of the coordinate system by exactly one half of the `width` set above. Thus, a minimal, triangular profile can be achieved like so, moving clockwise from the point of view of positive infinite x:
+The `interface` setting describes the shape of the housing as a list of vertices, each defined primarily by an offset in a little section (key) called `base`. The following properties are allowed in the value of `base`:
 
-```interface:
+* `offset` (required): A three-dimensional position in mm. This offset is from a point that is already displaced from the origin of the coordinate system by exactly one half of the `width` set above.
+* `left-hand-alias` (optional): A symbolic name for this point on the interface. Specifically, `left-hand-alias` will identify the point on the left-hand edge of the housing in its standard orientation.
+* `right-hand-alias` (optional): A symbolic name for the point on the right-hand-side edge. Because the right-hand side of the main body of the keyboard is the source of the left-hand side (with `reflect`, hence with a central housing), a `right-hand-alias` has more general utility. It’s usually a good idea to anchor your main key cluster to one of these.
+
+In addition to this `base` section, each item in the `interface` list may also include an `adapter` section. This section, and everything in it, is optional and relates to the central housing adapter feature. Briefly, the adapter fits precisely onto each interface of the housing. Here’s what the `adapter` section can contain:
+* `offset`: Not to be confused with the base offset, this one is also three-dimensional and in mm. It’s added to the width of the adapter and the base position.
+* `alias`: A symbolic name for this point on the side of the adapter facing away from the central housing. Notice that the side facing toward the central housing is coterminous with the interface itself, so the corresponding point on it is named by `right-hand-alias`.
+
+The following example covers only one vertex on the housing and one corresponding vertex on its adapter, and is therefore not a complete interface. That said, it does show all of the properties one item in the `interface` list can have, with realistic values.
+
+```
+  interface:
+  - base:
+      offset: [0, 20, 40]
+      left-hand-alias: housing-side-1L
+      right-hand-alias: housing-side-1R
+    adapter:
+      offset: [10, 0, 0]
+      alias: adapter-side-1
+```
+In this example, the vertex named `adapter-side-1` will be placed 10 mm plus the overall width of the adapter away from `housing-side-1R`, with the body of the adapter covering the intervening distance, so that the shell of the adapter touches both vertices, and the housing only touches one.
+
+Aliases for vertices on the interface itself, as opposed to the adapter, are useful mainly when you anchor features like an MCU holder to the central housing. Doing so, you need to be aware that the central housing has both symmetric and asymmetric properties. Its basic shape, including everything you can determine with `interface`, will be bilaterally symmetric. Adapters and their fasteners, and bottom plates, are also symmetric, except for threaded holes. By contrast, central-housing-specific `tweaks` and MCU holders will only appear on the specific side of the housing that you indicate, breaking symmetry.
+
+Here’s an example of a valid, minimal, triangular profile, like a little ridge tent:
+
+```
+  interface:
   - base:
       offset: [0, -10, 0]
   - base:
@@ -317,27 +346,16 @@ The `interface` setting describes the right-hand side of the housing as a list o
   - base:
       offset: [0, 10, 0]
 ```
-In this example, the high point in the middle is offset on the x axis, giving the edge of the central housing a slant. Notice also that the lowest z coordinate is 0, which places this central housing on the floor, inside the `mask`; this is not required. A lower z coordinate will cause the `mask` to open the bottom of the central housing, which is usually more practical.
+In this example, the high point in the middle is offset on the x axis, giving the edge of the central housing a slant as seen from infinite y. Notice also that the lowest z coordinate is 0, which places this central housing on the floor, inside the `mask`. This is not required. A lower z coordinate will cause the `mask` to open the bottom of the central housing, which is usually more practical for running wires through the keyboard.
 
-The series of vertices placed this way is conceptually similar to the outline of a house’s gable, up against which another house is built. Here, this other house usually starts with a central housing adapter, a feature which fits precisely onto each side of the housing. The basic form of the adapter is determined as part of the interface itself: Each `base` vertex of the interface has a corresponding vertex on the adapter, and each can be named with an `alias` for use as an anchor of other features.
+The DMOTE application uses the `interface` to construct OpenSCAD polyhedrons. OpenSCAD and CGAL have many requirements upon polyhedrons and a carelessly constructed interface will violate them, resulting in a central housing that cannot be rendered or printed. As a rule of thumb, define your interface moving clockwise from the point of view of positive infinite x, like the tent example. Be especially careful with `adapter` offsets on the y and z axes, and keep the housing itself more than twice as broad as its wall thickness at all points.
 
-The following example covers only one vertex on the housing and one corresponding outer point on its adapter, and is therefore not a complete interface. That said, it does show all of the properties one item in the `interface` list can have.
-
-```interface:
-  - base:
-      offset: [0, 20, 40]
-      alias: housing-side-1
-    adapter:
-      offset: [10, 0, 0]
-      alias: adapter-side-1
-```
-In this example, the vertex named `adapter-side-1` will be placed 10 mm plus the overall width of the adapter away from `housing-side-1`, with the body of the adapter covering the intervening distance, so that the outer shell of the adapter touches both vertices, and the housing only one.
 
 #### Section <a id="case-central-housing-adapter">`adapter`</a>
 
 The central housing can connect to key clusters through an adapter: A part that is shaped like the central housing and extends the rest of the case to meet the central housing at an interface.
 
-Using `tweaks`, points on the adapter should be connected to key cluster walls to close the case around the adapter but leave the adapter itself open.
+Using `case` → `tweaks`, points on the adapter should be connected to key cluster walls to close the case around the adapter but leave the adapter itself open.
 
 ##### Parameter <a id="case-central-housing-adapter-include">`include`</a>
 
@@ -345,7 +363,7 @@ If this is `true`, add an adapter for the central housing.
 
 ##### Parameter <a id="case-central-housing-adapter-width">`width`</a>
 
-The approximate width of the adapter on each side of the central housing, along its axis (the x axis). Individual points on the adapter can be offset from this width.
+The approximate width of the adapter on each side of the central housing, along its axis (the x axis). Individual points on the adapter can be offset from this width using the `interface` list.
 
 ##### Section <a id="case-central-housing-adapter-lip">`lip`</a>
 

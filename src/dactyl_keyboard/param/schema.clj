@@ -53,8 +53,11 @@
 (def central-housing-interface
   (tuple-of
     (map-like
-      {:base (map-like {:offset vec, :alias keyword})
-       :adapter (map-like {:offset vec, :alias keyword})})))
+      {:base (map-like {:offset vec
+                        :left-hand-alias keyword
+                        :right-hand-alias keyword})
+       :adapter (map-like {:offset vec
+                           :alias keyword})})))
 
 (def central-housing-normal-positions
   (tuple-of
@@ -158,9 +161,11 @@
   (spec/keys :req-un [::position]  ; 2D.
              :opt-un [::alias]))
 (spec/def :central/offset ::tarmi/point-3d)
+(spec/def :central/left-hand-alias ::alias)
+(spec/def :central/right-hand-alias ::alias)
 (spec/def :central/base
   (spec/keys :req-un [:central/offset]
-             :opt-un [::alias]))
+             :opt-un [:central/left-hand-alias :central/right-hand-alias]))
 (spec/def :central/adapter
   (spec/keys :opt-un [:central/offset ::alias]))
 (spec/def :central/interface-node

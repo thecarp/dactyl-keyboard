@@ -111,7 +111,8 @@
   (let [props {:type :central-housing, :index idx}
         pluck (fn [alias part extra]
                 (when alias [alias (merge props {:part part} extra)]))]
-    [(pluck (:alias base) :gabel {:side :right})
+    [(pluck (:right-hand-alias base) :gabel {:side :right})
+     (pluck (:left-hand-alias base) :gabel {:side :left})
      (pluck (:alias adapter) :adapter {})]))
 
 

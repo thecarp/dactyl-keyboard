@@ -354,7 +354,7 @@ case:
       # The near side:
       - base:
           offset: [42, -55, -5]
-          alias: ci-near-base
+          right-hand-alias: ci-near-base
         adapter:
           alias: ca-near-base
       - base:
@@ -388,12 +388,12 @@ case:
       # The top side, all the same height:
       - base:
           offset: [0, -40, 125]
-          alias: ci-near-roof
+          right-hand-alias: ci-near-roof
         adapter:
           alias: ca-near-roof
       - base:
           offset: [0, -33, 125]
-          alias: ci-thumb-1
+          right-hand-alias: ci-thumb-1
         adapter:
           alias: ca-thumb-1
       - base:
@@ -418,14 +418,13 @@ case:
           alias: ca-mid-4
       - base:
           offset: [30, 25, 125]
-          alias: ci-far-roof
         adapter:
           offset: [10, 0, 0]
           alias: ca-far-roof
       # The far side:
       - base:
           offset: [30, 35, 115]
-          alias: ci-far-wall
+          right-hand-alias: ci-far-wall
         adapter:
           offset: [10, 0, 0]
       - base:
@@ -434,7 +433,7 @@ case:
           alias: ca-far-wall
       - base:
           offset: [50, 40, -5]
-          alias: ci-far-base
+          right-hand-alias: ci-far-base
         adapter:
           alias: ca-far-base
     adapter:
