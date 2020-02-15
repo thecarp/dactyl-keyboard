@@ -265,8 +265,7 @@
 
 (defn- tweak-floor-vertex
   "A corner vertex on a tweak wall, extending from a key mount."
-  [getopt segment-picker bottom
-   [alias directions first-segment last-segment]]
+  [getopt segment-picker bottom [alias directions first-segment last-segment]]
   {:post [(spec/valid? ::tarmi-core/point-2d %)]}
   (let [segment (segment-picker (range first-segment (inc last-segment)))]
     (take 2 (place/reckon-from-anchor getopt alias

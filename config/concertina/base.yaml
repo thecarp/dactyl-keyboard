@@ -354,7 +354,7 @@ case:
       # The near side, ascending:
       - above-ground: true
         base:
-          offset: [42, -55, -5]
+          offset: [42, -55, -10]
           right-hand-alias: ci-near-base
         adapter:
           alias: ca-near-base
@@ -386,7 +386,9 @@ case:
           offset: [0, -55, 110]
         adapter:
           alias: ca-near-upper-5
-      # The near top, all the same height:
+      # The top, all the same height, with a couple of extra points just for
+      # the bottom plate mixed in to bring the plate out of the way of the
+      # bowled main key cluster.
       - base:
           offset: [0, -40, 125]
           right-hand-alias: ci-near-roof
@@ -403,15 +405,18 @@ case:
           offset: [15, 0, 0]
           alias: ca-mid-1
       - base:
+          offset: [35, -20, -10]  # Bottom plate only.
+        adapter:
+          alias: ca-bottom-1
+      - base:
           offset: [0, -10, 125]
         adapter:
           offset: [25, 0, 0]
           alias: ca-mid-2
-      # One extra point brings the bottom plate out of the way of the
-      # bowled main key cluster and does not shape the body.
       - base:
-          offset: [40, -5, -5]
-      # Returning to the top:
+          offset: [35, -5, -10]  # Bottom plate only.
+        adapter:
+          alias: ca-bottom-2
       - base:
           offset: [0, 10, 125]
         adapter:
@@ -439,7 +444,7 @@ case:
           alias: ca-far-wall
       - above-ground: true
         base:
-          offset: [50, 40, -5]
+          offset: [50, 40, -10]
           right-hand-alias: ci-far-base
         adapter:
           alias: ca-far-base
@@ -682,12 +687,13 @@ case:
       - [m2L, NNW, 3]
       - [m1L, NNE, 3]
       - [m1L, NNW, 3]
-    bottom:  # A thin strip along the east side of the main cluster.
-             # This comes in two parts because hulling the entire strip
-             # would extend the bottom plate outside the case.
+    bottom:
+    # A thin strip along the east side of the main cluster.
+    # This comes in two parts because hulling the entire strip would extend the
+    # bottom plate outside the case.
     - at-ground: true
-      chunk-size: 2
       hull-around:
+      - [ca-bottom-1]
       - [ci-near-base]
       - [ca-near-base]
       - [m5F, SSE, 0, 3]
@@ -696,11 +702,12 @@ case:
     - at-ground: true
       chunk-size: 2
       hull-around:
+      - [ca-bottom-1]
       - [m5F, ENE, 0]
       - [m5M, ESE, 0]
       - [m5M, ENE, 0]
+      - [ca-bottom-2]
     - at-ground: true
-      chunk-size: 2
       hull-around:
       - [m5M, ENE, 0]
       - [m5L, ESE, 0]
@@ -708,6 +715,7 @@ case:
       - [m5L1]
       - [ca-far-base]
       - [ci-far-base]
+      - [ca-bottom-2]
 mcu:
   include: true
   position:
