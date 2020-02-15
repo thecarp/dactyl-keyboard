@@ -1,6 +1,6 @@
 # Configuration fragment for the base of a Concertina.
 #
-# A work in progress. Pre-prototype stage.
+# A work in progress. Prototyping stage.
 #
 # This resembles the DMOTE but the hands are vertically oriented, and for this
 # reason, the keyboard is joined by a central housing rather than fully split.
@@ -29,8 +29,8 @@ keys:
 key-clusters:
   main:
     position:
-      anchor: ca-far-base
-      offset: [-17, -32, 75]
+      anchor: ca-ether
+      offset: [33, 8, 10]
     matrix-columns:
     - rows-above-home: 1
       rows-below-home: 1
@@ -351,8 +351,9 @@ case:
     shape:
       width: 190
       interface:
-      # The near side:
-      - base:
+      # The near side, ascending:
+      - above-ground: true
+        base:
           offset: [42, -55, -5]
           right-hand-alias: ci-near-base
         adapter:
@@ -385,7 +386,7 @@ case:
           offset: [0, -55, 110]
         adapter:
           alias: ca-near-upper-5
-      # The top side, all the same height:
+      # The near top, all the same height:
       - base:
           offset: [0, -40, 125]
           right-hand-alias: ci-near-roof
@@ -406,6 +407,11 @@ case:
         adapter:
           offset: [25, 0, 0]
           alias: ca-mid-2
+      # One extra point brings the bottom plate out of the way of the
+      # bowled main key cluster and does not shape the body.
+      - base:
+          offset: [40, -5, -5]
+      # Returning to the top:
       - base:
           offset: [0, 10, 125]
         adapter:
@@ -421,7 +427,7 @@ case:
         adapter:
           offset: [10, 0, 0]
           alias: ca-far-roof
-      # The far side:
+      # The far side, descending:
       - base:
           offset: [30, 35, 115]
           right-hand-alias: ci-far-wall
@@ -431,11 +437,19 @@ case:
           offset: [40, 40, 110]
         adapter:
           alias: ca-far-wall
-      - base:
+      - above-ground: true
+        base:
           offset: [50, 40, -5]
           right-hand-alias: ci-far-base
         adapter:
           alias: ca-far-base
+      # Finally, there’s an “ethereal” point that does not appear in the body or
+      # the plate but is useful for anchoring key clusters.
+      - at-ground: false
+        base:
+          offset: [0, 0, 60]
+        adapter:
+          alias: ca-ether
     adapter:
       include: true
       width: 3

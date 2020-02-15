@@ -249,14 +249,18 @@
 ;; Central housing.
 
 (defn- chousing-place
-  "Place passed shape in relation to a vertex of the central housing."
+  "Place passed shape in relation to a vertex of the central housing.
+  Pick the most useful precomputed 3D vertex, favouring actual vertices on
+  the body of the central housing over more ethereral vertices that are not
+  part of the body but correspond to its outer shell."
   [getopt index part side depth subject]
   {:pre [(nat-int? index), (keyword? part), (keyword? depth)]}
-  (let [prop (partial getopt :case :central-housing :derived :points part)
-        base (case part
-               :gabel (prop side depth index)
-               :adapter (prop depth index))]
-    (flex/translate base subject)))
+  (let [points (getopt :case :central-housing :derived :interface index :points)
+        coord (or  ; Pick the first of a number of candidates.
+               (get-in points [:above-ground part side depth])  ; Gabel.
+               (get-in points [:above-ground part depth])  ; Adapter.
+               (get-in points [:ethereal part]))]  ; Fallback even for at-ground.
+    (flex/translate coord subject)))
 
 (defn- chousing-fastener-landmark
   "Find a 3-tuple of coordinates for a fastener element for the central

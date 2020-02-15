@@ -53,7 +53,9 @@
 (def central-housing-interface
   (tuple-of
     (map-like
-      {:base (map-like {:offset vec
+      {:at-ground boolean
+       :above-ground boolean
+       :base (map-like {:offset vec
                         :left-hand-alias keyword
                         :right-hand-alias keyword})
        :adapter (map-like {:offset vec
@@ -170,7 +172,7 @@
   (spec/keys :opt-un [:central/offset ::alias]))
 (spec/def :central/interface-node
   (spec/keys :req-un [:central/base]
-             :opt-un [:central/adapter]))
+             :opt-un [:central/adapter ::at-ground ::above-ground]))
 (spec/def :central/starting-point keyword?)
 (spec/def :central/direction-point keyword?)
 (spec/def :central/lateral-offset #(not (zero? %)))

@@ -225,6 +225,32 @@
           (matrix/trace-between
             (getopt :key-clusters :derived :by-cluster cluster :key-requested?)))))))
 
+(defn- check-chousing-polygon
+  [points]
+  (when (< (count (distinct points)) 2)
+    (throw (ex-info (str "Too few points at ground level in central housing. "
+                         "Unable to draw bottom plate.")
+             {:available-points points
+              :minimum-count 2}))))
+
+(defn- chousing-floor-polygon
+  "A polygon for the body of the central housing
+  This goes through all interface points at ground and then reverses through
+  the most extreme of those points, shifted to x=0."
+  [getopt]
+  (let [gabel (central/interface getopt :at-ground [:points :at-ground :gabel])
+        centre-full (sort (map #(assoc % 0 0) gabel))]
+    (check-chousing-polygon gabel)
+    (model/polygon (concat gabel [(last centre-full) (first centre-full)]))))
+
+(defn- chousing-adapter-polygon
+  "A polygon for the central-housing adapter."
+  [getopt]
+  (let [gabel (central/interface getopt :at-ground [:points :at-ground :gabel])
+        adapter (central/interface getopt :at-ground [:points :at-ground :adapter])]
+    (check-chousing-polygon gabel)
+    (model/polygon (concat gabel (reverse adapter)))))
+
 (defn- rhousing-floor-polygon
   "A polygon describing the area underneath the rear housing.
   A projection of the 3D shape would work but it would require taking care to
@@ -298,9 +324,9 @@
     (masked-cut getopt (anchors-for-main-plate getopt))
     (all-tweak-shadows getopt)
     (when (getopt :case :central-housing :derived :include-main)
-      (masked-hull getopt (central/main-shell getopt)))
+      (chousing-floor-polygon getopt))
     (when (getopt :case :central-housing :derived :include-adapter)
-      (masked-cut getopt (central/adapter-shell getopt)))
+      (chousing-adapter-polygon getopt))
     ;; With a rear housing that connects to a regular key cluster wall, there
     ;; is a distinct possibility that two polygons (one for the housing, one
     ;; for the cluster wall) will overlap at one vertex, forming a union where

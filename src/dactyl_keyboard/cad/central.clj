@@ -4,12 +4,14 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns dactyl-keyboard.cad.central
-  (:require [thi.ng.math.core :as math]
+  (:require [clojure.spec.alpha :as spec]
+            [thi.ng.math.core :as math]
             [scad-clj.model :as model]
-            [scad-tarmi.core :refer [abs]]
+            [scad-tarmi.core :as tarmi :refer [abs]]
             [scad-tarmi.maybe :as maybe]
             [scad-tarmi.threaded :as threaded]
             [scad-tarmi.util :refer [loft]]
+            [dactyl-keyboard.misc :refer [soft-merge]]
             [dactyl-keyboard.cad.misc :refer [wafer]]
             [dactyl-keyboard.cad.poly :as poly]
             [dactyl-keyboard.cad.place :as place]))
@@ -20,15 +22,22 @@
 ;;;;;;;;;;;;;;;
 
 ;; Geometry.
+(defn- get-z-offset
+  "Get just a z-axis base offset."
+  [interface-item]
+  (get-in interface-item [:base :offset 2] 0))
 (defn- outline-back-to-3d
   [base-3d outline]
   (map (fn [[x _ _] [y1 z1]] [x y1 z1]) base-3d outline))
 (defn- horizontal-shifter [x-fn] (fn [[x y z]] [(x-fn x) y z]))
 (defn- mirror-shift [points] (map (horizontal-shifter -) points))
 (defn- shift-points
-  "Manipulate a series of 3D points forming a perimeter.
-  Inset (contract) the points in the yz plane (in 2D) and/or shift each point
-  on the x axis (back in 3D). Return a vector for indexability."
+  "Manipulate a series of 3D points.
+  If there are at least three points or a non-zero inset is passed, the points
+  must form a perimeter (a valid polygon) in the yz plane (2D). In that case
+  the polygon will be contracted by a positive inset. Each point will also be
+  shifted on the x axis (back in 3D) by a non-zero delta-x. Return a vector for
+  indexability."
   ([base]  ; Presumably called for vector conversion.
    (shift-points base 0))
   ([base inset]
@@ -36,16 +45,32 @@
   ([base inset delta-x]
    (shift-points base inset + delta-x))
   ([base inset x-operator delta-x]
-   (as-> base subject
-     (mapv rest subject)
-     (poly/from-outline subject inset)
-     (outline-back-to-3d base subject)
-     (mapv (horizontal-shifter #(x-operator % delta-x)) subject))))
+   {:pre [(spec/valid? ::tarmi/point-coll-3d base)
+          (number? inset)
+          (number? delta-x)]}
+   (mapv (horizontal-shifter #(x-operator % delta-x))
+     (if (zero? inset)
+       ;; Support sequences that are not valid polygons.
+       base
+       ;; Else apply the inset before the horizontal shifter.
+       (as-> base subject
+         (mapv rest subject)
+         (poly/from-outline subject inset)
+         (outline-back-to-3d base subject))))))
 
 ;; Predicates for sorting fasteners by the object they penetrate.
 (defn- adapter-side [{:keys [lateral-offset]}] (neg? lateral-offset))
 (defn- housing-side [{:keys [lateral-offset]}] (pos? lateral-offset))
 (defn- any-side [_] true)
+
+;; Predicates for filtering items in the interface for drawing different
+;; bodies.
+(defn- above-ground?  ; If true, to be included in main body.
+  [{:keys [above-ground] :as point}]
+  (if (nil? above-ground) (not (neg? (get-z-offset point))) above-ground))
+(defn- at-ground?  ; If true, to be included in bottom plate.
+  [{:keys [at-ground] :as point}]
+  (if (nil? at-ground) (not (pos? (get-z-offset point))) at-ground))
 
 (defn- fastener-feature
   "The union of all features produced by a given model function at the sites of
@@ -106,14 +131,145 @@
 
 (defn- collect-point-pair
   "Collect any aliases noted in the user configuration for one item in the
-  interface array."
-  [idx {:keys [base adapter]}]
-  (let [props {:type :central-housing, :index idx}
-        pluck (fn [alias part extra]
-                (when alias [alias (merge props {:part part} extra)]))]
-    [(pluck (:right-hand-alias base) :gabel {:side :right})
-     (pluck (:left-hand-alias base) :gabel {:side :left})
-     (pluck (:alias adapter) :adapter {})]))
+  interface array. Data about the item is expected to have been enriched by
+  the cross-index function for this purpose."
+  [source-index item]
+  (let [props {:type :central-housing, :index source-index}
+        pluck (fn [path part extra]
+                (when-let [alias (get-in item path)]
+                  [alias (merge props {:part part} extra)]))]
+    [(pluck [:base :right-hand-alias] :gabel {:side :right})
+     (pluck [:base :left-hand-alias] :gabel {:side :left})
+     (pluck [:adapter :alias] :adapter {})]))
+
+(defn- get-offsets
+  "Get raw offsets for each point on the interface."
+  [interface]
+  [(map #(get-in % [:base :offset] [0 0 0]) interface)
+   (map #(get-in % [:adapter :offset] [0 0 0]) interface)])
+
+(defn- get-widths
+  "Get half the width of the central housing and the full width of its
+  adapter."
+  [getopt]
+  [(/ (getopt :case :central-housing :shape :width) 2)
+   (getopt :case :central-housing :adapter :width)])
+
+(defn- resolve-offsets
+  "Find the 3D coordinates of points on the outer shell of passed interface."
+  [getopt interface]
+  (let [[half-width adapter-width] (get-widths getopt)
+        [base adapter] (get-offsets interface)
+        gabel (shift-points base 0 half-width)]
+    [gabel
+     (mapv (partial mapv + [adapter-width 0 0]) gabel (shift-points adapter))]))
+
+(defn- filter-indexed
+  "Filter an interface list while annotating it with its source indices."
+  [interface pred]
+  (keep-indexed (fn [index item] (when (pred item) [index item])) interface))
+
+(defn- index-map
+  "Filter an interface list. Return both a map of indices in the original list
+  to indices in the filtered version, and the filtered version itself.
+  This is intended to allow tracing items in the filtered version back to
+  the original, as is required to fully annotate the interface."
+  [interface pred]
+  (let [indexed (filter-indexed interface pred)]
+    [(into {} (map-indexed (fn [local [global _]] [global local]) indexed))
+     (map second indexed)]))
+
+(defn- annotate-interface
+  "Annotate relevant points in the central housing interface with additional
+  information relevant only to a shorter, hnce differently indexed, list."
+  [interface index-map basepath & subpath-data-pairs]
+  (map-indexed
+    (fn [global-index item]
+      (if-let [local-index (get index-map global-index)]
+        ;; Data should exist for the interface item.
+        (reduce
+          (fn [coll [subpath data]]
+            ;; Add one datum to the item without overriding neighbours.
+            (soft-merge coll
+              (assoc-in {} (concat basepath subpath) (get data local-index))))
+          item
+          (partition 2 subpath-data-pairs))
+        ;; Else pass the item through unchanged.
+        item))
+    interface))
+
+(defn- locate-above-ground-points
+  "Derive 3D coordinates on the main body of the central housing."
+  [getopt interface]
+  (let [[half-width _] (get-widths getopt)
+        thickness (getopt :case :web-thickness)
+        [cross-indexed items] (index-map interface :above-ground)
+        [base-offsets _] (get-offsets items)
+        [right-gabel-outer adapter-outer] (resolve-offsets getopt items)
+        shift-left (partial shift-points (mirror-shift base-offsets))]
+    (annotate-interface interface cross-indexed [:points :above-ground]
+      [:gabel :right :outer] right-gabel-outer
+      [:gabel :right :inner] (shift-points base-offsets thickness half-width)
+      [:gabel :left :outer] (shift-left 0 - half-width)
+      [:gabel :left :inner] (shift-left thickness - half-width)
+      [:adapter :outer] adapter-outer
+      [:adapter :inner] (shift-points adapter-outer thickness))))
+
+(defn- locate-lip
+  "Derive 3D coordinates on the adapter lip of the central housing."
+  [getopt interface]
+  (let [[cross-indexed items] (index-map interface :above-ground)
+        thickness (getopt :case :central-housing :adapter :lip :thickness)
+        width (partial getopt :case :central-housing :adapter :lip :width)
+        base (map #(get-in % [:points :above-ground :gabel :right :inner]) items)
+        shift-in (partial shift-points base)]
+    (annotate-interface interface cross-indexed [:points :above-ground]
+      [:lip :outside :outer] (shift-in 0 (width :outer))
+      [:lip :outside :inner] (shift-in thickness (width :outer))
+      [:lip :inside :outer] (shift-in 0 - (+ (width :taper) (width :inner)))
+      [:lip :inside :inner] (shift-in thickness - (width :inner)))))
+
+(defn- locate-at-ground-points
+  "Derive some useful 2D coordinates for drawing bottom plates."
+  [getopt interface]
+  (let [[cross-indexed items] (index-map interface :at-ground)
+        [gabel adapter] (map (partial mapv #(vec (take 2 %)))
+                             (resolve-offsets getopt items))]
+    (annotate-interface interface cross-indexed [:points :at-ground]
+      [:gabel] gabel
+      [:adapter] adapter)))
+
+(defn- locate-non-above-ground-points
+  "Derive 3D coordinates for points on the interface that do not directly
+  shape the central housing or its adapter. This includes points that only
+  shape the floor, and “ethereal” points that shape no part of the central
+  housing or its floor, except as anchors."
+  [getopt interface]
+  (let [[cross-indexed items] (index-map interface (complement :above-ground))
+        [gabel adapter] (resolve-offsets getopt items)]
+    (annotate-interface interface cross-indexed [:points :ethereal]
+      [:gabel] gabel
+      [:adapter] adapter)))
+
+(defn- prepare-criteria
+  "Derive quick-access flags for component inclusion."
+  [getopt]
+  (let [include-main (and (getopt :reflect)
+                          (getopt :case :central-housing :include))
+        include-adapter (and include-main
+                             (getopt :case :central-housing :adapter :include))]
+    {:include-main include-main
+     :include-adapter include-adapter
+     :include-lip (and include-adapter
+                       (getopt :case :central-housing :adapter :lip :include))}))
+
+(defn- categorize-explicitly
+  "Annotate an interface item with explicit category tags.
+  Some of these may replace sparser tagging from the user configuration."
+  [item]
+  (-> item
+    (assoc :above-ground (above-ground? item))
+    (assoc :at-ground (at-ground? item))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -124,6 +280,7 @@
   "A map of aliases to corresponding indices in the interface array."
   [getopt]
   (->> (getopt :case :central-housing :shape :interface)
+    (map categorize-explicitly)
     (map-indexed collect-point-pair)
     (apply concat)
     (into {})))
@@ -131,40 +288,29 @@
 (defn derive-properties
   "Derive certain properties from the base configuration."
   [getopt]
-  (let [thickness (getopt :case :web-thickness)
-        half-width (/ (getopt :case :central-housing :shape :width) 2)
-        adapter-width (getopt :case :central-housing :adapter :width)
-        interface (getopt :case :central-housing :shape :interface)
-        base-points (map #(get-in % [:base :offset]) interface)
-        left-points (mirror-shift base-points)
-        gabel-out (shift-points base-points 0 half-width)
-        gabel-in (shift-points base-points thickness half-width)
-        adapter-points-3d (map #(get-in % [:adapter :offset] [0 0 0]) interface)
-        adapter-intrinsic (shift-points adapter-points-3d)
-        adapter-outer (mapv (partial map + [adapter-width 0 0])
-                            gabel-out adapter-intrinsic)
-        lip-t (getopt :case :central-housing :adapter :lip :thickness)
-        lip-w (partial getopt :case :central-housing :adapter :lip :width)
-        include-main (and (getopt :reflect)
-                          (getopt :case :central-housing :include))
-        include-adapter (and include-main
-                             (getopt :case :central-housing :adapter :include))]
-    {:include-main include-main
-     :include-adapter include-adapter
-     :include-lip (and include-adapter
-                       (getopt :case :central-housing :adapter :lip :include))
-     :points
-      {:gabel {:right {:outer gabel-out
-                       :inner gabel-in}
-               :left {:outer (shift-points left-points 0 - half-width)
-                      :inner (shift-points left-points thickness - half-width)}}
-       :adapter {:outer adapter-outer
-                 :inner (shift-points adapter-outer thickness)}
-       :lip {:outside {:outer (shift-points gabel-in 0 (lip-w :outer))
-                       :inner (shift-points gabel-in lip-t (lip-w :outer))}
-             :inside {:outer (shift-points gabel-in 0 - (+ (lip-w :taper)
-                                                           (lip-w :inner)))
-                      :inner (shift-points gabel-in lip-t - (lip-w :inner))}}}}))
+  (merge
+    (prepare-criteria getopt)
+    {:interface  ; An annotated version of the interface list.
+      (->> (getopt :case :central-housing :shape :interface)
+        (map categorize-explicitly)
+        (locate-above-ground-points getopt)
+        (locate-lip getopt)  ; Uses results from locate-above-ground-points.
+        (locate-at-ground-points getopt)
+        (locate-non-above-ground-points getopt)
+        (vec))}))  ; Because literal lists are not indexable.
+
+(defn interface
+  "Access some precomputed set of coordinates from derive-properties."
+  [getopt pred item-path]
+  (mapv #(get-in % item-path)
+        (filter pred (getopt :case :central-housing :derived :interface))))
+
+(defn vertices
+  "Access a coordinate sequence."
+  ([getopt item-path]
+   (vertices getopt :above-ground item-path))
+  ([getopt pred item-path]
+   (interface getopt pred (concat [:points pred] item-path))))
 
 
 ;;;;;;;;;;;;;;;;;;;
@@ -214,12 +360,11 @@
 (defn lip-body-right
   "A lip for an adapter."
   [getopt]
-  (let [vertices (partial getopt :case :central-housing :derived :points :lip)]
-    (poly/tuboid
-      (vertices :outside :outer)
-      (vertices :outside :inner)
-      (vertices :inside :outer)
-      (vertices :inside :inner))))
+  (poly/tuboid
+    (vertices getopt [:lip :outside :outer])
+    (vertices getopt [:lip :outside :inner])
+    (vertices getopt [:lip :inside :outer])
+    (vertices getopt [:lip :inside :inner])))
 
 (defn adapter-shell
   "An OpenSCAD polyhedron describing an adapter for the central housing.
@@ -227,12 +372,11 @@
   because those may affect other parts of the adapted case."
   [getopt]
   (maybe/union
-    (let [vertices (partial getopt :case :central-housing :derived :points)]
-      (poly/tuboid
-        (vertices :gabel :right :outer)
-        (vertices :gabel :right :inner)
-        (vertices :adapter :outer)
-        (vertices :adapter :inner)))
+    (poly/tuboid
+      (vertices getopt [:gabel :right :outer])
+      (vertices getopt [:gabel :right :inner])
+      (vertices getopt [:adapter :outer])
+      (vertices getopt [:adapter :inner]))
     (fastener-feature getopt adapter-side single-receiver)))
 
 (defn main-shell
@@ -240,12 +384,11 @@
   For use in building both the central housing itself as a program output
   and a bottom plate at floor level."
   [getopt]
-  (let [vertices (partial getopt :case :central-housing :derived :points)]
-    (poly/tuboid
-      (vertices :gabel :left :outer)
-      (vertices :gabel :left :inner)
-      (vertices :gabel :right :outer)
-      (vertices :gabel :right :inner))))
+  (poly/tuboid
+    (vertices getopt [:gabel :left :outer])
+    (vertices getopt [:gabel :left :inner])
+    (vertices getopt [:gabel :right :outer])
+    (vertices getopt [:gabel :right :inner])))
 
 (defn negatives
   "Collected negative space for the keyboard case model beyond the adapter."
