@@ -35,8 +35,7 @@ Each heading in this document represents a recognized configuration key in the m
                     - Parameter <a href="#user-content-case-central-housing-adapter-lip-width-inner">`inner`</a>
                     - Parameter <a href="#user-content-case-central-housing-adapter-lip-width-taper">`taper`</a>
             - Section <a href="#user-content-case-central-housing-adapter-fasteners">`fasteners`</a>
-                - Parameter <a href="#user-content-case-central-housing-adapter-fasteners-diameter">`diameter`</a>
-                - Parameter <a href="#user-content-case-central-housing-adapter-fasteners-length">`length`</a>
+                - Parameter <a href="#user-content-case-central-housing-adapter-fasteners-bolt-properties">`bolt-properties`</a>
                 - Parameter <a href="#user-content-case-central-housing-adapter-fasteners-positions">`positions`</a>
             - Section <a href="#user-content-case-central-housing-adapter-receivers">`receivers`</a>
                 - Section <a href="#user-content-case-central-housing-adapter-receivers-thickness">`thickness`</a>
@@ -61,7 +60,7 @@ Each heading in this document represents a recognized configuration key in the m
                 - Parameter <a href="#user-content-case-rear-housing-position-offsets-south">`south`</a>
         - Parameter <a href="#user-content-case-rear-housing-height">`height`</a>
         - Section <a href="#user-content-case-rear-housing-fasteners">`fasteners`</a>
-            - Parameter <a href="#user-content-case-rear-housing-fasteners-diameter">`diameter`</a>
+            - Parameter <a href="#user-content-case-rear-housing-fasteners-bolt-properties">`bolt-properties`</a>
             - Parameter <a href="#user-content-case-rear-housing-fasteners-bosses">`bosses`</a>
             - Section <a href="#user-content-case-rear-housing-fasteners-west">`west`</a>
                 - Parameter <a href="#user-content-case-rear-housing-fasteners-west-include">`include`</a>
@@ -73,7 +72,7 @@ Each heading in this document represents a recognized configuration key in the m
         - Parameter <a href="#user-content-case-back-plate-include">`include`</a>
         - Parameter <a href="#user-content-case-back-plate-beam-height">`beam-height`</a>
         - Section <a href="#user-content-case-back-plate-fasteners">`fasteners`</a>
-            - Parameter <a href="#user-content-case-back-plate-fasteners-diameter">`diameter`</a>
+            - Parameter <a href="#user-content-case-back-plate-fasteners-bolt-properties">`bolt-properties`</a>
             - Parameter <a href="#user-content-case-back-plate-fasteners-distance">`distance`</a>
             - Parameter <a href="#user-content-case-back-plate-fasteners-bosses">`bosses`</a>
         - Section <a href="#user-content-case-back-plate-position">`position`</a>
@@ -93,8 +92,7 @@ Each heading in this document represents a recognized configuration key in the m
                     - Parameter <a href="#user-content-case-bottom-plate-installation-inserts-diameter-top">`top`</a>
                     - Parameter <a href="#user-content-case-bottom-plate-installation-inserts-diameter-bottom">`bottom`</a>
             - Section <a href="#user-content-case-bottom-plate-installation-fasteners">`fasteners`</a>
-                - Parameter <a href="#user-content-case-bottom-plate-installation-fasteners-diameter">`diameter`</a>
-                - Parameter <a href="#user-content-case-bottom-plate-installation-fasteners-length">`length`</a>
+                - Parameter <a href="#user-content-case-bottom-plate-installation-fasteners-bolt-properties">`bolt-properties`</a>
                 - Parameter <a href="#user-content-case-bottom-plate-installation-fasteners-positions">`positions`</a>
     - Section <a href="#user-content-case-leds">`leds`</a>
         - Parameter <a href="#user-content-case-leds-include">`include`</a>
@@ -124,9 +122,7 @@ Each heading in this document represents a recognized configuration key in the m
         - Section <a href="#user-content-mcu-support-lock">`lock`</a>
             - Parameter <a href="#user-content-mcu-support-lock-include">`include`</a>
             - Parameter <a href="#user-content-mcu-support-lock-width-factor">`width-factor`</a>
-            - Section <a href="#user-content-mcu-support-lock-fastener">`fastener`</a>
-                - Parameter <a href="#user-content-mcu-support-lock-fastener-style">`style`</a>
-                - Parameter <a href="#user-content-mcu-support-lock-fastener-diameter">`diameter`</a>
+            - Parameter <a href="#user-content-mcu-support-lock-fastener-properties">`fastener-properties`</a>
             - Section <a href="#user-content-mcu-support-lock-plate">`plate`</a>
                 - Parameter <a href="#user-content-mcu-support-lock-plate-alias">`alias`</a>
                 - Parameter <a href="#user-content-mcu-support-lock-plate-base-thickness">`base-thickness`</a>
@@ -408,13 +404,17 @@ The default value, zero, produces a right-angled transition. The higher the valu
 
 To connect the central housing and the adapter, threaded fasteners can be driven through the wall of either, into receivers extending from the other.
 
-###### Parameter <a id="case-central-housing-adapter-fasteners-diameter">`diameter`</a>
+###### Parameter <a id="case-central-housing-adapter-fasteners-bolt-properties">`bolt-properties`</a>
 
-The ISO metric diameter of each fastener.
+This parameter describes the properties of a screw or bolt. It takes a mapping appropriate for the `bolt` function in the [`scad-klupe.iso`](https://github.com/veikman/scad-klupe) library.
 
-###### Parameter <a id="case-central-housing-adapter-fasteners-length">`length`</a>
+The following describes only a subset of what you can include here:
 
-The length of each fastener in mm. This should be longer than the thickness of the housing wall.
+* `m-diameter`: The ISO metric diameter of a bolt, e.g. `6` for M6.
+* `head-type`: A keyword describing the head of the bolt, such as `hex` or `countersunk`.
+* `total-length`: The length of the threaded part of the bolt, in mm.
+
+Default values provided by the application are bare minima. More usefully, the application injects DFM functions and flags negative space for specific uses.
 
 ###### Parameter <a id="case-central-housing-adapter-fasteners-positions">`positions`</a>
 
@@ -532,9 +532,17 @@ The height in mm of the roof, over the floor.
 
 Threaded bolts can run through the roof of the rear housing, making it a hardpoint for attachments like a stabilizer to connect the two halves of a split keyboard.
 
-##### Parameter <a id="case-rear-housing-fasteners-diameter">`diameter`</a>
+##### Parameter <a id="case-rear-housing-fasteners-bolt-properties">`bolt-properties`</a>
 
-The ISO metric diameter of each fastener.
+This parameter describes the properties of a screw or bolt. It takes a mapping appropriate for the `bolt` function in the [`scad-klupe.iso`](https://github.com/veikman/scad-klupe) library.
+
+The following describes only a subset of what you can include here:
+
+* `m-diameter`: The ISO metric diameter of a bolt, e.g. `6` for M6.
+* `head-type`: A keyword describing the head of the bolt, such as `hex` or `countersunk`.
+* `total-length`: The length of the threaded part of the bolt, in mm.
+
+Default values provided by the application are bare minima. More usefully, the application injects DFM functions and flags negative space for specific uses.
 
 ##### Parameter <a id="case-rear-housing-fasteners-bosses">`bosses`</a>
 
@@ -582,13 +590,21 @@ The nominal vertical extent of the back plate in mm. Because the plate is bottom
 
 Two threaded bolts run through the back plate.
 
-##### Parameter <a id="case-back-plate-fasteners-diameter">`diameter`</a>
+##### Parameter <a id="case-back-plate-fasteners-bolt-properties">`bolt-properties`</a>
 
-The ISO metric diameter of each fastener.
+This parameter describes the properties of a screw or bolt. It takes a mapping appropriate for the `bolt` function in the [`scad-klupe.iso`](https://github.com/veikman/scad-klupe) library.
+
+The following describes only a subset of what you can include here:
+
+* `m-diameter`: The ISO metric diameter of a bolt, e.g. `6` for M6.
+* `head-type`: A keyword describing the head of the bolt, such as `hex` or `countersunk`.
+* `total-length`: The length of the threaded part of the bolt, in mm.
+
+Default values provided by the application are bare minima. More usefully, the application injects DFM functions and flags negative space for specific uses.
 
 ##### Parameter <a id="case-back-plate-fasteners-distance">`distance`</a>
 
-The horizontal distance between the fasteners.
+The horizontal distance between the bolts.
 
 ##### Parameter <a id="case-back-plate-fasteners-bosses">`bosses`</a>
 
@@ -680,13 +696,17 @@ Bottom diameter in mm. This needs to be at least as large as the top diameter si
 
 The type and positions of the threaded fasteners used to secure each bottom plate.
 
-###### Parameter <a id="case-bottom-plate-installation-fasteners-diameter">`diameter`</a>
+###### Parameter <a id="case-bottom-plate-installation-fasteners-bolt-properties">`bolt-properties`</a>
 
-The ISO metric diameter of each fastener.
+This parameter describes the properties of a screw or bolt. It takes a mapping appropriate for the `bolt` function in the [`scad-klupe.iso`](https://github.com/veikman/scad-klupe) library.
 
-###### Parameter <a id="case-bottom-plate-installation-fasteners-length">`length`</a>
+The following describes only a subset of what you can include here:
 
-The length in mm of each fastener. In the `threads` style, this refers to the part of the screw that is itself threaded: It excludes the head.
+* `m-diameter`: The ISO metric diameter of a bolt, e.g. `6` for M6.
+* `head-type`: A keyword describing the head of the bolt, such as `hex` or `countersunk`.
+* `total-length`: The length of the threaded part of the bolt, in mm.
+
+Default values provided by the application are bare minima. More usefully, the application injects DFM functions and flags negative space for specific uses.
 
 ###### Parameter <a id="case-bottom-plate-installation-fasteners-positions">`positions`</a>
 
@@ -855,7 +875,7 @@ An MCU lock is a support feature made up of three parts:
 * A fixture printed as part of the case. This fixture includes a plate for the PCB and a socket. The socket holds a USB connector on the PCB in place.
 * The bolt of the lock, printed separately.
 * A threaded fastener, not printed.
-The fastener connects the bolt to the fixture as the lock closes over the PCB.
+The fastener connects the bolt to the fixture as the lock closes over the PCB. Confusingly, the fastener constitutes a bolt, in a different sense of that word.
 
 A lock is most appropriate when the PCB aligns with a long, flat wall; typically the wall of a rear housing. It has the advantage that it can hug the connector on the PCB tightly from four sides, thus preventing a fragile surface-mounted connector from snapping off.
 
@@ -867,17 +887,11 @@ If `true`, include a lock.
 
 A multiplier for the width of the PCB. This determines the width of the parts touching the PCB in a lock: The plate and the base of the bolt.
 
-##### Section <a id="mcu-support-lock-fastener">`fastener`</a>
+##### Parameter <a id="mcu-support-lock-fastener-properties">`fastener-properties`</a>
 
-A threaded bolt connects the lock to the case.
+Like the various `bolt-properties` parameters elsewhere, this parameter describes a threaded fastener using the `bolt` function in the [`scad-klupe.iso`](https://github.com/veikman/scad-klupe) library.
 
-###### Parameter <a id="mcu-support-lock-fastener-style">`style`</a>
-
-A style of bolt head (cap) supported by `scad-tarmi`.
-
-###### Parameter <a id="mcu-support-lock-fastener-diameter">`diameter`</a>
-
-The ISO metric diameter of the fastener.
+This particular set of fastener propertes should not include a `total-length` because the application will interpolate default values for both `unthreaded-length` and `threaded-length` based on other properties of the lock. A contradictory `total-length` is an error.
 
 ##### Section <a id="mcu-support-lock-plate">`plate`</a>
 
@@ -911,7 +925,7 @@ The wall thickness of the socket.
 
 ##### Section <a id="mcu-support-lock-bolt">`bolt`</a>
 
-The bolt, named by analogy with a lock, is not to be confused with the threaded fastener (also a bolt) holding it in place.
+The bolt of the MCU lock, named by analogy with a regular door lock, is not to be confused with the threaded fastener holding it in place. The properties of the threaded fastener are set using `fastener-properties` above while the properties of the lock bolt are set here.
 
 ###### Parameter <a id="mcu-support-lock-bolt-clearance">`clearance`</a>
 

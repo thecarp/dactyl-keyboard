@@ -109,9 +109,23 @@ For printing prototypes and any printing with PLA-like materials that stiffen
 quickly, build support from the base plate only. This simplifies the process
 of removing the supports.
 
-For accuracy problems, especially with threaded fasteners, consider tweaking
-the DFM settings [documented here](options-main.md), particularly the
-`error-general` parameter.
+### Accuracy
+
+If you are printing holes for threaded fasteners as part of your design, please
+note that common FDM printers won’t print threaded holes smaller than M3 with
+useful accuracy. M4 is a safer bet, but even that may require some manual
+cleanup, particularly in orientations other than the vertical.
+
+For accuracy problems in general, and especially for problems with threaded
+holes, consider tweaking the DFM settings [documented here](options-main.md),
+particularly the `error-general` parameter.
+
+You may prefer tapping threads yourself. Each of the `bolt-properties`
+parameters to the application can take a value for `include-threading`. If you
+set this to `false`, a hole cut for that bolt will be a plain cylinder with the
+inner diameter (a.k.a. minor diameter) of standard ISO threading. If you have
+enough plastic in the perimeter of that hole, you can drill it to clean up the
+print and then tap it.
 
 ### Bottom plates
 

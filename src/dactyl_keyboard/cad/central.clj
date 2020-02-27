@@ -9,10 +9,10 @@
             [scad-clj.model :as model]
             [scad-tarmi.core :as tarmi :refer [abs]]
             [scad-tarmi.maybe :as maybe]
-            [scad-tarmi.threaded :as threaded]
             [scad-tarmi.util :refer [loft]]
+            [scad-klupe.iso :as iso]
             [dactyl-keyboard.misc :refer [soft-merge]]
-            [dactyl-keyboard.cad.misc :refer [wafer]]
+            [dactyl-keyboard.cad.misc :refer [merge-bolt wafer]]
             [dactyl-keyboard.cad.poly :as poly]
             [dactyl-keyboard.cad.place :as place]))
 
@@ -99,10 +99,10 @@
   [getopt {:keys [lateral-offset]}]
   (let [rprop (partial getopt :case :central-housing :adapter :receivers)
         fprop (partial getopt :case :central-housing :adapter :fasteners)
+        diameter (fprop :bolt-properties :m-diameter)
         z-wall (getopt :case :web-thickness)
-        diameter (fprop :diameter)
         width (+ diameter (* 2 (rprop :thickness :rim)))
-        z-hole (- (fprop :length) z-wall)
+        z-hole (- (iso/bolt-length (fprop :bolt-properties)) z-wall)
         z-bridge (min z-hole (rprop :thickness :bridge))
         x-gabel (abs lateral-offset)
         x-inner (+ x-gabel (rprop :width :inner))
@@ -319,17 +319,12 @@
 
 (defn build-fastener
   "A threaded fastener for attaching a central housing to its adapter.
-  This needs to be mirrored for the left-hand-side adapter, being chiral.
-  Hence it is written for use as an OpenSCAD module."
+  This needs to be mirrored for the left-hand-side adapter, being chiral
+  by default. Hence it is written for use as an OpenSCAD module."
   [getopt]
-  (let [prop (partial getopt :case :central-housing :adapter :fasteners)]
-    (threaded/bolt
-      :iso-size (prop :diameter),
-      :head-type :countersunk,
-      :point-type :cone,
-      :total-length (prop :length),
-      :compensator (getopt :dfm :derived :compensator)
-      :negative true)))
+  (merge-bolt
+    {:compensator (getopt :dfm :derived :compensator), :negative true}
+    (getopt :case :central-housing :adapter :fasteners :bolt-properties)))
 
 (defn adapter-right-fasteners
   "All of the screws (negative space) for one side of the housing and adapter."

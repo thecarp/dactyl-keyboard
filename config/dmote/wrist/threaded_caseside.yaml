@@ -7,8 +7,10 @@ wrist-rest:
   style: threaded
   mounts:
   - fasteners:
-      diameter: 4
-      length: 60
+      bolt-properties:
+        m-diameter: 4
+        head-type: socket
+        total-length: 60
       height:
         first: 3
     angle: -1.2
@@ -27,8 +29,10 @@ wrist-rest:
         wr0c: case-side
         wr0p: plinth-side
   - fasteners:
-      diameter: 4
-      length: 45
+      bolt-properties:
+        m-diameter: 4
+        head-type: socket
+        total-length: 45
       height:
         first: 3
     angle: -1.2

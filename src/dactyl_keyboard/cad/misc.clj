@@ -7,7 +7,8 @@
 
 (ns dactyl-keyboard.cad.misc
   (:require [scad-clj.model :as model]
-            [scad-tarmi.maybe :as maybe]))
+            [scad-tarmi.maybe :as maybe]
+            [scad-klupe.iso :refer [bolt]]))
 
 (def wafer 0.001)  ; Generic insignificant feature size.
 (def nodule (apply model/cube (repeat 3 wafer)))
@@ -62,3 +63,8 @@
       (translator [0 0 (- radius)])
       rotator
       (translator [0 0 radius]))))
+
+(defn merge-bolt
+  "Wrap scad-klupe.iso/bolt for multiple sources of parameters."
+  [& option-maps]
+  (bolt (apply merge option-maps)))

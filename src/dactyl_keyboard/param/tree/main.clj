@@ -7,12 +7,12 @@
   (:require [clojure.spec.alpha :as spec]
             [clojure.java.io :refer [file]]
             [scad-tarmi.core :as tarmi-core]
-            [scad-tarmi.threaded :as threaded]
             [scad-app.core :as appdata]
             [dmote-keycap.data :as capdata]
             [dmote-keycap.schema :as capschema]
             [dactyl-keyboard.param.base :as base]
             [dactyl-keyboard.param.schema :as schema]
+            [dactyl-keyboard.param.stock :as stock]
             [dactyl-keyboard.param.tree.cluster :as cluster]
             [dactyl-keyboard.param.tree.nested :as nested]
             [dactyl-keyboard.param.tree.restmnt :as restmnt]
@@ -368,13 +368,9 @@
     "To connect the central housing and the adapter, threaded fasteners "
     "can be driven through the wall of either, into receivers extending "
     "from the other."]
-   [:parameter [:case :central-housing :adapter :fasteners :diameter]
-    {:default 6 :parse-fn num :validate [::threaded/iso-nominal]}
-    "The ISO metric diameter of each fastener."]
-   [:parameter [:case :central-housing :adapter :fasteners :length]
-    {:default 1 :parse-fn num}
-    "The length of each fastener in mm. This should be longer than the "
-    "thickness of the housing wall."]
+   [:parameter [:case :central-housing :adapter :fasteners :bolt-properties]
+    stock/implicit-threaded-bolt-metadata
+    stock/threaded-bolt-documentation]
    [:parameter [:case :central-housing :adapter :fasteners :positions]
     {:default []
      :parse-fn schema/central-housing-normal-positions
@@ -509,9 +505,9 @@
     "Threaded bolts can run through the roof of the rear housing, making it a "
     "hardpoint for attachments like a stabilizer to connect the two halves of "
     "a split keyboard."]
-   [:parameter [:case :rear-housing :fasteners :diameter]
-    {:default 6 :parse-fn num :validate [::threaded/iso-nominal]}
-    "The ISO metric diameter of each fastener."]
+   [:parameter [:case :rear-housing :fasteners :bolt-properties]
+    stock/implicit-threaded-bolt-metadata
+    stock/threaded-bolt-documentation]
    [:parameter [:case :rear-housing :fasteners :bosses]
     {:default false :parse-fn boolean}
     "If `true`, add nut bosses to the ceiling of the rear housing for each "
@@ -555,12 +551,12 @@
     "of this setting is on the area of the plate above its holes."]
    [:section [:case :back-plate :fasteners]
     "Two threaded bolts run through the back plate."]
-   [:parameter [:case :back-plate :fasteners :diameter]
-    {:default 6 :parse-fn num :validate [::threaded/iso-nominal]}
-    "The ISO metric diameter of each fastener."]
+   [:parameter [:case :back-plate :fasteners :bolt-properties]
+    stock/implicit-threaded-bolt-metadata
+    stock/threaded-bolt-documentation]
    [:parameter [:case :back-plate :fasteners :distance]
     {:default 1 :parse-fn num}
-    "The horizontal distance between the fasteners."]
+    "The horizontal distance between the bolts."]
    [:parameter [:case :back-plate :fasteners :bosses]
     {:default false :parse-fn boolean}
     "If `true`, cut nut bosses into the inside wall of the block."]
@@ -652,13 +648,9 @@
    [:section [:case :bottom-plate :installation :fasteners]
     "The type and positions of the threaded fasteners used to secure each "
     "bottom plate."]
-   [:parameter [:case :bottom-plate :installation :fasteners :diameter]
-    {:default 6 :parse-fn num :validate [::threaded/iso-nominal]}
-    "The ISO metric diameter of each fastener."]
-   [:parameter [:case :bottom-plate :installation :fasteners :length]
-    {:default 1 :parse-fn num}
-    "The length in mm of each fastener. In the `threads` style, this refers "
-    "to the part of the screw that is itself threaded: It excludes the head."]
+   [:parameter [:case :bottom-plate :installation :fasteners :bolt-properties]
+    stock/implicit-threaded-bolt-metadata
+    stock/threaded-bolt-documentation]
    [:parameter [:case :bottom-plate :installation :fasteners :positions]
     {:default []
      :parse-fn schema/anchored-2d-positions
@@ -871,7 +863,8 @@
     "* The bolt of the lock, printed separately.\n"
     "* A threaded fastener, not printed.\n"
     "The fastener connects the bolt to the fixture as the lock closes over "
-    "the PCB.\n\n"
+    "the PCB. Confusingly, the fastener constitutes a bolt, in a different "
+    "sense of that word.\n\n"
     "A lock is most appropriate when the PCB aligns with a long, flat wall; "
     "typically the wall of a rear housing. It has the advantage that it can "
     "hug the connector on the PCB tightly from four sides, thus preventing "
@@ -883,14 +876,19 @@
     {:default 1 :parse-fn num}
     "A multiplier for the width of the PCB. This determines the width of the "
     "parts touching the PCB in a lock: The plate and the base of the bolt."]
-   [:section [:mcu :support :lock :fastener]
-    "A threaded bolt connects the lock to the case."]
-   [:parameter [:mcu :support :lock :fastener :style]
-    {:default :countersunk :parse-fn keyword :validate [::threaded/head-type]}
-    "A style of bolt head (cap) supported by `scad-tarmi`."]
-   [:parameter [:mcu :support :lock :fastener :diameter]
-    {:default 6 :parse-fn num :validate [::threaded/iso-nominal]}
-    "The ISO metric diameter of the fastener."]
+   [:parameter [:mcu :support :lock :fastener-properties]
+    ;; This parameter is named “fastener-properties” instead of the normal
+    ;; “bolt-properties” to help distinguish it both from the lock bolt and
+    ;; from parameters that add an implicit default length. The nomenclature
+    ;; is not ideal.
+    stock/explicit-threaded-bolt-metadata
+    "Like the various `bolt-properties` parameters elsewhere, this parameter "
+    "describes a threaded fastener using the `bolt` function in the "
+    "[`scad-klupe.iso`](https://github.com/veikman/scad-klupe) library.\n\n"
+    "This particular set of fastener propertes should not include a "
+    "`total-length` because the application will interpolate default values "
+    "for both `unthreaded-length` and `threaded-length` based on other "
+    "properties of the lock. A contradictory `total-length` is an error."]
    [:section [:mcu :support :lock :plate]
     "In the lock, the MCU PCBA sits on a plate, as part of the fixture. "
     "This plate is named by analogy with a roughly corresponding part in a "
@@ -921,8 +919,11 @@
     {:default 1 :parse-fn num}
     "The wall thickness of the socket."]
    [:section [:mcu :support :lock :bolt]
-    "The bolt, named by analogy with a lock, is not to be confused with the "
-    "threaded fastener (also a bolt) holding it in place."]
+    "The bolt of the MCU lock, named by analogy with a regular door lock, is "
+    "not to be confused with the threaded fastener holding it in place. "
+    "The properties of the threaded fastener are set using "
+    "`fastener-properties` above while the properties of the lock bolt are set "
+    "here."]
    [:parameter [:mcu :support :lock :bolt :clearance]
     {:default 1 :parse-fn num}
     "The distance of the bolt from the populated side of the PCB. "

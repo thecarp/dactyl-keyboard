@@ -5,8 +5,10 @@ wrist-rest:
   style: threaded
   mounts:
   - fasteners:
-      diameter: 6
-      length: 55
+      bolt-properties:
+        m-diameter: 6
+        head-type: socket
+        total-length: 55
       height:
         first: 4
         increment: 16

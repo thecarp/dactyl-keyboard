@@ -7,7 +7,7 @@
   (:require [scad-clj.model :as model]
             [scad-tarmi.core :refer [abs sin cos π]]
             [scad-tarmi.maybe :as maybe]
-            [scad-tarmi.threaded :as threaded]
+            [scad-klupe.iso :refer [bolt-length nut]]
             [thi.ng.geom.core :refer [tessellate vertices bounds]]
             [thi.ng.geom.polygon :refer [polygon2 inset-polygon]]
             [dactyl-keyboard.cad.misc :as misc]
@@ -364,7 +364,7 @@
         anchoring (prop :anchoring)
         threaded-center-height
           ;; The mid-point height of the first threaded fastener.
-          (+ (/ (prop :fasteners :diameter) 2)
+          (+ (/ (prop :fasteners :bolt-properties :m-diameter) 2)
              (prop :fasteners :height :first))
         to-3d #(misc/pad-to-3d % threaded-center-height)
         ofa #(place/offset-from-anchor getopt (prop :blocks % :position) 2)
@@ -406,8 +406,9 @@
   [getopt mount-index]
   (let [prop (partial getopt :wrist-rest :mounts mount-index)]
     (->>
-      (prop :fasteners :length)
-      (model/cylinder (/ (prop :fasteners :diameter) 2))
+      (prop :fasteners :bolt-properties)
+      (bolt-length)
+      (model/cylinder (/ (prop :fasteners :bolt-properties :m-diameter) 2))
       (model/rotate [0 (/ π 2) (prop :derived :angle)])
       (model/translate (prop :derived :midpoint)))))
 
@@ -426,7 +427,8 @@
   [getopt mount-index]
   (let [prop (partial getopt :wrist-rest :mounts mount-index)]
     (->>
-      (threaded/nut :iso-size (prop :fasteners :diameter), :negative true)
+      (nut (merge {:negative true}
+                  (prop :fasteners :bolt-properties)))
       (model/rotate [(/ π 2) 0 0])
       (model/translate [0 3 0])
       (model/rotate [0 0 (prop :derived :angle)])
@@ -454,10 +456,11 @@
   "Nut(s) in the plinth-side plate, with pocket(s)."
   [getopt mount-index]
   (let [prop (partial getopt :wrist-rest :mounts mount-index)
-        d (prop :fasteners :diameter)
+        bolt-properties (prop :fasteners :bolt-properties)
+        d (:m-diameter bolt-properties)
         height (prop :blocks :plinth-side :pocket-height)
         compensator (getopt :dfm :derived :compensator)
-        nut (->> (threaded/nut :iso-size d, :negative true)
+        nut (->> (nut (merge {:negative true} bolt-properties))
                  (model/rotate [(/ π 2) 0 (/ π 2)])
                  (compensator d {}))]
     (->>

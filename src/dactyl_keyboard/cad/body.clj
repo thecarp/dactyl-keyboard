@@ -7,7 +7,7 @@
   (:require [scad-clj.model :as model]
             [scad-tarmi.core :refer [mean]]
             [scad-tarmi.maybe :as maybe]
-            [scad-tarmi.threaded :as threaded]
+            [scad-klupe.iso :as threaded]
             [scad-tarmi.util :refer [loft]]
             [dactyl-keyboard.cad.central :as central]
             [dactyl-keyboard.cad.mcu :as mcu]
@@ -318,7 +318,7 @@
 
 (defn- rhousing-mount-place [getopt side shape]
   {:pre [(compass/cardinals side)]}
-  (let [d (getopt :case :rear-housing :fasteners :diameter)
+  (let [d (getopt :case :rear-housing :fasteners :bolt-properties :m-diameter)
         offset (getopt :case :rear-housing :fasteners
                  (side compass/short-to-long) :offset)
         n (getopt :case :rear-housing :position :offsets :north)
@@ -335,21 +335,21 @@
 
 (defn- rhousing-mount-positive [getopt side]
   {:pre [(compass/cardinals side)]}
-  (let [d (getopt :case :rear-housing :fasteners :diameter)
+  (let [d (getopt :case :rear-housing :fasteners :bolt-properties :m-diameter)
         w (* 2.2 d)]
    (rhousing-mount-place getopt side
      (model/cube w w (threaded/datum d :hex-nut-height)))))
 
 (defn- rhousing-mount-negative [getopt side]
   {:pre [(compass/cardinals side)]}
-  (let [d (getopt :case :rear-housing :fasteners :diameter)
+  (let [d (getopt :case :rear-housing :fasteners :bolt-properties :m-diameter)
         compensator (getopt :dfm :derived :compensator)]
    (model/union
      (rhousing-mount-place getopt side
        (model/cylinder (/ d 2) 20))
      (if (getopt :case :rear-housing :fasteners :bosses)
        (rhousing-mount-place getopt side
-         (threaded/nut :iso-size d :compensator compensator :negative true))))))
+         (threaded/nut {:m-diameter d :compensator compensator :negative true}))))))
 
 (defn rear-housing
   "A squarish box at the far end of a key cluster."

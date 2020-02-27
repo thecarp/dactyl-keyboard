@@ -5,8 +5,8 @@
 
 (ns dactyl-keyboard.param.tree.restmnt
   (:require [clojure.spec.alpha :as spec]
-            [scad-tarmi.threaded :as threaded]
             [dactyl-keyboard.param.schema :as schema]
+            [dactyl-keyboard.param.stock :as stock]
             [dactyl-keyboard.compass :as compass]))
 
 
@@ -24,11 +24,9 @@
    [:parameter [:fasteners :amount]
     {:default 1 :parse-fn int}
     "The number of vertically stacked screws in the mount. 1 by default."]
-   [:parameter [:fasteners :diameter]
-    {:default 6 :parse-fn int :validate [::threaded/iso-nominal]}
-    "The ISO metric diameter of each fastener."]
-   [:parameter [:fasteners :length]
-    {:default 1 :parse-fn int} "The length in mm of each fastener."]
+   [:parameter [:fasteners :bolt-properties]
+    stock/implicit-threaded-bolt-metadata
+    stock/threaded-bolt-documentation]
    [:section [:fasteners :height]
     "The vertical level of the fasteners."]
    [:parameter [:fasteners :height :first]

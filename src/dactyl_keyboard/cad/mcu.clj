@@ -7,11 +7,10 @@
   (:require [scad-clj.model :as model]
             [scad-tarmi.core :refer [π]]
             [scad-tarmi.maybe :as maybe]
-            [scad-tarmi.threaded :as threaded]
+            [scad-klupe.iso :refer [head-length]]
             [scad-tarmi.util :refer [loft]]
-            [dactyl-keyboard.compass :as compass]
             [dactyl-keyboard.misc :refer [colours]]
-            [dactyl-keyboard.cad.misc :as misc]
+            [dactyl-keyboard.cad.misc :refer [merge-bolt wafer]]
             [dactyl-keyboard.cad.place :as place]))
 
 
@@ -171,11 +170,11 @@
            (model/cube (+ socket-x 6) 1 1)))))))
 
 (defn lock-fasteners-model
-  "Negative space for a bolt threading into an MCU lock."
+  "Negative space for a threaded bolt fastening an MCU lock."
   [getopt]
-  (let [head-type (getopt :mcu :support :lock :fastener :style)
-        d (getopt :mcu :support :lock :fastener :diameter)
-        l0 (threaded/head-height d head-type)
+  (let [d (getopt :mcu :support :lock :fastener-properties :m-diameter)
+        head-type (getopt :mcu :support :lock :fastener-properties :head-type)
+        l0 (head-length d head-type)
         l1 (if (= (getopt :mcu :position :anchor) :rear-housing)
              (getopt :case :rear-housing :wall-thickness)
              (getopt :case :web-thickness))
@@ -183,12 +182,11 @@
         l2 (getopt :mcu :support :lock :plate :clearance)
         y1 (getopt :mcu :support :lock :bolt :mount-length)]
     (->>
-      (threaded/bolt
-          :iso-size d
-          :head-type head-type
-          :unthreaded-length (max 0 (- (+ l1 l2) l0))
-          :threaded-length (getopt :mcu :support :lock :bolt :mount-thickness)
-          :negative true)
+      (merge-bolt
+        {:unthreaded-length (max 0 (- (+ l1 l2) l0))
+         :threaded-length (getopt :mcu :support :lock :bolt :mount-thickness)
+         :negative true}
+        (getopt :mcu :support :lock :fastener-properties))
       (model/rotate [π 0 0])
       (model/translate [0 (- (+ pcb-y (/ y1 2))) (- (+ (/ pcb-z 2) l1 l2))]))))
 
@@ -228,7 +226,7 @@
           (model/translate [0 (/ pcb-y -4) bolt-z0]
             (model/cube usb-x 1 bolt-z-mount))
           (model/translate [0 (- usb-overshoot usb-y) bolt-z1]
-            (model/cube usb-x misc/wafer contact-z))]))
+            (model/cube usb-x wafer contact-z))]))
      (pcba-model getopt true 0)  ; Notch the mount.
      (lock-fasteners-model getopt))))
 

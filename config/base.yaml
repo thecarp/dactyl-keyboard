@@ -30,23 +30,34 @@ case:
   central-housing:
     adapter:
       fasteners:
-        diameter: 4
-        length: 8.5
+        bolt-properties:
+          m-diameter: 4
+          head-type: countersunk
+          total-length: 8.5
   rear-housing:
     wall-thickness: 2.5
+  back-plate:
+    fasteners:
+      bolt-properties:
+        m-diameter: 4
+        head-type: countersunk
   bottom-plate:
     installation:
       thickness: 2.5
       fasteners:
-        diameter: 4
-        length: 8.5
+        bolt-properties:
+          m-diameter: 4
+          head-type: countersunk
+          point-type: cone
+          total-length: 8.5
 mcu:
   type: promicro
   support:
     lock:
       width-factor: 0.45
-      fastener:
-        diameter: 4
+      fastener-properties:
+        m-diameter: 4
+        head-type: countersunk
       plate:
         clearance: 0.9
       socket:

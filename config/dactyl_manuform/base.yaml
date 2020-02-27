@@ -245,8 +245,10 @@ case:
           bottom: 5.31
         length: 3.8
       fasteners:
-        diameter: 3  # Speculation; Dactyl-ManuForm may have used non-metric.
-        length: 6
+        bolt-properties:
+          m-diameter: 3  # Speculation; Dactyl-ManuForm may have used non-metric.
+          head-type: countersunk
+          total-length: 6
         positions:
         - anchor: m00
           corner: WSW

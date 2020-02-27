@@ -442,7 +442,10 @@ case:
         west: 2
     height: 53.5
     fasteners:
-      diameter: 6
+      bolt-properties:
+        m-diameter: 6
+        head-type: countersunk
+        total-length: 8.5
       bosses: true
       west:
         include: true
@@ -453,7 +456,9 @@ case:
   back-plate:
     beam-height: 20
     fasteners:
-      diameter: 6
+      bolt-properties:
+        m-diameter: 6
+        head-type: socket
       distance: 30
     position:
       anchor: back1

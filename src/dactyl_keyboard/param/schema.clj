@@ -7,7 +7,11 @@
 
 (ns dactyl-keyboard.param.schema
   (:require [clojure.spec.alpha :as spec]
+            [clojure.set :refer [intersection]]
             [scad-tarmi.core :as tarmi]
+            [scad-klupe.iso :refer [head-length]]
+            [scad-klupe.schema.base]
+            [scad-klupe.schema.iso]
             [dmote-keycap.schema :as capschema]
             [dactyl-keyboard.compass :as compass]))
 
@@ -49,6 +53,21 @@
         (Integer/parseInt (name candidate))  ; Input like “:1” (clj-yaml key).
         (catch java.lang.NumberFormatException _
           (keyword candidate))))))           ; Input like “:first” or “"first"”.
+
+(def explicit-bolt-properties (map-like scad-klupe.schema.iso/bolt-parsers))
+
+(defn implicit-bolt-properties
+  "Parse the properties of a bolt with an implicit, dynamic addition.
+  Where the user has not supplied any information at all on the length of
+  the bolt, interpolate a total length of 10 mm. This fallback is designed
+  not to interfere with the user’s choice among scad-klupe’s options for how
+  to specify a length."
+  [candidate]
+  (let [explicit (explicit-bolt-properties candidate)]
+    (merge explicit
+      (when-not (spec/valid? :scad-klupe.schema.base/bolt-length-specifiers
+                  explicit)
+        {:unthreaded-length 10}))))
 
 (def central-housing-interface
   (tuple-of
@@ -146,6 +165,17 @@
 ;;;;;;;;;;;;;;;;
 ;; Validators ;;
 ;;;;;;;;;;;;;;;;
+
+;; A complex spec predicate for scad-klupe bolts, extending to the
+;; relationships between length specifiers including head length.
+;; Because head length is calculated along the way, this validator does
+;; not provide very helpful output on failure.
+(spec/def ::comprehensive-bolt-properties
+  (spec/and
+    :scad-klupe.schema.iso/bolt-parameters
+    (fn [{:keys [m-diameter head-type] :as parameters}]
+      (spec/valid? :scad-klupe.schema.base/bolt-length-parameters
+        (assoc parameters :head-length (head-length m-diameter head-type))))))
 
 ;; Used with spec/keys, making the names sensitive:
 (spec/def ::anchor keyword?)

@@ -6,13 +6,13 @@
 (ns dactyl-keyboard.cad.bottom
   (:require [clojure.spec.alpha :as spec]
             [scad-clj.model :as model]
+            [scad-klupe.iso :as threaded]
             [scad-tarmi.core :refer [π] :as tarmi-core]
             [scad-tarmi.maybe :as maybe]
-            [scad-tarmi.threaded :as threaded]
             [dactyl-keyboard.compass :as compass]
             [dactyl-keyboard.misc :refer [colours]]
             [dactyl-keyboard.cad.central :as central]
-            [dactyl-keyboard.cad.misc :as misc :refer [wafer]]
+            [dactyl-keyboard.cad.misc :as misc :refer [merge-bolt wafer]]
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.key :as key]
@@ -33,14 +33,16 @@
   (let [prop (partial getopt :case :bottom-plate :installation)
         style (prop :style)
         thickness (* 2 (prop :thickness))
-        iso-size (prop :fasteners :diameter)
-        head-height (threaded/head-height iso-size :countersunk)
+        bolt-prop (prop :fasteners :bolt-properties)
+        m-diameter (:m-diameter bolt-prop)
+        bolt-length (threaded/bolt-length bolt-prop)
+        head-length (threaded/head-length m-diameter :countersunk)
         inserts (= style :inserts)
-        base-top-diameter (if inserts (prop :inserts :diameter :top) iso-size)
+        base-top-diameter (if inserts (prop :inserts :diameter :top) m-diameter)
         walled-top-diameter (+ base-top-diameter thickness)
-        z-top-interior (if inserts (max (+ head-height (prop :inserts :length))
-                                        (prop :fasteners :length))
-                                   (prop :fasteners :length))
+        z-top-interior (if inserts (max (+ head-length (prop :inserts :length))
+                                        bolt-length)
+                                   bolt-length)
         dome (model/translate [0 0 z-top-interior]
                (model/sphere (/ walled-top-diameter 2)))]
     (if inserts
@@ -49,7 +51,7 @@
               (model/translate [0 0 z-top-interior]
                 (model/cylinder (/ walled-top-diameter 2) wafer))
             bottom-disc
-              (model/translate [0 0 head-height]
+              (model/translate [0 0 head-length]
                 (model/cylinder (/ (+ bottom-diameter thickness) 2) wafer))]
         (model/union
           dome
@@ -63,22 +65,17 @@
   [getopt]
   (let [prop (partial getopt :case :bottom-plate :installation)
         style (prop :style)
-        iso-size (prop :fasteners :diameter)]
+        bolt-prop (prop :fasteners :bolt-properties)
+        head-type (prop :fasteners :bolt-properties :head-type)]
     (maybe/union
       (model/rotate [π 0 0]
-        (threaded/bolt
-          :iso-size iso-size,
-          :head-type :countersunk,
-          :point-type :cone,
-          :total-length (prop :fasteners :length),
-          :unthreaded-length (when (= style :threads) 0),
-          :threaded-length (when (not= style :threads) 0),
-          :compensator (getopt :dfm :derived :compensator)
-          :negative true))
+        (merge-bolt
+          {:compensator (getopt :dfm :derived :compensator), :negative true}
+          bolt-prop))
       (when (= style :inserts)
         (let [d0 (prop :inserts :diameter :bottom)
               d1 (prop :inserts :diameter :top)
-              z0 (threaded/head-height iso-size :countersunk)
+              z0 (threaded/head-length (:m-diameter bolt-prop) head-type)
               z1 (+ z0 (prop :inserts :length))]
           (misc/bottom-hull (model/translate [0 0 z1]
                               (model/cylinder (/ d1 2) wafer))

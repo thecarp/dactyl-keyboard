@@ -9,8 +9,7 @@ This specific document describes options for each “mount”, a pair of cuboid 
 ## Table of contents
 - Section <a href="#user-content-fasteners">`fasteners`</a>
     - Parameter <a href="#user-content-fasteners-amount">`amount`</a>
-    - Parameter <a href="#user-content-fasteners-diameter">`diameter`</a>
-    - Parameter <a href="#user-content-fasteners-length">`length`</a>
+    - Parameter <a href="#user-content-fasteners-bolt-properties">`bolt-properties`</a>
     - Section <a href="#user-content-fasteners-height">`height`</a>
         - Parameter <a href="#user-content-fasteners-height-first">`first`</a>
         - Parameter <a href="#user-content-fasteners-height-increment">`increment`</a>
@@ -44,13 +43,17 @@ Threaded fasteners in the mount.
 
 The number of vertically stacked screws in the mount. 1 by default.
 
-### Parameter <a id="fasteners-diameter">`diameter`</a>
+### Parameter <a id="fasteners-bolt-properties">`bolt-properties`</a>
 
-The ISO metric diameter of each fastener.
+This parameter describes the properties of a screw or bolt. It takes a mapping appropriate for the `bolt` function in the [`scad-klupe.iso`](https://github.com/veikman/scad-klupe) library.
 
-### Parameter <a id="fasteners-length">`length`</a>
+The following describes only a subset of what you can include here:
 
-The length in mm of each fastener.
+* `m-diameter`: The ISO metric diameter of a bolt, e.g. `6` for M6.
+* `head-type`: A keyword describing the head of the bolt, such as `hex` or `countersunk`.
+* `total-length`: The length of the threaded part of the bolt, in mm.
+
+Default values provided by the application are bare minima. More usefully, the application injects DFM functions and flags negative space for specific uses.
 
 ### Section <a id="fasteners-height">`height`</a>
 

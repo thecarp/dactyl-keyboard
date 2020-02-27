@@ -5,8 +5,19 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 
 ## [Unreleased]
 ### Changed
-- The parameter `split` was **renamed** to `reflect` to avoid misleading the
-  user about how it interacts with the new `central-housing` feature.
+- Moved and replaced some parameters:
+    - The top-level parameter `split` was **renamed** to `reflect` to avoid
+      misleading the user about how it interacts with the new `central-housing`
+      feature.
+    - All parameters governing individual properties of threaded bolts have
+      been removed in favour of more powerful new parameters based on options
+      exposed by a new library (`scad-klupe`) that draws bolts for the
+      application.  For example, both `case` → `central-housing` → `adapter` →
+      `fasteners` → `diameter` and its sibling `length` parameter have been
+      replaced by a `bolt-properties` parameter in the same section.
+      This change provides greater freedom to choose different bolt head types,
+      partial threading, no threading (with a diameter suitable for tapping
+      holes manually) etc.
 - The two parameters named `prefer-rear-housing` and their associated
   functionality were all **removed**, having been obviated by placement in
   relation to a wide range of anchors.
@@ -31,7 +42,15 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - The alcove generated for the front end of an MCU PCBA now uses the general
   DFM setting (`error-general`). The `mcu` → `margin` setting was removed.
 
-Migration guide: To compensate for the changed default orientation of the MCU
+#### Migration guide
+
+In old configuration files, replace each `fasteners` → `diameter` with a
+`bolt-properties` → `m-diameter` setting, and each bolt length setting with
+`bolt-properties` → `total-length` or `threaded-length`, depending on whether
+you want the head to count towards length. For the MCU lock, the term is
+`fastener-properties` to avoid confusion with the bolt of a lock.
+
+To compensate for the changed default orientation of the MCU
 in an existing custom configuration, use the `rotation` setting for your MCU
 support, with the approximate value `[0, 1.5708, 0]`.
 

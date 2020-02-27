@@ -7,10 +7,9 @@
   (:require [scad-clj.model :as model]
             [scad-tarmi.core :refer [π]]
             [scad-tarmi.maybe :as maybe]
-            [scad-tarmi.threaded :as threaded]
+            [scad-klupe.iso :refer [nut]]
             [dactyl-keyboard.compass :as compass]
             [dactyl-keyboard.cad.misc :as misc]
-            [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.place :as place]))
 
 
@@ -47,7 +46,7 @@
 (defn backplate-fastener-holes
   "Two holes for screws through the back plate."
   [getopt]
-  (let [d (getopt :case :back-plate :fasteners :diameter)
+  (let [d (getopt :case :back-plate :fasteners :bolt-properties :m-diameter)
         D (getopt :case :back-plate :fasteners :distance)
         hole (fn [x-offset]
                (->>
@@ -55,7 +54,7 @@
                    (model/cylinder (/ d 2) 25)
                    (if (getopt :case :back-plate :fasteners :bosses)
                      (model/translate [0 0 10]
-                       (threaded/nut :iso-size d :height 10 :negative true))))
+                       (nut {:m-diameter d :height 10 :negative true}))))
                  (model/rotate [(/ π 2) 0 0])
                  (model/translate [x-offset 0 0])
                  (backplate-place getopt)))]
