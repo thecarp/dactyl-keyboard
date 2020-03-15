@@ -21,8 +21,8 @@ To get started, try the [introduction](doc/intro.md), part of the project’s
 ### Links
 
 This project, the DMOTE application, is a fork of Tom Short’s
-[Dactyl-ManuForm](https://github.com/tshort/dactyl-keyboard), among many
-other forks in the Dactyl genus.
+[Dactyl-ManuForm](https://github.com/tshort/dactyl-keyboard). It’s one of many
+forks in the [Dactyl](https://github.com/adereth/dactyl-keyboard) genus.
 
 There’s a small family of accessory projects:
 
@@ -38,9 +38,20 @@ There’s a small family of accessory projects:
   Configurable clips for stabilizing a split keyboard by holding a
   connecting rod between the two halves.
 
+Like its parent, the DMOTE project is based on Matthew Farrell’s
+[`scad-clj`](https://github.com/farrellm/scad-clj). A second small family of
+general CAD libraries for `scad-clj` have grown up around the DMOTE project.
+
+* [`scad-app`](https://github.com/veikman/scap-app): A simple way to turn
+  `scad-clj` specifications into applications, stripping out some boilerplate.
+  See also [`cad-template`](https://github.com/veikman/cad-template), which is
+  all boilerplate for starting new CAD projects that are ready to render.
+* [`scad-tarmi`](https://github.com/veikman/scad-tarmi): Commonplace abstractions.
+* [`scad-klupe`](https://github.com/veikman/scad-klupe): Threaded fasteners.
+
 ### License
 
-Copyright © 2015-2019 Matthew Adereth, Tom Short, Viktor Eikman et al.
+Copyright © 2015-2020 Matthew Adereth, Tom Short, Viktor Eikman et al.
 
 The source code for generating the models (everything excluding the
 [things/](things/) and [resources/](resources/) directories) is distributed
