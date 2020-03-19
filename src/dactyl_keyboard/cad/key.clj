@@ -15,6 +15,7 @@
             [dactyl-keyboard.compass :as compass]
             [dactyl-keyboard.misc :as misc]
             [dactyl-keyboard.cad.matrix :as matrix]
+            [dactyl-keyboard.cad.misc :refer [wafer]]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.param.access :refer [most-specific
                                                   key-properties]]))
@@ -217,6 +218,25 @@
   [getopt switch-height-to-plate-top]
   (- (* 2 switch-height-to-plate-top) (getopt :case :key-mount-thickness)))
 
+(defn- alps-wing
+  "Negative space for a pair of wings flaring out from the base of an
+  ALPS-style switch. This model is designed to hug the real thing quite
+  closely, mainly for the purpose of making the mount easy to print at
+  odd angles."
+  [x-base y-base z-base]
+  (let [y-wing 2  ; Length of a wing alongside the base of the switch.
+        x-wing (+ x-base 0.85)  ; Flaring 0.4 mm away from the base, each side.
+        z-gap 0.6   ; Distance from plate top to upper edge of wing.
+        z-upper 1.5 ; Distance from upper edge of wing to point.
+        z-lower 2.5 ; Distance from lower edge of wing to point.
+        z-wing (+ z-upper z-lower)]  ; Total vertical extent of wing.
+    (model/translate [0 (/ y-base 2) (- z-gap)]
+      (model/hull
+        (model/translate [0 (/ y-wing -2) (/ z-wing -2)]
+          (model/cube x-base y-wing z-wing))
+        (model/translate [0 0 (- z-upper)]
+          (model/cube x-wing wafer wafer))))))
+
 (defn alps-switch
   "One ALPS-compatible cutout model."
   [getopt]
@@ -233,10 +253,10 @@
       (model/translate [0 0 (/ height-to-plate-top -2)]
         (model/cube hole-x hole-y (plate-cutout-height getopt height-to-plate-top)))
       ;; ALPS-specific space for wings to flare out inside the plate.
-      (model/translate [0 0 (- (/ height-to-plate-top -2) 0.6)]
-        (model/difference
-          (model/cube (inc hole-x) hole-y height-to-plate-top)
-          (model/cube (inc hole-x) 7.5 height-to-plate-top))))))
+      (model/union
+        (alps-wing hole-x hole-y height-to-plate-top)
+        (model/mirror [0 1 0]
+          (alps-wing hole-x hole-y height-to-plate-top))))))
 
 (defn mx-switch
   "One MX Cherry-compatible cutout model. Square."

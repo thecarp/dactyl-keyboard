@@ -42,18 +42,6 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - The alcove generated for the front end of an MCU PCBA now uses the general
   DFM setting (`error-general`). The `mcu` → `margin` setting was removed.
 
-#### Migration guide
-
-In old configuration files, replace each `fasteners` → `diameter` with a
-`bolt-properties` → `m-diameter` setting, and each bolt length setting with
-`bolt-properties` → `total-length` or `threaded-length`, depending on whether
-you want the head to count towards length. For the MCU lock, the term is
-`fastener-properties` to avoid confusion with the bolt of a lock.
-
-To compensate for the changed default orientation of the MCU
-in an existing custom configuration, use the `rotation` setting for your MCU
-support, with the approximate value `[0, 1.5708, 0]`.
-
 ### Added
 - Documentation:
     - An execution guide, as a new document branched off from the introduction.
@@ -66,6 +54,8 @@ support, with the approximate value `[0, 1.5708, 0]`.
 - A GNU Make target for the Dactyl-ManuForm.
 
 ### Fixed
+- More accurate and printer-friendly spaces for the wings on ALPS-style
+  switches.
 - Made `transpile.sh` sensitive to configuration changes again.
 - A more categorical fix for `dmote-keycap` parameter support, achieved by
   migrating that library’s parsing logic into the library itself.
@@ -88,6 +78,18 @@ support, with the approximate value `[0, 1.5708, 0]`.
     compass code moved out. This makes two `misc` modules.
 - A folder of configuration files under `test/config` for manual regression
   testing.
+
+### Migration guide
+
+In old configuration files, replace each `fasteners` → `diameter` with a
+`bolt-properties` → `m-diameter` setting, and each bolt length setting with
+`bolt-properties` → `total-length` or `threaded-length`, depending on whether
+you want the head to count towards length. For the MCU lock, the term is
+`fastener-properties` to avoid confusion with the bolt of a lock.
+
+To compensate for the changed default orientation of the MCU
+in an existing custom configuration, use the `rotation` setting for your MCU
+support, with the approximate value `[0, 1.5708, 0]`.
 
 ## [Version 0.5.1] - 2019-10-16
 ### Fixed
