@@ -621,26 +621,29 @@
    [:parameter [:case :bottom-plate :installation :style]
     {:default :threads :parse-fn keyword
      :validate [::schema/plate-installation-style]}
-    "The general means of installation. All currently available styles "
-    "use threaded fasteners with countersunk heads. The styles differ only "
-    "in how these fasteners attach to the case.\n\n"
-    "One of:\n\n"
-    "- `threads`: Threaded holes in the case.\n"
-    "- `inserts`: Unthreaded holes for threaded heat-set inserts."]
+    "The general means of installation. This parameter has been reduced to a "
+    "placeholder: The only available style is `threads`, signifying the use "
+    "of threaded fasteners connecting the bottom plate to anchors in "
+    "the body of the keyboard."]
    [:parameter [:case :bottom-plate :installation :thickness]
     {:default 1 :parse-fn num}
-    "The thickness in mm of each wall of the anchor points."]
+    "The thickness in mm of each wall of the anchor points for threaded "
+    "fasteners."]
    [:section [:case :bottom-plate :installation :inserts]
-    "Properties of heat-set inserts for the `inserts` style."]
+    "You can use heat-set inserts in the anchor points.\n\n"
+    "It is assumed that, as in Tom Short’s Dactyl-ManuForm, the inserts are "
+    "largely cylindrical."]
+   [:parameter [:case :bottom-plate :installation :inserts :include]
+    {:default false :parse-fn boolean}
+    "If `true`, make space for inserts."]
    [:parameter [:case :bottom-plate :installation :inserts :length]
     {:default 1 :parse-fn num}
     "The length in mm of each insert."]
    [:section [:case :bottom-plate :installation :inserts :diameter]
-    "It is assumed that, as in Tom Short’s Dactyl-ManuForm, the inserts are "
-    "largely cylindrical but vary in diameter across their length."]
+    "Inserts may vary in diameter across their length."]
    [:parameter [:case :bottom-plate :installation :inserts :diameter :top]
     {:default 1 :parse-fn num}
-    "Top diameter in m."]
+    "Top diameter in mm."]
    [:parameter [:case :bottom-plate :installation :inserts :diameter :bottom]
     {:default 1 :parse-fn num}
     "Bottom diameter in mm. This needs to be at least as large as the top "

@@ -237,9 +237,9 @@ case:
   bottom-plate:
     include: true
     installation:
-      style: inserts
       thickness: 1.2
       inserts:
+        include: true
         diameter:
           top: 5.1
           bottom: 5.31

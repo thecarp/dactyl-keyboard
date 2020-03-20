@@ -87,6 +87,7 @@ Each heading in this document represents a recognized configuration key in the m
             - Parameter <a href="#user-content-case-bottom-plate-installation-style">`style`</a>
             - Parameter <a href="#user-content-case-bottom-plate-installation-thickness">`thickness`</a>
             - Section <a href="#user-content-case-bottom-plate-installation-inserts">`inserts`</a>
+                - Parameter <a href="#user-content-case-bottom-plate-installation-inserts-include">`include`</a>
                 - Parameter <a href="#user-content-case-bottom-plate-installation-inserts-length">`length`</a>
                 - Section <a href="#user-content-case-bottom-plate-installation-inserts-diameter">`diameter`</a>
                     - Parameter <a href="#user-content-case-bottom-plate-installation-inserts-diameter-top">`top`</a>
@@ -661,20 +662,21 @@ How your bottom plate is attached to the rest of your case.
 
 ##### Parameter <a id="case-bottom-plate-installation-style">`style`</a>
 
-The general means of installation. All currently available styles use threaded fasteners with countersunk heads. The styles differ only in how these fasteners attach to the case.
-
-One of:
-
-- `threads`: Threaded holes in the case.
-- `inserts`: Unthreaded holes for threaded heat-set inserts.
+The general means of installation. This parameter has been reduced to a placeholder: The only available style is `threads`, signifying the use of threaded fasteners connecting the bottom plate to anchors in the body of the keyboard.
 
 ##### Parameter <a id="case-bottom-plate-installation-thickness">`thickness`</a>
 
-The thickness in mm of each wall of the anchor points.
+The thickness in mm of each wall of the anchor points for threaded fasteners.
 
 ##### Section <a id="case-bottom-plate-installation-inserts">`inserts`</a>
 
-Properties of heat-set inserts for the `inserts` style.
+You can use heat-set inserts in the anchor points.
+
+It is assumed that, as in Tom Short’s Dactyl-ManuForm, the inserts are largely cylindrical.
+
+###### Parameter <a id="case-bottom-plate-installation-inserts-include">`include`</a>
+
+If `true`, make space for inserts.
 
 ###### Parameter <a id="case-bottom-plate-installation-inserts-length">`length`</a>
 
@@ -682,11 +684,11 @@ The length in mm of each insert.
 
 ###### Section <a id="case-bottom-plate-installation-inserts-diameter">`diameter`</a>
 
-It is assumed that, as in Tom Short’s Dactyl-ManuForm, the inserts are largely cylindrical but vary in diameter across their length.
+Inserts may vary in diameter across their length.
 
 ###### Parameter <a id="case-bottom-plate-installation-inserts-diameter-top">`top`</a> at level 7
 
-Top diameter in m.
+Top diameter in mm.
 
 ###### Parameter <a id="case-bottom-plate-installation-inserts-diameter-bottom">`bottom`</a> at level 7
 

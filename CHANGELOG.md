@@ -18,6 +18,10 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       This change provides greater freedom to choose different bolt head types,
       partial threading, no threading (with a diameter suitable for tapping
       holes manually) etc.
+    - Heat-set inserts for attaching bottom plates are no longer a separate
+      style. Thus the `inserts` option has been removed from the `case` →
+      `bottom-plate` → `installation` → `style` parameter and replaced by a new
+      `include` parameter, governing the same feature independently of style.
 - The two parameters named `prefer-rear-housing` and their associated
   functionality were all **removed**, having been obviated by placement in
   relation to a wide range of anchors.

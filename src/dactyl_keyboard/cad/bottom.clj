@@ -31,21 +31,23 @@
   Written for use as an OpenSCAD module."
   [getopt]
   (let [prop (partial getopt :case :bottom-plate :installation)
-        style (prop :style)
+        include-inserts (prop :inserts :include)
         thickness (* 2 (prop :thickness))
         bolt-prop (prop :fasteners :bolt-properties)
         m-diameter (:m-diameter bolt-prop)
         bolt-length (threaded/bolt-length bolt-prop)
         head-length (threaded/head-length m-diameter :countersunk)
-        inserts (= style :inserts)
-        base-top-diameter (if inserts (prop :inserts :diameter :top) m-diameter)
+        base-top-diameter (if include-inserts
+                            (prop :inserts :diameter :top)
+                            m-diameter)
         walled-top-diameter (+ base-top-diameter thickness)
-        z-top-interior (if inserts (max (+ head-length (prop :inserts :length))
-                                        bolt-length)
-                                   bolt-length)
+        z-top-interior (if include-inserts
+                         (max (+ head-length (prop :inserts :length))
+                              bolt-length)
+                         bolt-length)
         dome (model/translate [0 0 z-top-interior]
                (model/sphere (/ walled-top-diameter 2)))]
-    (if inserts
+    (if include-inserts
       (let [bottom-diameter (prop :inserts :diameter :bottom)
             top-disc
               (model/translate [0 0 z-top-interior]
@@ -64,7 +66,6 @@
   Written for use as an OpenSCAD module."
   [getopt]
   (let [prop (partial getopt :case :bottom-plate :installation)
-        style (prop :style)
         bolt-prop (prop :fasteners :bolt-properties)
         head-type (prop :fasteners :bolt-properties :head-type)]
     (maybe/union
@@ -72,7 +73,7 @@
         (merge-bolt
           {:compensator (getopt :dfm :derived :compensator), :negative true}
           bolt-prop))
-      (when (= style :inserts)
+      (when (prop :inserts :include)
         (let [d0 (prop :inserts :diameter :bottom)
               d1 (prop :inserts :diameter :top)
               z0 (threaded/head-length (:m-diameter bolt-prop) head-type)
