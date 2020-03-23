@@ -350,11 +350,6 @@
       access/option-accessor
       (checkpoint "Enriched settings:"))))
 
-(defn- mirror-within-scene
-  "Preface a model precursor function for a module."
-  [precursor]
-  (fn [getopt] (model/mirror [0 -1 0] (precursor getopt))))
-
 (def module-asset-list
   "OpenSCAD modules and the functions that make them."
   [{:name "housing_adapter_fastener"
@@ -364,11 +359,9 @@
     :model-precursor wrist/sprue-negative}
    {:name "bottom_plate_anchor_positive"
     :model-precursor bottom/anchor-positive}
-   {:name "bottom_plate_anchor_mirrored"
+   {:name "bottom_plate_anchor_negative"
     :model-precursor bottom/anchor-negative,
-    :chiral true}
-   {:name "bottom_plate_central_anchor_negative"
-    :model-precursor (mirror-within-scene bottom/anchor-negative)}])
+    :chiral true}])
 
 (defn module-asset-map
   "Convert module-asset-list to a hash map with fully resolved models.
@@ -408,8 +401,7 @@
 (defn- conditional-bottom-plate-modules
   [getopt]
   (if (getopt :case :bottom-plate :include)
-    ["bottom_plate_anchor_positive"
-     "bottom_plate_anchor_mirrored"]
+    ["bottom_plate_anchor_positive", "bottom_plate_anchor_negative"]
     []))
 
 (defn get-static-precursors
@@ -436,9 +428,7 @@
      {:name "case-central"
       :modules (concat
                  [(when (getopt :case :central-housing :derived :include-adapter)
-                    "housing_adapter_fastener")
-                  (when (getopt :case :bottom-plate :include)
-                    "bottom_plate_central_anchor_negative")]
+                    "housing_adapter_fastener")]
                  (conditional-bottom-plate-modules getopt))
       :model-precursor build-central-housing})
    (when (and (getopt :mcu :include)

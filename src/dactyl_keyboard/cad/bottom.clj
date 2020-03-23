@@ -139,16 +139,17 @@
           [:wrist-rest :bottom-plate :fastener-positions]]]))))
 
 (let [module-names {1 "bottom_plate_anchor_positive"
-                    2 "bottom_plate_anchor_mirrored"
-                    3 "bottom_plate_central_anchor_negative"}]
+                    2 "bottom_plate_anchor_negative"}]
   (defn- fasteners
     "Place instances of a predefined module according to user configuration.
     The passed predicate function is used to select positions, while the
     OpenSCAD module is identified by an integer key, for brevity."
-    [getopt pred type-id]
-    (apply maybe/union
-      (map (place/module-z0-2d-placer getopt (get module-names type-id))
-           (filter pred (all-fastener-positions getopt))))))
+    ([getopt pred type-id]
+     (fasteners getopt pred type-id false))
+    ([getopt pred type-id mirror]
+     (apply maybe/union
+       (map (place/module-z0-2d-placer getopt (get module-names type-id) mirror)
+            (filter pred (all-fastener-positions getopt)))))))
 
 (defn- any-type
   "Return a predicate function for filtering fasteners.
@@ -162,7 +163,7 @@
 (def anchors-for-main-plate #(fasteners % (any-type ::main ::centre) 1))
 (def anchors-in-wrist-rest #(fasteners % (any-type ::wrist) 1))
 (def holes-in-main-plate #(fasteners % (any-type ::main ::centre) 2))
-(def holes-in-left-housing #(fasteners % (any-type ::centre) 3))
+(def holes-in-left-housing #(fasteners % (any-type ::centre) 2 true))
 (def holes-in-wrist-plate #(fasteners % (any-type ::wrist) 2))
 (def holes-in-combo #(fasteners % (any-type ::main ::wrist) 2))
 

@@ -610,9 +610,14 @@
     (mapv + (misc/z0 general) to-nook offset)))
 
 (defn module-z0-2d-placer
-  "Produce a function that places a named module in relation to an anchor."
-  [getopt module-name]
-  (fn [position-map]
-    (maybe/translate
-      (misc/z0 (offset-from-anchor getopt position-map 2))
-      (model/call-module module-name))))
+  "Produce a function that places a named module in relation to an anchor.
+  If “mirror”, a Boolean, is true, the module is mirrored on its own x axis,
+  without affecting its position in relation to the anchor. This mirroring
+  is intended to support chiral components of what are otherwise bilaterally
+  symmetrical features of single program outputs."
+  [getopt module-name mirror]
+  (let [prefix (if mirror (partial model/mirror [-1 0 0]) identity)]
+    (fn [position-map]
+      (maybe/translate
+        (misc/z0 (offset-from-anchor getopt position-map 2))
+        (prefix (model/call-module module-name))))))

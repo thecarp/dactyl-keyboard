@@ -256,7 +256,7 @@
 (defn sprues
   "Place the sprue module according to user configuration."
   [getopt]
-  (let [base-placer (place/module-z0-2d-placer getopt "sprue_negative")]
+  (let [base-placer (place/module-z0-2d-placer getopt "sprue_negative" false)]
     (apply maybe/union
       (map #(base-placer (assoc % :outline-key :sprue))
            (getopt :wrist-rest :sprues :positions)))))
