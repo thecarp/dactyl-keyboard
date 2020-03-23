@@ -28,38 +28,54 @@
 
 (defn anchor-positive
   "A shape that holds a screw, and possibly a heat-set insert.
-  Written for use as an OpenSCAD module."
+  Written for use as an OpenSCAD module.
+  This model is a short sequence of seamlessly connecting conical frusta
+  with an optional spherical cap, otherwise a bevelled top edge.
+  One of the concerns here is to keep the edges of the model fairly straight,
+  both to make it easy to connect to case walls of different shapes and
+  to make sure the projection of the model onto z = 0 is an accurate footprint.
+  The only way the side of the model won’t be straight is if the user
+  configuration specifies heat-set inserts of uneven diameter.
+  Precautions against a paradoxical user configuration are minimal."
   [getopt]
   (let [prop (partial getopt :case :bottom-plate :installation)
-        include-inserts (prop :inserts :include)
-        thickness (* 2 (prop :thickness))
+        ins (partial prop :inserts)
         bolt-prop (prop :fasteners :bolt-properties)
         m-diameter (:m-diameter bolt-prop)
-        bolt-length (threaded/bolt-length bolt-prop)
-        head-length (threaded/head-length m-diameter :countersunk)
-        base-top-diameter (if include-inserts
-                            (prop :inserts :diameter :top)
-                            m-diameter)
-        walled-top-diameter (+ base-top-diameter thickness)
-        z-top-interior (if include-inserts
-                         (max (+ head-length (prop :inserts :length))
-                              bolt-length)
-                         bolt-length)
-        dome (model/translate [0 0 z-top-interior]
-               (model/sphere (/ walled-top-diameter 2)))]
-    (if include-inserts
-      (let [bottom-diameter (prop :inserts :diameter :bottom)
-            top-disc
-              (model/translate [0 0 z-top-interior]
-                (model/cylinder (/ walled-top-diameter 2) wafer))
-            bottom-disc
-              (model/translate [0 0 head-length]
-                (model/cylinder (/ (+ bottom-diameter thickness) 2) wafer))]
-        (model/union
-          dome
-          (model/hull top-disc bottom-disc)
-          (misc/bottom-hull bottom-disc)))
-      (misc/bottom-hull dome))))
+        z-head (threaded/head-length m-diameter :countersunk)
+        z-end (max (if (ins :include) (+ z-head (ins :length)) 0)
+                   (threaded/bolt-length bolt-prop))
+        core (if (ins :include) [(ins :diameter :top) (ins :diameter :bottom)]
+                                [m-diameter])
+        shell-radii (mapv (fn [d] (+ (/ d 2) (prop :thickness))) (distinct core))
+        ;; Ignore z-head unless we have two different radii.
+        base (partition 2 (interleave shell-radii [z-end z-head]))
+        [top-radius top-height] (first base)]
+    (maybe/union
+      (when (prop :dome-caps)
+        (model/translate [0 0 z-end] (model/sphere top-radius)))
+      (apply maybe/union
+        (map
+          (fn [[[r1 h1] [r0 h0]]]
+            (let [length (- h1 h0)
+                  thickness (if (= r0 r1) r0 [r0 r1])]
+              (when (pos? length)  ; Omit contradictions, redundancies.
+                (maybe/translate [0 0 (+ h0 (/ length 2))]
+                  (model/cylinder thickness length)))))
+          (->>
+            (concat  ; Compile a list of circle radii and heights.
+              (if (prop :dome-caps)
+                [(first base)]  ; No bevelling.
+                [[(dec top-radius) top-height]  ; Bevelling.
+                 [top-radius (dec top-height)]])
+              (rest base)
+              ;; Finally a bottom segment, from the level of the
+              ;; bottom plate to the floor. Right-angled profile.
+              [[(last shell-radii) (getopt :case :bottom-plate :thickness)]
+               [(last shell-radii) 0]])
+            (remove nil?)
+            (distinct)  ; In case the screw head stops at plate level.
+            (partition 2 1)))))))  ; Connecting pairs make frusta.
 
 (defn anchor-negative
   "The shape of a screw and optionally a heat-set insert for that screw.

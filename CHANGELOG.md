@@ -45,6 +45,10 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       `mcu` → `support` → `lock` → `plate` → `clearance`.
 - The alcove generated for the front end of an MCU PCBA now uses the general
   DFM setting (`error-general`). The `mcu` → `margin` setting was removed.
+- Anchors for bottom-plate mounting screws no longer have domed caps by
+  default. These are still available but are governed by a new parameter.
+  Domes were made optional to make it easier to tap threads rather than print
+  them, and use longer screws than was originally intended.
 
 ### Added
 - Documentation:

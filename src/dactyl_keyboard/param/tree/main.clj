@@ -625,6 +625,14 @@
     "placeholder: The only available style is `threads`, signifying the use "
     "of threaded fasteners connecting the bottom plate to anchors in "
     "the body of the keyboard."]
+   [:parameter [:case :bottom-plate :installation :dome-caps]
+    {:default false :parse-fn boolean}
+    "If `true`, terminate each anchor with a hemispherical tip. This is "
+    "an aesthetic feature, primarily intended for externally visible anchors "
+    "and printed threading. "
+    "If all of your anchors are completely internal to the case, and/or you "
+    "intend to tap the screw holes after printing, dome caps are wasteful at "
+    "best and counterproductive at worst."]
    [:parameter [:case :bottom-plate :installation :thickness]
     {:default 1 :parse-fn num}
     "The thickness in mm of each wall of the anchor points for threaded "

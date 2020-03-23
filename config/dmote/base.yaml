@@ -467,6 +467,7 @@ case:
     include: true
     thickness: 0.8
     installation:
+      dome-caps: true
       fasteners:
         positions:
         - anchor: rear-housing

@@ -85,6 +85,7 @@ Each heading in this document represents a recognized configuration key in the m
         - Parameter <a href="#user-content-case-bottom-plate-thickness">`thickness`</a>
         - Section <a href="#user-content-case-bottom-plate-installation">`installation`</a>
             - Parameter <a href="#user-content-case-bottom-plate-installation-style">`style`</a>
+            - Parameter <a href="#user-content-case-bottom-plate-installation-dome-caps">`dome-caps`</a>
             - Parameter <a href="#user-content-case-bottom-plate-installation-thickness">`thickness`</a>
             - Section <a href="#user-content-case-bottom-plate-installation-inserts">`inserts`</a>
                 - Parameter <a href="#user-content-case-bottom-plate-installation-inserts-include">`include`</a>
@@ -663,6 +664,10 @@ How your bottom plate is attached to the rest of your case.
 ##### Parameter <a id="case-bottom-plate-installation-style">`style`</a>
 
 The general means of installation. This parameter has been reduced to a placeholder: The only available style is `threads`, signifying the use of threaded fasteners connecting the bottom plate to anchors in the body of the keyboard.
+
+##### Parameter <a id="case-bottom-plate-installation-dome-caps">`dome-caps`</a>
+
+If `true`, terminate each anchor with a hemispherical tip. This is an aesthetic feature, primarily intended for externally visible anchors and printed threading. If all of your anchors are completely internal to the case, and/or you intend to tap the screw holes after printing, dome caps are wasteful at best and counterproductive at worst.
 
 ##### Parameter <a id="case-bottom-plate-installation-thickness">`thickness`</a>
 

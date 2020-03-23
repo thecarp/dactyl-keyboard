@@ -237,6 +237,7 @@ case:
   bottom-plate:
     include: true
     installation:
+      dome-caps: true
       thickness: 1.2
       inserts:
         include: true

@@ -451,6 +451,7 @@ case:
       # Finally, there’s an “ethereal” point that does not appear in the body or
       # the plate but is useful for anchoring key clusters.
       - at-ground: false
+        above-ground: false
         base:
           offset: [0, 0, 60]
         adapter:
@@ -465,6 +466,10 @@ case:
           outer: 2
           taper: 4
       fasteners:
+        bolt-properties:
+          m-diameter: 3
+          total-length: 8
+          include-threading: false
         positions:
         - starting-point: ci-thumb-1
           lateral-offset: 8
@@ -482,11 +487,13 @@ case:
     bottom-plate:
       fastener-positions:
       - anchor: origin
-        offset: [15, 35]
+        offset: [15, 36]
       - anchor: origin
-        offset: [15, -50]
+        offset: [15, -51]
       - anchor: ci-near-base
-        offset: [-15, 5]
+        offset: [-15, 4]
+      - anchor: ci-far-base
+        offset: [-6, -4]
     tweaks:  # Tweaks for the central housing.
       mcu-holder:
       - at-ground: true
@@ -500,9 +507,16 @@ case:
     thickness: 2
     installation:
       fasteners:
+        bolt-properties:
+          m-diameter: 3
+          total-length: 8
+          include-threading: false
         positions:
         - anchor: ca-far-base
-          offset: [-5, -13]
+          offset: [-6, -21]
+        - anchor: m5F
+          corner: ENE
+          offset: [2, 5.5]
   tweaks:
     near-wall:  # Up the south side of the main key cluster:
     - hull-around:
@@ -700,7 +714,6 @@ case:
       - [m5F, ESE, 0]
       - [m5F, ENE, 0]
     - at-ground: true
-      chunk-size: 2
       hull-around:
       - [ca-bottom-1]
       - [m5F, ENE, 0]
@@ -728,6 +741,9 @@ mcu:
       include: true
       plate:
         alias: mcu-plate
+      fastener-properties:
+        m-diameter: 3
+        include-threading: false
 secondaries:
   m5L1:
     anchor: m5L
