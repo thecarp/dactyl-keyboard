@@ -2,7 +2,15 @@
 
 (ns dactyl-keyboard.compass-test
   (:require [clojure.test :refer [deftest testing is]]
+            [scad-tarmi.core :refer [π]]
             [dactyl-keyboard.compass :as compass]))
+
+(deftest keyword-to-radians
+  (testing "samples"
+    (is (zero? (compass/radians :N)))
+    (is (zero? (compass/radians :north)))
+    (is (zero? (:N compass/radians)))
+    (is (= (:S compass/radians) π))))
 
 (deftest turning
   (testing "reversal"

@@ -1,7 +1,9 @@
 (ns dactyl-keyboard.schema-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest testing is]]
             [clojure.spec.alpha :as spec]
+            [scad-tarmi.core :refer [π]]
             [dactyl-keyboard.param.schema :as schema]))
+
 
 (deftest test-coordinate-parser
   (testing "single integer flexcoord"
@@ -22,6 +24,18 @@
     (is (= (spec/valid? ::schema/parameter-spec {:a 1}) false)))
   (testing "nested"
     (is (= (spec/valid? ::schema/parameter-spec {:k {:default 1}}) false))))
+
+(deftest compass-compatible-angle-parser
+  (testing "string"
+    (is (= (schema/compass-compatible-angle "N") 0.0))
+    (is (= (schema/compass-compatible-angle "NE") (/ π 4)))
+    (is (= (schema/compass-compatible-angle "west") (* 1.5 π))))
+  (testing "keyword"
+    (is (= (schema/compass-compatible-angle :N) 0.0))
+    (is (= (schema/compass-compatible-angle :NE) (/ π 4))))
+  (testing "number"
+    (is (= (schema/compass-compatible-angle 0) 0))
+    (is (= (schema/compass-compatible-angle 0.1) 0.1))))
 
 (deftest test-parse-anchored-2d-positions
   (testing "parsing anchored 2D positions"

@@ -10,10 +10,10 @@
 (ns dactyl-keyboard.compass
   (:refer-clojure :exclude [reverse])
   (:require [clojure.set :refer [map-invert union]]
-            [scad-tarmi.core :refer [π]]))
+            [scad-tarmi.core :refer [τ]]))
 
 (def directions
-  "Clockwise around the compass using upper-case keywords."
+  "Clockwise around the compass."
   [:N :NNE :NE :ENE :E :ESE :SE :SSE :S :SSW :SW :WSW :W :WNW :NW :NNW])
 (def n-divisions (count directions))
 
@@ -24,6 +24,16 @@
    :south :S
    :west  :W})
 (def short-to-long (map-invert long-to-short))
+
+(let [short (into {} (map-indexed
+                       (fn [i d] [d (/ (* i τ) n-divisions)])
+                       directions))]
+  (def radians
+    "A map of compass points, including long and short names, to radians.
+    This represents a somewhat literal interpretation of the compass metaphor
+    and is not the only interpretation used in the application."
+    (merge short
+           (into {} (map (fn [[k v]] [k (v short)]) long-to-short)))))
 
 (defn- select-length [n] (set (filter #(= (count (name %)) n) directions)))
 
@@ -81,12 +91,6 @@
 (def sharp-right (partial turn (/ n-divisions 4)))
 (def sharp-left (partial turn (/ n-divisions -4)))
 (def reverse (partial turn (/ n-divisions 2)))
-
-(def radians
-  {:N 0
-   :E (/ π 2)
-   :S π
-   :W (/ π -2)})
 
 (def to-grid
   "Translation particles for each cardinal direction."

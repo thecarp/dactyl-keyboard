@@ -45,6 +45,9 @@ Each heading in this document represents a recognized configuration key in the m
                     - Parameter <a href="#user-content-case-central-housing-adapter-receivers-width-inner">`inner`</a>
                     - Parameter <a href="#user-content-case-central-housing-adapter-receivers-width-taper">`taper`</a>
         - Section <a href="#user-content-case-central-housing-bottom-plate">`bottom-plate`</a>
+            - Section <a href="#user-content-case-central-housing-bottom-plate-projections">`projections`</a>
+                - Parameter <a href="#user-content-case-central-housing-bottom-plate-projections-include">`include`</a>
+                - Parameter <a href="#user-content-case-central-housing-bottom-plate-projections-scale">`scale`</a>
             - Parameter <a href="#user-content-case-central-housing-bottom-plate-fastener-positions">`fastener-positions`</a>
         - Parameter <a href="#user-content-case-central-housing-tweaks">`tweaks`</a>
     - Section <a href="#user-content-case-rear-housing">`rear-housing`</a>
@@ -474,9 +477,21 @@ The width of a taper, as with the lip.
 
 Any bottom plating for the case will extend to the midpoint of the central housing, on the assumption that bottom-plating anchors will be used to attach it there.
 
+##### Section <a id="case-central-housing-bottom-plate-projections">`projections`</a>
+
+To facilitate printing a central housing standing on its edge, or to add strength, you can extend bottom-plating anchors onto the nearest wall, via a convex hull of each anchor and its projection. The result is an internal chamfer resembling a primitive fillet.
+
+###### Parameter <a id="case-central-housing-bottom-plate-projections-include">`include`</a>
+
+If `true`, extend each bottom-plating anchor.
+
+###### Parameter <a id="case-central-housing-bottom-plate-projections-scale">`scale`</a>
+
+The scale of each projection, as a 2-tuple of horizontal and vertical factors. The horizontal factor controls the width of the projection and the vertical factor its height. The length of the projection is fixed at the distance between the center of the anchor and the outermost part of its shell.
+
 ##### Parameter <a id="case-central-housing-bottom-plate-fastener-positions">`fastener-positions`</a>
 
-The positions of threaded fasteners used to attach the bottom plate to the body of the central housing.
+The positions of threaded fasteners used to attach the bottom plate to the body of the central housing. In addition to the properties permitted in similar lists of such anchors, the central housing permits a `direction`, formulated as a point on the compass or an angle in radians. This property controls the facing of a projection. Typically, you want it facing the central housing’s nearest wall.
 
 #### Parameter <a id="case-central-housing-tweaks">`tweaks`</a>
 

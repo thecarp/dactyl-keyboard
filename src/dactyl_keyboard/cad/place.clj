@@ -614,10 +614,16 @@
   If “mirror”, a Boolean, is true, the module is mirrored on its own x axis,
   without affecting its position in relation to the anchor. This mirroring
   is intended to support chiral components of what are otherwise bilaterally
-  symmetrical features of single program outputs."
+  symmetrical features of single program outputs.
+  The returned function supports some general anchoring parameters but
+  intercepts a “direction” parameter and uses that to rotate the module on
+  the z axis following any mirroring, instead of passing it on."
   [getopt module-name mirror]
   (let [prefix (if mirror (partial model/mirror [-1 0 0]) identity)]
-    (fn [position-map]
-      (maybe/translate
-        (misc/z0 (offset-from-anchor getopt position-map 2))
-        (prefix (model/call-module module-name))))))
+    (fn [{:keys [direction] :or {direction 0} :as options}]
+      {:pre [(number? direction)]}
+      (let [anchor-map (dissoc options :direction)]
+        (maybe/translate
+          (misc/z0 (offset-from-anchor getopt anchor-map 2))
+          (maybe/rotate [0 0 direction]
+            (prefix (model/call-module module-name))))))))

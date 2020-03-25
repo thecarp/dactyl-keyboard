@@ -357,8 +357,10 @@
     :chiral true}
    {:name "sprue_negative"
     :model-precursor wrist/sprue-negative}
-   {:name "bottom_plate_anchor_positive"
-    :model-precursor bottom/anchor-positive}
+   {:name "bottom_plate_anchor_positive_nonprojecting"
+    :model-precursor bottom/anchor-positive-nonprojecting}
+   {:name "bottom_plate_anchor_positive_central"
+    :model-precursor bottom/anchor-positive-central}
    {:name "bottom_plate_anchor_negative"
     :model-precursor bottom/anchor-negative,
     :chiral true}])
@@ -401,7 +403,9 @@
 (defn- conditional-bottom-plate-modules
   [getopt]
   (if (getopt :case :bottom-plate :include)
-    ["bottom_plate_anchor_positive", "bottom_plate_anchor_negative"]
+    ["bottom_plate_anchor_positive_nonprojecting",
+     "bottom_plate_anchor_positive_central",
+     "bottom_plate_anchor_negative"]
     []))
 
 (defn get-static-precursors

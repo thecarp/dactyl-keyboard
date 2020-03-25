@@ -453,11 +453,30 @@
     "Any bottom plating for the case will extend to the midpoint of the "
     "central housing, on the assumption that bottom-plating anchors will "
     "be used to attach it there."]
+   [:section [:case :central-housing :bottom-plate :projections]
+    "To facilitate printing a central housing standing on its edge, or to add "
+    "strength, you can extend bottom-plating anchors onto the nearest wall, "
+    "via a convex hull of each anchor and its projection. The result is an "
+    "internal chamfer resembling a primitive fillet."]
+   [:parameter [:case :central-housing :bottom-plate :projections :include]
+    {:default false :parse-fn boolean}
+    "If `true`, extend each bottom-plating anchor."]
+   [:parameter [:case :central-housing :bottom-plate :projections :scale]
+    {:default [1 1] :parse-fn vec :validate [::tarmi-core/point-2d]}
+    "The scale of each projection, as a 2-tuple of horizontal and vertical "
+    "factors. The horizontal factor controls the width of the projection and "
+    "the vertical factor its height. The length of the projection is fixed "
+    "at the distance between the center of the anchor and the outermost "
+    "part of its shell."]
    [:parameter [:case :central-housing :bottom-plate :fastener-positions]
-    {:default [] :parse-fn schema/anchored-2d-positions
-     :validate [::schema/anchored-2d-list]}
+    {:default [] :parse-fn schema/projecting-2d-positions
+     :validate [::schema/projecting-2d-list]}
     "The positions of threaded fasteners used to attach the bottom plate to "
-    "the body of the central housing."]
+    "the body of the central housing. In addition to the properties permitted "
+    "in similar lists of such anchors, the central housing permits a "
+    "`direction`, formulated as a point on the compass or an angle in "
+    "radians. This property controls the facing of a projection. Typically, "
+    "you want it facing the central housing’s nearest wall."]
    [:parameter [:case :central-housing :tweaks]
     {:default [] :parse-fn schema/case-tweak-map
      :validate [::schema/tweak-name-map]}

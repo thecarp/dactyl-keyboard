@@ -26,7 +26,7 @@
 ;; Basic ;;
 ;;;;;;;;;;;
 
-(defn anchor-positive
+(defn anchor-positive-nonprojecting
   "A shape that holds a screw, and possibly a heat-set insert.
   Written for use as an OpenSCAD module.
   This model is a short sequence of seamlessly connecting conical frusta
@@ -76,6 +76,41 @@
             (remove nil?)
             (distinct)  ; In case the screw head stops at plate level.
             (partition 2 1)))))))  ; Connecting pairs make frusta.
+
+(defn- max-anchor-thickness
+  "The maximum width of a screw anchor for attaching a bottom plate."
+  [getopt]
+  (let [prop (partial getopt :case :bottom-plate :installation)
+        ins (partial prop :inserts)]
+    (+ (/ (if (ins :include) (max (ins :diameter :top) (ins :diameter :bottom))
+                             (prop :fasteners :bolt-properties :m-diameter))
+          2)
+       (prop :thickness))))
+
+(defn anchor-positive-central
+  "A possibly extended version of anchor-positive-nonprojecting.
+  If projections are enabled for the central housing, this module
+  refers twice to the result of anchor-positive-nonprojecting above
+  via its module. Otherwise, it is just one reference, as a sort of
+  redirection."
+  [getopt]
+  (let [base "bottom_plate_anchor_positive_nonprojecting"]
+    (maybe/hull
+      (model/call-module base)
+      (when (getopt :case :central-housing :bottom-plate :projections :include)
+        (->> (model/call-module base)
+          ;; Get a 2D cut through the middle of the ordinary anchor, assuming
+          ;; it’s rotationally symmetric in the x-y plane.
+          (model/rotate [(/ π 2) 0 0])
+          (model/project)
+          ;; Scale the 2D cut and extrude to 3D as a thin sliver.
+          (model/scale
+            (getopt :case :central-housing :bottom-plate :projections :scale))
+          (model/extrude-linear {:height wafer})
+          ;; Rotate back up to stand beside the original.
+          (model/rotate [(/ π -2) 0 0])
+          ;; Move to the edge of the thickest part of the original.
+          (model/translate [0 (max-anchor-thickness getopt) 0]))))))
 
 (defn anchor-negative
   "The shape of a screw and optionally a heat-set insert for that screw.
@@ -138,8 +173,9 @@
         [[::wrist
           [:wrist-rest :bottom-plate :fastener-positions]]]))))
 
-(let [module-names {1 "bottom_plate_anchor_positive"
-                    2 "bottom_plate_anchor_negative"}]
+(let [module-names {1 "bottom_plate_anchor_positive_nonprojecting"
+                    2 "bottom_plate_anchor_positive_central"
+                    3 "bottom_plate_anchor_negative"}]
   (defn- fasteners
     "Place instances of a predefined module according to user configuration.
     The passed predicate function is used to select positions, while the
@@ -153,19 +189,19 @@
 
 (defn- any-type
   "Return a predicate function for filtering fasteners.
-  The filter will exclude those fastener positions that do not have are not sourced
-  from any of the "
+  The filter will match fastener positions of any type included in the whitelist
+  passed to this function."
   [& types]
   (fn [position] (some (set types) #{(::type position)})))
 
 (def anchors-in-main-body #(fasteners % (any-type ::main) 1))
-(def anchors-in-central-housing #(fasteners % (any-type ::centre) 1))
+(def anchors-in-central-housing #(fasteners % (any-type ::centre) 2))
 (def anchors-for-main-plate #(fasteners % (any-type ::main ::centre) 1))
 (def anchors-in-wrist-rest #(fasteners % (any-type ::wrist) 1))
-(def holes-in-main-plate #(fasteners % (any-type ::main ::centre) 2))
-(def holes-in-left-housing #(fasteners % (any-type ::centre) 2 true))
-(def holes-in-wrist-plate #(fasteners % (any-type ::wrist) 2))
-(def holes-in-combo #(fasteners % (any-type ::main ::wrist) 2))
+(def holes-in-main-plate #(fasteners % (any-type ::main ::centre) 3))
+(def holes-in-left-housing #(fasteners % (any-type ::centre) 3 true))
+(def holes-in-wrist-plate #(fasteners % (any-type ::wrist) 3))
+(def holes-in-combo #(fasteners % (any-type ::main ::wrist) 3))
 
 
 ;;;;;;;;;;

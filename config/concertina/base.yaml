@@ -485,15 +485,22 @@ case:
           inner: 4
           taper: 5
     bottom-plate:
+      projections:
+        include: true
+        scale: [2.5, 1]
       fastener-positions:
       - anchor: origin
         offset: [15, 36]
+        direction: north
       - anchor: origin
         offset: [15, -51]
+        direction: south
       - anchor: ci-near-base
         offset: [-15, 4]
+        direction: south
       - anchor: ci-far-base
-        offset: [-6, -4]
+        offset: [-42, -4]
+        direction: north
     tweaks:  # Tweaks for the central housing.
       mcu-holder:
       - at-ground: true
@@ -506,6 +513,7 @@ case:
     include: true
     thickness: 2
     installation:
+      thickness: 1
       fasteners:
         bolt-properties:
           m-diameter: 3
@@ -514,9 +522,12 @@ case:
         positions:
         - anchor: ca-far-base
           offset: [-6, -21]
-        - anchor: m5F
-          corner: ENE
-          offset: [2, 5.5]
+        - anchor: m5L
+          corner: ESE
+          offset: [2.5, -4]
+        - anchor: m5M
+          corner: ESE
+          offset: [4, -2.5]
   tweaks:
     near-wall:  # Up the south side of the main key cluster:
     - hull-around:

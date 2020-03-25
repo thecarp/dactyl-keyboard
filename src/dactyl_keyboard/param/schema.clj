@@ -7,10 +7,8 @@
 
 (ns dactyl-keyboard.param.schema
   (:require [clojure.spec.alpha :as spec]
-            [clojure.set :refer [intersection]]
             [scad-tarmi.core :as tarmi]
             [scad-klupe.iso :refer [head-length]]
-            [scad-klupe.schema.base]
             [scad-klupe.schema.iso]
             [dmote-keycap.schema :as capschema]
             [dactyl-keyboard.compass :as compass]))
@@ -53,6 +51,17 @@
         (Integer/parseInt (name candidate))  ; Input like “:1” (clj-yaml key).
         (catch java.lang.NumberFormatException _
           (keyword candidate))))))           ; Input like “:first” or “"first"”.
+
+(defn compass-compatible-angle
+  "A parser that takes an identifier of an angle. A string is converted
+  to a keyword and recursed upon, a keyword is looked up as a compass
+  point (returning a number on a hit and nil on a miss). Any other value is
+  returned unchanged, on the assumption that it’s an angle in radians."
+  [candidate]
+  (cond
+    (string? candidate) (compass-compatible-angle (keyword candidate))
+    (keyword? candidate) (get compass/radians candidate)
+    :else candidate))
 
 (def explicit-bolt-properties (map-like scad-klupe.schema.iso/bolt-parsers))
 
@@ -143,12 +152,17 @@
        :segment int
        :offset vec})))
 
+(def anchored-2d-position-map
+  {:anchor keyword
+   :corner keyword
+   :offset vec})
+
 (def anchored-2d-positions
-  (tuple-of
-    (map-like
-      {:anchor keyword
-       :corner keyword
-       :offset vec})))
+  (tuple-of (map-like anchored-2d-position-map)))
+
+(def projecting-2d-positions
+  (tuple-of (map-like (assoc anchored-2d-position-map
+                        :direction compass-compatible-angle))))
 
 (def anchored-polygons
   (tuple-of
@@ -215,6 +229,7 @@
 
 ;; Also used with spec/keys, with closer competition, hence non-local,
 ;; non-module namespacing.
+(spec/def :numeric/direction number?)
 (spec/def :intercardinal/corner compass/intercardinals)
 (spec/def :intermediate/corner compass/intermediates)
 (spec/def :flexible/corner compass/noncardinals)
@@ -231,6 +246,11 @@
                (spec/keys :req-un [::anchor]
                           :opt-un [:flexible/corner ::segment :three/offset])))
 (spec/def ::anchored-2d-list (spec/coll-of ::anchored-2d-position))
+(spec/def ::projecting-2d-list
+  (spec/coll-of
+    (spec/and
+      ::anchored-2d-position
+      (spec/keys :opt-un [:numeric/direction]))))
 (spec/def ::points ::anchored-2d-list)
 (spec/def ::central-housing-interface (spec/coll-of :central/interface-node))
 (spec/def ::central-housing-normal-positions (spec/coll-of :central/fastener-node))
