@@ -781,3 +781,6 @@ secondaries:
     corner: SW
     segment: 2
     offset: [2, 8, 0]
+dfm:
+  central-housing:
+    sections: [70]

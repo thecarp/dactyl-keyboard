@@ -408,6 +408,14 @@
      "bottom_plate_anchor_negative"]
     []))
 
+(defn- central-housing-modules
+  "A collection of OpenSCAD modules for the central housing."
+  [getopt]
+  (concat
+    [(when (getopt :case :central-housing :derived :include-adapter)
+       "housing_adapter_fastener")]
+    (conditional-bottom-plate-modules getopt)))
+
 (defn get-static-precursors
   "Make the central roster of files and the models that go into each.
   The schema used to describe them is a superset of the scad-app
@@ -429,11 +437,10 @@
     :model-precursor build-main-body-right
     :chiral (getopt :reflect)}
    (when (getopt :case :central-housing :derived :include-main)
-     {:name "case-central"
-      :modules (concat
-                 [(when (getopt :case :central-housing :derived :include-adapter)
-                    "housing_adapter_fastener")]
-                 (conditional-bottom-plate-modules getopt))
+     {:name (str "case-central"  ; With conditional suffix.
+              (when (getopt :case :central-housing :derived :include-sections)
+                "-full"))
+      :modules (central-housing-modules getopt)
       :model-precursor build-central-housing})
    (when (and (getopt :mcu :include)
               (getopt :mcu :support :lock :include))
@@ -488,19 +495,45 @@
       :rotation [0 π 0]
       :chiral (getopt :reflect)})])
 
-(defn get-all-precursors
-  "Add dynamic elements to static precursors.
-  This is currently all about keycaps, ignoring maquette-style caps as
-  disinteresting to print."
+(defn get-key-style-precursors
+  "Collate key-style precursors. No maquettes though; they’re no fun to print."
   [getopt]
-  (reduce
-    (fn [coll key-style]
-      (concat coll
-        (if-not (= (getopt :keys :derived key-style :style) :maquette)
-          [{:name (str "keycap-" (name key-style))
-            :model-precursor #(key/single-cap % key-style true)}])))
-    (get-static-precursors getopt)
+  (mapcat
+    (fn [key-style]
+      (if-not (= (getopt :keys :derived key-style :style) :maquette)
+        [{:name (str "keycap-" (name key-style))
+          :model-precursor #(key/single-cap % key-style true)}]))
     (keys (getopt :keys :styles))))
+
+(defn get-dfm-subassemblies
+  "Collate model precursors for subassemblies.
+  This currently consists of central housing sections only."
+  [getopt]
+  (when (getopt :case :central-housing :derived :include-sections)
+    (map-indexed
+      (fn [idx [left right]]
+        {:name (str "case-central-section-" (inc idx))
+         :modules (central-housing-modules getopt)
+         :model-precursor
+           (fn [getopt]
+             (model/rotate [0 (/ π (if (zero? idx) 2 -2)) 0]
+               (model/intersection
+                 (model/translate [(+ left (/ (- right left) 2)) 0 0]
+                   (model/cube (- right left) 1000 1000))
+                 (build-central-housing getopt))))})
+      (->>
+        (getopt :dfm :central-housing :sections)
+        (concat [-1000 1000])  ; Add left- and right-hand-side bookends.
+        (sort)
+        (partition 2 1)))))
+
+(defn get-all-precursors
+  "Add dynamic elements to static precursors."
+  [getopt]
+  (concat
+    (get-static-precursors getopt)
+    (get-key-style-precursors getopt)
+    (get-dfm-subassemblies getopt)))
 
 (defn- finalize-asset
   "Define scad-app asset(s) from a single proto-asset.

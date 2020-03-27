@@ -259,6 +259,8 @@
         include-adapter (and include-main
                              (getopt :case :central-housing :adapter :include))]
     {:include-main include-main
+     :include-sections (and include-main
+                            (not-empty (getopt :dfm :central-housing :sections)))
      :include-adapter include-adapter
      :include-lip (and include-adapter
                        (getopt :case :central-housing :adapter :lip :include))}))

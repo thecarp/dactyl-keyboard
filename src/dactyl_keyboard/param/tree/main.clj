@@ -1267,6 +1267,31 @@
     {:default (:error-stem-negative capdata/option-defaults) :parse-fn num}
     "Error on the negative components of stems on keycaps, such as the "
     "cross on an MX-compatible cap."]
+   [:section [:dfm :central-housing]
+    "DFM for the central housing."]
+   [:parameter [:dfm :central-housing :sections]
+    {:default [] :parse-fn vec :validate [(spec/coll-of number?)]}
+    "A series of coordinates in mm on the x axis. If a central housing is "
+    "included and this parameter is populated, the program will produce "
+    "additional model outputs where the central housing is "
+    "sectioned off at the specified coordinates. Each piece is rendered "
+    "standing on its plain crossection.\n"
+    "\n"
+    "The purpose of this parameter is to simplify the printing of a central "
+    "housing piece by piece, with each piece standing on end to minimize the "
+    "need for support. This is particularly useful when the central housing "
+    "interface is irregular or the total length of the housing is greater "
+    "than the vertical build volume of your printer.\n"
+    "\n"
+    "This feature provides no mechanism for joining the different sections "
+    "after printing. In a thermoplastic, you should be able to join them "
+    "by running a soldering iron along the interior seams between sections.\n"
+    "\n"
+    "Coordinates entered here are not reflected. When picking them out, "
+    "consider that any bottom plates for the central housing, which are "
+    "reflected, meet in the middle at x = 0. "
+    "If you use `[0]` for this parameter, both plates and sections will meet "
+    "on the same line, weakening the structure."]
    [:section [:dfm :bottom-plate]
     "DFM for bottom plates."]
    [:parameter [:dfm :bottom-plate :fastener-plate-offset]
