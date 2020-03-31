@@ -40,6 +40,8 @@
 (def cardinals (select-length 1))       ; North, south, etc. 4 directions.
 (def intercardinals (select-length 2))  ; Northeast, southeast, etc. Also 4.
 (def intermediates (select-length 3))   ; North-by-northeast etc. 8 directions.
+(def all-short (union cardinals intercardinals intermediates))  ; 16 directions.
+(def nonintermediates (union cardinals intercardinals))  ; 8 directions.
 (def noncardinals (union intercardinals intermediates))  ; 12 directions.
 
 ;; The twelve directions intermediate between the cardinals and intercardinals
@@ -72,11 +74,36 @@
 (let [f (fn [i] [i (get pair-to-intercardinal (set (i intermediate-to-tuple)))])]
   (def intermediate-to-intercardinal (into {} (map f intermediates))))
 
+(def noncardinal-to-tuple
+  (merge intercardinal-to-tuple intermediate-to-tuple))
+
+(defn convert-to-cardinal
+  "Take a compass-point keyword. Return the nearest cardinal direction."
+  [direction]
+  {:pre [(all-short direction)] :post [cardinals]}
+  (if-let [tuple (get noncardinal-to-tuple direction)]
+    (first tuple)
+    direction))
+
 (defn convert-to-intercardinal
-  "Take a corner keyword. Return the nearest intercardinal direction."
-  [corner]
-  {:pre [(noncardinals corner)] :post [#(intercardinals %)]}
-  (get intermediate-to-intercardinal corner corner))
+  "Take a compass-point keyword. Return the nearest intercardinal direction."
+  [direction]
+  {:pre [(noncardinals direction)] :post [intercardinals]}
+  (get intermediate-to-intercardinal direction direction))
+
+(defn convert-to-nonintermediate
+  "Take any short compass keyword. Return the nearest nonintermediate direction."
+  [direction]
+  {:pre [(all-short direction)] :post [nonintermediates]}
+  (if (intermediates direction)
+    (convert-to-intercardinal direction)
+    direction))
+
+(defn convert-to-any-short
+  "Accept a long or short keyword for any compass point. Return a short form."
+  [direction]
+  {:post [all-short]}
+  (get long-to-short direction direction))
 
 (def keyword-to-tuple (merge intercardinal-to-tuple intermediate-to-tuple))
 

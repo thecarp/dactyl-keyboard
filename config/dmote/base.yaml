@@ -416,7 +416,7 @@ secondaries:
   # Main-to-thumb0 cluster bridge points:
   mt0a:
     anchor: m00
-    corner: SSE
+    side: SSE
     segment: 0
     offset: [0, -2, 2]
   mt0b:
@@ -428,7 +428,7 @@ secondaries:
   # Shims for wall posts being thinner than rear housing posts:
   rh-0:
     anchor: rear-housing
-    corner: ESE
+    side: ESE
     segment: 1
     offset: [0, 0, -20]
 case:
@@ -471,22 +471,22 @@ case:
       fasteners:
         positions:
         - anchor: rear-housing
-          corner: NNW
+          side: NNW
           offset: [3, -4]
         - anchor: rear-housing
-          corner: NNE
+          side: NNE
           offset: [-2.5, -11]
         - anchor: a1
-          corner: ENE
+          side: ENE
           offset: [-4.5, -3.5]
         - anchor: near-right
-          corner: ESE
+          side: ESE
           offset: [-5, 3]
         - anchor: t4
-          corner: SSW
+          side: SSW
           offset: [-1, 4]
         - anchor: t1
-          corner: NNW
+          side: NNW
           offset: [3.5, -3]
   leds:
     include: true
@@ -742,20 +742,30 @@ mcu:
   include: true
   position:
     anchor: rear-housing
-    corner: ENE
-    offset: [0, 0, 2]
-    rotation: [0, 1.5708, 0]
+    side: NE
+    segment: 3  # Floor level.
+    offset: [-0.5, -2.5, 11]
+  # Stand on the long edge, folded into the rear housing.
+  intrinsic-rotation: [0, 1.5708, -1.5708]
   support:
     lock:
       include: true
-connection:
-  include: true
-  socket-size: [10, 11, 17.7]  # 616E minus the vertical bar is 10 mm wide.
-  position:
-    anchor: rear-housing
-    corner: ENE
-    raise: true
-    offset: [0, 0, -1]
+ports:
+  # A port in the top far-right corner of the rear housing. This is for running
+  # the wire between the two halves of the keyboard on or through a connecting rod
+  # or bar that sits atop the rear housings.
+  reflection-port:
+    include: true
+    port-type: modular-4p4c-616e
+    position:
+      anchor: rear-housing
+      side: E
+      segment: 1
+      offset: [1, 2, -2]
+    intrinsic-rotation: [0, 0, -1.5708]
+    holder:
+      include: true
+      thickness: 2
 wrist-rest:
   position:
     offset: [83, -90]

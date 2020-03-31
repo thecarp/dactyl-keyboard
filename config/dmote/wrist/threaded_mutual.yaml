@@ -18,7 +18,8 @@ wrist-rest:
       case-side:
         position:
           anchor: t4
-          offset: [2, 4]
+          side: NNE
+          offset: [7, -9]
         depth: 9
       plinth-side:
         position:

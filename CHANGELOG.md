@@ -9,6 +9,9 @@ version 0.2.0, thus covering only a fraction of the project’s history.
     - The top-level parameter `split` was **renamed** to `reflect` to avoid
       misleading the user about how it interacts with the new `central-housing`
       feature.
+    - Parameters named `corner` have been **renamed** to `side`. They now take
+      codes for cardinal compass points as well as actual corners. The default
+      side for anchoring has changed to the north.
     - All parameters governing individual properties of threaded bolts have
       been removed in favour of more powerful new parameters based on options
       exposed by a new library (`scad-klupe`) that draws bolts for the
@@ -18,13 +21,23 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       This change provides greater freedom to choose different bolt head types,
       partial threading, no threading (with a diameter suitable for tapping
       holes manually) etc.
+    - The `connection` section has been replaced by a general `ports` map.
     - Heat-set inserts for attaching bottom plates are no longer a separate
       style. Thus the `inserts` option has been removed from the `case` →
       `bottom-plate` → `installation` → `style` parameter and replaced by a new
       `include` parameter, governing the same feature independently of style.
-- The two parameters named `prefer-rear-housing` and their associated
-  functionality were all **removed**, having been obviated by placement in
-  relation to a wide range of anchors.
+- Removed much of the special treatment of the rear housing, no longer needed.
+    - The two parameters named `prefer-rear-housing` and their associated
+      functionality were all **removed**, having been obviated by placement in
+      relation to a wide range of anchors.
+    - The `raise` parameter for `connection` has been replaced by an extension
+      of the concept of vertical segments to the rear housing.
+    - Removed `into-nook`, which automated some fine tuning for placing ports
+      and MCUs inside the rear housing. This has been obviated in part by the
+      corner-to-side change, which allows the user to target an edge rather
+      than a corner of the rear housing, and in part by the extension of
+      segments on the rear housing to include segment 2, referring to floor
+      level beneath the walls.
 - MCU supports have changed, gaining more power but losing some ease of use,
   to work better with the option of central housing.
     - The default orientation of the MCU PCB has changed, from standing on its
@@ -43,6 +56,9 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       `mcu` → `support` → `lock` → `width-factor`.
     - `mcu` → `support` → `lateral-spacing` was moved to
       `mcu` → `support` → `lock` → `plate` → `clearance`.
+- Anchoring one feature to another no longer imposes a rotation. Thus the
+  MCU's `rotation` parameter has moved out of its `position` map, to a new
+  name (`intrinsic-rotation`) and will be needed more often.
 - The alcove generated for the front end of an MCU PCBA now uses the general
   DFM setting (`error-general`). The `mcu` → `margin` setting was removed.
 - Anchors for bottom-plate mounting screws no longer have domed caps by
@@ -54,11 +70,22 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - Documentation:
     - An execution guide, as a new document branched off from the introduction.
     - Tables of content in auto-generated documents.
+- Support for a number of different types of MCUs beyon the Pro Micro:
+  Common Teensies as well as the Elite-C and Proton C.
 - Central housing, a new feature.
+- An MCU shelf. This type of MCU support corresponds directly to the
+  Dactyl-ManuForm’s `teensy-holder` object and is therefore not new, but
+  it has some parameters to extend its functionality.
+- Support for an arbitrary number of ports.
+    - Support for standard types of ports, including different USB connectors
+      and a modular connector (616E for 4P4C, previously emulated in
+      configuration).
 - Extensions to bottom plates for projections of the anchors used to fasten
   such plates to the case. This restores a feature of the upstream
   Dactyl-ManuForm.
 - The ability to target the plate of an MCU lock for case `tweaks`.
+- An extension of the concept of segments to the rear housing and the plate of
+  an MCU lock for case `tweaks`.
 - A GNU Make target for the Dactyl-ManuForm.
 
 ### Fixed
@@ -82,6 +109,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
     keyword (`:SW`), not to a tuple of cardinal-direction keywords (`[:south
     :west]`). Corner keywords are translated to tuples at need. Note that
     the new direction keywords are not yet namespaced to the compass module.
+  - `cots`, gathering information on commercial off-the-shelf goods.
   - `misc`, which collects everything that remained of `generics` after
     compass code moved out. This makes two `misc` modules.
 - A folder of configuration files under `test/config` for manual regression
@@ -89,15 +117,20 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 
 ### Migration guide
 
-In old configuration files, replace each `fasteners` → `diameter` with a
-`bolt-properties` → `m-diameter` setting, and each bolt length setting with
-`bolt-properties` → `total-length` or `threaded-length`, depending on whether
-you want the head to count towards length. For the MCU lock, the term is
-`fastener-properties` to avoid confusion with the bolt of a lock.
+Compare versions of `config/dmote/base.yaml` to see how to migrate your old
+configuration files. Salient points:
 
-To compensate for the changed default orientation of the MCU
-in an existing custom configuration, use the `rotation` setting for your MCU
-support, with the approximate value `[0, 1.5708, 0]`.
+* Replace each `fasteners` → `diameter` with a `bolt-properties` → `m-diameter`
+  setting, and each bolt length setting with `bolt-properties` → `total-length`
+  or `threaded-length`, depending on whether you want the head to count towards
+  length. For the MCU lock, the term is `fastener-properties` to avoid
+  confusion with the bolt of a lock.
+* To compensate for the changed default orientation of the MCU in an existing
+  custom configuration, use the moved `intrinsic-rotation` setting for your MCU
+  support, with the approximate value `[0, 1.5708, 0]`, plus something for the
+  z axis if that used to be rotated by its anchor.
+* Rename `corner` parameters to `side`.
+* Remove `connection` and add equivalent settings to the new `ports` map.
 
 ## [Version 0.5.1] - 2019-10-16
 ### Fixed

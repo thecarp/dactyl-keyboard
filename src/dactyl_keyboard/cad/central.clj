@@ -254,15 +254,15 @@
 (defn- prepare-criteria
   "Derive quick-access flags for component inclusion."
   [getopt]
-  (let [include-main (and (getopt :reflect)
-                          (getopt :case :central-housing :include))
-        include-adapter (and include-main
-                             (getopt :case :central-housing :adapter :include))]
-    {:include-main include-main
-     :include-sections (and include-main
-                            (not-empty (getopt :dfm :central-housing :sections)))
-     :include-adapter include-adapter
-     :include-lip (and include-adapter
+  (let [main (and (getopt :reflect)
+                  (getopt :case :central-housing :include))
+        adapter (and main
+                     (getopt :case :central-housing :adapter :include))]
+    {:include-main main
+     :include-sections (and main
+                            (not (empty? (getopt :dfm :central-housing :sections))))
+     :include-adapter adapter
+     :include-lip (and adapter
                        (getopt :case :central-housing :adapter :lip :include))}))
 
 (defn- categorize-explicitly

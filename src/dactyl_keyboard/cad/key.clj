@@ -318,10 +318,10 @@
 
 (defn mount-corner-post
   "A post shape that comes offset for one corner of a key mount."
-  [getopt key-style corner]
-  {:pre [(compass/intermediates corner)]}
+  [getopt key-style side]
+  {:pre [(compass/intermediates side)]}
   (->> (web-post getopt)
-       (model/translate (place/mount-corner-offset getopt key-style corner))))
+       (model/translate (place/mount-corner-offset getopt key-style side))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -10,32 +10,32 @@ case:
     polygons:
     - points:
       - anchor: rear-housing
-        corner: NNW
+        side: NNW
         offset: [0, 0]
       - anchor: rear-housing
-        corner: NNW
+        side: NNW
         offset: [10, 0]
       - anchor: rear-housing
-        corner: NNW
+        side: NNW
         offset: [0, -10]
     - points:
       - anchor: a1
-        corner: WNW
+        side: WNW
         offset: [7, 0]
       - anchor: a1
-        corner: NNE
+        side: NNE
       - anchor: a1
-        corner: ESE
+        side: ESE
         offset: [0, -6]
     - points:
       - anchor: near-right
-        corner: SSW
+        side: SSW
         offset: [4, 1]
       - anchor: near-right
-        corner: NNE
+        side: NNE
         offset: [1, -5]
       - anchor: near-right
-        corner: ESE
+        side: ESE
 wrist-rest:
   bottom-plate:
     include: false

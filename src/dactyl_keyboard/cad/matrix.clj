@@ -85,9 +85,9 @@
 
 (defn cube-vertex-offset
   "Compute a 3D offset from the center of a cube to a vertex on it."
-  [corner [x y z] {:keys [bottom] :or {bottom true}}]
-  {:pre [(compass/noncardinals corner)]}
-  (let [directions (compass/keyword-to-tuple corner)]
+  [side [x y z] {:keys [bottom] :or {bottom true}}]
+  {:pre [(compass/noncardinals side)]}
+  (let [directions (compass/keyword-to-tuple side)]
     [(* (apply compass/delta-x directions) x)
      (* (apply compass/delta-y directions) y)
      ((if bottom - +) z)]))

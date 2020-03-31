@@ -80,11 +80,13 @@
     (key/metacluster key/cluster-plates getopt)
     (key/metacluster body/cluster-web getopt)
     (key/metacluster body/cluster-wall getopt)
+    (when (and (getopt :mcu :derived :include-laterally)
+               (getopt :mcu :support :shelf :include))
+      (mcu/shelf-model getopt))
     (when (and (getopt :wrist-rest :include)
                (= (getopt :wrist-rest :style) :threaded))
       (wrist/all-case-blocks getopt))
-    (when (and (getopt :reflect) (getopt :connection :include))
-      (auxf/connection-positive getopt))
+    (auxf/ports-positive getopt)
     (when (getopt :case :back-plate :include)
       (auxf/backplate-block getopt))
     (when (getopt :case :rear-housing :include)
@@ -160,6 +162,9 @@
                 (bottom/holes-in-main-plate getopt)
                 (bottom/holes-in-left-housing getopt))))
           (when (and (getopt :mcu :derived :include-centrally)
+                     (getopt :mcu :support :shelf :include))
+            (mcu/shelf-model getopt))
+          (when (and (getopt :mcu :derived :include-centrally)
                      (getopt :mcu :support :lock :include))
             (mcu/lock-fixture-composite getopt))
           (sandbox/positive getopt))
@@ -190,11 +195,11 @@
             ;; Space for an adapter lip, in case the adapter itself is too
             ;; thin.
             (central/lip-body-right getopt))
-          (when (and (getopt :reflect) (getopt :connection :include))
-            (auxf/connection-negative getopt))
+          (auxf/ports-negative getopt)
           (when (getopt :mcu :derived :include-laterally)
             (mcu/negative-composite getopt))
-          (when (getopt :case :leds :include) (auxf/led-holes getopt))
+          (when (getopt :case :leds :include)
+            (auxf/led-holes getopt))
           (when (getopt :case :back-plate :include)
             (auxf/backplate-fastener-holes getopt))
           (when (and (getopt :wrist-rest :include)
@@ -229,8 +234,6 @@
   This is for casting silicone into, “in place”. If the wrist rest has
   180° rotational symmetry around the z axis, one mould should
   be enough for both halves’ wrist rests. To be printed upside down."
-  ;; WARNING: This will not render correctly in OpenSCAD 2015. It will in
-  ;; a nightly build as of 2018-12-17.
   [getopt]
   (place/wrist-undo getopt
     (model/difference
@@ -262,6 +265,7 @@
                     (getopt :mcu :support :lock :plate :alias)
                     {:type :mcu-lock-plate}}
                    (key/collect-key-aliases getopt)
+                   (auxf/collect-port-aliases getopt)
                    (central/collect-point-aliases getopt)
                    (mcu/collect-grip-aliases getopt)
                    (wrist/collect-point-aliases getopt)

@@ -50,9 +50,11 @@ mcu:
   include: true
   position:
     anchor: rear-housing
-    corner: ENE
-    offset: [-10, 0, 4]
-    rotation: [0, 1.5708, 0]  # Stand on the long edge.
+    side: ENE
+    segment: 2  # Midway up the wall.
+    offset: [-1, -1.25, 0]
+  # Stand on the long edge folded into the rear housing.
+  intrinsic-rotation: [0, 1.5708, -1.5708]
   support:
     lock:
       include: true

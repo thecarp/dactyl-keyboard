@@ -8,7 +8,7 @@
             [scad-tarmi.core :refer [π]]
             [scad-tarmi.maybe :as maybe]
             [scad-klupe.iso :refer [nut]]
-            [dactyl-keyboard.compass :as compass]
+            [dactyl-keyboard.cots :as cots]
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.cad.place :as place]))
 
@@ -75,37 +75,37 @@
         column 0
         rows (getopt :key-clusters :derived :by-cluster cluster
                :row-indices-by-column column)]
-    (for [row rows, corner [:WSW :WNW]]
+    (for [row rows, side [:WSW :WNW]]
      (let [[x y _] (place/wall-corner-place
-                     getopt cluster [column row] {:directions corner})]
+                     getopt cluster [column row] {:side side})]
       [(+ x (getopt :by-key :parameters :wall :thickness)) y]))))
 
 (defn- west-wall-east-points [getopt]
   (map (fn [[x y]] [(+ x 10) y]) (west-wall-west-points getopt)))
 
-(defn west-wall-led-channel [getopt]
+(defn- west-wall-led-channel [getopt]
   (let [west-points (west-wall-west-points getopt)
         east-points (west-wall-east-points getopt)]
     (model/extrude-linear {:height 50}
       (model/polygon (concat west-points (reverse east-points))))))
 
-(defn led-hole-position [getopt ordinal]
+(defn- led-hole-position [getopt ordinal]
   (let [cluster (getopt :case :leds :position :cluster)
         column 0
         rows (getopt :key-clusters :derived :by-cluster cluster
                  :row-indices-by-column column)
         row (first rows)
         [x0 y0 _] (place/wall-corner-place
-                    getopt cluster [column row] {:directions [:W :N]})
+                    getopt cluster [column row] {:side :WNW})
         h (+ 5 (/ (getopt :case :leds :housing-size) 2))]
    [x0 (+ y0 (* (getopt :case :leds :interval) ordinal)) h]))
 
-(defn led-emitter-channel [getopt ordinal]
+(defn- led-emitter-channel [getopt ordinal]
   (->> (model/cylinder (/ (getopt :case :leds :emitter-diameter) 2) 20)
        (model/rotate [0 (/ π 2) 0])
        (model/translate (led-hole-position getopt ordinal))))
 
-(defn lhousing-channel [getopt ordinal]
+(defn- lhousing-channel [getopt ordinal]
   (let [h (getopt :case :leds :housing-size)]
    (->> (model/cube 50 h h)
         (model/translate (led-hole-position getopt ordinal)))))
@@ -114,87 +114,66 @@
   (let [holes (range (getopt :case :leds :amount))
         group (fn [function]
                 (apply model/union (map (partial function getopt) holes)))]
-   (model/union
-     (model/intersection
-       (west-wall-led-channel getopt)
-       (group lhousing-channel))
-     (group led-emitter-channel))))
+    (model/union
+      (model/intersection
+        (west-wall-led-channel getopt)
+        (group lhousing-channel))
+      (group led-emitter-channel))))
 
 
-;;;;;;;;;;;;;;;;
-;; Signalling ;;
-;;;;;;;;;;;;;;;;
+;;;;;;;;;;;
+;; Ports ;;
+;;;;;;;;;;;
 
-(defn connection-position
-  "Move the negative or positive of the connection metasocket into place."
-  [getopt shape]
-  (let [corner (getopt :connection :position :corner)
-        directions (compass/keyword-to-tuple corner)
-        use-housing (and = (getopt :connection :position :anchor) :rear-housing)
-        socket-size (getopt :connection :socket-size)
-        socket-depth-offset (/ (second socket-size) -2)
-        socket-height-offset (/ (nth socket-size 2) 2)
-        socket-thickness (getopt :connection :socket-thickness)
-        vertical-alignment
-          ;; Line up with a wall and a metasocket base plate.
-          (if (and use-housing (getopt :connection :position :raise))
-            ;; Raise socket to just below roof.
-            (- (getopt :case :rear-housing :height)
-               (max socket-thickness
-                    (getopt :case :rear-housing :roof-thickness))
-               socket-height-offset)
-            ;; Raise socket to just above floor.
-            (+ socket-thickness socket-height-offset))
-        shim
-          (if use-housing
-            (place/lateral-offset getopt (second directions)
-              (/ (first socket-size) -2))
-            [0 0 0])]
-   (->> shape
-        ;; Bring the face of the socket to the origin, at the right height.
-        (model/translate [0 socket-depth-offset vertical-alignment])
-        ;; Rotate as specified and to face out from the anchor.
-        (maybe/rotate
-          (mapv +
-            (getopt :connection :position :rotation)
-            [0 0 (- (compass/radians (first directions)))]))
-        ;; Bring snugly to the requested corner.
-        (model/translate (mapv + shim (place/into-nook getopt :connection))))))
 
-(defn connection-metasocket
-  "The shape of a holder in the case to receive a signalling socket component.
-  Here, the shape nominally faces north."
+(defn collect-port-aliases
+  "The ID of each port automatically doubles as an alias for that port."
   [getopt]
-  ;; TODO: Generalize this a bit to also provide a full-size USB socket
-  ;; as a less fragile alternative or complement to a USB connector built into
-  ;; the MCU.
-  (let [socket-size (getopt :connection :socket-size)
-        thickness (getopt :connection :socket-thickness)
-        double (* thickness 2)]
-   (model/translate [0 (/ thickness -2) 0]
-     (apply model/cube (mapv + socket-size [double thickness double])))))
+  (into {} (map (fn [k] [k {:type :port}]) (keys (getopt :ports)))))
 
-(defn connection-socket
-  "Negative space for a port, with a hole for wires leading out of the port and
-  into the interior of the keyboard. The hole is in the negative-y-side wall,
-  based on the assumption that the socket is pointing “north” and the wires
-  come out to the “south”. The hole is slightly thicker than the wall for
-  cleaner rendering."
-  [getopt]
-  (let [socket-size (getopt :connection :socket-size)
-        thickness (getopt :case :web-thickness)]
-   (model/union
-     (apply model/cube socket-size)
-     (model/translate [0 (/ (+ (second socket-size) thickness) -2) 0]
-       (model/cube (dec (first socket-size))
-                   (inc thickness)
-                   (dec (last socket-size)))))))
+(defn- port-model
+  "The positive or negative space to hold a port.
+  The upper middle edge of the face of the port is placed at the origin
+  of the local coordinate system.
+  The “positive” parameter is true for a holder, i.e. a shape added to the
+  case to hold a port. The inclusion parameter for such a shape is not
+  checked here."
+  [getopt id positive]
+  (let [{:keys [port-type size holder]
+         :or {port-type :custom, size [0 0 0], rotation [0 0 0], holder {}}}
+        (getopt :ports id)
+        [xₛ yₛ zₛ] (if (= port-type :custom)
+                     size
+                     (misc/map-to-3d-vec (port-type cots/port-facts)))
+        t (get holder :thickness 1)
+        [xᵢ yᵢ] (map (getopt :dfm :derived :compensator) [xₛ yₛ])]
+    (maybe/translate [0 0 (/ zₛ -2)]
+      (if positive
+        (model/translate [0 (+ (/ yₛ -2) (/ t -2)) 0]
+          (model/cube (+ xₛ t t) (+ yₛ t) (+ zₛ t t)))
+        (model/union
+          (model/translate [0 (/ yᵢ -2) 0]
+            (model/cube xᵢ yᵢ zₛ))
+          (model/hull  ; Flared entry path.
+            (model/cube xᵢ misc/wafer zₛ)
+            (model/translate [0 1 0]
+              (model/cube (inc xᵢ) misc/wafer (inc zₛ)))))))))
 
-(defn connection-positive [getopt]
-  (connection-position getopt (connection-metasocket getopt)))
+(defn- port-set
+  "The positive or negative space for all ports."
+  [getopt positive]
+  (apply maybe/union
+    (map (fn [id]
+           (when (and (get (getopt :ports id) :include)
+                      (or (not positive)
+                          (get-in (getopt :ports id) [:holder :include])))
+               (place/port-place getopt id
+                 (port-model getopt id positive))))
+         (keys (getopt :ports)))))
 
-(defn connection-negative [getopt]
-  (connection-position getopt (connection-socket getopt)))
+;; Unions of the positive and negative spaces for holding all ports, in place.
+(defn ports-positive [getopt] (port-set getopt true))
+(defn ports-negative [getopt] (port-set getopt false))
 
 
 ;;;;;;;;;;;;;;;;;;;;

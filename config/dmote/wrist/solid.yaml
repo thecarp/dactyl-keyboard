@@ -3,7 +3,7 @@
 secondaries:
   wrb-case:
     anchor: m03
-    corner: SSE
+    side: SSE
     segment: 3
     offset: [-16, 0, -10]
   wrb-rest:

@@ -232,12 +232,6 @@
   (when-not (empty? shape)
     (->> shape model/cut (model/intersection (mask-2d getopt)))))
 
-(defn- masked-hull
-  "A hulled slice of a 3D object at z=0, restricted by the mask."
-  [getopt shape]
-  (when-not (empty? shape)
-    (->> shape model/cut model/hull (model/intersection (mask-2d getopt)))))
-
 (defn- wall-base-3d
   "A sliver cut from the case wall."
   [getopt]
@@ -255,11 +249,11 @@
   (fn [[coord direction turning-fn]]
     (let [key [:wall (compass/short-to-long direction) :extent]
           extent (most-specific getopt key cluster coord)
-          corner (compass/tuple-to-intermediate
+          side (compass/tuple-to-intermediate
                    [direction (turning-fn direction)])]
       (when (= extent :full)  ; Ignore partial walls.
         (take 2 (place/wall-corner-place getopt cluster coord
-                  {:corner corner, :vertex true}))))))
+                  {:side side, :vertex true}))))))
 
 (defn- cluster-floor-polygon
   "A polygon approximating a floor-level projection of a key clusters’s wall."
@@ -316,11 +310,11 @@
 
 (defn- tweak-floor-vertex
   "A corner vertex on a tweak wall, extending from a key mount."
-  [getopt segment-picker bottom [alias directions first-segment last-segment]]
+  [getopt segment-picker bottom [alias side first-segment last-segment]]
   {:post [(spec/valid? ::tarmi-core/point-2d %)]}
   (let [segment (segment-picker (range first-segment (inc last-segment)))]
     (take 2 (place/reckon-from-anchor getopt alias
-              {:corner directions, :segment segment, :bottom bottom}))))
+              {:side side, :segment segment, :bottom bottom}))))
 
 (defn- dig-to-seq [node]
   (if (map? node) (dig-to-seq (:hull-around node)) node))

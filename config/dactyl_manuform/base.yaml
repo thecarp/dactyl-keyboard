@@ -2,11 +2,9 @@
 
 # The long-term goal with this file is to have it produce Short’s design
 # through the DMOTE application for upstream compatibility.
-
-# As of DMOTE v0.6.0-SNAPSHOT, that is not yet possible, because:
-# - No internal shelf for the MCU.
-# - No USB A.
-# - No wire hooks.
+# As of DMOTE v0.6.0, the application is still missing the wire hook
+# feature on the original Dactyl-ManuForm, and vertex-perfect imitation
+# would be laborious.
 
 reflect: true
 keys:
@@ -250,21 +248,22 @@ case:
           m-diameter: 3  # Speculation; Dactyl-ManuForm may have used non-metric.
           head-type: countersunk
           total-length: 6
+          include-threading: false  # Threading not used with inserts.
         positions:
         - anchor: m00
-          corner: WSW
+          side: WSW
           offset: [-3, -7]
         - anchor: back0
-          corner: WSW
+          side: WSW
           offset: [0, 6]
         - anchor: back2
-          corner: NNE
+          side: NNE
           offset: [13.5, -3]
         - anchor: m02
-          corner: SSE
+          side: SSE
           offset: [-6, -4]
         - anchor: right0
-          corner: ESE
+          side: ESE
           offset: [-1, 10]
   tweaks:
     webbing:
@@ -346,86 +345,49 @@ case:
         - [thumb-mr, SSE, 0, 4]
         - [thumb-tr, SSE, 0, 4]
         - [m03, SSW, 0, 4]
-    # MCU-related tweaks correspond to nothing in the upstream.
-    # They should be moved into a variant YAML file when Short’s
-    # MCU shelf is supported by the DMOTE application.
-    mcu-grip:
-      - chunk-size: 2
-        hull-around:
-        - [grip-west-corner-forward]
-        - [grip-west-corner-backward]
-        - [grip-west-center-outermost]
-      - chunk-size: 2
-        hull-around:
-        - [grip-east-corner-forward]
-        - [grip-east-corner-backward]
-        - [grip-east-center-outermost]
-      - hull-around:
-        - [grip-west-center-outermost]
-        - [grip-west-center-innermost]
-        - [grip-east-center-innermost]
-        - [grip-east-center-outermost]
-    grip-to-web:
-      - hull-around:
-        - [grip-west-center-outermost]
-        - [grip-east-center-outermost]
-        - [grip-rear-west]
-        - [grip-rear-east]
-      - hull-around:
-        - [grip-rear-west]
-        - [grip-rear-east]
-        - [back0, ESE, 0]
-        - [mcu-base-key, ENE, 0]
 mcu:
   include: true
   type: promicro
   position:
-    anchor: back0
-    corner: NNE
-    offset: [4, 0, -6]
+    anchor: big-port
+    side: WSW
+    segment: 0
+    offset: [-9, -20, -6]
+  intrinsic-rotation: [0, 1.5708, 0]
   support:
-    # There is none of the
-    grip:
-      size: [2, 2, 5]
-      anchors:
-        # One group of anchors goes round the south-west corner.
-        - alias: grip-west-corner-forward
-          corner: SW
-          offset: [-1, -0.5]
-        - alias: grip-west-corner-backward
-          corner: SW
-          offset: [-1, -1]
-        - alias: grip-west-center-outermost
-          corner: SW
-          offset: [4, -1]
-        - alias: grip-west-center-innermost
-          corner: SW
-          offset: [8, 0.5]
-        # A corresponding group goes round the south-east corner.
-        - alias: grip-east-corner-forward
-          corner: SE
-          offset: [1, -0.5]
-        - alias: grip-east-corner-backward
-          corner: SE
-          offset: [1, -1]
-        - alias: grip-east-center-outermost
-          corner: SE
-          offset: [-4, -1]
-        - alias: grip-east-center-innermost
-          corner: SE
-          offset: [-8, 0.5]
-        # A pair of anchors above and further behind the PCB.
-        # These serve as a bridge to the key webbing.
-        - alias: grip-rear-west
-          corner: SW
-          offset: [10, -5, 5]
-        - alias: grip-rear-east
-          corner: SE
-          offset: [-10, -5, 5]
-connection:
-  include: true
-  socket-size: [10.78, 9, 18.38]
-  position:
-    anchor: back0
-    corner: NNE
-    offset: [-9, 1.3, 1]
+    shelf:
+      include: true
+      extra-space: [3, 19.9, 0.43]
+      thickness: 3
+      sides:
+        lateral-thickness: 4
+        overhang-thickness: 4
+        overhang-width: 3
+        offsets: [-34.9, 0]
+ports:
+  big-port:
+    # This models an unknown variety of RJ9 socket.
+    include: true
+    port-type: custom
+    size: [10.78, 9, 18.38]
+    position:
+      anchor: back0
+      side: NNE
+      segment: 3
+      offset: [-5, 1.4, -7]
+    holder:
+      include: true
+      thickness: 2
+  small-port:
+    # This models an unknown variety of USB socket.
+    include: true
+    port-type: custom
+    size: [6.5, 10, 13.6]
+    position:
+      anchor: back1
+      side: NNW
+      segment: 3
+      offset: [8, 2, -3]
+    holder:
+      include: true
+      thickness: 2

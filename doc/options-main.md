@@ -119,11 +119,22 @@ Each heading in this document represents a recognized configuration key in the m
     - Section <a href="#user-content-mcu-position">`position`</a>
         - Parameter <a href="#user-content-mcu-position-central">`central`</a>
         - Parameter <a href="#user-content-mcu-position-anchor">`anchor`</a>
-        - Parameter <a href="#user-content-mcu-position-corner">`corner`</a>
+        - Parameter <a href="#user-content-mcu-position-side">`side`</a>
+        - Parameter <a href="#user-content-mcu-position-segment">`segment`</a>
         - Parameter <a href="#user-content-mcu-position-offset">`offset`</a>
-        - Parameter <a href="#user-content-mcu-position-rotation">`rotation`</a>
+    - Parameter <a href="#user-content-mcu-intrinsic-rotation">`intrinsic-rotation`</a>
     - Section <a href="#user-content-mcu-support">`support`</a>
         - Parameter <a href="#user-content-mcu-support-preview">`preview`</a>
+        - Section <a href="#user-content-mcu-support-shelf">`shelf`</a>
+            - Parameter <a href="#user-content-mcu-support-shelf-include">`include`</a>
+            - Parameter <a href="#user-content-mcu-support-shelf-extra-space">`extra-space`</a>
+            - Parameter <a href="#user-content-mcu-support-shelf-thickness">`thickness`</a>
+            - Parameter <a href="#user-content-mcu-support-shelf-bevel">`bevel`</a>
+            - Section <a href="#user-content-mcu-support-shelf-sides">`sides`</a>
+                - Parameter <a href="#user-content-mcu-support-shelf-sides-lateral-thickness">`lateral-thickness`</a>
+                - Parameter <a href="#user-content-mcu-support-shelf-sides-overhang-thickness">`overhang-thickness`</a>
+                - Parameter <a href="#user-content-mcu-support-shelf-sides-overhang-width">`overhang-width`</a>
+                - Parameter <a href="#user-content-mcu-support-shelf-sides-offsets">`offsets`</a>
         - Section <a href="#user-content-mcu-support-lock">`lock`</a>
             - Parameter <a href="#user-content-mcu-support-lock-include">`include`</a>
             - Parameter <a href="#user-content-mcu-support-lock-width-factor">`width-factor`</a>
@@ -142,23 +153,15 @@ Each heading in this document represents a recognized configuration key in the m
         - Section <a href="#user-content-mcu-support-grip">`grip`</a>
             - Parameter <a href="#user-content-mcu-support-grip-size">`size`</a>
             - Parameter <a href="#user-content-mcu-support-grip-anchors">`anchors`</a>
-- Section <a href="#user-content-connection">`connection`</a>
-    - Parameter <a href="#user-content-connection-include">`include`</a>
-    - Parameter <a href="#user-content-connection-socket-size">`socket-size`</a>
-    - Parameter <a href="#user-content-connection-socket-thickness">`socket-thickness`</a>
-    - Section <a href="#user-content-connection-position">`position`</a>
-        - Parameter <a href="#user-content-connection-position-anchor">`anchor`</a>
-        - Parameter <a href="#user-content-connection-position-corner">`corner`</a>
-        - Parameter <a href="#user-content-connection-position-raise">`raise`</a>
-        - Parameter <a href="#user-content-connection-position-offset">`offset`</a>
-        - Parameter <a href="#user-content-connection-position-rotation">`rotation`</a>
+- Parameter <a href="#user-content-ports">`ports`</a>
 - Section <a href="#user-content-wrist-rest">`wrist-rest`</a>
     - Parameter <a href="#user-content-wrist-rest-include">`include`</a>
     - Parameter <a href="#user-content-wrist-rest-style">`style`</a>
     - Parameter <a href="#user-content-wrist-rest-preview">`preview`</a>
     - Section <a href="#user-content-wrist-rest-position">`position`</a>
         - Parameter <a href="#user-content-wrist-rest-position-anchor">`anchor`</a>
-        - Parameter <a href="#user-content-wrist-rest-position-corner">`corner`</a>
+        - Parameter <a href="#user-content-wrist-rest-position-side">`side`</a>
+        - Parameter <a href="#user-content-wrist-rest-position-segment">`segment`</a>
         - Parameter <a href="#user-content-wrist-rest-position-offset">`offset`</a>
     - Parameter <a href="#user-content-wrist-rest-plinth-height">`plinth-height`</a>
     - Section <a href="#user-content-wrist-rest-shape">`shape`</a>
@@ -258,13 +261,13 @@ An example:
 ```secondaries:
   s0:
     anchor: f0
-    corner: NNE
+    side: NNE
     segment: 3
     offset: [0, 0, 10]
 ```
 This example gives the name `s0` to a point 10 mm above a key or some other feature named `f0`, which must be defined elsewhere.
 
-A `corner` and `segment` are useful mainly with key aliases. An `offset` is applied late, i.e. in the overall coordinate system, following any transformations inherent to the anchor.
+A `side` and `segment` are useful mainly with key aliases. An `offset` is applied late, i.e. in the overall coordinate system, following any transformations inherent to the anchor.
 
 ## Section <a id="case">`case`</a>
 
@@ -639,7 +642,7 @@ The name of a feature where the block will attach.
 
 ##### Parameter <a id="case-back-plate-position-offset">`offset`</a>
 
-An offset in mm from the named feature to the middle of the base of the back-plate block.
+A three-dimensional offset in mm from the feature named in `anchor`. This is applied in the anchor’s local frame of reference and may therefore be subject to various rotations etc.
 
 ### Section <a id="case-bottom-plate">`bottom-plate`</a>
 
@@ -785,8 +788,8 @@ Below the names, each item in each list can follow one of the following patterns
 Each leaf node identifies a particular named feature of the keyboard. It’s usually a set of corner posts on a named (aliased) key mount. These are identical to the posts used to build the walls, but this section gives you greater freedom in how to combine them. The elements of a leaf are, in order:
 
 1. Mandatory: The name of a feature, such as a key by its `alias`.
-2. Optional: A corner ID, such as `SW` for south-west or `NNE` for north by north-east. If this is omitted, i.e. if only the mandatory element is given, the tweak will use the middle of the named feature.
-3. Optional: A starting wall segment ID, which is an integer from 0 to at most 4 inclusive (2 is the maximum for an MCU lock plate, 4 for a key mount). If this is omitted, but a corner is named, the default value is 0.
+2. Optional: A compass point, such as `SW` for south-west or `NNE` for north by north-east. If this is omitted, i.e. if only the mandatory element is given, the tweak will use the middle of the named feature.
+3. Optional: A starting wall segment ID, which is an integer from 0 to at most 4 inclusive (2 is the maximum for an MCU lock plate, 4 for a key mount). If this is omitted, but a side is named, the default value is 0.
 4. Optional: A second wall segment ID. If this is provided, the leaf will represent the convex hull of the two indicated segments plus all segments between them. If this is omitted, only one wall post will be placed.
 
 By default, a map node will create a convex hull around its child nodes. However, this behaviour can be modified. The following keys are recognized:
@@ -848,7 +851,15 @@ If `true`, render a visualization of the MCU PCBA. For use in development.
 
 ### Parameter <a id="mcu-type">`type`</a>
 
-A symbolic name for a commercial product. Currently, only `promicro` is supported, referring to any MCU PCBA with the dimensions of a SparkFun Pro Micro, including That-Canadian’s Elite-C.
+A code name for a form factor. The following values are supported, representing a selection of designs for commercial products from PJRC, SparkFun, the QMK team and others:
+
+* `elite-c`: Elite-C.
+* `promicro`: Pro Micro.
+* `proton-c`: Proton C.
+* `teensy-l`: Teensy++ 2.0.
+* `teensy-m`: Medium-size Teensy, 3.2 or LC.
+* `teensy-s`: Teensy 2.0.
+* `teensy-xl`: Extra large Teensy, 3.5 or 3.6.
 
 ### Section <a id="mcu-position">`position`</a>
 
@@ -868,15 +879,19 @@ The name of a feature at which to place the PCBA. Typically a key alias, central
 
 To ensure harmony, when you enable `central` (above), you would normally enable both `reflect` and `central-housing` *and* set this `anchor` to `origin` or to a point on the central housing, in such a way that the MCU support will be physically attached to and supported by the central housing wall.
 
-#### Parameter <a id="mcu-position-corner">`corner`</a>
+#### Parameter <a id="mcu-position-side">`side`</a>
 
-A code for a corner of the `anchor` feature. This determines both the location and facing of the PCBA.
+A compass-point code for one side of the feature named in `anchor`. The default is `N`, signifying the north side.
+
+#### Parameter <a id="mcu-position-segment">`segment`</a>
+
+An integer identifying one vertical segment of the feature named in `anchor`. The default is `0`, signifying the topmost part of the anchor.
 
 #### Parameter <a id="mcu-position-offset">`offset`</a>
 
-A 3D offset in mm, measuring from the `corner`.
+A three-dimensional offset in mm from the feature named in `anchor`. This is applied in the anchor’s local frame of reference and may therefore be subject to various rotations etc.
 
-#### Parameter <a id="mcu-position-rotation">`rotation`</a>
+### Parameter <a id="mcu-intrinsic-rotation">`intrinsic-rotation`</a>
 
 A vector of 3 angles in radians. This parameter governs the rotation of the PCBA around its anchor point in the front. For example, to have the PCBA standing on its long edge instead of lying flat, you would give this a value like `[0, 1.5708, 0]`, the middle number being roughly π/2.
 
@@ -891,6 +906,50 @@ Despite the importance of support in most use cases, no MCU support is included 
 #### Parameter <a id="mcu-support-preview">`preview`</a>
 
 If `true`, render a visualization of the support in place. This applies only to those parts of the support that are not part of the case model.
+
+#### Section <a id="mcu-support-shelf">`shelf`</a>
+
+The case can include a shelf for the MCU.
+
+A shelf is the simplest type of MCU support, found on the original Dactyl-ManuForm. It provides very little mechanical support to hold the MCU itself in place, so it is not suitable for exposing a connector on the MCU PCBA through the case. Instead, it’s suitable for use together with a pigtail cable between the MCU and a secondary USB connector embedded in the case wall (see `ports`). It’s especially good with stiff single-strand wiring that will help keep the MCU in place without a lock or firm grip.
+
+##### Parameter <a id="mcu-support-shelf-include">`include`</a>
+
+If `true`, include a shelf.
+
+##### Parameter <a id="mcu-support-shelf-extra-space">`extra-space`</a>
+
+Modifiers for the size of the PCB, on all three axes, in mm, for the purpose of determining the size of the shelf.
+
+For example, the last term, for z, adds extra space between the component side of the PCBA up to the overhang on each side of the shelf, if any. The MCU will appear centered inside the available space, so this parameter can move the plane of the shelf itself.
+
+##### Parameter <a id="mcu-support-shelf-thickness">`thickness`</a>
+
+The thickness of material in the shelf, below or behind the PCBA, in mm.
+
+##### Parameter <a id="mcu-support-shelf-bevel">`bevel`</a>
+
+A map of angles, in radians, indexed by cardinal compass points, whereby any and all sides of the shelf are turned away from the MCU PCBA. This feature is intended mainly for manufacturability, to reduce the need for supports in printing, but it can also add strength or help connect to other features.
+
+##### Section <a id="mcu-support-shelf-sides">`sides`</a>
+
+By default, a shelf includes raised sides to hold on to the PCBA. This is most useful when the shelf is rotated, following the MCU (cf. `intrinsic-rotation`), out of the x-y plane.
+
+###### Parameter <a id="mcu-support-shelf-sides-lateral-thickness">`lateral-thickness`</a>
+
+The thickness of material to each side of the MCU, in mm.
+
+###### Parameter <a id="mcu-support-shelf-sides-overhang-thickness">`overhang-thickness`</a>
+
+The thickness of material in the outermost part on each side, in mm.
+
+###### Parameter <a id="mcu-support-shelf-sides-overhang-width">`overhang-width`</a>
+
+The extent to which each grip extends out across the PCBA, in mm.
+
+###### Parameter <a id="mcu-support-shelf-sides-offsets">`offsets`</a>
+
+One or two lengthwise offsets in mm. When these are left at zero, the sides of the shelf will appear in full. A negative or positive offset shortens the corresponding side, towards or away from the connector side of the PCBA.
 
 #### Section <a id="mcu-support-lock">`lock`</a>
 
@@ -983,63 +1042,62 @@ This parameter determines the size of the object that will occupy an anchor poin
 
 A list of points in space positioned relative to the PCB’s corners.
 
-Each point must have an `alias`, which is a name you can use elsewhere to refer to that point, and a `corner`, identifying one corner of the PCB, e.g. `SE` for the south-east corner.
+Each point must have an `alias`, which is a name you can use elsewhere to refer to that point, and a `side`, identifying one side of the PCB, e.g. `SE` for the south-east corner.
 
-Each point may also have an `offset` from the stated corner. These offsets must be given in mm, either as a 2-tuple like `[1, 2]` for a two-dimensional offset in the plane of the PCB, or as a 3-tuple like `[1, 2, 3]` for a three-dimensional offset that can put the point above or below the PCB.
+Each point may also have an `offset` from the stated side. These offsets must be given in mm, either as a 2-tuple like `[1, 2]` for a two-dimensional offset in the plane of the PCB, or as a 3-tuple like `[1, 2, 3]` for a three-dimensional offset that can put the point above or below the PCB.
 
 An example with two-dimensional offsets hugging one corner:
 
 ```anchors
   - alias: corner-side
-    corner: SE
+    side: SE
     offset: [1, 1]
   - alias: corner-back
-    corner: SE
+    side: SE
     offset: [-1, -1]```
 
 Grip anchor points are all empty by default. They can be occupied, and connected, using `tweaks`.
 
-## Section <a id="connection">`connection`</a>
+## Parameter <a id="ports">`ports`</a>
 
-There must be a signalling connection between the two halves of a split keyboard.
+This parameter describes the connectors for any and all external ports, i.e. sockets in the case walls to contain electronic receptacles for signalling connections and other interfaces.
 
-### Parameter <a id="connection-include">`include`</a>
+There is one exception: Ports attached directly to microcontroller boards are treated in the `mcu` section above, not here.
 
-If `true`, inclue a “metasocket”, i.e. physical support for a socket where you plug in a cable that will, in turn, provide the signalling connection between the two halves.
+Example uses for this parameter:
 
-### Parameter <a id="connection-socket-size">`socket-size`</a>
+* One port for the connection between the two halves of a reflected keyboard without a central housing. Such ports are usually TRRS or 4P4C (“RJ9”), but you can use practically anything with enough wires.
+* An external USB port for interfacing with your computer, such as a full-size USB A port. You might want this when your MCU either has no such port attached or the attached port is too weak for direct human use (cf. `shelf`) or difficult to get into a good position.
+* Additional USB ports, connected via internal hub or to an integrated microphone clip, phone charger etc.
+* A speaker for QMK audio.
+* An LCD screen for QMK video.
+* An exotic human interface device, such as a large rotary encoder or trackball, not supported (by this application) as a type of keyboard switch.
+* Assortment drawers built into a large rear or central housing.
 
-The size in mm of a hole in the case, for the female to fit into. For example, the female might be a type 616E socket for a (male) 4P4C “RJ9” plug, in which case the metasocket has to fit around the entire 616E.
+There are very limited facilities for specifying the shape of a port. Basically, this parameter assumes a cuboid socket. For any different shape, get as close as possible with `tweaks`, then make your own adapter and/or widen the socket with a soldering iron or similar tools to fit a more complex object.
 
-This parameter assumes a cuboid socket. For a socket of a different shape, get as close as possible, then make your own adapter and/or widen the metasocket with a soldering iron or similar tools.
+This parameter maps aliases to maps that may contain the following keys. All of them are optional.
 
-### Parameter <a id="connection-socket-thickness">`socket-thickness`</a>
+* `include`: If `true`, include the port. The main use of this option is for disabling ports defined in other configuration files. The default value is `false` for consistency with other inclusion parameters.
+* `port-type`: A code identifying a common type of port. There’s a list of the available options below.
+* `size`: An `[x, y, z]` vector specifying the size of the port in mm. This is used only with the `custom` port type.
+* `position`: A map of `anchor`, `side`, `segment` and `offset`. This works just like the equivalent parameters for the `mcu`.
+* `intrinsic-rotation`: An `[x, y, z]` vector of radians to rotate the port around the top of its own face.
+* `holder`: A map describing a positive addition to the `case` on five sides of the port: Every side but the front.
+    * `include`: If true, build a wall around the port.
+    * `alias`: A name for the holder, for anchoring to it.
+    * `thickness`: A number specifying the thickness of the wall on       each side, in mm.
 
-The thickness in mm of the roof, walls and floor of the metasocket, i.e. around the hole in the case.
+The following values are recognized for `port-type`.
 
-### Section <a id="connection-position">`position`</a>
-
-Where to place the socket. Equivalent to `mcu` → `position`.
-
-#### Parameter <a id="connection-position-anchor">`anchor`</a>
-
-
-
-#### Parameter <a id="connection-position-corner">`corner`</a>
-
-
-
-#### Parameter <a id="connection-position-raise">`raise`</a>
-
-If `true`, and the socket is being placed in relation to the rear housing, put it directly under the ceiling, instead of directly over the floor.
-
-#### Parameter <a id="connection-position-offset">`offset`</a>
-
-
-
-#### Parameter <a id="connection-position-rotation">`rotation`</a>
-
-
+* `custom`, meaning `size` will take effect.
+* `modular-4p4c-616e`: modular connector 4P4C, socket 616E, minus the vertical stripe.
+* `usb-c`: USB C.
+* `usb-full-2b`: full-size USB 2 B.
+* `usb-full-3b`: full-size USB 3 B.
+* `usb-full-a`: full-size USB A.
+* `usb-micro-2b`: USB micro 2 B.
+* `usb-mini-b`: USB mini B.
 
 ## Section <a id="wrist-rest">`wrist-rest`</a>
 
@@ -1068,13 +1126,17 @@ The wrist rest is positioned in relation to a named feature.
 
 The name of a feature where the wrist rest will attach. The vertical component of its position will be ignored.
 
-#### Parameter <a id="wrist-rest-position-corner">`corner`</a>
+#### Parameter <a id="wrist-rest-position-side">`side`</a>
 
-A corner of the feature named in `anchor`.
+A compass-point code for one side of the feature named in `anchor`. The default is `N`, signifying the north side.
+
+#### Parameter <a id="wrist-rest-position-segment">`segment`</a>
+
+An integer identifying one vertical segment of the feature named in `anchor`. The default is `0`, signifying the topmost part of the anchor.
 
 #### Parameter <a id="wrist-rest-position-offset">`offset`</a>
 
-An offset in mm from the feature named in `anchor`.
+A two-dimensional offset in mm from the feature named in `anchor`.
 
 ### Parameter <a id="wrist-rest-plinth-height">`plinth-height`</a>
 

@@ -11,7 +11,8 @@
             [scad-klupe.iso :refer [head-length]]
             [scad-klupe.schema.iso]
             [dmote-keycap.schema :as capschema]
-            [dactyl-keyboard.compass :as compass]))
+            [dactyl-keyboard.compass :as compass]
+            [dactyl-keyboard.cots :as cots]))
 
 
 ;;;;;;;;;;;;;
@@ -52,6 +53,13 @@
         (catch java.lang.NumberFormatException _
           (keyword candidate))))))           ; Input like “:first” or “"first"”.
 
+(defn any-compass-point
+  "Convert to a short keyword for a compass point, even from a long string."
+  [candidate]
+  (compass/convert-to-any-short (keyword candidate)))
+
+(def compass-angle-map (map-of any-compass-point num))
+
 (defn compass-compatible-angle
   "A parser that takes an identifier of an angle. A string is converted
   to a keyword and recursed upon, a keyword is looked up as a compass
@@ -62,6 +70,35 @@
     (string? candidate) (compass-compatible-angle (keyword candidate))
     (keyword? candidate) (get compass/radians candidate)
     :else candidate))
+
+(def anchored-2d-position-map
+  {:anchor keyword
+   :side keyword  ; Which side (e.g. corner) of anchor to use.
+   :segment int   ; Which segment of anchor to use.
+   :offset vec})
+
+(def anchored-3d-position-map anchored-2d-position-map)
+
+(def named-secondary-positions
+  (map-of keyword (map-like anchored-3d-position-map)))
+
+(def anchored-2d-positions
+  (tuple-of (map-like anchored-2d-position-map)))
+
+(def projecting-2d-positions
+  (tuple-of (map-like (assoc anchored-2d-position-map
+                        :direction compass-compatible-angle))))
+
+(def anchored-polygons
+  (tuple-of
+    (map-like
+      {:points anchored-2d-positions})))
+
+(def nameable-spline
+  (tuple-of
+    (map-like
+      {:position (tuple-of num)
+       :alias keyword})))
 
 (def explicit-bolt-properties (map-like scad-klupe.schema.iso/bolt-parsers))
 
@@ -100,7 +137,7 @@
 (def mcu-grip-anchors
   (tuple-of
     (map-like
-      {:corner keyword
+      {:side keyword
        :offset vec
        :alias keyword})))
 
@@ -110,12 +147,12 @@
   anything down to a single alias without further specification is allowed."
   ([alias]
    [(keyword alias) nil 0 0])
-  ([alias corner]
-   (case-tweak-position alias corner 0 0))  ; Default to segment 0.
-  ([alias corner segment]
-   (case-tweak-position alias corner segment segment))
-  ([alias corner s0 s1]
-   [(keyword alias) (keyword corner) (int s0) (int s1)]))
+  ([alias side]
+   (case-tweak-position alias side 0 0))  ; Default to segment 0.
+  ([alias side segment]
+   (case-tweak-position alias side segment segment))
+  ([alias side s0 s1]
+   [(keyword alias) (keyword side) (int s0) (int s1)]))
 
 (defn case-tweaks [candidate]
   "Parse a tweak. This can be a lazy sequence describing a single
@@ -143,38 +180,6 @@
   configuration."
   (map-of keyword (map-like capschema/option-parsers)))
 
-(def named-secondary-positions
-  (map-of
-    keyword
-    (map-like
-      {:anchor keyword
-       :corner keyword
-       :segment int
-       :offset vec})))
-
-(def anchored-2d-position-map
-  {:anchor keyword
-   :corner keyword
-   :offset vec})
-
-(def anchored-2d-positions
-  (tuple-of (map-like anchored-2d-position-map)))
-
-(def projecting-2d-positions
-  (tuple-of (map-like (assoc anchored-2d-position-map
-                        :direction compass-compatible-angle))))
-
-(def anchored-polygons
-  (tuple-of
-    (map-like
-      {:points anchored-2d-positions})))
-
-(def nameable-spline
-  (tuple-of
-    (map-like
-      {:position (tuple-of num)
-       :alias keyword})))
-
 
 ;;;;;;;;;;;;;;;;
 ;; Validators ;;
@@ -192,11 +197,13 @@
         (assoc parameters :head-length (head-length m-diameter head-type))))))
 
 ;; Used with spec/keys, making the names sensitive:
+(spec/def ::include boolean?)
 (spec/def ::anchor keyword?)
 (spec/def ::alias (spec/and keyword?
                             #(not (= :origin %))
                             #(not (= :rear-housing %))))
 (spec/def ::segment (spec/int-in 0 5))
+(spec/def ::thickness (spec/and number? (complement neg?)))
 (spec/def ::highlight boolean?)
 (spec/def ::at-ground boolean?)
 (spec/def ::above-ground boolean?)
@@ -206,6 +213,9 @@
 (spec/def ::spline-point
   (spec/keys :req-un [::position]  ; 2D.
              :opt-un [::alias]))
+(spec/def ::port-type (set (conj (keys cots/port-facts) :custom)))
+(spec/def :port/size ::tarmi/point-3d)
+(spec/def :port/intrinsic-rotation ::tarmi/point-3d)
 (spec/def :central/offset ::tarmi/point-3d)
 (spec/def :central/left-hand-alias ::alias)
 (spec/def :central/right-hand-alias ::alias)
@@ -230,9 +240,9 @@
 ;; Also used with spec/keys, with closer competition, hence non-local,
 ;; non-module namespacing.
 (spec/def :numeric/direction number?)
-(spec/def :intercardinal/corner compass/intercardinals)
-(spec/def :intermediate/corner compass/intermediates)
-(spec/def :flexible/corner compass/noncardinals)
+(spec/def :intercardinal/side compass/intercardinals)
+(spec/def :intermediate/side compass/intermediates)
+(spec/def :flexible/side compass/noncardinals)
 (spec/def :two/offset ::tarmi/point-2d)
 (spec/def :three/offset ::tarmi/point-3d)
 (spec/def :flexible/offset ::tarmi/point-2-3d)
@@ -240,11 +250,13 @@
 ;; Users thereof:
 (spec/def ::foot-plate (spec/keys :req-un [::points]))
 (spec/def ::anchored-2d-position
-  (spec/keys :opt-un [::anchor :flexible/corner :two/offset]))
+  (spec/keys :opt-un [::anchor :flexible/side :two/offset]))
+(spec/def ::anchored-3d-position
+  (spec/keys :opt-un [::anchor :flexible/side :three/offset]))
 (spec/def ::named-secondary-positions
   (spec/map-of ::alias
                (spec/keys :req-un [::anchor]
-                          :opt-un [:flexible/corner ::segment :three/offset])))
+                          :opt-un [:flexible/side ::segment :three/offset])))
 (spec/def ::anchored-2d-list (spec/coll-of ::anchored-2d-position))
 (spec/def ::projecting-2d-list
   (spec/coll-of
@@ -256,8 +268,14 @@
 (spec/def ::central-housing-normal-positions (spec/coll-of :central/fastener-node))
 (spec/def ::mcu-grip-anchors
   (spec/coll-of
-    (spec/keys :req-un [::alias :intercardinal/corner]
+    (spec/keys :req-un [::alias :intercardinal/side]
                :opt-un [:flexible/offset])))
+(spec/def ::port-holder (spec/keys :req-un [::include ::alias ::thickness]))
+(spec/def ::port-map
+  (spec/map-of
+    ::alias
+    (spec/keys :opt-un [::include ::port-type :port/size :three/position
+                        :port/intrinsic-rotation ::port-holder])))
 (spec/def ::tweak-name-map (spec/map-of keyword? ::hull-around))
 (spec/def ::tweak-plate-map
   (spec/keys :req-un [::hull-around]
@@ -268,8 +286,10 @@
 (spec/def ::key-cluster #(not (= :derived %)))
 (spec/def ::cluster-style #{:standard :orthographic})
 (spec/def ::plate-installation-style #{:threads :inserts})
-(spec/def ::mcu-type #{:promicro})
-(spec/def ::mcu-support-style #{:lock :stop})
+(spec/def ::compass-angle-map
+  (spec/map-of compass/cardinals (spec/and (complement neg?)
+                                           #(<= % (* 3/8 tarmi/π)))))
+
 (spec/def ::wrist-rest-style #{:threaded :solid})
 (spec/def ::wrist-position-style #{:case-side :mutual})
 (spec/def ::wrist-block #{:case-side :plinth-side})
@@ -281,7 +301,7 @@
 (spec/def ::wall-segment ::segment)
 (spec/def ::wall-extent (spec/or :partial ::wall-segment :full #{:full}))
 (spec/def ::tweak-plate-leaf
-  (spec/tuple keyword? (spec/nilable :flexible/corner) ::wall-segment ::wall-segment))
+  (spec/tuple keyword? (spec/nilable :flexible/side) ::wall-segment ::wall-segment))
 (spec/def ::foot-plate-polygons (spec/coll-of ::foot-plate))
 
 (spec/def ::descriptor  ; Parameter metadata descriptor.

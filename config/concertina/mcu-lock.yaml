@@ -1,0 +1,40 @@
+# Configuration fragment for an MCU lock on a Concertina.
+
+case:
+  central-housing:
+    tweaks:  # Tweaks for the central housing.
+      mcu-holder:
+      - at-ground: true
+        hull-around:
+        - [mcu-plate, NE]
+        - [mcu-SE]
+        - [mcu-SW]
+        - [mcu-plate, NW]
+mcu:
+  position:
+    central: true
+    anchor: ci-far-base
+    side: NNE
+    offset: [-18, -2, -3]
+  support:
+    shelf:
+      include: false
+    lock:
+      include: true
+      plate:
+        alias: mcu-plate
+      fastener-properties:
+        m-diameter: 3
+        include-threading: false
+  # A couple of offsets from the inner corners of the MCU plate, designed to
+  # get out of the way of the screw that attaches the MCU lock bolt.
+  mcu-SE:
+    anchor: mcu-plate
+    side: SE
+    segment: 2
+    offset: [-2, 8, 0]
+  mcu-SW:
+    anchor: mcu-plate
+    side: SW
+    segment: 2
+    offset: [2, 8, 0]

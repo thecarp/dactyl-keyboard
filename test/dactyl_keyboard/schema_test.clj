@@ -42,8 +42,8 @@
     (is (= (schema/anchored-2d-positions [])
            []))
     (is (= (schema/anchored-2d-positions
-             [{:anchor "a", :corner "SSW", :offset [0 -1]}])
-           [{:anchor :a, :corner :SSW, :offset [0 -1]}]))))
+             [{:anchor "a", :side "SSW", :offset [0 -1]}])
+           [{:anchor :a, :side :SSW, :offset [0 -1]}]))))
 
 (deftest test-coordinate-validator
   (testing "empty"

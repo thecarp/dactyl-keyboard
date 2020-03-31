@@ -6,12 +6,20 @@
 ;;; Functions useful in more than one scad-clj project.
 
 (ns dactyl-keyboard.cad.misc
-  (:require [scad-clj.model :as model]
+  (:require [clojure.spec.alpha :as spec]
+            [scad-clj.model :as model]
+            [scad-tarmi.core :as tarmi]
             [scad-tarmi.maybe :as maybe]
             [scad-klupe.iso :refer [bolt]]))
 
 (def wafer 0.001)  ; Generic insignificant feature size.
 (def nodule (apply model/cube (repeat 3 wafer)))
+
+(defn map-to-3d-vec
+  "Turn a descriptive hash map into an x-y-z vector."
+  {:post [#(spec/valid? ::tarmi/point-3d %)]}
+  [{:keys [width depth length thickness height]}]
+  [(or width 1) (or depth length 1) (or thickness height 1)])
 
 (defn shallow-wrap
   "Return a permissible index to a list-like collection.

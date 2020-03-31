@@ -10,7 +10,8 @@
             [scad-klupe.iso :refer [head-length]]
             [scad-tarmi.util :refer [loft]]
             [dactyl-keyboard.misc :refer [colours]]
-            [dactyl-keyboard.cad.misc :refer [merge-bolt wafer]]
+            [dactyl-keyboard.cots :as cots]
+            [dactyl-keyboard.cad.misc :refer [map-to-3d-vec merge-bolt wafer]]
             [dactyl-keyboard.cad.place :as place]))
 
 
@@ -19,26 +20,13 @@
 ;;;;;;;;;;;;
 
 
-(def usb-a-female-dimensions
-  "This assumes the flat orientation common in laptops.
-  In a DMOTE, USB connector width would typically go on the z axis, etc."
-  {:full {:width 10.0 :length 13.6 :height 6.5}
-   :micro {:width 7.5 :length 5.9 :height 2.55}})
-
-(defn- descriptor-vec
-  [{:keys [width length thickness height]}]
-  [(or width 1) (or length 1) (or thickness height 1)])
-
 (defn derive-properties
   "Derive secondary properties of the MCU."
   [getopt]
   (let [mcu-type (getopt :mcu :type)
-        pcb-base {:thickness 1.57 :connector-overshoot 1.9}
-        pcb-model (case mcu-type
-                    :promicro {:width 18 :length 33}
-                    :teensy {:width 17.78 :length 35.56}
-                    :teensy++ {:width 17.78 :length 53})
-        [xₚ yₚ zₚ] (descriptor-vec (merge pcb-base pcb-model))
+        pcb-base (merge (::cots/default cots/mcu-facts)
+                        (mcu-type cots/mcu-facts))
+        [xₚ yₚ zₚ] (map-to-3d-vec pcb-base)
         pcb-sw [(/ xₚ -2) (- yₚ) 0]
         pcb-corners {:NW (mapv + pcb-sw [0 yₚ 0])
                      :NE (mapv + pcb-sw [xₚ yₚ 0])
@@ -58,8 +46,8 @@
                                       (getopt :case :central-housing :include)
                                       (getopt :mcu :position :central))))
     ;; Add [x y z] coordinates of the four corners of the PCB. No DFM.
-    :pcb (merge pcb-base pcb-model pcb-corners)
-    :connector (:micro usb-a-female-dimensions)
+    :pcb (merge pcb-base pcb-corners)
+    :connector (get cots/port-facts (:port-type pcb-base))
     :plate (merge
              {:width xₜ
               :length yₜ
@@ -72,10 +60,10 @@
   "Collect the names of MCU grip anchors. Expand 2D offsets to 3D."
   [getopt]
   (reduce
-    (fn [coll {:keys [corner offset alias] :or {offset [0 0]}}]
+    (fn [coll {:keys [side offset alias] :or {offset [0 0]}}]
       (assoc coll alias
         {:type :mcu-grip,
-         :corner corner,
+         :side side,
          :offset (subvec (conj offset 0) 0 3)}))
     {}
     (getopt :mcu :support :grip :anchors)))
@@ -85,12 +73,12 @@
   orientation of the model is flat with the connector on top, facing “north”.
   The middle of that short edge of the PCB centers at the origin of the local
   cordinate system."
-  [getopt include-margin connector-elongation]
+  [getopt include-margin port-elongation]
   (let [prop (partial getopt :mcu :derived)
-        overshoot (prop :pcb :connector-overshoot)
-        [pcb-x pcb-y pcb-z] (descriptor-vec (prop :pcb))
-        [usb-x usb-y-base usb-z] (descriptor-vec (prop :connector))
-        usb-y (+ usb-y-base connector-elongation)
+        overshoot (prop :pcb :port-overshoot)
+        [pcb-x pcb-y pcb-z] (map-to-3d-vec (prop :pcb))
+        [usb-x usb-y-base usb-z] (map-to-3d-vec (prop :connector))
+        usb-y (+ usb-y-base port-elongation)
         margin (if include-margin (getopt :dfm :error-general) 0)
         mcube (fn [& dimensions] (apply model/cube (map #(- % margin) dimensions)))]
     (model/union
@@ -98,7 +86,7 @@
         (model/color (:pcb colours)
           (mcube pcb-x pcb-y pcb-z)))
       (model/translate [0
-                        (+ (/ usb-y -2) (/ connector-elongation 2) overshoot)
+                        (+ (/ usb-y -2) (/ port-elongation 2) overshoot)
                         (+ (/ pcb-z 2) (/ usb-z 2))]
         (model/color (:metal colours)
           (mcube usb-x usb-y usb-z))))))
@@ -117,7 +105,7 @@
   high printing accuracy or difficult cleanup."
   [getopt]
   (let [prop (partial getopt :mcu :derived)
-        [pcb-x _ pcb-z] (descriptor-vec (prop :pcb))
+        [pcb-x _ pcb-z] (map-to-3d-vec (prop :pcb))
         usb-z (prop :connector :height)
         error (getopt :dfm :error-general)
         x (- pcb-x error)]
@@ -128,12 +116,62 @@
         (model/translate [0 (/ x -2) (/ (+ pcb-z usb-z) 2)]
           (model/cube (dec x) x (- usb-z error)))))))
 
+(defn shelf-model
+  "An MCU shelf. This is intended primarily for use with
+  a pigtail cable between the MCU itself and a primary USB connector
+  in the case wall."
+  [getopt]
+  (let [[xₚ yₚ zₚ] (mapv + (map-to-3d-vec (getopt :mcu :derived :pcb))
+                           (getopt :mcu :support :shelf :extra-space))
+        {:keys [N E S W] :or {N 0, E 0, S 0, W 0}}
+        (getopt :mcu :support :shelf :bevel)
+        t0 (getopt :mcu :support :shelf :thickness)
+        t1 (getopt :mcu :support :shelf :sides :lateral-thickness)
+        t2 (getopt :mcu :support :shelf :sides :overhang-thickness)
+        xₜ (+ xₚ (* 2 t1))  ; Total width of the shelf with its sides.
+        [X Y Z] [(* 3 xₜ) (* 3 yₚ) 60]  ; Blown up for intersections.
+        xₒ (+ t1 (getopt :mcu :support :shelf :sides :overhang-width))
+        [off0 off1] (getopt :mcu :support :shelf :sides :offsets)
+        tr (fn [p a s] (model/translate p (maybe/rotate a s)))
+        tc (fn [p d] (model/translate p (apply model/cube d)))
+        side (fn [x-op y-offset]
+               (maybe/translate [(x-op (/ xₚ 2))
+                                 (+ y-offset (/ yₚ -2))
+                                 (/ zₚ -2)]
+                 (model/union
+                   ;; Wall.
+                   (tc [(x-op (/ t1 2)) 0 (/ zₚ 2)]
+                       [t1 yₚ zₚ])
+                   ;; Overhang.
+                   (tc [(+ (x-op (/ xₒ -2)) (x-op t1)) 0 (+ zₚ (/ t2 2))]
+                       [xₒ yₚ t2]))))]
+    (place/mcu-place getopt
+      (maybe/intersection
+        ;; The positive body of the shelf.
+        (model/union ;; The back plate and grips, without a bevel.
+          (tc [0 (/ yₚ -2) (- 0 (/ zₚ 2) (/ t0 2))] [X Y t0])
+          (model/union (side - off0) (side + off1)))
+        ;; End bevel, rotating on the x axis.
+        (model/translate [0 0 (/ zₚ -2)]
+          (let [d [X (/ yₚ 2) Z]]
+            (maybe/union
+              (tc [0 (/ yₚ -2) 0] d)
+              (tr [0 0 0] [N 0 0] (tc [0 (/ yₚ -4) 0] d))
+              (tr [0 (- yₚ) 0] [(- S) 0 0] (tc [0 (/ yₚ 4) 0] d)))))
+        ;; Side (lengthwise) bevel, rotating on the y axis.
+        (model/translate [0 0 (/ zₚ -2)]
+          (let [d [(/ xₜ 2) Y Z]]
+            (maybe/union
+              (tc [0 (/ yₚ -2) 0] d)
+              (tr [(/ xₜ 2) 0 0] [0 (- E) 0] (tc [(/ xₜ -4) (/ yₚ -2) 0] d))
+              (tr [(/ xₜ -2) 0 0] [0 W 0] (tc [(/ xₜ 4) (/ yₚ -2) 0] d)))))))))
+
 (defn lock-plate-base
   "The model of the plate upon which an MCU PCBA rests in a lock.
   This is intended for use in the lock model itself (complete)
   and in tweaks (include-clearance set to false)."
   [getopt include-clearance]
-  (let [[plate-x plate-y plate-z] (descriptor-vec (getopt :mcu :derived :plate))
+  (let [[plate-x plate-y plate-z] (map-to-3d-vec (getopt :mcu :derived :plate))
         transition (getopt :mcu :derived :plate :transition)
         full-z (- plate-z transition)
         main-z (if include-clearance full-z plate-z)]
@@ -148,7 +186,7 @@
   [getopt]
   (let [prop (partial getopt :mcu :derived)
         pcb-z (prop :pcb :thickness)
-        [usb-x usb-y usb-z] (descriptor-vec (prop :connector))
+        [usb-x usb-y usb-z] (map-to-3d-vec (prop :connector))
         thickness (getopt :mcu :support :lock :socket :thickness)
         socket-z-thickness (+ (/ usb-z 2) thickness)
         socket-z-offset (+ (/ pcb-z 2) (* 3/4 usb-z) (/ thickness 2))
@@ -178,7 +216,7 @@
         l1 (if (= (getopt :mcu :position :anchor) :rear-housing)
              (getopt :case :rear-housing :wall-thickness)
              (getopt :case :web-thickness))
-        [_ pcb-y pcb-z] (descriptor-vec (getopt :mcu :derived :pcb))
+        [_ pcb-y pcb-z] (map-to-3d-vec (getopt :mcu :derived :pcb))
         l2 (getopt :mcu :support :lock :plate :clearance)
         y1 (getopt :mcu :support :lock :bolt :mount-length)]
     (->>
@@ -201,9 +239,8 @@
   the user to file down the tip and finalize the fit."
   [getopt]
   (let [prop (partial getopt :mcu :derived)
-        usb-overshoot (prop :pcb :connector-overshoot)
-        [_ pcb-y pcb-z] (descriptor-vec (prop :pcb))
-        [usb-x usb-y usb-z] (descriptor-vec (prop :connector))
+        [_ pcb-y pcb-z] (map-to-3d-vec (prop :pcb))
+        [usb-x usb-y usb-z] (map-to-3d-vec (prop :connector))
         mount-z (getopt :mcu :support :lock :bolt :mount-thickness)
         mount-overshoot (getopt :mcu :support :lock :bolt :overshoot)
         mount-y-base (getopt :mcu :support :lock :bolt :mount-length)
@@ -225,7 +262,7 @@
             (model/cube usb-x 10 bolt-z-mount))
           (model/translate [0 (/ pcb-y -4) bolt-z0]
             (model/cube usb-x 1 bolt-z-mount))
-          (model/translate [0 (- usb-overshoot usb-y) bolt-z1]
+          (model/translate [0 (- (prop :pcb :port-overshoot) usb-y) bolt-z1]
             (model/cube usb-x wafer contact-z))]))
      (pcba-model getopt true 0)  ; Notch the mount.
      (lock-fasteners-model getopt))))

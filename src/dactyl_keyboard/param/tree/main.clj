@@ -16,7 +16,7 @@
             [dactyl-keyboard.param.tree.cluster :as cluster]
             [dactyl-keyboard.param.tree.nested :as nested]
             [dactyl-keyboard.param.tree.restmnt :as restmnt]
-            [dactyl-keyboard.compass :as compass]))
+            [dactyl-keyboard.cots :as cots]))
 
 
 ;; Though this module describes the main body of parameters, it contains
@@ -128,14 +128,14 @@
     "```secondaries:\n"
     "  s0:\n"
     "    anchor: f0\n"
-    "    corner: NNE\n"
+    "    side: NNE\n"
     "    segment: 3\n"
     "    offset: [0, 0, 10]\n```"
     "\n"
     "This example gives the name `s0` to a point 10 mm above a key or "
     "some other feature named `f0`, which must be defined elsewhere.\n"
     "\n"
-    "A `corner` and `segment` are useful mainly with key aliases. "
+    "A `side` and `segment` are useful mainly with key aliases. "
     "An `offset` is applied late, i.e. in the overall coordinate system, "
     "following any transformations inherent to the anchor."]
    [:section [:case]
@@ -585,9 +585,8 @@
     {:default :origin :parse-fn keyword :validate [::schema/anchor]}
     "The name of a feature where the block will attach."]
    [:parameter [:case :back-plate :position :offset]
-    {:default [0 0 0] :parse-fn vec :validate [::tarmi-core/point-3d]}
-    "An offset in mm from the named feature to the middle of the base of the "
-    "back-plate block."]
+    stock/anchor-3d-vector-metadata
+    stock/anchor-3d-offset-documentation]
    [:section [:case :bottom-plate]
     "A bottom plate can be added to close the case. This is useful mainly to "
     "simplify transportation.\n"
@@ -746,14 +745,14 @@
     "The elements of a leaf are, in order:\n"
     "\n"
     "1. Mandatory: The name of a feature, such as a key by its `alias`.\n"
-    "2. Optional: A corner ID, such as `SW` for south-west or `NNE` for "
+    "2. Optional: A compass point, such as `SW` for south-west or `NNE` for "
     "north by north-east. "
     "If this is omitted, i.e. if only the mandatory element is given, the "
     "tweak will use the middle of the named feature.\n"
     "3. Optional: A starting wall segment ID, which is an integer from 0 to "
     "at most 4 inclusive (2 is the maximum for an MCU lock plate, 4 for a "
     "key mount). "
-    "If this is omitted, but a corner is named, the default value is 0.\n"
+    "If this is omitted, but a side is named, the default value is 0.\n"
     "4. Optional: A second wall segment ID. If this is provided, the leaf "
     "will represent the convex hull of the two indicated segments plus all "
     "segments between them. If this is omitted, only one wall post will be "
@@ -831,11 +830,13 @@
     "If `true`, render a visualization of the MCU PCBA. "
     "For use in development."]
    [:parameter [:mcu :type]
-    {:default :promicro :parse-fn keyword :validate [::schema/mcu-type]}
-    ;; Note: Support for Teensy/Teensy++ is not fully implemented.
-    "A symbolic name for a commercial product. Currently, only `promicro` is "
-    "supported, referring to any MCU PCBA with the dimensions of a "
-    "SparkFun Pro Micro, including That-Canadian’s Elite-C."]
+    {:default :promicro :parse-fn keyword
+     :validate [(partial contains? cots/mcu-facts)]}
+    "A code name for a form factor. "
+    "The following values are supported, representing a selection of "
+    "designs for commercial products from PJRC, SparkFun, the QMK team "
+    "and others:\n\n"
+    (cots/support-list cots/mcu-facts)]
    [:section [:mcu :position]
     "Where to place the MCU PCBA.\n\n"
     "By default, the PCBA appears lying flat, with the MCU side up and the "
@@ -857,15 +858,17 @@
     "`origin` or to a point on the central housing, in such a way that the "
     "MCU support will be physically attached to and supported by the central "
     "housing wall."]
-   [:parameter [:mcu :position :corner]
-    {:default :ENE :parse-fn keyword :validate [compass/noncardinals]}
-    "A code for a corner of the `anchor` feature. "
-    "This determines both the location and facing of the PCBA."]
+   [:parameter [:mcu :position :side]
+    stock/anchor-side-metadata
+    stock/anchor-side-documentation]
+   [:parameter [:mcu :position :segment]
+    stock/anchor-segment-metadata
+    stock/anchor-segment-documentation]
    [:parameter [:mcu :position :offset]
-    {:default [0 0 0] :parse-fn vec :validate [::tarmi-core/point-3d]}
-    "A 3D offset in mm, measuring from the `corner`."]
-   [:parameter [:mcu :position :rotation]
-    {:default [0 0 0] :parse-fn vec :validate [::tarmi-core/point-3d]}
+    stock/anchor-3d-vector-metadata
+    stock/anchor-3d-offset-documentation]
+   [:parameter [:mcu :intrinsic-rotation]
+    stock/anchor-3d-vector-metadata
     "A vector of 3 angles in radians. This parameter governs the rotation of "
     "the PCBA around its anchor point in the front. For example, to have the "
     "PCBA standing on its long edge instead of lying flat, you would give "
@@ -885,6 +888,60 @@
     {:default false :parse-fn boolean}
     "If `true`, render a visualization of the support in place. This applies "
     "only to those parts of the support that are not part of the case model."]
+   [:section [:mcu :support :shelf]
+    "The case can include a shelf for the MCU.\n\n"
+    "A shelf is the simplest type of MCU support, found on the original "
+    "Dactyl-ManuForm. It provides very little mechanical support to hold the "
+    "MCU itself in place, so it is not suitable for exposing a connector on "
+    "the MCU PCBA through the case. Instead, it’s suitable for use together "
+    "with a pigtail cable between the MCU and a secondary USB connector "
+    "embedded in the case wall (see `ports`). "
+    "It’s especially good with stiff single-strand wiring that will help keep "
+    "the MCU in place without a lock or firm grip."]
+   [:parameter [:mcu :support :shelf :include]
+    {:default false :parse-fn boolean}
+    "If `true`, include a shelf."]
+   [:parameter [:mcu :support :shelf :extra-space]
+    {:default [0 0 0] :parse-fn vec :validate [::tarmi-core/point-3d]}
+    "Modifiers for the size of the PCB, on all three axes, in mm, for the "
+    "purpose of determining the size of the shelf.\n\n"
+    "For example, the last term, for z, adds extra space between the "
+    "component side of the PCBA up to the overhang on each side of the shelf, "
+    "if any. The MCU will appear centered inside the available space, so this "
+    "parameter can move the plane of the shelf itself."]
+   [:parameter [:mcu :support :shelf :thickness]
+    {:default 1 :parse-fn num :validate [pos?]}
+    "The thickness of material in the shelf, below or behind the PCBA, in mm."]
+   [:parameter [:mcu :support :shelf :bevel]
+    {:default {} :parse-fn schema/compass-angle-map
+     :validate [::schema/compass-angle-map]}
+    "A map of angles, in radians, indexed by cardinal compass points, whereby "
+    "any and all sides of the shelf are turned away from the MCU PCBA. "
+    "This feature is intended mainly for manufacturability, to reduce the "
+    "need for supports in printing, but it can also add strength or help "
+    "connect to other features."]
+   [:section [:mcu :support :shelf :sides]
+    "By default, a shelf includes raised sides to hold on to the "
+    "PCBA. This is most useful when the shelf is rotated, following the "
+    "MCU (cf. `intrinsic-rotation`), out of the x-y plane."]
+   [:parameter [:mcu :support :shelf :sides :lateral-thickness]
+    {:default 1 :parse-fn num :validate [pos?]}
+    "The thickness of material to each side of the MCU, in mm."]
+   [:parameter [:mcu :support :shelf :sides :overhang-thickness]
+    {:default 1 :parse-fn num :validate [pos?]}
+    "The thickness of material in the outermost part on each side, in mm."]
+   [:parameter [:mcu :support :shelf :sides :overhang-width]
+    {:default 0 :parse-fn num :validate [#(not (neg? %))]}
+    "The extent to which each grip extends out across the PCBA, in mm."]
+   [:parameter [:mcu :support :shelf :sides :offsets]
+    {:default [0 0]
+     :parse-fn (fn [candidate]
+                 (if (number? candidate) [candidate candidate] (vec candidate)))
+     :validate [::tarmi-core/point-2d]}
+    "One or two lengthwise offsets in mm. When these are left at zero, the "
+    "sides of the shelf will appear in full. A negative or positive offset "
+    "shortens the corresponding side, towards or away from the connector side "
+    "of the PCBA."]
    [:section [:mcu :support :lock]
     "An MCU lock is a support feature made up of three parts:\n\n"
     "* A fixture printed as part of the case. This fixture includes a plate for "
@@ -991,9 +1048,9 @@
      :validate [::schema/mcu-grip-anchors]}
     "A list of points in space positioned relative to the PCB’s corners.\n\n"
     "Each point must have an `alias`, which is a name you can use "
-    "elsewhere to refer to that point, and a `corner`, identifying one "
-    "corner of the PCB, e.g. `SE` for the south-east corner.\n\n"
-    "Each point may also have an `offset` from the stated corner. These "
+    "elsewhere to refer to that point, and a `side`, identifying one "
+    "side of the PCB, e.g. `SE` for the south-east corner.\n\n"
+    "Each point may also have an `offset` from the stated side. These "
     "offsets must be given in mm, either as a 2-tuple like `[1, 2]` for a "
     "two-dimensional offset in the plane of the PCB, or as a 3-tuple "
     "like `[1, 2, 3]` for a three-dimensional offset that can put the point "
@@ -1001,48 +1058,81 @@
     "An example with two-dimensional offsets hugging one corner:\n\n"
     "```anchors\n"
     "  - alias: corner-side\n"
-    "    corner: SE\n"
+    "    side: SE\n"
     "    offset: [1, 1]\n"
     "  - alias: corner-back\n"
-    "    corner: SE\n"
+    "    side: SE\n"
     "    offset: [-1, -1]```\n\n"
     "Grip anchor points are all empty by default. "
     "They can be occupied, and connected, using `tweaks`."]
-   [:section [:connection]
-    "There must be a signalling connection between the two halves of a split "
-    "keyboard."]
-   [:parameter [:connection :include]
-    {:default false :parse-fn boolean}
-    "If `true`, inclue a “metasocket”, i.e. physical support for a socket "
-    "where you plug in a cable that will, in turn, provide the signalling "
-    "connection between the two halves."]
-   [:parameter [:connection :socket-size]
-    {:default [1 1 1] :parse-fn vec :validate [::tarmi-core/point-3d]}
-    "The size in mm of a hole in the case, for the female to fit into. For "
-    "example, the female might be a type 616E socket for a (male) 4P4C “RJ9” "
-    "plug, in which case the metasocket has to fit around the entire 616E.\n\n"
-    "This parameter assumes a cuboid socket. For a socket of a different "
-    "shape, get as close as possible, then make your own adapter and/or "
-    "widen the metasocket with a soldering iron or similar tools."]
-   [:parameter [:connection :socket-thickness]
-    {:default 1 :parse-fn num}
-    "The thickness in mm of the roof, walls and floor of the metasocket, "
-    "i.e. around the hole in the case."]
-   [:section [:connection :position]
-    "Where to place the socket. Equivalent to `mcu` → `position`."]
-   [:parameter [:connection :position :anchor]
-    {:default :origin :parse-fn keyword :validate [::schema/anchor]}]
-   [:parameter [:connection :position :corner]
-    {:default :ENE :parse-fn keyword :validate [compass/noncardinals]}]
-   [:parameter [:connection :position :raise]
-    {:default false :parse-fn boolean}
-    "If `true`, and the socket is being placed in relation to the rear "
-    "housing, put it directly under the ceiling, instead of directly over "
-    "the floor."]
-   [:parameter [:connection :position :offset]
-    {:default [0 0 0] :parse-fn vec :validate [::tarmi-core/point-3d]}]
-   [:parameter [:connection :position :rotation]
-    {:default [0 0 0] :parse-fn vec :validate [::tarmi-core/point-3d]}]
+   [:parameter [:ports]
+    {:default []
+     :parse-fn (schema/map-of
+                 keyword
+                 (schema/map-like
+                   {:include boolean
+                    :port-type keyword
+                    :size vec
+                    :position (schema/map-like schema/anchored-3d-position-map)
+                    :intrinsic-rotation vec
+                    :holder (schema/map-like
+                              {:include boolean
+                               :alias keyword
+                               :thickness num})}))
+     :validate [::schema/port-map]}
+    "This parameter describes the connectors for any and all external ports, "
+    "i.e. sockets in the case walls to contain electronic receptacles for "
+    "signalling connections and other interfaces.\n\n"
+    "There is one exception: Ports attached directly to microcontroller "
+    "boards are treated in the `mcu` section above, not here.\n\n"
+    "Example uses for this parameter:\n"
+    "\n"
+    "* One port for the connection between the two halves of a reflected "
+    "keyboard without a central housing. Such ports are usually TRRS or "
+    "4P4C (“RJ9”), but you can use practically anything with enough wires.\n"
+    "* An external USB port for interfacing with your computer, such as a "
+    "full-size USB A port. You might want this when your MCU either has no "
+    "such port attached or the attached port is too weak for direct human "
+    "use (cf. `shelf`) or difficult to get into a good position.\n"
+    "* Additional USB ports, connected via internal hub or to an "
+    "integrated microphone clip, phone charger etc.\n"
+    "* A speaker for QMK audio.\n"
+    "* An LCD screen for QMK video.\n"
+    "* An exotic human interface device, such as a large rotary encoder or "
+    "trackball, not supported (by this application) as a type of keyboard "
+    "switch.\n"
+    "* Assortment drawers built into a large rear or central housing.\n"
+    "\n"
+    "There are very limited facilities for specifying the shape of a port. "
+    "Basically, this parameter assumes a cuboid socket. For any different "
+    "shape, get as close as possible with `tweaks`, then make your own "
+    "adapter and/or widen the socket with a soldering iron or similar "
+    "tools to fit a more complex object.\n"
+    "\n"
+    "This parameter maps aliases to maps that may contain the following "
+    "keys. All of them are optional.\n\n"
+    "* `include`: If `true`, include the port. The main use of "
+    "this option is for disabling ports defined in other configuration files. "
+    "The default value is `false` for consistency with other inclusion "
+    "parameters.\n"
+    "* `port-type`: A code identifying a common type of port. "
+    "There’s a list of the available options below.\n"
+    "* `size`: An `[x, y, z]` vector specifying the "
+    "size of the port in mm. This is used only with the `custom` port type.\n"
+    "* `position`: A map of `anchor`, `side`, `segment` and "
+    "`offset`. This works just like the equivalent parameters for the `mcu`.\n"
+    "* `intrinsic-rotation`: An `[x, y, z]` vector of radians to rotate the "
+    "port around the top of its own face.\n"
+    "* `holder`: A map describing a positive addition to the `case` on five "
+    "sides of the port: Every side but the front.\n"
+    "    * `include`: If true, build a wall around the port.\n"
+    "    * `alias`: A name for the holder, for anchoring to it.\n"
+    "    * `thickness`: A number specifying the thickness of the wall on "
+    "      each side, in mm.\n"
+    "\n"
+    "The following values are recognized for `port-type`.\n\n"
+    "* `custom`, meaning `size` will take effect.\n"
+    (cots/support-list cots/port-facts)]
    [:section [:wrist-rest]
     "An optional extension to support the user’s wrist."]
    [:parameter [:wrist-rest :include]
@@ -1065,12 +1155,12 @@
     {:default :origin :parse-fn keyword :validate [::schema/anchor]}
     "The name of a feature where the wrist rest will attach. "
     "The vertical component of its position will be ignored."]
-   [:parameter [:wrist-rest :position :corner]
-    {:default :ENE :parse-fn keyword :validate [compass/noncardinals]}
-    "A corner of the feature named in `anchor`."]
+   [:parameter [:wrist-rest :position :side]
+    stock/anchor-side-metadata stock/anchor-side-documentation]
+   [:parameter [:wrist-rest :position :segment]
+    stock/anchor-segment-metadata stock/anchor-segment-documentation]
    [:parameter [:wrist-rest :position :offset]
-    {:default [0 0] :parse-fn vec :validate [::tarmi-core/point-2d]}
-    "An offset in mm from the feature named in `anchor`."]
+    stock/anchor-2d-vector-metadata stock/anchor-2d-offset-documentation]
    [:parameter [:wrist-rest :plinth-height]
     {:default 1 :parse-fn num}
     "The average height of the plastic plinth in mm, at its upper lip."]

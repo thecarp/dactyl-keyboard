@@ -6,8 +6,7 @@
 (ns dactyl-keyboard.param.tree.restmnt
   (:require [clojure.spec.alpha :as spec]
             [dactyl-keyboard.param.schema :as schema]
-            [dactyl-keyboard.param.stock :as stock]
-            [dactyl-keyboard.compass :as compass]))
+            [dactyl-keyboard.param.stock :as stock]))
 
 
 (def raws
@@ -71,12 +70,12 @@
    [:parameter [:blocks :case-side :position :anchor]
     {:default :origin :parse-fn keyword :validate [::schema/anchor]}
     "An alias referring to a feature that anchors the block."]
-   [:parameter [:blocks :case-side :position :corner]
-    {:default :SSE :parse-fn keyword :validate [compass/noncardinals]}
-    "A corner of the anchor. By default: `SSE` for south-by-southeast."]
+   [:parameter [:blocks :case-side :position :side]
+    stock/anchor-side-metadata
+    stock/anchor-side-documentation]
    [:parameter [:blocks :case-side :position :offset]
-    {:default [0 0] :parse-fn vec}
-    "A two-dimensional vector offset in mm from the anchor to the block."]
+    stock/anchor-2d-vector-metadata
+    stock/anchor-2d-offset-documentation]
    [:parameter [:blocks :case-side :depth]
     {:default 1 :parse-fn num}
     "The thickness of the block in mm along the axis of the fastener(s)."]

@@ -92,11 +92,11 @@
       (getopt :key-clusters :derived :by-cluster cluster :row-range)
       (getopt :key-clusters :derived :by-cluster cluster :key-requested?)
       (partial place/cluster-place getopt cluster)
-      (fn [corner]  ; A corner finder.
-        {:pre [(compass/intermediates corner)]}
-        (let [directions (compass/intermediate-to-tuple corner)
+      (fn [side]  ; A corner finder.
+        {:pre [(compass/intermediates side)]}
+        (let [directions (compass/intermediate-to-tuple side)
               key-style (most-specific getopt [:key-style] cluster directions)]
-           (key/mount-corner-post getopt key-style corner))))))
+           (key/mount-corner-post getopt key-style side))))))
 
 
 ;;;;;;;;;;;;;;;;;;;
@@ -111,6 +111,7 @@
   "The part of a case wall that runs along the side of a key mount on the
   edge of the board."
   [{:keys [coordinates direction]}]
+  {:pre [(compass/cardinals direction)]}
   (let [facing (sharp-left direction)]
     [[coordinates facing sharp-right]
      [coordinates facing sharp-left]]))
@@ -118,6 +119,7 @@
 (defn wall-straight-join
   "The part of a case wall that runs between two key mounts in a straight line."
   [{:keys [coordinates direction]}]
+  {:pre [(compass/cardinals direction)]}
   (let [next-coord (matrix/walk coordinates direction)
         facing (sharp-left direction)]
     [[coordinates facing sharp-right]
@@ -126,6 +128,7 @@
 (defn wall-outer-corner
   "The part of a case wall that smooths out an outer, sharp corner."
   [{:keys [coordinates direction]}]
+  {:pre [(compass/cardinals direction)]}
   (let [original-facing (sharp-left direction)]
     [[coordinates original-facing sharp-right]
      [coordinates direction sharp-left]]))
@@ -135,6 +138,7 @@
   In this case, it is import to pick not only the right corner but the right
   direction moving out from that corner."
   [{:keys [coordinates direction]}]
+  {:pre [(compass/cardinals direction)]}
   (let [opposite (matrix/walk coordinates (sharp-left direction) direction)]
     [[coordinates (sharp-left direction) (constantly direction)]
      [opposite (compass/reverse direction) sharp-left]]))
@@ -196,11 +200,12 @@
   (let [cluster (getopt :case :rear-housing :position :cluster)
         key-style (fn [coord] (most-specific getopt [:key-style] cluster coord))
         row (last (getopt :key-clusters :derived :by-cluster cluster :row-range))
-        coords (getopt :key-clusters :derived :by-cluster cluster :coordinates-by-row row)
-        pairs (into [] (for [coord coords, corner [:NNW :NNE]] [coord corner]))
-        getpos (fn [[coord corner]]
+        coords (getopt :key-clusters :derived :by-cluster cluster
+                       :coordinates-by-row row)
+        pairs (into [] (for [coord coords, side [:NNW :NNE]] [coord side]))
+        getpos (fn [[coord side]]
                  (place/cluster-place getopt cluster coord
-                   (place/mount-corner-offset getopt (key-style coord) corner)))
+                   (place/mount-corner-offset getopt (key-style coord) side)))
         y-max (apply max (map #(second (getpos %)) pairs))
         getoffset (partial getopt :case :rear-housing :position :offsets)
         y-roof-s (+ y-max (getoffset :south))
@@ -209,22 +214,26 @@
         roof-sw [(- (first (getpos (first pairs))) (getoffset :west)) y-roof-s z]
         roof-se [(+ (first (getpos (last pairs))) (getoffset :east)) y-roof-s z]
         roof-nw [(first roof-sw) y-roof-n z]
-        roof-ne [(first roof-se) y-roof-n z]]
-   {:west-end-coord (first coords)
-    :east-end-coord (last coords)
-    :coordinate-corner-pairs pairs
-    ;; [x y z] coordinates of the corners of the topmost part of the roof:
-    :SW roof-sw
-    :SE roof-se
-    :NW roof-nw
-    :NE roof-ne}))
+        roof-ne [(first roof-se) y-roof-n z]
+        between (fn [a b] (mapv #(/ % 2) (mapv + a b)))]
+   {:coordinate-corner-pairs pairs
+    ;; [x y z] coordinates on the topmost part of the roof:
+    :side {:N (between roof-nw roof-ne)
+           :NE roof-ne
+           :E (between roof-ne roof-se)
+           :SE roof-se
+           :S (between roof-se roof-sw)
+           :SW roof-sw
+           :W (between roof-sw roof-nw)
+           :NW roof-nw}
+    :end-coord {:W (first coords), :E (last coords)}}))
 
 (defn- rhousing-roof
   "A cuboid shape between the four corners of the rear housing’s roof."
   [getopt]
-  (let [getcorner (partial getopt :case :rear-housing :derived)]
+  (let [get-side (partial getopt :case :rear-housing :derived :side)]
     (apply model/hull
-      (map #(maybe/translate (getcorner %) (rhousing-post getopt))
+      (map #(maybe/translate (get-side %) (rhousing-post getopt))
            [:NW :NE :SE :SW]))))
 
 (defn rhousing-pillar-functions
@@ -236,10 +245,10 @@
   [getopt]
   (let [cluster (getopt :case :rear-housing :position :cluster)
         cluster-pillar
-          (fn [coord-key cardinal rhousing-turning-fn cluster-turning-fn]
+          (fn [cardinal rhousing-turning-fn cluster-turning-fn]
             ;; Make a function for a part of the cluster wall.
             (fn [reckon upper]
-              (let [coord (getopt :case :rear-housing :derived coord-key)
+              (let [coord (getopt :case :rear-housing :derived :end-coord cardinal)
                     subject (if reckon [0 0 0] (key/web-post getopt))
                     ;; For reckoning, return a 3D coordinate vector.
                     ;; For building, return a sequence of web posts.
@@ -248,27 +257,27 @@
                   (place/wall-edge-sequence getopt cluster upper
                     [coord cardinal rhousing-turning-fn] subject)))))
         rhousing-pillar
-          (fn [opposite corner]
+          (fn [opposite side]
             ;; Make a function for a part of the rear housing.
             ;; For reckoning, return a 3D coordinate vector.
             ;; For building, return a hull of housing cubes.
-            {:pre [(compass/intermediates corner)]}
+            {:pre [(compass/intermediates side)]}
             (fn [reckon upper]
               (let [subject (if reckon
                               (place/rhousing-vertex-offset getopt
-                                (if opposite (compass/reverse corner) corner))
+                                (if opposite (compass/reverse side) side))
                               (rhousing-post getopt))]
                 (apply (if reckon mean model/hull)
-                  (map #(place/rhousing-place getopt corner % subject)
+                  (map #(place/rhousing-place getopt side % subject)
                        (if upper [0 1] [1]))))))]
-    [(cluster-pillar :west-end-coord :W sharp-right sharp-left)
+    [(cluster-pillar :W sharp-right sharp-left)
      (rhousing-pillar true :WSW)
      (rhousing-pillar false :WNW)
      (rhousing-pillar false :NNW)
      (rhousing-pillar false :NNE)
      (rhousing-pillar false :ENE)
      (rhousing-pillar true :ESE)
-     (cluster-pillar :east-end-coord :E sharp-left sharp-right)]))
+     (cluster-pillar :E sharp-left sharp-right)]))
 
 (defn- rhousing-wall-shape-level
   "The west, north and east walls of the rear housing with connections to the
@@ -293,25 +302,25 @@
   [getopt]
   (let [cluster (getopt :case :rear-housing :position :cluster)
         key-style (fn [coord] (most-specific getopt [:key-style] cluster coord))
-        pos-corner (fn [coord corner]
+        pos-corner (fn [coord side]
                      (place/cluster-place getopt cluster coord
-                       (place/mount-corner-offset getopt (key-style coord) corner)))
-        sw (getopt :case :rear-housing :derived :SW)
-        se (getopt :case :rear-housing :derived :SE)
-        x (fn [coord corner]
+                       (place/mount-corner-offset getopt (key-style coord) side)))
+        sw (getopt :case :rear-housing :derived :side :SW)
+        se (getopt :case :rear-housing :derived :side :SE)
+        x (fn [coord side]
             (max (first sw)
-                 (min (first (pos-corner coord corner))
+                 (min (first (pos-corner coord side))
                       (first se))))
         y (second sw)
         z (rhousing-height getopt)]
    (loft
      (reduce
-       (fn [coll [coord corner]]
+       (fn [coll [coord side]]
          (conj coll
            (model/hull
              (place/cluster-place getopt cluster coord
-               (key/mount-corner-post getopt (key-style coord) corner))
-             (model/translate [(x coord corner) y z]
+               (key/mount-corner-post getopt (key-style coord) side))
+             (model/translate [(x coord side) y z]
                (rhousing-post getopt)))))
        []
        (getopt :case :rear-housing :derived :coordinate-corner-pairs)))))
@@ -325,8 +334,8 @@
         t (getopt :case :rear-housing :roof-thickness)
         h (threaded/datum d :hex-nut-height)
         [sign base] (case side
-                      :W [+ (getopt :case :rear-housing :derived :SW)]
-                      :E [- (getopt :case :rear-housing :derived :SE)])
+                      :W [+ (getopt :case :rear-housing :derived :side :SW)]
+                      :E [- (getopt :case :rear-housing :derived :side :SE)])
         near (mapv + base [(+ (- (sign offset)) (sign d)) d (/ (+ t h) -2)])
         far (mapv + near [0 (- n d d) 0])]
    (model/hull
@@ -380,16 +389,16 @@
   for both shape and position, because they are closely related in that case.
   Otherwise use the most specific dimensions available for the post, defaulting
   to a web post."
-  [getopt anchor corner first-segment last-segment]
+  [getopt anchor side first-segment last-segment]
   (if (= first-segment last-segment)
     (let [type (:type (access/resolve-anchor getopt anchor))
           post (case type
                  :central-housing (central/tweak-post getopt anchor)
                  :rear-housing (rhousing-post getopt)
                  :mcu-grip (apply model/cube (getopt :mcu :support :grip :size))
-                 ;; If a corner of the MCU plate is specifed, put a nodule there,
+                 ;; If a side of the MCU plate is specifed, put a nodule there,
                  ;; else use the entire base of the plate.
-                 :mcu-lock-plate (if corner
+                 :mcu-lock-plate (if side
                                    misc/nodule
                                    (mcu/lock-plate-base getopt false))
                  (key/web-post getopt))]
@@ -398,8 +407,8 @@
         post
         ;; Low-precision anchor.
         (place/reckon-from-anchor getopt anchor
-          {:subject post, :corner corner, :segment first-segment})))
-    (apply model/hull (map #(tweak-posts getopt anchor corner %1 %1)
+          {:subject post, :side side, :segment first-segment})))
+    (apply model/hull (map #(tweak-posts getopt anchor side %1 %1)
                            (range first-segment (inc last-segment))))))
 
 (declare tweak-plating)

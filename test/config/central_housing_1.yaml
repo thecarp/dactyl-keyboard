@@ -41,8 +41,10 @@ case:
     adapter:
       include: true
       fasteners:
-        diameter: 3
-        length: 2
+        bolt-properties:
+          m-diameter: 3
+          head-type: countersunk
+          unthreaded-length: 2
         positions:
           - starting-point: point1
             lateral-offset: -4

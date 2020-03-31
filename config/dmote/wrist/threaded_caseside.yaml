@@ -20,6 +20,7 @@ wrist-rest:
       case-side:
         position:
           anchor: t4
+          side: NNE
           offset: [5, 8.5]
         depth: 10
       plinth-side:
@@ -42,7 +43,7 @@ wrist-rest:
       case-side:
         position:
           anchor: near-right
-          corner: SSW
+          side: SSW
           offset: [-5, 0]
         depth: 7
       plinth-side:

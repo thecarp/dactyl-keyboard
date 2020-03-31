@@ -21,7 +21,7 @@ This specific document describes options for each “mount”, a pair of cuboid 
     - Section <a href="#user-content-blocks-case-side">`case-side`</a>
         - Section <a href="#user-content-blocks-case-side-position">`position`</a>
             - Parameter <a href="#user-content-blocks-case-side-position-anchor">`anchor`</a>
-            - Parameter <a href="#user-content-blocks-case-side-position-corner">`corner`</a>
+            - Parameter <a href="#user-content-blocks-case-side-position-side">`side`</a>
             - Parameter <a href="#user-content-blocks-case-side-position-offset">`offset`</a>
         - Parameter <a href="#user-content-blocks-case-side-depth">`depth`</a>
         - Section <a href="#user-content-blocks-case-side-nuts">`nuts`</a>
@@ -102,13 +102,13 @@ Where to place the block.
 
 An alias referring to a feature that anchors the block.
 
-##### Parameter <a id="blocks-case-side-position-corner">`corner`</a>
+##### Parameter <a id="blocks-case-side-position-side">`side`</a>
 
-A corner of the anchor. By default: `SSE` for south-by-southeast.
+A compass-point code for one side of the feature named in `anchor`. The default is `N`, signifying the north side.
 
 ##### Parameter <a id="blocks-case-side-position-offset">`offset`</a>
 
-A two-dimensional vector offset in mm from the anchor to the block.
+A two-dimensional offset in mm from the feature named in `anchor`.
 
 #### Parameter <a id="blocks-case-side-depth">`depth`</a>
 
