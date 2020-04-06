@@ -18,9 +18,6 @@
             [dactyl-keyboard.sandbox :as sandbox]
             [dactyl-keyboard.param.access :as access]
             [dactyl-keyboard.param.doc :refer [print-markdown-section]]
-            [dactyl-keyboard.param.tree.cluster]
-            [dactyl-keyboard.param.tree.nested]
-            [dactyl-keyboard.param.tree.main]
             [dactyl-keyboard.cad.auxf :as auxf]
             [dactyl-keyboard.cad.body :as body]
             [dactyl-keyboard.cad.bottom :as bottom]
@@ -48,9 +45,10 @@
   (println)
   (print-markdown-section
     (case section
-      :main dactyl-keyboard.param.tree.main/raws
       :clusters dactyl-keyboard.param.tree.cluster/raws
+      :main dactyl-keyboard.param.tree.main/raws
       :nested dactyl-keyboard.param.tree.nested/raws
+      :ports dactyl-keyboard.param.tree.port/raws
       :wrist-rest-mounts dactyl-keyboard.param.tree.restmnt/raws
       (do (println "ERROR: Unknown section of parameters.")
           (System/exit 1))))

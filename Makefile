@@ -67,10 +67,13 @@ doc/options-clusters.md: target/dmote.jar
 doc/options-nested.md: target/dmote.jar
 	java -jar target/dmote.jar --describe-parameters nested > doc/options-nested.md
 
+doc/options-ports.md: target/dmote.jar
+	java -jar target/dmote.jar --describe-parameters ports > doc/options-ports.md
+
 doc/options-wrist-rest-mounts.md: target/dmote.jar
 	java -jar target/dmote.jar --describe-parameters wrist-rest-mounts > doc/options-wrist-rest-mounts.md
 
-docs: doc/options-main.md doc/options-clusters.md doc/options-nested.md doc/options-wrist-rest-mounts.md
+docs: doc/options-main.md doc/options-clusters.md doc/options-nested.md doc/options-ports.md doc/options-wrist-rest-mounts.md
 
 test:
 	lein test

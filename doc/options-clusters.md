@@ -4,7 +4,7 @@
 
 Each heading in this document represents a recognized configuration key in YAML files for a DMOTE variant.
 
-This specific document describes options for the general outline and position of any individual cluster of keys. One set of such options will exist for each entry in `key-clusters`, a parameter documented [here](options-main.md).
+This specific document describes options for the general outline and position of any individual cluster of keys. One set of such options will exist for each entry in `key-clusters`, a section documented [here](options-main.md).
 
 ## Table of contents
 - Parameter <a href="#user-content-matrix-columns">`matrix-columns`</a>

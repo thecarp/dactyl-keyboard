@@ -16,7 +16,7 @@
     "in YAML files for a DMOTE variant.\n\n"
     "This specific document describes options for the general outline "
     "and position of any individual cluster of keys. One set of such "
-    "options will exist for each entry in `key-clusters`, a parameter "
+    "options will exist for each entry in `key-clusters`, a section "
     "documented [here](options-main.md)."]
    [:parameter [:matrix-columns]
     {:default [{}]

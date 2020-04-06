@@ -213,9 +213,6 @@
 (spec/def ::spline-point
   (spec/keys :req-un [::position]  ; 2D.
              :opt-un [::alias]))
-(spec/def ::port-type (set (conj (keys cots/port-facts) :custom)))
-(spec/def :port/size ::tarmi/point-3d)
-(spec/def :port/intrinsic-rotation ::tarmi/point-3d)
 (spec/def :central/offset ::tarmi/point-3d)
 (spec/def :central/left-hand-alias ::alias)
 (spec/def :central/right-hand-alias ::alias)
@@ -270,12 +267,6 @@
   (spec/coll-of
     (spec/keys :req-un [::alias :intercardinal/side]
                :opt-un [:flexible/offset])))
-(spec/def ::port-holder (spec/keys :req-un [::include ::alias ::thickness]))
-(spec/def ::port-map
-  (spec/map-of
-    ::alias
-    (spec/keys :opt-un [::include ::port-type :port/size :three/position
-                        :port/intrinsic-rotation ::port-holder])))
 (spec/def ::tweak-name-map (spec/map-of keyword? ::hull-around))
 (spec/def ::tweak-plate-map
   (spec/keys :req-un [::hull-around]

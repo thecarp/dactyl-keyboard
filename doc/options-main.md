@@ -153,7 +153,7 @@ Each heading in this document represents a recognized configuration key in the m
         - Section <a href="#user-content-mcu-support-grip">`grip`</a>
             - Parameter <a href="#user-content-mcu-support-grip-size">`size`</a>
             - Parameter <a href="#user-content-mcu-support-grip-anchors">`anchors`</a>
-- Parameter <a href="#user-content-ports">`ports`</a>
+- Special section <a href="#user-content-ports">`ports`</a>
 - Section <a href="#user-content-wrist-rest">`wrist-rest`</a>
     - Parameter <a href="#user-content-wrist-rest-include">`include`</a>
     - Parameter <a href="#user-content-wrist-rest-style">`style`</a>
@@ -1058,46 +1058,9 @@ An example with two-dimensional offsets hugging one corner:
 
 Grip anchor points are all empty by default. They can be occupied, and connected, using `tweaks`.
 
-## Parameter <a id="ports">`ports`</a>
+## Special section <a id="ports">`ports`</a>
 
-This parameter describes the connectors for any and all external ports, i.e. sockets in the case walls to contain electronic receptacles for signalling connections and other interfaces.
-
-There is one exception: Ports attached directly to microcontroller boards are treated in the `mcu` section above, not here.
-
-Example uses for this parameter:
-
-* One port for the connection between the two halves of a reflected keyboard without a central housing. Such ports are usually TRRS or 4P4C (“RJ9”), but you can use practically anything with enough wires.
-* An external USB port for interfacing with your computer, such as a full-size USB A port. You might want this when your MCU either has no such port attached or the attached port is too weak for direct human use (cf. `shelf`) or difficult to get into a good position.
-* Additional USB ports, connected via internal hub or to an integrated microphone clip, phone charger etc.
-* A speaker for QMK audio.
-* An LCD screen for QMK video.
-* An exotic human interface device, such as a large rotary encoder or trackball, not supported (by this application) as a type of keyboard switch.
-* Assortment drawers built into a large rear or central housing.
-
-There are very limited facilities for specifying the shape of a port. Basically, this parameter assumes a cuboid socket. For any different shape, get as close as possible with `tweaks`, then make your own adapter and/or widen the socket with a soldering iron or similar tools to fit a more complex object.
-
-This parameter maps aliases to maps that may contain the following keys. All of them are optional.
-
-* `include`: If `true`, include the port. The main use of this option is for disabling ports defined in other configuration files. The default value is `false` for consistency with other inclusion parameters.
-* `port-type`: A code identifying a common type of port. There’s a list of the available options below.
-* `size`: An `[x, y, z]` vector specifying the size of the port in mm. This is used only with the `custom` port type.
-* `position`: A map of `anchor`, `side`, `segment` and `offset`. This works just like the equivalent parameters for the `mcu`.
-* `intrinsic-rotation`: An `[x, y, z]` vector of radians to rotate the port around the top of its own face.
-* `holder`: A map describing a positive addition to the `case` on five sides of the port: Every side but the front.
-    * `include`: If true, build a wall around the port.
-    * `alias`: A name for the holder, for anchoring to it.
-    * `thickness`: A number specifying the thickness of the wall on       each side, in mm.
-
-The following values are recognized for `port-type`.
-
-* `custom`, meaning `size` will take effect.
-* `modular-4p4c-616e`: modular connector 4P4C, socket 616E, minus the vertical stripe.
-* `usb-c`: USB C.
-* `usb-full-2b`: full-size USB 2 B.
-* `usb-full-3b`: full-size USB 3 B.
-* `usb-full-a`: full-size USB A.
-* `usb-micro-2b`: USB micro 2 B.
-* `usb-mini-b`: USB mini B.
+This section describes ports, including sockets in the case walls to contain electronic receptacles for signalling connections and other interfaces. Each port gets its own subsection. Ports are documented in detail [here](options-ports.md).
 
 ## Section <a id="wrist-rest">`wrist-rest`</a>
 

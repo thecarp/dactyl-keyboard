@@ -14,6 +14,7 @@
             [dactyl-keyboard.param.schema :as schema]
             [dactyl-keyboard.param.stock :as stock]
             [dactyl-keyboard.param.tree.cluster :as cluster]
+            [dactyl-keyboard.param.tree.port :as port]
             [dactyl-keyboard.param.tree.nested :as nested]
             [dactyl-keyboard.param.tree.restmnt :as restmnt]
             [dactyl-keyboard.cots :as cots]))
@@ -1066,73 +1067,17 @@
     "Grip anchor points are all empty by default. "
     "They can be occupied, and connected, using `tweaks`."]
    [:parameter [:ports]
-    {:default []
-     :parse-fn (schema/map-of
-                 keyword
-                 (schema/map-like
-                   {:include boolean
-                    :port-type keyword
-                    :size vec
-                    :position (schema/map-like schema/anchored-3d-position-map)
-                    :intrinsic-rotation vec
-                    :holder (schema/map-like
-                              {:include boolean
-                               :alias keyword
-                               :thickness num})}))
-     :validate [::schema/port-map]}
-    "This parameter describes the connectors for any and all external ports, "
-    "i.e. sockets in the case walls to contain electronic receptacles for "
-    "signalling connections and other interfaces.\n\n"
-    "There is one exception: Ports attached directly to microcontroller "
-    "boards are treated in the `mcu` section above, not here.\n\n"
-    "Example uses for this parameter:\n"
-    "\n"
-    "* One port for the connection between the two halves of a reflected "
-    "keyboard without a central housing. Such ports are usually TRRS or "
-    "4P4C (“RJ9”), but you can use practically anything with enough wires.\n"
-    "* An external USB port for interfacing with your computer, such as a "
-    "full-size USB A port. You might want this when your MCU either has no "
-    "such port attached or the attached port is too weak for direct human "
-    "use (cf. `shelf`) or difficult to get into a good position.\n"
-    "* Additional USB ports, connected via internal hub or to an "
-    "integrated microphone clip, phone charger etc.\n"
-    "* A speaker for QMK audio.\n"
-    "* An LCD screen for QMK video.\n"
-    "* An exotic human interface device, such as a large rotary encoder or "
-    "trackball, not supported (by this application) as a type of keyboard "
-    "switch.\n"
-    "* Assortment drawers built into a large rear or central housing.\n"
-    "\n"
-    "There are very limited facilities for specifying the shape of a port. "
-    "Basically, this parameter assumes a cuboid socket. For any different "
-    "shape, get as close as possible with `tweaks`, then make your own "
-    "adapter and/or widen the socket with a soldering iron or similar "
-    "tools to fit a more complex object.\n"
-    "\n"
-    "This parameter maps aliases to maps that may contain the following "
-    "keys. All of them are optional.\n\n"
-    "* `include`: If `true`, include the port. The main use of "
-    "this option is for disabling ports defined in other configuration files. "
-    "The default value is `false` for consistency with other inclusion "
-    "parameters.\n"
-    "* `port-type`: A code identifying a common type of port. "
-    "There’s a list of the available options below.\n"
-    "* `size`: An `[x, y, z]` vector specifying the "
-    "size of the port in mm. This is used only with the `custom` port type.\n"
-    "* `position`: A map of `anchor`, `side`, `segment` and "
-    "`offset`. This works just like the equivalent parameters for the `mcu`.\n"
-    "* `intrinsic-rotation`: An `[x, y, z]` vector of radians to rotate the "
-    "port around the top of its own face.\n"
-    "* `holder`: A map describing a positive addition to the `case` on five "
-    "sides of the port: Every side but the front.\n"
-    "    * `include`: If true, build a wall around the port.\n"
-    "    * `alias`: A name for the holder, for anchoring to it.\n"
-    "    * `thickness`: A number specifying the thickness of the wall on "
-    "      each side, in mm.\n"
-    "\n"
-    "The following values are recognized for `port-type`.\n\n"
-    "* `custom`, meaning `size` will take effect.\n"
-    (cots/support-list cots/port-facts)]
+    {:heading-template "Special section %s"
+     :default {}
+     :parse-fn (schema/map-of keyword
+                 (base/parser-with-defaults port/raws))
+     :validate [(spec/map-of
+                  ::schema/alias
+                  (base/delegated-validation port/raws))]}
+    "This section describes ports, including sockets in the case walls to "
+    "contain electronic receptacles for signalling connections and other "
+    "interfaces. Each port gets its own subsection. "
+    "Ports are documented in detail [here](options-ports.md)."]
    [:section [:wrist-rest]
     "An optional extension to support the user’s wrist."]
    [:parameter [:wrist-rest :include]
