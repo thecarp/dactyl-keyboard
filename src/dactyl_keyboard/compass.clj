@@ -120,12 +120,15 @@
 (def reverse (partial turn (/ n-divisions 2)))
 
 (def to-grid
-  "Translation particles for each cardinal direction."
-  (array-map
-   :N {:dx  0, :dy  1},
-   :E {:dx  1, :dy  0},
-   :S {:dx  0, :dy -1},
-   :W {:dx -1, :dy  0}))
+  "Unit-scale translation particles.
+  The cardinal directions have hardcoded [x y] vectors and the rest combine
+  two of these by addition."
+  (let [base {:N [0 1], :E [1 0], :S [0 -1], :W [-1 0]}]
+    (reduce-kv
+      (fn [coll direction constituents]
+        (assoc coll direction (apply mapv + (map base constituents))))
+      base
+      noncardinal-to-tuple)))
 
 (defn- axis-delta
   "Find a coordinate axis delta for movement in any of the stated directions."
@@ -136,5 +139,5 @@
       value
       (apply axis-delta axis directions))))
 
-(defn delta-x [& directions] (apply axis-delta :dx directions))
-(defn delta-y [& directions] (apply axis-delta :dy directions))
+(defn delta-x [& directions] (apply axis-delta 0 directions))
+(defn delta-y [& directions] (apply axis-delta 1 directions))

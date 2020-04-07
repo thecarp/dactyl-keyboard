@@ -8,7 +8,6 @@
             [scad-tarmi.core :refer [π]]
             [scad-tarmi.maybe :as maybe]
             [scad-klupe.iso :refer [nut]]
-            [dactyl-keyboard.cots :as cots]
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.cad.place :as place]))
 
@@ -28,7 +27,7 @@
     (model/translate [0 0 (/ (getopt :case :back-plate :beam-height) -2)])))
 
 (defn backplate-shape
-  "A mounting plate for a connecting beam."
+  "A mounting plate for a connecting bar/rod/beam."
   [getopt]
   (let [height (getopt :case :back-plate :beam-height)
         width (+ (getopt :case :back-plate :fasteners :distance) height)
@@ -125,50 +124,60 @@
 ;; Ports ;;
 ;;;;;;;;;;;
 
-
 (defn collect-port-aliases
-  "The ID of each port automatically doubles as an alias for that port."
+  "The ID of each port automatically doubles as an alias for the negative
+  space of that port. The holder around it gets its own alias, with an
+  annotation for tracing it to its parent port."
   [getopt]
-  (into {} (map (fn [k] [k {:type :port}]) (keys (getopt :ports)))))
+  (apply merge
+    (map
+      (fn [k]
+        {k                                {:type :port-hole}
+         (getopt :ports k :holder :alias) {:type :port-holder, :parent k}})
+      (keys (getopt :ports)))))
 
-(defn- port-model
-  "The positive or negative space to hold a port.
+(defn port-hole
+  "Negative space for one port, in place.
   The upper middle edge of the face of the port is placed at the origin
   of the local coordinate system.
-  The “positive” parameter is true for a holder, i.e. a shape added to the
-  case to hold a port. The inclusion parameter for such a shape is not
-  checked here."
-  [getopt id positive]
-  (let [{:keys [port-type size holder]
-         :or {port-type :custom, size [0 0 0], rotation [0 0 0], holder {}}}
-        (getopt :ports id)
-        [xₛ yₛ zₛ] (if (= port-type :custom)
-                     size
-                     (misc/map-to-3d-vec (port-type cots/port-facts)))
-        t (get holder :thickness 1)
-        [xᵢ yᵢ] (map (getopt :dfm :derived :compensator) [xₛ yₛ])]
-    (maybe/translate [0 0 (/ zₛ -2)]
-      (if positive
-        (model/translate [0 (+ (/ yₛ -2) (/ t -2)) 0]
-          (model/cube (+ xₛ t t) (+ yₛ t) (+ zₛ t t)))
-        (model/union
-          (model/translate [0 (/ yᵢ -2) 0]
-            (model/cube xᵢ yᵢ zₛ))
-          (model/hull  ; Flared entry path.
-            (model/cube xᵢ misc/wafer zₛ)
+  This comes with a flared front plate for entry in case of imperfect alignment."
+  [getopt id]
+  (let [[[_ x] [_ y] z] (place/port-hole-size getopt id)]
+    (maybe/translate (place/port-hole-offset getopt {:anchor id})
+      (model/union
+        (model/cube x y z)
+        (model/translate [0 (/ y 2) 0]
+          (model/hull
+            (model/cube x misc/wafer z)
             (model/translate [0 1 0]
-              (model/cube (inc xᵢ) misc/wafer (inc zₛ)))))))))
+              (model/cube (inc x) misc/wafer (inc z)))))))))
+
+(defn port-holder
+  "Positive space for one port, in place.
+  Take the ID of the port, not the holder."
+  [getopt id]
+  {:pre [(keyword? id)]}
+  (let [[x y z] (place/port-holder-size getopt id)]
+    (maybe/translate
+      (place/port-holder-offset getopt {:parent id})
+      (model/cube x y z))))
+
+(defn port-tweak-post
+  "A cube the thickness of the wall around a specific holder."
+  [getopt id]
+  {:pre [(keyword? id)]}
+  (apply model/cube (repeat 3 (getopt :ports id :holder :thickness))))
 
 (defn- port-set
   "The positive or negative space for all ports."
   [getopt positive]
   (apply maybe/union
     (map (fn [id]
-           (when (and (get (getopt :ports id) :include)
+           (when (and (getopt :ports id :include)
                       (or (not positive)
-                          (get-in (getopt :ports id) [:holder :include])))
-               (place/port-place getopt id
-                 (port-model getopt id positive))))
+                          (getopt :ports id :holder :include)))
+             (place/port-place getopt id
+               ((if positive port-holder port-hole) getopt id))))
          (keys (getopt :ports)))))
 
 ;; Unions of the positive and negative spaces for holding all ports, in place.

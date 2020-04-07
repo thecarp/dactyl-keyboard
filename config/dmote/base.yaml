@@ -431,6 +431,12 @@ secondaries:
     side: ESE
     segment: 1
     offset: [0, 0, -20]
+  # Other:
+  port-corner:
+    anchor: reflection-port-holder
+    side: NW
+    segment: 2
+    offset: [0, 0, -10]
 case:
   rear-housing:
     include: true
@@ -738,6 +744,11 @@ case:
         - [rear-housing, WSW]
         - [back0, WNW, 3]
         - [back0, WSW, 3]
+    connector-housing:
+      - hull-around:
+        - [reflection-port-holder]
+        - [port-corner]
+
 mcu:
   include: true
   position:
@@ -765,6 +776,7 @@ ports:
     intrinsic-rotation: [0, 0, -1.5708]
     holder:
       include: true
+      alias: reflection-port-holder
       thickness: 2
 wrist-rest:
   position:

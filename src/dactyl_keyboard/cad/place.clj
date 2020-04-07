@@ -19,6 +19,7 @@
             [scad-tarmi.flex :as flex]
             [dmote-keycap.data :as capdata]
             [dmote-keycap.measure :as measure]
+            [dactyl-keyboard.cots :as cots]
             [dactyl-keyboard.compass :as compass :refer [sharp-left sharp-right]]
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.misc :as misc]
@@ -32,11 +33,53 @@
 
 ;; Primitives.
 
-(defn lateral-offset
-  "Produce a 3D vector for moving something laterally."
-  [getopt direction offset]
-  (let [{:keys [dx dy]} (compass/to-grid direction)]
-    [(* dx offset) (* dy offset) 0]))
+(defn- grid-factors
+  "Find a pair of [x y] unit particles for movement on a grid."
+  [direction]
+  (if (nil? direction)
+    [0 0]
+    (compass/to-grid (compass/convert-to-cardinal direction))))
+
+(defn- *xy
+  "Produce a vector for moving something laterally on a grid."
+  ([direction offset]
+   (*xy 1 direction offset))
+  ([coefficient direction offset]
+   {:pre [(spec/valid? ::tarmi-core/point-2-3d offset)]}
+   (let [[dx dy] (grid-factors direction)]
+     (-> offset
+       (update 0 (partial * coefficient dx))
+       (update 1 (partial * coefficient dy))))))
+
+(defn- *z
+  "Produce a vector for moving something vertically on a grid.
+  This is based on a convention for cuboid models where segment
+  0 is “up”, 1 is the middle or current location, 2 is “down”."
+  ([segment offset]
+   (*z 1 segment offset))
+  ([coefficient segment offset]
+   {:pre [(spec/valid? ::tarmi-core/point-2-3d offset)]}
+   (-> offset
+     (update 2 (partial * coefficient (case segment 0 -1, 1 0, 2 1))))))
+
+(defn- cube-corner-xy
+  [direction size wall-thickness]
+  (mapv +
+    (*xy 0.5 direction size)
+    (*xy 0.5 (compass/reverse direction) [wall-thickness wall-thickness 0])))
+
+(defn- cube-corner-z
+  [segment size wall-thickness]
+  (mapv +
+    (*z 0.5 segment size)
+    (*z 0.5 (abs (- 2 segment)) [0 0 wall-thickness])))
+
+(defn- cube-corner-xyz
+  [direction segment size wall-thickness]
+  (assoc
+    (cube-corner-xy direction size wall-thickness)
+    2
+    (last (cube-corner-z segment size wall-thickness))))
 
 (declare reckon-from-anchor)
 (declare reckon-with-anchor)
@@ -147,7 +190,7 @@
         long-dir (compass/short-to-long side)
         parallel (most [long-dir :parallel])
         perpendicular (most [long-dir :perpendicular])
-        {dx :dx dy :dy} (side compass/to-grid)
+        [dx dy] (side compass/to-grid)
         bevel
           (if (zero? perpendicular)
             bevel-factor
@@ -356,16 +399,56 @@
 
 ;; Ports.
 
+(defn port-hole-size
+  "Compute the size of a port hole."
+  [getopt id]
+  {:pre [(= (getopt :derived :anchors id :type) :port-hole)]}
+  (let [port-type (getopt :ports id :port-type)
+        [xₛ yₛ zₛ] (if (= port-type :custom)
+                     (getopt :ports id :size)
+                     (misc/map-to-3d-vec (port-type cots/port-facts)))
+        [xᵢ yᵢ] (map (getopt :dfm :derived :compensator) [xₛ yₛ])]
+    [[xₛ xᵢ] [yₛ yᵢ] zₛ]))
+
+(defn port-holder-size
+  "Compute the size of a port holder."
+  [getopt id]
+  {:pre [(= (getopt :derived :anchors id :type) :port-hole)]}
+  (let [[[x _] [y _] z] (port-hole-size getopt id)
+        t (getopt :ports id :holder :thickness)]
+    [(+ x t t) (+ y t) (+ z t t)]))
+
 (defn port-place
   "Place passed object as the indicated port."
   [getopt id obj]
-  {:pre [(keyword? id)]}
+  {:pre [(keyword? id)
+         (= (getopt :derived :anchors id :type) :port-hole)]}
   (->> obj
-    (flex/rotate (get (getopt :ports id) :intrinsic-rotation [0 0 0]))
-    (flex/translate
-      (reckon-with-anchor getopt
-        (merge {:anchor :origin, :side :N, :segment 0, :offset [0 0 0]}
-               (get (getopt :ports id) :position {}))))))
+    (flex/rotate (getopt :ports id :intrinsic-rotation))
+    (flex/translate (reckon-with-anchor getopt (getopt :ports id :position)))))
+
+(defn port-hole-offset
+  "Shift an offset for one part of a port hole.
+  This is designed to hit a corner of the negative space."
+  [getopt {:keys [anchor side segment offset]
+           :or {segment 1, offset [0 0 0]}}]
+  (let [[[_ x] [_ y] z] (port-hole-size getopt anchor)]
+    (mapv + (cube-corner-xyz side segment [x y z] 0)
+            offset)))
+
+(defn port-holder-offset
+  "Shift an offset for one part of a port holder.
+  This is designed to hit inside the wall, not at a corner,
+  on the assumption that a tweak post with the thickness of the
+  wall is being placed."
+  [getopt {:keys [parent side segment offset]
+           :or {segment 1, offset [0 0 0]}}]
+  {:pre [(keyword? parent)]}
+  (let [t (getopt :ports parent :holder :thickness)
+        [x y z] (port-holder-size getopt parent)]
+    (mapv + (cube-corner-xyz side segment [x y z] t)
+            [0 (/ t -2) 0]
+            offset)))
 
 
 ;; Wrist rests.
@@ -534,9 +617,13 @@
       (getopt :mcu :derived :pcb (compass/convert-to-intercardinal side))
       initial)))
 
-(defmethod by-type :port
+(defmethod by-type :port-hole
   [getopt {:keys [anchor initial]}]
   (port-place getopt anchor initial))
+
+(defmethod by-type :port-holder
+  [getopt {:keys [parent initial]}]
+  (port-place getopt parent initial))
 
 (defmethod by-type :secondary
   [getopt {:keys [anchor offset] :or {offset [0 0 0]} :as opts}]

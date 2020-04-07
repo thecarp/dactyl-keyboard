@@ -11,14 +11,16 @@
             [scad-clj.model :as model]
             [scad-tarmi.core :as tarmi-core]
             [scad-tarmi.maybe :as maybe]
+            [dactyl-keyboard.cad.auxf :as auxf]
             [dactyl-keyboard.cad.body :as body]
             [dactyl-keyboard.cad.central :as central]
             [dactyl-keyboard.cad.mcu :as mcu]
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.key :as key]
-            [dactyl-keyboard.param.access :as access :refer [main-body-tweak-data
-                                                             central-tweak-data]]))
+            [dactyl-keyboard.param.access :refer [resolve-anchor
+                                                  main-body-tweak-data
+                                                  central-tweak-data]]))
 
 
 ;;;;;;;;;;
@@ -26,32 +28,61 @@
 ;;;;;;;;;;
 
 
+(defn- select-post
+  "Pick the model for a tweak. Return a tuple of that model and an indicator
+  for whether the model is already in place. Positioning depends both on the
+  type of anchor and secondary parameters about the target detail upon it.
+  By default, use the most specific dimensions available for the post,
+  defaulting to a post for key-cluster webbing."
+  [getopt {:keys [anchor side segment offset] :as opts}]
+  (let [{:keys [type parent]} (resolve-anchor getopt anchor)]
+    (case type
+      :central-housing
+        [true
+         (central/tweak-post getopt anchor)]
+      :rear-housing
+        [false  ; TODO: Refactor based on central-housing-like logic.
+         (body/rhousing-post getopt)]
+      :mcu-grip
+        [false
+         (apply model/cube (getopt :mcu :support :grip :size))]
+      ;; If a side of the MCU plate is specifed, put a nodule there,
+      ;; else use the entire base of the plate.
+      :mcu-lock-plate
+        [false
+         (if side
+           misc/nodule
+           (mcu/lock-plate-base getopt false))]
+      :port-hole
+        [true
+         (place/port-place getopt anchor
+           (if (or side segment offset)
+             (maybe/translate (place/port-hole-offset getopt opts)
+               (misc/nodule))
+             (auxf/port-hole getopt anchor)))]
+      :port-holder
+        [true
+         (place/port-place getopt parent
+           (if (or side segment offset)
+             (maybe/translate (place/port-holder-offset getopt
+                                (assoc opts :parent parent))
+               (auxf/port-tweak-post getopt parent))
+             (auxf/port-holder getopt anchor)))]
+      [false (key/web-post getopt)])))
+
+(defn- single-post
+  "One model at one vertical segment of one feature."
+  [getopt {:keys [anchor] :as opts}]
+  (let [[placed post] (select-post getopt opts)]
+    (if placed
+      post
+      (place/reckon-from-anchor getopt anchor (assoc opts :subject post)))))
+
 (defn- posts
-  "(The hull of) one or more corner posts for a case tweak.
-  This function both picks the shape of the post and positions it.
-  For a tweak anchored to the central housing, defer to the central module
-  for both shape and position, because they are closely related in that case.
-  Otherwise use the most specific dimensions available for the post, defaulting
-  to a web post."
+  "(The hull of) one or more models of one type on one side."
   [getopt anchor side first-segment last-segment]
   (if (= first-segment last-segment)
-    (let [type (:type (access/resolve-anchor getopt anchor))
-          post (case type
-                 :central-housing (central/tweak-post getopt anchor)
-                 :rear-housing (body/rhousing-post getopt)
-                 :mcu-grip (apply model/cube (getopt :mcu :support :grip :size))
-                 ;; If a side of the MCU plate is specifed, put a nodule there,
-                 ;; else use the entire base of the plate.
-                 :mcu-lock-plate (if side
-                                   misc/nodule
-                                   (mcu/lock-plate-base getopt false))
-                 (key/web-post getopt))]
-      (if (= type :central-housing)
-        ;; High-precision anchor; reckon-from-anchor is inadequate.
-        post
-        ;; Low-precision anchor.
-        (place/reckon-from-anchor getopt anchor
-          {:subject post, :side side, :segment first-segment})))
+    (single-post getopt {:anchor anchor, :side side, :segment first-segment})
     (apply model/hull (map #(posts getopt anchor side %1 %1)
                            (range first-segment (inc last-segment))))))
 
