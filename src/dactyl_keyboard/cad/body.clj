@@ -9,16 +9,12 @@
             [scad-tarmi.maybe :as maybe]
             [scad-klupe.iso :as threaded]
             [scad-tarmi.util :refer [loft]]
-            [dactyl-keyboard.cad.central :as central]
-            [dactyl-keyboard.cad.mcu :as mcu]
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.key :as key]
             [dactyl-keyboard.compass :as compass :refer [sharp-left sharp-right]]
-            [dactyl-keyboard.param.access :as access :refer [most-specific
-                                                             main-body-tweak-data
-                                                             central-tweak-data]]))
+            [dactyl-keyboard.param.access :as access :refer [most-specific]]))
 
 
 ;;;;;;;;;;;;;
@@ -184,7 +180,7 @@
 ;; Rear Housing ;;
 ;;;;;;;;;;;;;;;;;;
 
-(defn- rhousing-post [getopt]
+(defn rhousing-post [getopt]
   (let [xy (getopt :case :rear-housing :wall-thickness)]
     (model/cube xy xy (getopt :case :rear-housing :roof-thickness))))
 
@@ -375,73 +371,3 @@
        (rhousing-outer-wall getopt)
        (if (prop :bosses) (pair rhousing-mount-positive)))
      (pair rhousing-mount-negative))))
-
-
-;;;;;;;;;;;;;;;;;;;
-;; Tweak Plating ;;
-;;;;;;;;;;;;;;;;;;;
-
-
-(defn- tweak-posts
-  "(The hull of) one or more corner posts for a case tweak.
-  This function both picks the shape of the post and positions it.
-  For a tweak anchored to the central housing, defer to the central module
-  for both shape and position, because they are closely related in that case.
-  Otherwise use the most specific dimensions available for the post, defaulting
-  to a web post."
-  [getopt anchor side first-segment last-segment]
-  (if (= first-segment last-segment)
-    (let [type (:type (access/resolve-anchor getopt anchor))
-          post (case type
-                 :central-housing (central/tweak-post getopt anchor)
-                 :rear-housing (rhousing-post getopt)
-                 :mcu-grip (apply model/cube (getopt :mcu :support :grip :size))
-                 ;; If a side of the MCU plate is specifed, put a nodule there,
-                 ;; else use the entire base of the plate.
-                 :mcu-lock-plate (if side
-                                   misc/nodule
-                                   (mcu/lock-plate-base getopt false))
-                 (key/web-post getopt))]
-      (if (= type :central-housing)
-        ;; High-precision anchor; reckon-from-anchor is inadequate.
-        post
-        ;; Low-precision anchor.
-        (place/reckon-from-anchor getopt anchor
-          {:subject post, :side side, :segment first-segment})))
-    (apply model/hull (map #(tweak-posts getopt anchor side %1 %1)
-                           (range first-segment (inc last-segment))))))
-
-(declare tweak-plating)
-
-(defn- tweak-map
-  "Treat a map-type node in the configuration."
-  [getopt node]
-  (let [parts (get node :chunk-size)
-        at-ground (get node :at-ground false)
-        prefix (if (get node :highlight) model/-# identity)
-        shapes (reduce (partial tweak-plating getopt) [] (:hull-around node))
-        hull (if at-ground misc/bottom-hull model/hull)]
-    (when (get node :above-ground true)
-      (prefix
-        (apply (if parts model/union hull)
-          (if parts
-            (map (partial apply hull) (partition parts 1 shapes))
-            shapes))))))
-
-(defn- tweak-plating
-  "A reducer."
-  [getopt coll node]
-  (conj coll
-    (if (map? node)
-      (tweak-map getopt node)
-      (apply (partial tweak-posts getopt) node))))
-
-(defn- tweak-union
-  [getopt data-fn]
-  "User-requested additional shapes from some data."
-  [getopt]
-  (apply maybe/union
-    (reduce (partial tweak-plating getopt) [] (data-fn getopt))))
-
-(defn main-body-tweaks [getopt] (tweak-union getopt main-body-tweak-data))
-(defn central-tweaks [getopt] (tweak-union getopt central-tweak-data))

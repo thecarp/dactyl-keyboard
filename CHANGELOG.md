@@ -103,6 +103,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - New modules:
   - `poly`, collecting helper functions for making polyhedra.
   - `mcu`, breaking MCU features out of `auxf`.
+  - `tweak`, breaking tweak plating out of `body` and `bottom`.
   - `compass`, gathering code from `generics` and `matrix` with refactoring
     to improve the compass metaphor for feature placement. For example, the new
     MCU grip anchors are created with a corner such as `SW`, and this maps to a

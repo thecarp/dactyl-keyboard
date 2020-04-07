@@ -21,11 +21,12 @@
             [dactyl-keyboard.cad.auxf :as auxf]
             [dactyl-keyboard.cad.body :as body]
             [dactyl-keyboard.cad.bottom :as bottom]
+            [dactyl-keyboard.cad.central :as central]
             [dactyl-keyboard.cad.key :as key]
-            [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.mcu :as mcu]
-            [dactyl-keyboard.cad.wrist :as wrist]
-            [dactyl-keyboard.cad.central :as central])
+            [dactyl-keyboard.cad.place :as place]
+            [dactyl-keyboard.cad.tweak :as tweak]
+            [dactyl-keyboard.cad.wrist :as wrist])
   (:gen-class :main true))
 
 (defn pprint-settings
@@ -89,7 +90,7 @@
       (auxf/backplate-block getopt))
     (when (getopt :case :rear-housing :include)
       (body/rear-housing getopt))
-    (body/main-body-tweaks getopt)
+    (tweak/all-main-body getopt)
     (when (getopt :case :bottom-plate :include)
       (bottom/anchors-in-main-body getopt))
     (auxf/foot-plates getopt)
@@ -148,7 +149,7 @@
                 (bilateral (central/lip-body-right getopt)))
               (when (getopt :case :central-housing :derived :include-adapter)
                 (bilateral (central/adapter-fastener-receivers getopt)))
-              (body/central-tweaks getopt))
+              (tweak/all-central-housing getopt))
             (when (getopt :case :central-housing :derived :include-adapter)
               (bilateral
                 (central/adapter-right-fasteners getopt)
@@ -239,7 +240,7 @@
       (wrist/unified-preview getopt)
       (bottom/wrist-anchors-positive getopt)
       (when (= (getopt :wrist-rest :style) :solid)
-        (body/main-body-tweaks getopt)))))
+        (tweak/all-main-body getopt)))))
 
 (defn build-rubber-pad-right
   "Right-hand-side wrist-rest pad model. Useful in visualization and
@@ -252,7 +253,7 @@
         (wrist/rubber-insert-positive getopt))
       (bottom/wrist-anchors-positive getopt)
       (when (= (getopt :wrist-rest :style) :solid)
-        (body/main-body-tweaks getopt)))))
+        (tweak/all-main-body getopt)))))
 
 (defn- collect-anchors
   "Gather names and properties for the placement of keyboard features relative

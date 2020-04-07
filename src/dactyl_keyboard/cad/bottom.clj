@@ -17,6 +17,7 @@
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.key :as key]
             [dactyl-keyboard.cad.body :as body]
+            [dactyl-keyboard.cad.tweak :as tweak]
             [dactyl-keyboard.cad.wrist :as wrist]
             [dactyl-keyboard.param.access
              :refer [most-specific get-key-alias main-body-tweak-data]]))
@@ -239,7 +240,7 @@
     (mask-3d getopt)
     (maybe/union
       (key/metacluster body/cluster-wall getopt)
-      (body/main-body-tweaks getopt))))
+      (tweak/all-main-body getopt))))
 
 (defn- floor-finder
   "Make a function that takes a key mount and returns a 2D vertex
@@ -308,56 +309,6 @@
       []
       (body/rhousing-pillar-functions getopt))))
 
-(defn- tweak-floor-vertex
-  "A corner vertex on a tweak wall, extending from a key mount."
-  [getopt segment-picker bottom [alias side first-segment last-segment]]
-  {:post [(spec/valid? ::tarmi-core/point-2d %)]}
-  (let [segment (segment-picker (range first-segment (inc last-segment)))]
-    (take 2 (place/reckon-from-anchor getopt alias
-              {:side side, :segment segment, :bottom bottom}))))
-
-(defn- dig-to-seq [node]
-  (if (map? node) (dig-to-seq (:hull-around node)) node))
-
-(defn- tweak-floor-pairs
-  "Produce coordinate pairs for a polygon. A reducer."
-  [getopt [post-picker segment-picker bottom] coll node]
-  {:post [(spec/valid? ::tarmi-core/point-coll-2d %)]}
-  (let [vertex-fn (partial tweak-floor-vertex getopt segment-picker bottom)]
-    (conj coll
-      (if (map? node)
-        ;; Pick just one post in the subordinate node, on the assumption that
-        ;; they’re not all ringing the case.
-        (vertex-fn (post-picker (dig-to-seq node)))
-        ;; Node is one post at the top level. Always use that.
-        (vertex-fn node)))))
-
-(defn- tweak-plate-polygon
-  "A single version of the footprint of a tweak.
-  Tweaks so small that they amount to fewer than three vertices are ignored
-  because they wouldn’t have any area."
-  [getopt pickers node-list]
-  (let [points (reduce (partial tweak-floor-pairs getopt pickers) [] node-list)]
-    (when (> (count points) 2)
-      (model/polygon points))))
-
-(defn- tweak-plate-shadows
-  "Versions of a tweak footprint.
-  This is a semi-brute-force-approach to the problem that we cannot easily
-  identify which vertices shape the outside of the case at z = 0."
-  [getopt node-list]
-  (apply maybe/union
-    (distinct
-      (for
-        [post [first last], segment [first last], bottom [false true]]
-        (tweak-plate-polygon getopt [post segment bottom] node-list)))))
-
-(defn- all-tweak-shadows
-  "The footprint of all user-requested additional shapes that go to the floor."
-  [getopt]
-  (apply maybe/union (map #(tweak-plate-shadows getopt (:hull-around %))
-                          (filter :at-ground (main-body-tweak-data getopt)))))
-
 (defn- case-positive-2d
   "A union of polygons representing the interior of the case, including the
   central housing, when configured to appear."
@@ -366,7 +317,7 @@
   (maybe/union
     (key/metacluster cluster-floor-polygon getopt)
     (masked-cut getopt (anchors-for-main-plate getopt))
-    (all-tweak-shadows getopt)
+    (tweak/all-shadows getopt)
     (when (getopt :case :central-housing :derived :include-main)
       (chousing-floor-polygon getopt))
     (when (getopt :case :central-housing :derived :include-adapter)
