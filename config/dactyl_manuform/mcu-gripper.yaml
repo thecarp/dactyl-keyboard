@@ -34,10 +34,10 @@ case:
         - [mcu-base-key, ENE, 0]
 mcu:
   type: promicro
+  intrinsic-rotation: [0, 0, 0]  # Lie flat.
   position:
     anchor: big-port
     offset: [18, -4, -16]
-  intrinsic-rotation: [0, 0, 0]  # Lie flat.
   support:
     shelf:
       include: false

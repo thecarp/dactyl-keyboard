@@ -20,12 +20,15 @@ Notice ports attached directly to microcontroller boards are treated in the `mcu
 - Parameter <a href="#user-content-include">`include`</a>
 - Parameter <a href="#user-content-port-type">`port-type`</a>
 - Parameter <a href="#user-content-size">`size`</a>
+- Section <a href="#user-content-alignment">`alignment`</a>
+    - Parameter <a href="#user-content-alignment-segment">`segment`</a>
+    - Parameter <a href="#user-content-alignment-side">`side`</a>
+- Parameter <a href="#user-content-intrinsic-rotation">`intrinsic-rotation`</a>
 - Section <a href="#user-content-position">`position`</a>
     - Parameter <a href="#user-content-position-anchor">`anchor`</a>
     - Parameter <a href="#user-content-position-side">`side`</a>
     - Parameter <a href="#user-content-position-segment">`segment`</a>
     - Parameter <a href="#user-content-position-offset">`offset`</a>
-- Parameter <a href="#user-content-intrinsic-rotation">`intrinsic-rotation`</a>
 - Section <a href="#user-content-holder">`holder`</a>
     - Parameter <a href="#user-content-holder-include">`include`</a>
     - Parameter <a href="#user-content-holder-alias">`alias`</a>
@@ -54,9 +57,25 @@ An `[x, y, z]` vector specifying the size of the port in mm. This is used only w
 
 There are limited facilities for specifying the shape of a port. Basically, this parameter assumes a cuboid socket. For any different shape, get as close as possible with `tweaks`, then make your own adapter and/or widen the socket with a soldering iron or similar tools to fit a more complex object.
 
+## Section <a id="alignment">`alignment`</a>
+
+How the port lines itself up at its position.
+
+### Parameter <a id="alignment-segment">`segment`</a>
+
+Which vertical segment of the port itself to place at `position` below. The default value here is 0, meaning the ceiling of the port.
+
+### Parameter <a id="alignment-side">`side`</a>
+
+Which wall or corner of the port itself to place at `position`. The default value here is `N` (nominal north), which is the open face of the port.
+
+## Parameter <a id="intrinsic-rotation">`intrinsic-rotation`</a>
+
+An `[x, y, z]` vector of radians, rotating the port around its point of `alignment` before moving it to `position`.
+
 ## Section <a id="position">`position`</a>
 
-The position of the port in relation to something else.
+This section collects the most important factors for placing the aligned port on the keyboard.
 
 ### Parameter <a id="position-anchor">`anchor`</a>
 
@@ -73,10 +92,6 @@ An integer identifying one vertical segment of the feature named in `anchor`. Th
 ### Parameter <a id="position-offset">`offset`</a>
 
 A three-dimensional offset in mm from the feature named in `anchor`. This is applied in the anchor’s local frame of reference and may therefore be subject to various rotations etc.
-
-## Parameter <a id="intrinsic-rotation">`intrinsic-rotation`</a>
-
-An `[x, y, z]` vector of radians, rotating the port around the top of its own face.
 
 ## Section <a id="holder">`holder`</a>
 

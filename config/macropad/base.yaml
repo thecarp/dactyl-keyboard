@@ -48,13 +48,13 @@ case:
     height: 24.5
 mcu:
   include: true
+  # Stand on the long edge folded into the rear housing.
+  intrinsic-rotation: [0, 1.5708, -1.5708]
   position:
     anchor: rear-housing
     side: ENE
     segment: 2  # Midway up the wall.
     offset: [-1, -1.25, 0]
-  # Stand on the long edge folded into the rear housing.
-  intrinsic-rotation: [0, 1.5708, -1.5708]
   support:
     lock:
       include: true

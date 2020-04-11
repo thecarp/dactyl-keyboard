@@ -838,10 +838,17 @@
     "designs for commercial products from PJRC, SparkFun, the QMK team "
     "and others:\n\n"
     (cots/support-list cots/mcu-facts)]
-   [:section [:mcu :position]
-    "Where to place the MCU PCBA.\n\n"
+   [:parameter [:mcu :intrinsic-rotation]
+    stock/anchor-3d-vector-metadata
+    "A vector of 3 angles in radians. This parameter governs the rotation of "
+    "the PCBA around its anchor point in the front.\n"
     "By default, the PCBA appears lying flat, with the MCU side up and the "
-    "connector end facing “north” (i.e. away from the user)."]
+    "connector end facing nominal north, away from the user.\n\n"
+    "As an example, to have the PCBA standing on its long edge instead of "
+    "lying flat, you would set this parameter like `[0, 1.5708, 0]`, the "
+    "middle number being roughly π/2."]
+   [:section [:mcu :position]
+    "Where to place the MCU PCBA after intrinsic rotation."]
    [:parameter [:mcu :position :central]
     {:default false :parse-fn boolean}
     "If `true`, treat the MCU as central even on a reflected keyboard. "
@@ -868,19 +875,13 @@
    [:parameter [:mcu :position :offset]
     stock/anchor-3d-vector-metadata
     stock/anchor-3d-offset-documentation]
-   [:parameter [:mcu :intrinsic-rotation]
-    stock/anchor-3d-vector-metadata
-    "A vector of 3 angles in radians. This parameter governs the rotation of "
-    "the PCBA around its anchor point in the front. For example, to have the "
-    "PCBA standing on its long edge instead of lying flat, you would give "
-    "this a value like `[0, 1.5708, 0]`, the middle number being roughly π/2."]
    [:section [:mcu :support]
     "This section offers a couple of different, mutually compatible ways to "
     "hold an MCU PCBA in place. Without such support, the MCU will be "
     "rattling around inside the case.\n\n"
     "Support is especially important if connector(s) on the PCBA will be "
     "exposed to animals, such as people. Take care that the user can plug in "
-    "a USB cable, which requires the female USB connector to be both reachable "
+    "a USB cable, which requires a receptable to be both reachable "
     "through the case *and* held there firmly enough that the force of the "
     "user’s interaction will neither damage nor displace the board.\n\n"
     "Despite the importance of support in most use cases, no MCU support is "

@@ -116,13 +116,13 @@ Each heading in this document represents a recognized configuration key in the m
     - Parameter <a href="#user-content-mcu-include">`include`</a>
     - Parameter <a href="#user-content-mcu-preview">`preview`</a>
     - Parameter <a href="#user-content-mcu-type">`type`</a>
+    - Parameter <a href="#user-content-mcu-intrinsic-rotation">`intrinsic-rotation`</a>
     - Section <a href="#user-content-mcu-position">`position`</a>
         - Parameter <a href="#user-content-mcu-position-central">`central`</a>
         - Parameter <a href="#user-content-mcu-position-anchor">`anchor`</a>
         - Parameter <a href="#user-content-mcu-position-side">`side`</a>
         - Parameter <a href="#user-content-mcu-position-segment">`segment`</a>
         - Parameter <a href="#user-content-mcu-position-offset">`offset`</a>
-    - Parameter <a href="#user-content-mcu-intrinsic-rotation">`intrinsic-rotation`</a>
     - Section <a href="#user-content-mcu-support">`support`</a>
         - Parameter <a href="#user-content-mcu-support-preview">`preview`</a>
         - Section <a href="#user-content-mcu-support-shelf">`shelf`</a>
@@ -861,11 +861,16 @@ A code name for a form factor. The following values are supported, representing 
 * `teensy-s`: Teensy 2.0.
 * `teensy-xl`: Extra large Teensy, 3.5 or 3.6.
 
+### Parameter <a id="mcu-intrinsic-rotation">`intrinsic-rotation`</a>
+
+A vector of 3 angles in radians. This parameter governs the rotation of the PCBA around its anchor point in the front.
+By default, the PCBA appears lying flat, with the MCU side up and the connector end facing nominal north, away from the user.
+
+As an example, to have the PCBA standing on its long edge instead of lying flat, you would set this parameter like `[0, 1.5708, 0]`, the middle number being roughly π/2.
+
 ### Section <a id="mcu-position">`position`</a>
 
-Where to place the MCU PCBA.
-
-By default, the PCBA appears lying flat, with the MCU side up and the connector end facing “north” (i.e. away from the user).
+Where to place the MCU PCBA after intrinsic rotation.
 
 #### Parameter <a id="mcu-position-central">`central`</a>
 
@@ -891,15 +896,11 @@ An integer identifying one vertical segment of the feature named in `anchor`. Th
 
 A three-dimensional offset in mm from the feature named in `anchor`. This is applied in the anchor’s local frame of reference and may therefore be subject to various rotations etc.
 
-### Parameter <a id="mcu-intrinsic-rotation">`intrinsic-rotation`</a>
-
-A vector of 3 angles in radians. This parameter governs the rotation of the PCBA around its anchor point in the front. For example, to have the PCBA standing on its long edge instead of lying flat, you would give this a value like `[0, 1.5708, 0]`, the middle number being roughly π/2.
-
 ### Section <a id="mcu-support">`support`</a>
 
 This section offers a couple of different, mutually compatible ways to hold an MCU PCBA in place. Without such support, the MCU will be rattling around inside the case.
 
-Support is especially important if connector(s) on the PCBA will be exposed to animals, such as people. Take care that the user can plug in a USB cable, which requires the female USB connector to be both reachable through the case *and* held there firmly enough that the force of the user’s interaction will neither damage nor displace the board.
+Support is especially important if connector(s) on the PCBA will be exposed to animals, such as people. Take care that the user can plug in a USB cable, which requires a receptable to be both reachable through the case *and* held there firmly enough that the force of the user’s interaction will neither damage nor displace the board.
 
 Despite the importance of support in most use cases, no MCU support is included by default.
 

@@ -751,13 +751,13 @@ case:
 
 mcu:
   include: true
+  # Stand on the long edge, folded into the rear housing.
+  intrinsic-rotation: [0, 1.5708, -1.5708]
   position:
     anchor: rear-housing
     side: NE
     segment: 3  # Floor level.
     offset: [-0.5, -2.5, 11]
-  # Stand on the long edge, folded into the rear housing.
-  intrinsic-rotation: [0, 1.5708, -1.5708]
   support:
     lock:
       include: true
@@ -768,12 +768,12 @@ ports:
   reflection-port:
     include: true
     port-type: modular-4p4c-616e
+    intrinsic-rotation: [0, 0, -1.5708]
     position:
       anchor: rear-housing
       side: E
       segment: 1
       offset: [1, 2, -2]
-    intrinsic-rotation: [0, 0, -1.5708]
     holder:
       include: true
       alias: reflection-port-holder

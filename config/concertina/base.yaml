@@ -734,11 +734,11 @@ case:
       - [ca-bottom-2]
 mcu:
   include: true
+  intrinsic-rotation: [-1.5708, 0.785398, 3.14159]  # π/2, π/4, π.
   position:
     central: true
     anchor: ci-far-base
     offset: [-28, -5, 25]
-  intrinsic-rotation: [-1.5708, 0.785398, 3.14159]  # π/2, π/4, π.
   support:
     shelf:
       include: true

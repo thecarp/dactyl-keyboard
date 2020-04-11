@@ -60,7 +60,7 @@
   ([coefficient segment offset]
    {:pre [(spec/valid? ::tarmi-core/point-2-3d offset)]}
    (-> offset
-     (update 2 (partial * coefficient (case segment 0 -1, 1 0, 2 1))))))
+     (update 2 (partial * coefficient (case segment 0 1, 1 0, 2 -1))))))
 
 (defn- cube-corner-xy
   [direction size wall-thickness]
@@ -418,15 +418,6 @@
         t (getopt :ports id :holder :thickness)]
     [(+ x t t) (+ y t) (+ z t t)]))
 
-(defn port-place
-  "Place passed object as the indicated port."
-  [getopt id obj]
-  {:pre [(keyword? id)
-         (= (getopt :derived :anchors id :type) :port-hole)]}
-  (->> obj
-    (flex/rotate (getopt :ports id :intrinsic-rotation))
-    (flex/translate (reckon-with-anchor getopt (getopt :ports id :position)))))
-
 (defn port-hole-offset
   "Shift an offset for one part of a port hole.
   This is designed to hit a corner of the negative space."
@@ -435,6 +426,15 @@
   (let [[[_ x] [_ y] z] (port-hole-size getopt anchor)]
     (mapv + (cube-corner-xyz side segment [x y z] 0)
             offset)))
+
+(defn- port-alignment-offset
+  "Return a vector moving the centre of one port away from its anchor."
+  [getopt id]
+  (mapv -
+    (port-hole-offset getopt
+      {:anchor id
+       :side (getopt :ports id :alignment :side)
+       :segment (getopt :ports id :alignment :segment)})))
 
 (defn port-holder-offset
   "Shift an offset for one part of a port holder.
@@ -449,6 +449,16 @@
     (mapv + (cube-corner-xyz side segment [x y z] t)
             [0 (/ t -2) 0]
             offset)))
+
+(defn port-place
+  "Place passed object as the indicated port."
+  [getopt id obj]
+  {:pre [(keyword? id)
+         (= (getopt :derived :anchors id :type) :port-hole)]}
+  (->> obj
+    (flex/translate (port-alignment-offset getopt id))
+    (flex/rotate (getopt :ports id :intrinsic-rotation))
+    (flex/translate (reckon-with-anchor getopt (getopt :ports id :position)))))
 
 
 ;; Wrist rests.
