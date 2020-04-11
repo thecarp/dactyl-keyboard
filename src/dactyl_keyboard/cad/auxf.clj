@@ -9,7 +9,8 @@
             [scad-tarmi.maybe :as maybe]
             [scad-klupe.iso :refer [nut]]
             [dactyl-keyboard.cad.misc :as misc]
-            [dactyl-keyboard.cad.place :as place]))
+            [dactyl-keyboard.cad.place :as place]
+            [dactyl-keyboard.param.proc.anch :as anch]))
 
 
 ;;;;;;;;;;;;;;;;
@@ -147,7 +148,7 @@
   {:pre [(keyword? id)]}
   (let [[x y z] (place/port-holder-size getopt id)]
     (maybe/translate
-      (place/port-holder-offset getopt {:parent id})
+      (place/port-holder-offset getopt {::anch/primary id})
       (model/cube x y z))))
 
 (defn port-tweak-post

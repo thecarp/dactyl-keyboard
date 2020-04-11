@@ -77,12 +77,13 @@
     ;; Ports:
     ;; The ID of each port automatically doubles as an alias for the negative
     ;; space of that port. The holder around it gets its own alias, with an
-    ;; annotation for tracing it to its parent port.
+    ;; annotation (same as for a secondary) for tracing it to its parent port.
     (apply merge
       (map
         (fn [k]
           {k                                {::type :port-hole}
-           (getopt :ports k :holder :alias) {::type :port-holder, :parent k}})
+           (getopt :ports k :holder :alias) {::type :port-holder,
+                                             ::primary k}})
         (keys (getopt :ports))))
 
     ;; The central housing:

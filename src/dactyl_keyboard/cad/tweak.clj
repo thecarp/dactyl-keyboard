@@ -20,7 +20,8 @@
             [dactyl-keyboard.cad.key :as key]
             [dactyl-keyboard.param.access :refer [resolve-anchor
                                                   main-body-tweak-data
-                                                  central-tweak-data]]))
+                                                  central-tweak-data]]
+            [dactyl-keyboard.param.proc.anch :as anch]))
 
 
 ;;;;;;;;;;
@@ -35,7 +36,7 @@
   By default, use the most specific dimensions available for the post,
   defaulting to a post for key-cluster webbing."
   [getopt {:keys [anchor side segment offset] :as opts}]
-  (let [{:keys [type parent]} (resolve-anchor getopt anchor)]
+  (let [{::anch/keys [type primary]} (resolve-anchor getopt anchor)]
     (case type
       :central-housing
         [true
@@ -62,11 +63,11 @@
              (auxf/port-hole getopt anchor)))]
       :port-holder
         [true
-         (place/port-place getopt parent
+         (place/port-place getopt primary
            (if (or side segment offset)
              (maybe/translate (place/port-holder-offset getopt
-                                (assoc opts :parent parent))
-               (auxf/port-tweak-post getopt parent))
+                                (assoc opts ::anch/primary primary))
+               (auxf/port-tweak-post getopt primary))
              (auxf/port-holder getopt anchor)))]
       [false (key/web-post getopt)])))
 

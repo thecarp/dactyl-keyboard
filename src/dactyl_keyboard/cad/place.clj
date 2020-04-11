@@ -447,15 +447,15 @@
   This is designed to hit inside the wall, not at a corner,
   on the assumption that a tweak post with the thickness of the
   wall is being placed."
-  [getopt {:keys [parent side segment offset]
+  [getopt {:keys [side segment offset] ::anch/keys [primary]
            :or {segment 1, offset [0 0 0]}}]
-  {:pre [(keyword? parent)]}
+  {:pre [(keyword? primary)]}
   (when-not (#{0 1 2} segment)
     (throw (ex-info "Invalid segment ID specified for port holder."
               {:configured-segment segment
                :available-segments #{0 1 2}})))
-  (let [t (getopt :ports parent :holder :thickness)
-        [x y z] (port-holder-size getopt parent)]
+  (let [t (getopt :ports primary :holder :thickness)
+        [x y z] (port-holder-size getopt primary)]
     (mapv + (cube-corner-xyz side segment [x y z] t)
             [0 (/ t -2) 0]
             offset)))
@@ -642,18 +642,17 @@
   (port-place getopt anchor initial))
 
 (defmethod by-type :port-holder
-  [getopt {:keys [parent initial]}]
-  (port-place getopt parent initial))
+  [getopt {:keys [initial] ::anch/keys [primary]}]
+  (port-place getopt primary initial))
 
 (defmethod by-type :secondary
-  [getopt {:keys [initial] :as opts}]
-  (let [prop (::anch/primary opts)
-        base (reckon-with-anchor getopt (prop :anchoring))
+  [getopt {:keys [initial] ::anch/keys [primary]}]
+  (let [base (reckon-with-anchor getopt (:anchoring primary))
         ;; Apply the override by walking across the primary anchor’s position,
         ;; picking coordinates from the override where not nil.
-        override (fn [i coord] (or (get (prop :override) i) coord))]
+        override (fn [i coord] (or (get (:override primary) i) coord))]
     (->> initial
-      (flex/translate (prop :translation))
+      (flex/translate (:translation primary))
       (flex/translate (map-indexed override base)))))
 
 ;; Generalizations.
