@@ -118,7 +118,7 @@
     "toward the key level."]
    [:parameter [:secondaries]
     {:default {}
-     :parse-fn schema/named-secondary-positions,
+     :parse-fn schema/named-secondary-positions
      :validate [::schema/named-secondary-positions]}
     "A map where each item provides a name for a position in space. "
     "Such positions exist in relation to other named features of the keyboard "
@@ -128,17 +128,27 @@
     "An example:\n\n"
     "```secondaries:\n"
     "  s0:\n"
-    "    anchor: f0\n"
-    "    side: NNE\n"
-    "    segment: 3\n"
-    "    offset: [0, 0, 10]\n```"
+    "    anchoring:\n"
+    "      anchor: f0\n"
+    "      side: SE\n"
+    "      segment: 2\n"
+    "      offset: [1, 0, 0]\n"
+    "    override [none, none, 2]\n"
+    "    translation: [0, 3, 0]```\n"
     "\n"
-    "This example gives the name `s0` to a point 10 mm above a key or "
-    "some other feature named `f0`, which must be defined elsewhere.\n"
+    "This example gives the name `s0` to a point near some feature named "
+    "`f0`, which must be defined elsewhere. All parameters in the `anchoring` "
+    "map work like their equivalent for primary features like `mcu`, so that "
+    "`offset` is applied in the vector space of the anchor.\n"
     "\n"
-    "A `side` and `segment` are useful mainly with key aliases. "
-    "An `offset` is applied late, i.e. in the overall coordinate system, "
-    "following any transformations inherent to the anchor."]
+    "Populated coordinates in `override` replace corresponding coordinates "
+    "given by the anchor, and `translation` finally shifts the position "
+    "of the secondary feature in the global vector space.\n"
+    "\n"
+    "In the example, `s0` is a position 1 mm to the local right of the "
+    "south-east corner of vertical segment 2 of `f0`, projected onto the "
+    "global x-y plane at z = 2 (i.e. 2 mm above the floor), and then shifted "
+    "3 mm away from the user on that plane."]
    [:section [:case]
     "Much of the keyboard case is generated from the `wall` parameters "
     "described [here](options-nested.md). "

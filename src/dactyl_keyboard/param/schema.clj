@@ -11,8 +11,7 @@
             [scad-klupe.iso :refer [head-length]]
             [scad-klupe.schema.iso]
             [dmote-keycap.schema :as capschema]
-            [dactyl-keyboard.compass :as compass]
-            [dactyl-keyboard.cots :as cots]))
+            [dactyl-keyboard.compass :as compass]))
 
 
 ;;;;;;;;;;;;;
@@ -80,7 +79,11 @@
 (def anchored-3d-position-map anchored-2d-position-map)
 
 (def named-secondary-positions
-  (map-of keyword (map-like anchored-3d-position-map)))
+  (map-of keyword
+    (map-like
+      {:anchoring (map-like anchored-3d-position-map)
+       :override vec
+       :translation vec})))
 
 (def anchored-2d-positions
   (tuple-of (map-like anchored-2d-position-map)))
@@ -242,18 +245,21 @@
 (spec/def :flexible/side compass/noncardinals)
 (spec/def :two/offset ::tarmi/point-2d)
 (spec/def :three/offset ::tarmi/point-3d)
+(spec/def :three/override (spec/coll-of (spec/nilable number?) :count 3))
+(spec/def :three/translation ::tarmi/point-3d)
 (spec/def :flexible/offset ::tarmi/point-2-3d)
 
 ;; Users thereof:
 (spec/def ::foot-plate (spec/keys :req-un [::points]))
 (spec/def ::anchored-2d-position
-  (spec/keys :opt-un [::anchor :flexible/side :two/offset]))
+  (spec/keys :opt-un [::anchor :flexible/side ::segment :two/offset]))
 (spec/def ::anchored-3d-position
-  (spec/keys :opt-un [::anchor :flexible/side :three/offset]))
+  (spec/keys :opt-un [::anchor :flexible/side ::segment :three/offset]))
+(spec/def ::anchoring ::anchored-3d-position)
 (spec/def ::named-secondary-positions
   (spec/map-of ::alias
-               (spec/keys :req-un [::anchor]
-                          :opt-un [:flexible/side ::segment :three/offset])))
+               (spec/keys :opt-un [::anchoring :three/override
+                                   :three/translation])))
 (spec/def ::anchored-2d-list (spec/coll-of ::anchored-2d-position))
 (spec/def ::projecting-2d-list
   (spec/coll-of

@@ -415,28 +415,33 @@ by-key:
 secondaries:
   # Main-to-thumb0 cluster bridge points:
   mt0a:
-    anchor: m00
-    side: SSE
-    segment: 0
-    offset: [0, -2, 2]
+    anchoring:
+      anchor: m00
+      side: SSE
+      segment: 0
+    translation: [0, -2, 2]
   mt0b:
-    anchor: mt0a
-    offset: [4, -3, 16]
+    anchoring:
+      anchor: mt0a
+    translation: [4, -3, 16]
   mt0c:
-    anchor: mt0b
-    offset: [6, -2, 1]
+    anchoring:
+      anchor: mt0b
+    translation: [6, -2, 1]
   # Shims for wall posts being thinner than rear housing posts:
   rh-0:
-    anchor: rear-housing
-    side: ESE
-    segment: 1
-    offset: [0, 0, -20]
+    anchoring:
+      anchor: rear-housing
+      side: ESE
+      segment: 1
+    translation: [0, 0, -20]
   # Other:
   port-corner:
-    anchor: reflection-port-holder
-    side: NW
-    segment: 2
-    offset: [0, 0, -10]
+    anchoring:
+      anchor: reflection-port-holder
+      side: NW
+      segment: 2
+    translation: [0, 0, -10]
 case:
   rear-housing:
     include: true

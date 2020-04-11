@@ -269,8 +269,18 @@
                    (mcu/collect-grip-aliases getopt)
                    (wrist/collect-point-aliases getopt)
                    (wrist/collect-block-aliases getopt)
-                   (into {} (for [[k v] (getopt :secondaries)]
-                              [k (merge v {:type :secondary})])))})
+                   (into {}
+                     (for [[k v] (getopt :secondaries)]
+                       [k {:type :secondary
+                           :position
+                             ;; Provide defaults absent in initial parser.
+                             ;; TODO: Add to parser without requiring a
+                             ;; side or segment.
+                             (soft-merge
+                               {:anchoring {:anchor :origin}
+                                :override [nil nil nil]
+                                :translation [0 0 0]}
+                               v)}])))})
 
 (def derivers-static
   "A vector of configuration locations and functions for expanding them."

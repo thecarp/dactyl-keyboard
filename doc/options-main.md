@@ -260,14 +260,19 @@ An example:
 
 ```secondaries:
   s0:
-    anchor: f0
-    side: NNE
-    segment: 3
-    offset: [0, 0, 10]
-```
-This example gives the name `s0` to a point 10 mm above a key or some other feature named `f0`, which must be defined elsewhere.
+    anchoring:
+      anchor: f0
+      side: SE
+      segment: 2
+      offset: [1, 0, 0]
+    override [none, none, 2]
+    translation: [0, 3, 0]```
 
-A `side` and `segment` are useful mainly with key aliases. An `offset` is applied late, i.e. in the overall coordinate system, following any transformations inherent to the anchor.
+This example gives the name `s0` to a point near some feature named `f0`, which must be defined elsewhere. All parameters in the `anchoring` map work like their equivalent for primary features like `mcu`, so that `offset` is applied in the vector space of the anchor.
+
+Populated coordinates in `override` replace corresponding coordinates given by the anchor, and `translation` finally shifts the position of the secondary feature in the global vector space.
+
+In the example, `s0` is a position 1 mm to the local right of the south-east corner of vertical segment 2 of `f0`, projected onto the global x-y plane at z = 2 (i.e. 2 mm above the floor), and then shifted 3 mm away from the user on that plane.
 
 ## Section <a id="case">`case`</a>
 

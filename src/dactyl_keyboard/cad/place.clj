@@ -423,6 +423,10 @@
   This is designed to hit a corner of the negative space."
   [getopt {:keys [anchor side segment offset]
            :or {segment 1, offset [0 0 0]}}]
+  (when-not (#{0 1 2} segment)
+    (throw (ex-info "Invalid segment ID specified for port hole."
+              {:configured-segment segment
+               :available-segments #{0 1 2}})))
   (let [[[_ x] [_ y] z] (port-hole-size getopt anchor)]
     (mapv + (cube-corner-xyz side segment [x y z] 0)
             offset)))
@@ -444,6 +448,10 @@
   [getopt {:keys [parent side segment offset]
            :or {segment 1, offset [0 0 0]}}]
   {:pre [(keyword? parent)]}
+  (when-not (#{0 1 2} segment)
+    (throw (ex-info "Invalid segment ID specified for port holder."
+              {:configured-segment segment
+               :available-segments #{0 1 2}})))
   (let [t (getopt :ports parent :holder :thickness)
         [x y z] (port-holder-size getopt parent)]
     (mapv + (cube-corner-xyz side segment [x y z] t)
@@ -636,12 +644,15 @@
   (port-place getopt parent initial))
 
 (defmethod by-type :secondary
-  [getopt {:keys [anchor offset] :or {offset [0 0 0]} :as opts}]
-  (let [primary (resolve-anchor getopt anchor)
-        clean (dissoc opts :type :anchor :alias :offset)]
-    (flex/translate
-      (mapv + (get primary :offset [0 0 0]) offset)
-      (reckon-feature getopt (merge clean (dissoc primary :offset))))))
+  [getopt {:keys [anchor initial]}]
+  {:pre [(keyword? anchor)]}
+  (let [prop (partial getopt :derived :anchors anchor :position)]
+    (->> initial
+      (flex/translate (prop :translation))
+      ;; Apply the override by walking across the primary anchor’s position,
+      ;; picking coordinates from the override where not nil.
+      (flex/translate (map-indexed #(or (get (prop :override) %1) %2)
+                        (reckon-with-anchor getopt (prop :anchoring)))))))
 
 ;; Generalizations.
 

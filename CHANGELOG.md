@@ -38,6 +38,11 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       than a corner of the rear housing, and in part by the extension of
       segments on the rear housing to include segment 2, referring to floor
       level beneath the walls.
+    - Moved the parameters that anchor each named secondary position to another
+      feature into a nested mapping called `anchoring`. An `offset` within this
+      mapping no longer gets exceptional treatment; it now occurs in the vector
+      space of the anchor. The old behaviour, i.e. translation in the
+      global vector space, has a new parameter (`translation`).
 - MCU supports have changed, gaining more power but losing some ease of use,
   to work better with the option of central housing.
     - The default orientation of the MCU PCB has changed, from standing on its
@@ -70,7 +75,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - Documentation:
     - An execution guide, as a new document branched off from the introduction.
     - Tables of content in auto-generated documents.
-- Support for a number of different types of MCUs beyon the Pro Micro:
+- Support for a number of different types of MCUs beyond the Pro Micro:
   Common Teensies as well as the Elite-C and Proton C.
 - Central housing, a new feature.
 - An MCU shelf. This type of MCU support corresponds directly to the
@@ -86,6 +91,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - The ability to target the plate of an MCU lock for case `tweaks`.
 - An extension of the concept of segments to the rear housing and the plate of
   an MCU lock for case `tweaks`.
+- The ability to override specific coordinates for secondary named positions.
 - A GNU Make target for the Dactyl-ManuForm.
 
 ### Fixed

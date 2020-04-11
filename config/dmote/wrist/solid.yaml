@@ -2,66 +2,86 @@
 
 secondaries:
   wrb-case:
-    anchor: m03
-    side: SSE
-    segment: 3
-    offset: [-16, 0, -10]
+    anchoring:
+      anchor: m03
+      side: SSE
+      segment: 3
+    translation: [-16, 0, -10]
   wrb-rest:
-    anchor: plinth-left
-    offset: [0, 0, -3]
+    anchoring:
+      anchor: plinth-left
+    translation: [0, 0, -3]
   wrb1a:
-    anchor: wrb-case
+    anchoring:
+      anchor: wrb-case
   wrb1b:
-    anchor: wrb1a
-    offset: [10, 0, 8]
+    anchoring:
+      anchor: wrb1a
+    translation: [10, 0, 8]
   wrb1c:
-    anchor: wrb1a
-    offset: [20, 0, 8]
+    anchoring:
+      anchor: wrb1a
+    translation: [20, 0, 8]
   wrb1d:
-    anchor: wrb1a
-    offset: [30, 0, 0]
+    anchoring:
+      anchor: wrb1a
+    translation: [30, 0, 0]
   wrb2a:
-    anchor: wrb1a
-    offset: [5, -15, 0]
+    anchoring:
+      anchor: wrb1a
+    translation: [5, -15, 0]
   wrb2b:
-    anchor: wrb1b
-    offset: [2, -15, -5]
+    anchoring:
+      anchor: wrb1b
+    translation: [2, -15, -5]
   wrb2c:
-    anchor: wrb1c
-    offset: [-2, -15, -5]
+    anchoring:
+      anchor: wrb1c
+    translation: [-2, -15, -5]
   wrb2d:
-    anchor: wrb1d
-    offset: [-5, -15, 0]
+    anchoring:
+      anchor: wrb1d
+    translation: [-5, -15, 0]
   wrb3a:
-    anchor: wrb2a
-    offset: [0, -25, 0]
+    anchoring:
+      anchor: wrb2a
+    translation: [0, -25, 0]
   wrb3b:
-    anchor: wrb2b
-    offset: [0, -25, 0]
+    anchoring:
+      anchor: wrb2b
+    translation: [0, -25, 0]
   wrb3c:
-    anchor: wrb2c
-    offset: [0, -25, 0]
+    anchoring:
+      anchor: wrb2c
+    translation: [0, -25, 0]
   wrb3d:
-    anchor: wrb2d
-    offset: [0, -25, 0]
+    anchoring:
+      anchor: wrb2d
+    translation: [0, -25, 0]
   wrb4a:
-    anchor: wrb1a
-    offset: [0, -55, 0]
+    anchoring:
+      anchor: wrb1a
+    translation: [0, -55, 0]
   wrb4b:
-    anchor: wrb1b
-    offset: [0, -55, 0]
+    anchoring:
+      anchor: wrb1b
+    translation: [0, -55, 0]
   wrb4c:
-    anchor: wrb1c
-    offset: [0, -55, 0]
+    anchoring:
+      anchor: wrb1c
+    translation: [0, -55, 0]
   wrb4d:
-    anchor: wrb1d
-    offset: [0, -55, 0]
+    anchoring:
+      anchor: wrb1d
+    translation: [0, -55, 0]
   wrb5b:
-    anchor: wrb4b
-    offset: [0, -10, 0]
+    anchoring:
+      anchor: wrb4b
+    translation: [0, -10, 0]
   wrb5c:
-    anchor: wrb4c
-    offset: [0, -10, 0]
+    anchoring:
+      anchor: wrb4c
+    translation: [0, -10, 0]
 case:
   tweaks:
     wrist-rest-bridge-case:
