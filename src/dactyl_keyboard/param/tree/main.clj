@@ -133,7 +133,7 @@
     "      side: SE\n"
     "      segment: 2\n"
     "      offset: [1, 0, 0]\n"
-    "    override [none, none, 2]\n"
+    "    override [null, null, 2]\n"
     "    translation: [0, 3, 0]```\n"
     "\n"
     "This example gives the name `s0` to a point near some feature named "
@@ -1074,7 +1074,8 @@
     "    offset: [1, 1]\n"
     "  - alias: corner-back\n"
     "    side: SE\n"
-    "    offset: [-1, -1]```\n\n"
+    "    offset: [-1, -1]\n```"
+    "\n"
     "Grip anchor points are all empty by default. "
     "They can be occupied, and connected, using `tweaks`."]
    [:parameter [:ports]

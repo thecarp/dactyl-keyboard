@@ -646,15 +646,15 @@
   (port-place getopt parent initial))
 
 (defmethod by-type :secondary
-  [getopt {:keys [anchor initial]}]
-  {:pre [(keyword? anchor)]}
-  (let [prop (partial getopt :derived :anchors anchor :position)]
+  [getopt {:keys [initial] :as opts}]
+  (let [prop (::anch/primary opts)
+        base (reckon-with-anchor getopt (prop :anchoring))
+        ;; Apply the override by walking across the primary anchor’s position,
+        ;; picking coordinates from the override where not nil.
+        override (fn [i coord] (or (get (prop :override) i) coord))]
     (->> initial
       (flex/translate (prop :translation))
-      ;; Apply the override by walking across the primary anchor’s position,
-      ;; picking coordinates from the override where not nil.
-      (flex/translate (map-indexed #(or (get (prop :override) %1) %2)
-                        (reckon-with-anchor getopt (prop :anchoring)))))))
+      (flex/translate (map-indexed override base)))))
 
 ;; Generalizations.
 

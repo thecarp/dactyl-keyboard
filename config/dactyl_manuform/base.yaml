@@ -228,6 +228,13 @@ by-key:
                     intrinsic: -0.2
                   translation:
                     early: [0.6, 8, 4.5]
+secondaries:
+  back-plane:
+    anchoring:
+      anchor: back0
+      side: NNE
+      segment: 3
+    override: [null, null, 3]
 case:
   key-mount-thickness: 4
   key-mount-corner-margin: 1.5
@@ -350,10 +357,8 @@ mcu:
   type: promicro
   intrinsic-rotation: [0, 1.5708, 0]
   position:
-    anchor: big-port
-    side: WSW
-    segment: 0
-    offset: [-9, -20, -6]
+    anchor: back-plane
+    offset: [-17, -20, 11]
   support:
     shelf:
       include: true
@@ -371,12 +376,11 @@ ports:
     type: custom
     size: [10.78, 9, 18.38]
     alignment:
-      segment: 1
+      side: NE
+      segment: 2
     position:
-      anchor: back0
-      side: NNE
-      segment: 3
-      offset: [1, 5.4, -19.5]
+      anchor: back-plane
+      offset: [-8, 5, 0]
     holder:
       include: true
       thickness: 2
@@ -386,12 +390,11 @@ ports:
     type: custom
     size: [6.5, 10, 13.6]
     alignment:
-      segment: 1
+      side: NW
+      segment: 2
     position:
-      anchor: back1
-      side: NNW
-      segment: 3
-      offset: [10, 6, -12]
+      anchor: back-plane
+      offset: [10, 5, 0]
     holder:
       include: true
       thickness: 2

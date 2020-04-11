@@ -129,12 +129,9 @@
     (into {}
       (for [[k v] (getopt :secondaries)]
         [k {::type :secondary
-            :position
-              ;; Provide defaults absent in initial parser.
-              ;; TODO: Add to parser without requiring a side or segment.
-              (soft-merge
-                {:anchoring {:anchor :origin}
-                 :override [nil nil nil]
-                 :translation [0 0 0]}
-                v)}]))))
-
+            ;; Provide defaults absent in initial parser.
+            ;; TODO: Add to parser without requiring a side or segment.
+            ::primary (soft-merge {:anchoring {:anchor :origin}
+                                   :override [nil nil nil]
+                                   :translation [0 0 0]}
+                                  v)}]))))

@@ -265,7 +265,7 @@ An example:
       side: SE
       segment: 2
       offset: [1, 0, 0]
-    override [none, none, 2]
+    override [null, null, 2]
     translation: [0, 3, 0]```
 
 This example gives the name `s0` to a point near some feature named `f0`, which must be defined elsewhere. All parameters in the `anchoring` map work like their equivalent for primary features like `mcu`, so that `offset` is applied in the vector space of the anchor.
@@ -1060,8 +1060,8 @@ An example with two-dimensional offsets hugging one corner:
     offset: [1, 1]
   - alias: corner-back
     side: SE
-    offset: [-1, -1]```
-
+    offset: [-1, -1]
+```
 Grip anchor points are all empty by default. They can be occupied, and connected, using `tweaks`.
 
 ## Special section <a id="ports">`ports`</a>
