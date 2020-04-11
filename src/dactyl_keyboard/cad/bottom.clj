@@ -20,7 +20,7 @@
             [dactyl-keyboard.cad.tweak :as tweak]
             [dactyl-keyboard.cad.wrist :as wrist]
             [dactyl-keyboard.param.access
-             :refer [most-specific get-key-alias main-body-tweak-data]]))
+             :refer [most-specific main-body-tweak-data]]))
 
 
 ;;;;;;;;;;;

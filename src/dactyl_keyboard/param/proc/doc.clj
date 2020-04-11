@@ -5,7 +5,7 @@
 
 ;;; This file extracts built-in documentation from application parameters.
 
-(ns dactyl-keyboard.param.doc
+(ns dactyl-keyboard.param.proc.doc
   (:require [clojure.string :as string]
             [clojure.spec.alpha :as spec]
             [dactyl-keyboard.param.base :as base]

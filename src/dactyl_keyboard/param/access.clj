@@ -137,9 +137,6 @@
                        {:name name, :properties properties,
                         :predicate predicate}))))))
 
-(defn get-key-alias [getopt alias]
-  (resolve-anchor getopt alias #(= (:type %) :key)))
-
 (defn key-properties
   "The properties of a specific key, including derived data."
   [getopt cluster coord]

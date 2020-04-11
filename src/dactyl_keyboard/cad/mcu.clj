@@ -56,18 +56,6 @@
                                 (/ zₚ 2)))}
              plate-corners)}))
 
-(defn collect-grip-aliases
-  "Collect the names of MCU grip anchors. Expand 2D offsets to 3D."
-  [getopt]
-  (reduce
-    (fn [coll {:keys [side offset alias] :or {offset [0 0]}}]
-      (assoc coll alias
-        {:type :mcu-grip,
-         :side side,
-         :offset (subvec (conj offset 0) 0 3)}))
-    {}
-    (getopt :mcu :support :grip :anchors)))
-
 (defn pcba-model
   "A model of an MCU: PCB and integrated USB connector (if any). The
   orientation of the model is flat with the connector on top, facing “north”.

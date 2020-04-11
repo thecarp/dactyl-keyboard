@@ -20,11 +20,12 @@
             [dmote-keycap.data :as capdata]
             [dmote-keycap.measure :as measure]
             [dactyl-keyboard.cots :as cots]
-            [dactyl-keyboard.compass :as compass :refer [sharp-left sharp-right]]
+            [dactyl-keyboard.compass :as compass]
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.param.access
-             :refer [most-specific resolve-anchor key-properties]]))
+             :refer [most-specific resolve-anchor key-properties]]
+            [dactyl-keyboard.param.proc.anch :as anch]))
 
 
 ;;;;;;;;;;;;;;;
@@ -248,11 +249,12 @@
   "Combined [x y z] offset to the center of a vertical wall.
   Computed as the arithmetic average of its two corners."
   [getopt cluster coordinates direction]
-  (letfn [(c [turning-fn]
+  (let [c (fn [turning-fn]
             (wall-corner-offset getopt cluster coordinates
               {:side (compass/tuple-to-intermediate
-                         [direction (turning-fn direction)])}))]
-    (vec (map / (vec (map + (c sharp-left) (c sharp-right))) [2 2 2]))))
+                         [direction (turning-fn direction)])}))
+        pair (map + (c compass/sharp-left) (c compass/sharp-right))]
+    (vec (map / (vec pair) [2 2 2]))))
 
 (defn wall-edge-sequence
   "Corner posts for the upper or lower part of the edge of one case wall slab.
@@ -402,7 +404,7 @@
 (defn port-hole-size
   "Compute the size of a port hole."
   [getopt id]
-  {:pre [(= (getopt :derived :anchors id :type) :port-hole)]}
+  {:pre [(= (getopt :derived :anchors id ::anch/type) :port-hole)]}
   (let [type (getopt :ports id :type)
         [xₛ yₛ zₛ] (if (= type :custom)
                      (getopt :ports id :size)
@@ -413,7 +415,7 @@
 (defn port-holder-size
   "Compute the size of a port holder."
   [getopt id]
-  {:pre [(= (getopt :derived :anchors id :type) :port-hole)]}
+  {:pre [(= (getopt :derived :anchors id ::anch/type) :port-hole)]}
   (let [[[x _] [y _] z] (port-hole-size getopt id)
         t (getopt :ports id :holder :thickness)]
     [(+ x t t) (+ y t) (+ z t t)]))
@@ -462,7 +464,7 @@
   "Place passed object as the indicated port."
   [getopt id obj]
   {:pre [(keyword? id)
-         (= (getopt :derived :anchors id :type) :port-hole)]}
+         (= (getopt :derived :anchors id ::anch/type) :port-hole)]}
   (->> obj
     (flex/translate (port-alignment-offset getopt id))
     (flex/rotate (getopt :ports id :intrinsic-rotation))
@@ -551,9 +553,9 @@
 ;; Polymorphic treatment of the properties of aliases.
 ;; The by-type multimethod dispatches placement of features in relation to
 ;; other features, on the basis of properties associated with each alias,
-;; starting with its :type.
+;; starting with its ::anch/type.
 
-(defmulti by-type (fn [_ {:keys [type]}] type))
+(defmulti by-type (fn [_ properties] (::anch/type properties)))
 
 (defmethod by-type :origin
   [_ {:keys [initial]}]

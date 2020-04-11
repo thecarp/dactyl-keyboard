@@ -124,18 +124,6 @@
 ;; Ports ;;
 ;;;;;;;;;;;
 
-(defn collect-port-aliases
-  "The ID of each port automatically doubles as an alias for the negative
-  space of that port. The holder around it gets its own alias, with an
-  annotation for tracing it to its parent port."
-  [getopt]
-  (apply merge
-    (map
-      (fn [k]
-        {k                                {:type :port-hole}
-         (getopt :ports k :holder :alias) {:type :port-holder, :parent k}})
-      (keys (getopt :ports)))))
-
 (defn port-hole
   "Negative space for one port, in place.
   The upper middle edge of the face of the port is placed at the origin

@@ -41,21 +41,6 @@
   [getopt & keys]
   (apply (partial getopt :key-clusters :derived :by-cluster) keys))
 
-(defn resolve-flex
-  "Resolve supported keywords in a coordinate pair to names.
-  This allows for integers as well as the keywords :first and :last, meaning
-  first and last in the column or row. Columns have priority."
-  [getopt cluster [c0 r0]]
-  (let [columns (derived getopt cluster :column-range)
-        c1 (case c0 :first (first columns) :last (last columns) c0)
-        rows (derived getopt cluster :row-indices-by-column c1)]
-   [c1 (case r0 :first (first rows) :last (last rows) r0)]))
-
-(defn match-flex
-  "Check whether coordinate pairs are the same, with keyword support."
-  [getopt cluster & coords]
-  (apply = (map (partial resolve-flex getopt cluster) coords)))
-
 (defn chart-cluster
   "Derive some properties about a key cluster from raw configuration info."
   [cluster getopt]
@@ -132,22 +117,6 @@
   [getopt]
   (let [by-cluster (fn [coll key] (assoc coll key (chart-cluster key getopt)))]
    {:by-cluster (reduce by-cluster {} (all-clusters getopt))}))
-
-(defn collect-key-aliases
-  "Unify cluster-specific key aliases into a single global map that preserves
-  their cluster of origin and resolves symbolic coordinates to absolute values."
-  [getopt]
-  (into {}
-    (mapcat
-      (fn [cluster]
-        (into {}
-          (map
-            (fn [[alias flex]]
-              [alias {:type :key
-                      :cluster cluster
-                      :coordinates (resolve-flex getopt cluster flex)}]))
-          (getopt :key-clusters cluster :aliases)))
-      (all-clusters getopt))))
 
 (defn print-matrix
   "Print a schematic picture of a key cluster. For your REPL."

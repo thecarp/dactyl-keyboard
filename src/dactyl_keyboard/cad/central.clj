@@ -129,19 +129,6 @@
            (model/translate [0 0 (/ z-hole 8)]
              (model/cylinder (/ width 2) (/ z-hole 3)))))])))
 
-(defn- collect-point-pair
-  "Collect any aliases noted in the user configuration for one item in the
-  interface array. Data about the item is expected to have been enriched by
-  the cross-index function for this purpose."
-  [source-index item]
-  (let [props {:type :central-housing, :index source-index}
-        pluck (fn [path part extra]
-                (when-let [alias (get-in item path)]
-                  [alias (merge props {:part part} extra)]))]
-    [(pluck [:base :right-hand-alias] :gabel {:side :right})
-     (pluck [:base :left-hand-alias] :gabel {:side :left})
-     (pluck [:adapter :alias] :adapter {})]))
-
 (defn- get-offsets
   "Get raw offsets for each point on the interface."
   [interface]
@@ -265,7 +252,7 @@
      :include-lip (and adapter
                        (getopt :case :central-housing :adapter :lip :include))}))
 
-(defn- categorize-explicitly
+(defn categorize-explicitly
   "Annotate an interface item with explicit category tags.
   Some of these may replace sparser tagging from the user configuration."
   [item]
@@ -277,15 +264,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Configuration Interface ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn collect-point-aliases
-  "A map of aliases to corresponding indices in the interface array."
-  [getopt]
-  (->> (getopt :case :central-housing :shape :interface)
-    (map categorize-explicitly)
-    (map-indexed collect-point-pair)
-    (apply concat)
-    (into {})))
 
 (defn derive-properties
   "Derive certain properties from the base configuration."

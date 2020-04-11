@@ -17,7 +17,8 @@
             [dactyl-keyboard.misc :refer [output-directory soft-merge]]
             [dactyl-keyboard.sandbox :as sandbox]
             [dactyl-keyboard.param.access :as access]
-            [dactyl-keyboard.param.doc :refer [print-markdown-section]]
+            [dactyl-keyboard.param.proc.doc :refer [print-markdown-section]]
+            [dactyl-keyboard.param.proc.anch :as anch]
             [dactyl-keyboard.cad.auxf :as auxf]
             [dactyl-keyboard.cad.body :as body]
             [dactyl-keyboard.cad.bottom :as bottom]
@@ -255,41 +256,14 @@
       (when (= (getopt :wrist-rest :style) :solid)
         (tweak/all-main-body getopt)))))
 
-(defn- collect-anchors
-  "Gather names and properties for the placement of keyboard features relative
-  to one another."
-  [getopt]
-  {:anchors (merge {:origin {:type :origin}
-                    :rear-housing {:type :rear-housing}
-                    (getopt :mcu :support :lock :plate :alias)
-                    {:type :mcu-lock-plate}}
-                   (key/collect-key-aliases getopt)
-                   (auxf/collect-port-aliases getopt)
-                   (central/collect-point-aliases getopt)
-                   (mcu/collect-grip-aliases getopt)
-                   (wrist/collect-point-aliases getopt)
-                   (wrist/collect-block-aliases getopt)
-                   (into {}
-                     (for [[k v] (getopt :secondaries)]
-                       [k {:type :secondary
-                           :position
-                             ;; Provide defaults absent in initial parser.
-                             ;; TODO: Add to parser without requiring a
-                             ;; side or segment.
-                             (soft-merge
-                               {:anchoring {:anchor :origin}
-                                :override [nil nil nil]
-                                :translation [0 0 0]}
-                               v)}])))})
-
 (def derivers-static
   "A vector of configuration locations and functions for expanding them."
   ;; Mind the order. One of these may depend upon earlier steps.
   [[[:dfm] (fn [getopt] {:compensator (error-fn (getopt :dfm :error-general))})]
    [[:keys] key/derive-style-properties]
    [[:key-clusters] key/derive-cluster-properties]
-   [[] collect-anchors]
    [[:case :central-housing] central/derive-properties]
+   [[] (fn [getopt] {:anchors (anch/collect getopt)})]
    [[:case :rear-housing] body/rhousing-properties]
    [[:mcu] mcu/derive-properties]
    [[:wrist-rest] wrist/derive-properties]])

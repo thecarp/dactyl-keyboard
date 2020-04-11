@@ -268,46 +268,10 @@
     (model/translate [0 0 (/ height 2)]
       (model/cylinder (/ (getopt :wrist-rest :sprues :diameter) 2) height))))
 
-(defn- get-block-alias
-  [getopt mount-index]
-  (reduce
-    (fn [coll [alias side-key]]
-      (merge coll
-        {alias {:type :wr-block
-                :mount-index mount-index
-                :side-key side-key}}))
-    {}
-    (getopt :wrist-rest :mounts mount-index :blocks :aliases)))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Configuration Interface ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-(defn collect-point-aliases
-  "Collect naïve coordinates of named main points. These coordinates will
-  require mapping onto the splined outline later. This is an awkward
-  consequence of aliases being collected before wrist-rest properties are
-  derived, and of indices changing with the actual spline operation."
-  [getopt]
-  (reduce
-    (fn [coll point-properties]
-      (if-let [alias (:alias point-properties)]
-        (merge coll
-          {alias {:type :wr-perimeter
-                  :coordinates (:position point-properties)}})
-        coll))
-    {}
-    (getopt :wrist-rest :shape :spline :main-points)))
-
-(defn collect-block-aliases
-  [getopt]
-  (reduce
-    (fn [coll mount-index]
-      (merge coll (get-block-alias getopt mount-index)))
-    {}
-    (range (count (getopt :wrist-rest :mounts)))))
 
 (defn derive-properties
   "Derive certain properties from the base configuration.
