@@ -18,7 +18,7 @@ Notice ports attached directly to microcontroller boards are treated in the `mcu
 
 ## Table of contents
 - Parameter <a href="#user-content-include">`include`</a>
-- Parameter <a href="#user-content-port-type">`port-type`</a>
+- Parameter <a href="#user-content-type">`type`</a>
 - Parameter <a href="#user-content-size">`size`</a>
 - Section <a href="#user-content-alignment">`alignment`</a>
     - Parameter <a href="#user-content-alignment-segment">`segment`</a>
@@ -38,7 +38,7 @@ Notice ports attached directly to microcontroller boards are treated in the `mcu
 
 If `true`, include the port. The main use of this option is for disabling ports defined in other configuration files. The default value is `false` for consistency with other inclusion parameters.
 
-## Parameter <a id="port-type">`port-type`</a>
+## Parameter <a id="type">`type`</a>
 
 A code identifying a common type of port. The following values are recognized.
 

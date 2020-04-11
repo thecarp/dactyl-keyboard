@@ -403,10 +403,10 @@
   "Compute the size of a port hole."
   [getopt id]
   {:pre [(= (getopt :derived :anchors id :type) :port-hole)]}
-  (let [port-type (getopt :ports id :port-type)
-        [xₛ yₛ zₛ] (if (= port-type :custom)
+  (let [type (getopt :ports id :type)
+        [xₛ yₛ zₛ] (if (= type :custom)
                      (getopt :ports id :size)
-                     (misc/map-to-3d-vec (port-type cots/port-facts)))
+                     (misc/map-to-3d-vec (type cots/port-facts)))
         [xᵢ yᵢ] (map (getopt :dfm :derived :compensator) [xₛ yₛ])]
     [[xₛ xᵢ] [yₛ yᵢ] zₛ]))
 

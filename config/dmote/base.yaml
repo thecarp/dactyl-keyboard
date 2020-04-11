@@ -767,7 +767,7 @@ ports:
   # or bar that sits atop the rear housings.
   reflection-port:
     include: true
-    port-type: modular-4p4c-616e
+    type: modular-4p4c-616e
     intrinsic-rotation: [0, 0, -1.5708]
     position:
       anchor: rear-housing

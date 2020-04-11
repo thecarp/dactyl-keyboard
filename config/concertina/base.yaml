@@ -754,7 +754,7 @@ mcu:
 ports:
   external-usb:
     include: true
-    port-type: usb-full-2b
+    type: usb-full-2b
     position:
       anchor: ci-far-base
       offset: [-20, 0, 25]

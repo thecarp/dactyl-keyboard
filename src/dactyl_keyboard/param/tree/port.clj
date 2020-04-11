@@ -45,7 +45,7 @@
     "disabling ports defined in other configuration files. "
     "The default value is `false` for consistency with other inclusion "
     "parameters."]
-   [:parameter [:port-type]
+   [:parameter [:type]
     {:default :custom :parse-fn keyword
      :validate [(set (conj (keys cots/port-facts) :custom))]}
     "A code identifying a common type of port. "
