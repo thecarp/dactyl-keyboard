@@ -145,32 +145,50 @@
        :alias keyword})))
 
 (defn case-tweak-position
-  "Parse notation for a tweak position.
-  This is normally a range of wall segments off a specific key corner, but
-  anything down to a single alias without further specification is allowed."
-  ([alias]
-   [(keyword alias) nil 0 0])
-  ([alias side]
-   (case-tweak-position alias side 0 0))  ; Default to segment 0.
-  ([alias side segment]
-   (case-tweak-position alias side segment segment))
-  ([alias side s0 s1]
-   [(keyword alias) (keyword side) (int s0) (int s1)]))
+  "Parse notation for a tweak position. This is a highly permissive parser.
+  The base case is one anchor, typically a key alias, with ordinary specifiers
+  for a side and vertical segment off that anchor. However, the parser also
+  accepts a second segment ID to form a sweep across a range of segments, and
+  in place of any or all positional arguments after the first (typically coming
+  in last), the parser takes a map of extras that may overlap the meaning
+  of the positional arguments.
+  Return a map."
+  ([anchor]
+   (case-tweak-position anchor nil))
+  ([anchor side]
+   (case-tweak-position anchor side nil nil))
+  ([anchor side segment]
+   (case-tweak-position anchor side segment segment))
+  ([anchor side first-segment last-segment]
+   (case-tweak-position anchor side first-segment last-segment {}))
+  ([anchor side first-segment last-segment options]
+   {:pre [(map? options)]}
+   (reduce
+     (fn [coll [item path parser]]
+       (cond
+         (map? item) (merge item coll)
+         (some? item) (assoc-in coll path (parser item))
+         :else coll))
+     (merge {:anchoring {:anchor :origin}, :sweep nil} options)
+     [[anchor [:anchoring :anchor] keyword]
+      [side [:anchoring :side] keyword]
+      [first-segment [:anchoring :segment] int]
+      [last-segment [:sweep] int]])))
 
-(defn case-tweaks [candidate]
+(defn case-tweaks
   "Parse a tweak. This can be a lazy sequence describing a single
   point, a lazy sequence of such sequences, or a map. If it is a
   map, it may contain a similar nested structure."
-  (if (string? (first candidate))
-    (apply case-tweak-position candidate)
-    (if (map? candidate)
-      ((map-like {:chunk-size int
-                  :at-ground boolean
-                  :above-ground boolean
-                  :highlight boolean
-                  :hull-around case-tweaks})
-       candidate)
-      (map case-tweaks candidate))))
+  [candidate]
+  (cond
+    (string? (first candidate)) (apply case-tweak-position candidate)
+    (map? candidate) ((map-like {:chunk-size int
+                                 :at-ground boolean
+                                 :above-ground boolean
+                                 :highlight boolean
+                                 :hull-around case-tweaks})
+                      candidate)
+    :else (map case-tweaks candidate)))
 
 (def case-tweak-map
   "A parser of a map of names to tweaks."
@@ -206,6 +224,7 @@
                             #(not (= :origin %))
                             #(not (= :rear-housing %))))
 (spec/def ::segment (spec/int-in 0 5))
+(spec/def ::sweep (spec/nilable ::segment))
 (spec/def ::thickness (spec/and number? (complement neg?)))
 (spec/def ::highlight boolean?)
 (spec/def ::at-ground boolean?)
@@ -298,7 +317,15 @@
 (spec/def ::wall-segment ::segment)
 (spec/def ::wall-extent (spec/or :partial ::wall-segment :full #{:full}))
 (spec/def ::tweak-plate-leaf
-  (spec/tuple keyword? (spec/nilable :flexible/side) ::wall-segment ::wall-segment))
+  (spec/and
+    (spec/keys :req-un [::anchoring ::sweep])
+    ;; Require a start to a sweep
+    (fn [{:keys [anchoring sweep]}] (if (some? sweep)
+                                        (some? (:segment anchoring))
+                                        true))
+    ;; Make sure the sweep does not end before it starts.
+    (fn [{:keys [anchoring sweep]}] (<= (get anchoring :segment 0)
+                                        (or sweep 5)))))
 (spec/def ::foot-plate-polygons (spec/coll-of ::foot-plate))
 
 (spec/def ::descriptor  ; Parameter metadata descriptor.

@@ -10,6 +10,7 @@
             [scad-klupe.iso :refer [nut]]
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.cad.place :as place]
+            [dactyl-keyboard.param.access :refer [resolve-anchor]]
             [dactyl-keyboard.param.proc.anch :as anch]))
 
 
@@ -145,10 +146,11 @@
   "Positive space for one port, in place.
   Take the ID of the port, not the holder."
   [getopt id]
-  {:pre [(keyword? id)]}
+  {:pre [(keyword? id)
+         (= (getopt :derived :anchors id ::anch/type) :port-hole)]}
   (let [[x y z] (place/port-holder-size getopt id)]
     (maybe/translate
-      (place/port-holder-offset getopt {::anch/primary id})
+      (place/port-holder-offset getopt {:anchor id})
       (model/cube x y z))))
 
 (defn port-tweak-post

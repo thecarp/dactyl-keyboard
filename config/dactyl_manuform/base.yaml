@@ -276,36 +276,36 @@ case:
     webbing:
       - chunk-size: 3
         hull-around:  # Between the two thumb clusters.
-        - [thumb-tl, WNW]
-        - [thumb-ml, ENE]
-        - [thumb-tl, WSW]
-        - [thumb-ml, ESE]
-        - [thumb-tl, SSE]
-        - [thumb-mr, ENE]
-        - [thumb-tr, SSW]
-        - [thumb-mr, SSE]
-        - [thumb-tr, SSE]
+        - [thumb-tl, WNW, 0]
+        - [thumb-ml, ENE, 0]
+        - [thumb-tl, WSW, 0]
+        - [thumb-ml, ESE, 0]
+        - [thumb-tl, SSE, 0]
+        - [thumb-mr, ENE, 0]
+        - [thumb-tr, SSW, 0]
+        - [thumb-mr, SSE, 0]
+        - [thumb-tr, SSE, 0]
       - chunk-size: 3
         hull-around:  # Between thumb0 and the main cluster.
-        - [thumb-tl, NNW]
-        - [m00, SSW]
-        - [thumb-tl, NNE]
-        - [m00, SSE]
-        - [thumb-tr, NNW]
-        - [m01, SSW]
-        - [thumb-tr, NNE]
+        - [thumb-tl, NNW, 0]
+        - [m00, SSW, 0]
+        - [thumb-tl, NNE, 0]
+        - [m00, SSE, 0]
+        - [thumb-tr, NNW, 0]
+        - [m01, SSW, 0]
+        - [thumb-tr, NNE, 0]
         - hull-around:
-          - [m01, SSE]
-          - [m02, WNW]
-        - [thumb-tr, ENE]
+          - [m01, SSE, 0]
+          - [m02, WNW, 0]
+        - [thumb-tr, ENE, 0]
         - hull-around:
-          - [m02, WNW]
-          - [m02, WSW]
-        - [thumb-tr, ESE]
-        - [m02, SSW]
+          - [m02, WNW, 0]
+          - [m02, WSW, 0]
+        - [thumb-tr, ESE, 0]
+        - [m02, SSW, 0]
         - hull-around:
-          - [m02, SSE]
-          - [m03, WSW]
+          - [m02, SSE, 0]
+          - [m03, WSW, 0]
     to-floor:
       - at-ground: true
         hull-around:
@@ -345,7 +345,7 @@ case:
         hull-around:
         - [m00, WSW, 0, 2]
         - [m00, WSW, 3, 4]
-        - [thumb-tl, WNW]
+        - [thumb-tl, WNW, 0]
         - [thumb-ml, NNE, 0, 4]
       - chunk-size: 2
         hull-around:

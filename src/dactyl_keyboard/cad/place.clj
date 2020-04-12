@@ -327,8 +327,9 @@
   ;; complex central-housing adapters and wall tweaks. Custom offsets and
   ;; angles may need to be added to the parameter set.
   [getopt {:keys [starting-point direction-point lateral-offset radial-offset]} subject]
-  (let [pred (fn [{:keys [type part]}] (and (= type :central-housing)
-                                            (= part :gabel)))
+  (let [pred (fn [feature]
+               (and (= (::anch/type feature) :central-housing)
+                    (= (:part feature) :gabel)))
         anchor (resolve-anchor getopt starting-point pred)
         starting-coord (vec3 (reckon-from-anchor getopt starting-point {}))
         target-coord (chousing-fastener-landmark
@@ -413,7 +414,8 @@
     [[xₛ xᵢ] [yₛ yᵢ] zₛ]))
 
 (defn port-holder-size
-  "Compute the size of a port holder."
+  "Compute the size of a port holder.
+  Take the ID of the port, not the holder."
   [getopt id]
   {:pre [(= (getopt :derived :anchors id ::anch/type) :port-hole)]}
   (let [[[x _] [y _] z] (port-hole-size getopt id)
@@ -447,15 +449,16 @@
   This is designed to hit inside the wall, not at a corner,
   on the assumption that a tweak post with the thickness of the
   wall is being placed."
-  [getopt {:keys [side segment offset] ::anch/keys [primary]
+  [getopt {:keys [anchor side segment offset]
            :or {segment 1, offset [0 0 0]}}]
-  {:pre [(keyword? primary)]}
+  {:pre [(keyword? anchor)
+         (= (getopt :derived :anchors anchor ::anch/type) :port-hole)]}
   (when-not (#{0 1 2} segment)
     (throw (ex-info "Invalid segment ID specified for port holder."
               {:configured-segment segment
                :available-segments #{0 1 2}})))
-  (let [t (getopt :ports primary :holder :thickness)
-        [x y z] (port-holder-size getopt primary)]
+  (let [t (getopt :ports anchor :holder :thickness)
+        [x y z] (port-holder-size getopt anchor)]
     (mapv + (cube-corner-xyz side segment [x y z] t)
             [0 (/ t -2) 0]
             offset)))

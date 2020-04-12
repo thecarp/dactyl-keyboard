@@ -18,25 +18,56 @@
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.key :as key]
+            [dactyl-keyboard.param.schema :as schema]
             [dactyl-keyboard.param.access :refer [resolve-anchor
                                                   main-body-tweak-data
                                                   central-tweak-data]]
             [dactyl-keyboard.param.proc.anch :as anch]))
 
 
-;;;;;;;;;;
-;; Main ;;
-;;;;;;;;;;
+;;;;;;;;;;;;;
+;; General ;;
+;;;;;;;;;;;;;
+
+(defn- classify-node [node]
+  (cond
+    (spec/valid? ::schema/tweak-plate-map node) ::branch
+    (spec/valid? ::schema/tweak-plate-leaf node) ::leaf
+    :else (throw (ex-info "Unclassifiable tweak node."
+                   {:node node}))))
+
+(defn- segment-range
+  [{:keys [anchoring sweep]}]
+  {:pre [sweep (:segment anchoring)]}
+  (range (:segment anchoring) (inc sweep)))
+
+(defn- single-step-node
+  "Simplify a leaf node to cover one part of a sweep."
+  [node segment]
+  (-> node (assoc :sweep nil) (assoc-in [:anchoring :segment] segment)))
+
+(defn- splay
+  "Represent one leaf node as a list of one or more non-sweeping nodes."
+  [{:keys [sweep] :as node}]
+  (if sweep
+    (map (partial single-step-node node) (segment-range node))
+    [node]))
 
 
-(defn- select-post
+;;;;;;;;
+;; 3D ;;
+;;;;;;;;
+
+(defn- pick-3d-shape
   "Pick the model for a tweak. Return a tuple of that model and an indicator
   for whether the model is already in place. Positioning depends both on the
   type of anchor and secondary parameters about the target detail upon it.
   By default, use the most specific dimensions available for the post,
   defaulting to a post for key-cluster webbing."
-  [getopt {:keys [anchor side segment offset] :as opts}]
-  (let [{::anch/keys [type primary]} (resolve-anchor getopt anchor)]
+  [getopt {:keys [anchoring] :as node}]
+  {:pre [(spec/valid? ::schema/tweak-plate-leaf node)]}
+  (let [{:keys [anchor side segment offset]} anchoring
+        {::anch/keys [type primary]} (resolve-anchor getopt anchor)]
     (case type
       :central-housing
         [true
@@ -58,7 +89,7 @@
         [true
          (place/port-place getopt anchor
            (if (or side segment offset)
-             (maybe/translate (place/port-hole-offset getopt opts)
+             (maybe/translate (place/port-hole-offset getopt anchoring)
                (misc/nodule))
              (auxf/port-hole getopt anchor)))]
       :port-holder
@@ -66,51 +97,47 @@
          (place/port-place getopt primary
            (if (or side segment offset)
              (maybe/translate (place/port-holder-offset getopt
-                                (assoc opts ::anch/primary primary))
+                                (assoc anchoring ::anch/primary primary))
                (auxf/port-tweak-post getopt primary))
-             (auxf/port-holder getopt anchor)))]
+             (auxf/port-holder getopt primary)))]
       [false (key/web-post getopt)])))
 
-(defn- single-post
+(defn- leaf-blade-3d
   "One model at one vertical segment of one feature."
-  [getopt {:keys [anchor] :as opts}]
-  (let [[placed post] (select-post getopt opts)]
+  [getopt {:keys [anchoring] :as node}]
+  {:pre [(spec/valid? ::schema/tweak-plate-leaf node)]}
+  (let [[placed item] (pick-3d-shape getopt node)]
     (if placed
-      post
-      (place/reckon-from-anchor getopt anchor (assoc opts :subject post)))))
+      item
+      (place/reckon-with-anchor getopt (assoc anchoring :subject item)))))
 
-(defn- posts
-  "(The hull of) one or more models of one type on one side."
-  [getopt anchor side first-segment last-segment]
-  (if (= first-segment last-segment)
-    (single-post getopt {:anchor anchor, :side side, :segment first-segment})
-    (apply model/hull (map #(posts getopt anchor side %1 %1)
-                           (range first-segment (inc last-segment))))))
+(defn- model-leaf-3d
+  "(The hull of) one or more models of one type on one side, in place, in 3D."
+  [getopt node]
+  (apply maybe/hull (map (partial leaf-blade-3d getopt) (splay node))))
 
 (declare plating)
 
-(defn- tweak-map
-  "Treat a map-type node in the configuration."
-  [getopt node]
-  (let [parts (get node :chunk-size)
-        at-ground (get node :at-ground false)
-        prefix (if (get node :highlight) model/-# identity)
-        shapes (reduce (partial plating getopt) [] (:hull-around node))
+(defn- model-branch-3d
+  [getopt {:keys [at-ground above-ground hull-around chunk-size highlight]
+           :or {above-ground true}}]
+  (let [prefix (if highlight model/-# identity)
+        shapes (reduce (partial plating getopt) [] hull-around)
         hull (if at-ground misc/bottom-hull model/hull)]
-    (when (get node :above-ground true)
+    (when above-ground
       (prefix
-        (apply (if parts model/union hull)
-          (if parts
-            (map (partial apply hull) (partition parts 1 shapes))
+        (apply (if chunk-size model/union hull)
+          (if chunk-size
+            (map (partial apply hull) (partition chunk-size 1 shapes))
             shapes))))))
 
 (defn- plating
   "A reducer."
   [getopt coll node]
   (conj coll
-    (if (map? node)
-      (tweak-map getopt node)
-      (apply (partial posts getopt) node))))
+    (case (classify-node node)
+      ::branch (model-branch-3d getopt node)
+      ::leaf (model-leaf-3d getopt node))))
 
 (defn- union
   [getopt data-fn]
@@ -123,34 +150,28 @@
 (defn all-central-housing [getopt] (union getopt central-tweak-data))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Projections to the Floor ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-(defn- floor-vertex
-  "A corner vertex on a tweak wall, extending from a key mount."
-  [getopt segment-picker bottom [alias side first-segment last-segment]]
-  {:post [(spec/valid? ::tarmi-core/point-2d %)]}
-  (let [segment (segment-picker (range first-segment (inc last-segment)))]
-    (take 2 (place/reckon-from-anchor getopt alias
-              {:side side, :segment segment, :bottom bottom}))))
-
-(defn- dig-to-seq [node]
-  (if (map? node) (dig-to-seq (:hull-around node)) node))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 2D: Projections to the Floor ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn- floor-pairs
-  "Produce coordinate pairs for a polygon. A reducer."
+  "Produce coordinate pairs for a polygon. A reducer.
+  Pick just one leaf in a branch node, and just one post in a leaf, on the
+  assumption that they’re not all ringing the case."
   [getopt [post-picker segment-picker bottom] coll node]
-  {:post [(spec/valid? ::tarmi-core/point-coll-2d %)]}
-  (let [vertex-fn (partial floor-vertex getopt segment-picker bottom)]
-    (conj coll
-      (if (map? node)
-        ;; Pick just one post in the subordinate node, on the assumption that
-        ;; they’re not all ringing the case.
-        (vertex-fn (post-picker (dig-to-seq node)))
-        ;; Node is one post at the top level. Always use that.
-        (vertex-fn node)))))
+  {:pre [(spec/valid? ::schema/tweak-plate-leaf node)]
+   :post [(spec/valid? ::tarmi-core/point-coll-2d %)]}
+  (conj coll
+    (as-> (case (classify-node node)
+            ::branch (post-picker (:hull-around node))
+            ::leaf node)
+          point
+      (splay point)
+      (segment-picker point)  ; A single- or no-segment leaf.
+      (:anchoring point)
+      (assoc point :bottom bottom)  ; Metadata for placement.
+      (place/reckon-with-anchor getopt point)
+      (take 2 point))))  ; [x y] coordinates.
 
 (defn- plate-polygon
   "A single version of the footprint of a tweak.
@@ -158,8 +179,7 @@
   because they wouldn’t have any area."
   [getopt pickers node-list]
   (let [points (reduce (partial floor-pairs getopt pickers) [] node-list)]
-    (when (> (count points) 2)
-      (model/polygon points))))
+    (when (> (count points) 2) (model/polygon points))))
 
 (defn- plate-shadows
   "Versions of a tweak footprint.
@@ -175,6 +195,7 @@
 (defn all-shadows
   "The footprint of all user-requested additional shapes that go to the floor."
   [getopt]
-  (apply maybe/union (map #(plate-shadows getopt (:hull-around %))
-                          (filter :at-ground (main-body-tweak-data getopt)))))
+  (apply maybe/union
+    (map #(plate-shadows getopt (:hull-around %))
+         (filter :at-ground (main-body-tweak-data getopt)))))
 

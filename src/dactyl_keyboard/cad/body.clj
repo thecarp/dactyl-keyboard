@@ -238,11 +238,12 @@
   bottom plate in 2D and placement functions for building the case walls in
   3D. Because they’re specialized, the ultimate return values are disturbingly
   different."
+  ;; TODO: Refactor this along the lines of the central housing.
   [getopt]
   (let [cluster (getopt :case :rear-housing :position :cluster)
         cluster-pillar
           (fn [cardinal rhousing-turning-fn cluster-turning-fn]
-            ;; Make a function for a part of the cluster wall.
+            ;; Make a function for a part of the key cluster wall.
             (fn [reckon upper]
               (let [coord (getopt :case :rear-housing :derived :end-coord cardinal)
                     subject (if reckon [0 0 0] (key/web-post getopt))
@@ -253,26 +254,25 @@
                   (place/wall-edge-sequence getopt cluster upper
                     [coord cardinal rhousing-turning-fn] subject)))))
         rhousing-pillar
-          (fn [opposite side]
+          (fn [side]
             ;; Make a function for a part of the rear housing.
             ;; For reckoning, return a 3D coordinate vector.
             ;; For building, return a hull of housing cubes.
             {:pre [(compass/intermediates side)]}
             (fn [reckon upper]
               (let [subject (if reckon
-                              (place/rhousing-vertex-offset getopt
-                                (if opposite (compass/reverse side) side))
+                              (place/rhousing-vertex-offset getopt side)
                               (rhousing-post getopt))]
                 (apply (if reckon mean model/hull)
                   (map #(place/rhousing-place getopt side % subject)
                        (if upper [0 1] [1]))))))]
     [(cluster-pillar :W sharp-right sharp-left)
-     (rhousing-pillar true :WSW)
-     (rhousing-pillar false :WNW)
-     (rhousing-pillar false :NNW)
-     (rhousing-pillar false :NNE)
-     (rhousing-pillar false :ENE)
-     (rhousing-pillar true :ESE)
+     (rhousing-pillar :WSW)
+     (rhousing-pillar :WNW)
+     (rhousing-pillar :NNW)
+     (rhousing-pillar :NNE)
+     (rhousing-pillar :ENE)
+     (rhousing-pillar :ESE)
      (cluster-pillar :E sharp-left sharp-right)]))
 
 (defn- rhousing-wall-shape-level
@@ -362,8 +362,8 @@
   (let [prop (partial getopt :case :rear-housing :fasteners)
         pair (fn [function]
                (model/union
-                 (if (prop :west :include) (function getopt :W))
-                 (if (prop :east :include) (function getopt :E))))]
+                 (when (prop :west :include) (function getopt :W))
+                 (when (prop :east :include) (function getopt :E))))]
    (model/difference
      (model/union
        (rhousing-roof getopt)

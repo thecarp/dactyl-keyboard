@@ -782,20 +782,21 @@ The distance between LEDs on the strip. You may want to apply a setting slightly
 
 Additional shapes. This is usually needed to bridge gaps between the walls of the key clusters. The expected value here is an arbitrarily nested structure starting with a map of names to lists.
 
-The names at the top level are arbitrary but should be distinct and descriptive. Their only technical significance lies in the fact that when you combine multiple configuration files, a later tweak will override a previous tweak if and only if they share the same name.
+The names at the top level are arbitrary but should be distinct and descriptive. They cannot serve as anchors. Their only technical significance lies in the fact that when you combine multiple configuration files, a later tweak will override a previous tweak if and only if they share the same name.
 
 Below the names, each item in each list can follow one of the following patterns:
 
-- A leaf node. This is a tuple of 1 to 4 elements specified below.
+- A leaf node. This is a list 1 to 5 elements specified below.
 - A map, representing an instruction to combine nested items in a specific way.
 - A list of any combination of the other two types. This type exists at the second level from the top and as the immediate child of each map node.
 
-Each leaf node identifies a particular named feature of the keyboard. It’s usually a set of corner posts on a named (aliased) key mount. These are identical to the posts used to build the walls, but this section gives you greater freedom in how to combine them. The elements of a leaf are, in order:
+Each leaf node identifies a particular named feature of the keyboard and places a cuboid shape there. The elements of a leaf are, in order:
 
-1. Mandatory: The name of a feature, such as a key by its `alias`.
-2. Optional: A compass point, such as `SW` for south-west or `NNE` for north by north-east. If this is omitted, i.e. if only the mandatory element is given, the tweak will use the middle of the named feature.
-3. Optional: A starting wall segment ID, which is an integer from 0 to at most 4 inclusive (2 is the maximum for an MCU lock plate, 4 for a key mount). If this is omitted, but a side is named, the default value is 0.
-4. Optional: A second wall segment ID. If this is provided, the leaf will represent the convex hull of the two indicated segments plus all segments between them. If this is omitted, only one wall post will be placed.
+1. Mandatory: An anchor. This is the name of a feature, such as a key by its `alias`.
+2. Optional: A compass point code, such as `SW` for south-west or `NNE` for north by north-east, identifying a side of the anchor. There is no default value. If this code is omitted, i.e. if only the mandatory element is given, the tweak will use the middle of the named feature.
+3. Optional: A starting vertical segment ID, which is an integer from 0 up to a maximum number that varies with the type of the anchor. Again there is no default.
+4. Optional: A stopping wall segment ID. If this is provided, it must be at least as great as the starting segment ID, in which case the leaf will represent the convex hull of the two indicated segments plus all segments between them, off the same anchor.
+5. Optional: A map of additional settings.
 
 By default, a map node will create a convex hull around its child nodes. However, this behaviour can be modified. The following keys are recognized:
 
@@ -812,8 +813,8 @@ In the following example, `A` and `B` are key aliases that would be defined else
     bridge-between-A-and-B:
       - chunk-size: 2
         hull-around:
-        - [A, SSE]
-        - [B, NNE]
+        - [A, SSE, 0]
+        - [B, NNE, 0]
         - [A, SSW, 0, 4]
 ```
 
