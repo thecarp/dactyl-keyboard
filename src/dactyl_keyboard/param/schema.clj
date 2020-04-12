@@ -261,7 +261,9 @@
 (spec/def :numeric/direction number?)
 (spec/def :intercardinal/side compass/intercardinals)
 (spec/def :intermediate/side compass/intermediates)
-(spec/def :flexible/side compass/noncardinals)
+;; TODO: Make sure the various placement functions affected by flexible/side
+;; can actually take all directions, by lossy approximation where necessary.
+(spec/def :flexible/side compass/all-short)
 (spec/def :two/offset ::tarmi/point-2d)
 (spec/def :three/offset ::tarmi/point-3d)
 (spec/def :three/override (spec/coll-of (spec/nilable number?) :count 3))

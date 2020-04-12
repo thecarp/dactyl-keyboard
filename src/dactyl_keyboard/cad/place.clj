@@ -37,9 +37,7 @@
 (defn- grid-factors
   "Find a pair of [x y] unit particles for movement on a grid."
   [direction]
-  (if (nil? direction)
-    [0 0]
-    (compass/to-grid (compass/convert-to-cardinal direction))))
+  (if (nil? direction) [0 0] (compass/to-grid direction)))
 
 (defn- *xy
   "Produce a vector for moving something laterally on a grid."
@@ -641,12 +639,17 @@
       initial)))
 
 (defmethod by-type :port-hole
-  [getopt {:keys [anchor initial]}]
-  (port-place getopt anchor initial))
+  [getopt {:keys [anchor initial] :as opts}]
+  (->> initial
+    (flex/translate (port-hole-offset getopt opts))
+    (port-place getopt anchor)))
+
 
 (defmethod by-type :port-holder
-  [getopt {:keys [initial] ::anch/keys [primary]}]
-  (port-place getopt primary initial))
+  [getopt {:keys [initial] ::anch/keys [primary] :as opts}]
+  (->> initial
+    (flex/translate (port-holder-offset getopt (assoc opts :anchor primary)))
+    (port-place getopt primary)))
 
 (defmethod by-type :secondary
   [getopt {:keys [initial] ::anch/keys [primary]}]

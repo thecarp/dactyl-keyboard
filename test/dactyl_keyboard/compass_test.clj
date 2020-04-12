@@ -28,3 +28,12 @@
     (is (= (compass/sharp-left :N) :W))
     (is (= (compass/sharp-left :NE) :NW))
     (is (= (compass/sharp-left :NNE) :WNW))))
+
+(deftest to-grid
+  (testing "cardinal"
+    (is (= (compass/to-grid :N) [0 1])))
+  (testing "intercardinal"
+    (is (= (compass/to-grid :SW) [-1 -1])))
+  (testing "intermediate"
+    (is (= (compass/to-grid :NNE) [1 1]))
+    (is (= (compass/to-grid :ENE) [1 1]))))
