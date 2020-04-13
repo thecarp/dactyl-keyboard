@@ -11,7 +11,8 @@
             [scad-klupe.iso :refer [head-length]]
             [scad-klupe.schema.iso]
             [dmote-keycap.schema :as capschema]
-            [dactyl-keyboard.compass :as compass]))
+            [dactyl-keyboard.compass :as compass]
+            [dactyl-keyboard.misc :refer [soft-merge]]))
 
 
 ;;;;;;;;;;;;;
@@ -144,55 +145,75 @@
        :offset vec
        :alias keyword})))
 
-(defn case-tweak-position
-  "Parse notation for a tweak position. This is a highly permissive parser.
-  The base case is one anchor, typically a key alias, with ordinary specifiers
-  for a side and vertical segment off that anchor. However, the parser also
-  accepts a second segment ID to form a sweep across a range of segments, and
-  in place of any or all positional arguments after the first (typically coming
-  in last), the parser takes a map of extras that may overlap the meaning
-  of the positional arguments.
-  Return a map."
-  ([anchor]
-   (case-tweak-position anchor nil))
-  ([anchor side]
-   (case-tweak-position anchor side nil nil))
-  ([anchor side segment]
-   (case-tweak-position anchor side segment segment))
-  ([anchor side first-segment last-segment]
-   (case-tweak-position anchor side first-segment last-segment {}))
-  ([anchor side first-segment last-segment options]
-   {:pre [(map? options)]}
-   (reduce
-     (fn [coll [item path parser]]
-       (cond
-         (map? item) (merge item coll)
-         (some? item) (assoc-in coll path (parser item))
-         :else coll))
-     (merge {:anchoring {:anchor :origin}, :sweep nil} options)
-     [[anchor [:anchoring :anchor] keyword]
-      [side [:anchoring :side] keyword]
-      [first-segment [:anchoring :segment] int]
-      [last-segment [:sweep] int]])))
+(let [leaf
+        (fn parse-leaf
+          ([anchor]
+           (parse-leaf anchor nil))
+          ([anchor side]
+           (parse-leaf anchor side nil nil))
+          ([anchor side segment]
+           (parse-leaf anchor side segment segment))
+          ([anchor side first-segment last-segment]
+           (parse-leaf anchor side first-segment last-segment {}))
+          ([anchor side first-segment last-segment options]
+           {:pre [(map? options)]}
+           (reduce
+             (fn [coll [item path parser]]
+               (cond
+                 (map? item) (soft-merge item coll)
+                 (some? item) (assoc-in coll path (parser item))
+                 :else coll))
+             (merge {:anchoring {:anchor :origin}, :sweep nil} options)
+             [[anchor [:anchoring :anchor] keyword]
+              [side [:anchoring :side] keyword]
+              [first-segment [:anchoring :segment] int]
+              [last-segment [:sweep] int]])))
+      branch-skeleton {:chunk-size int
+                       :above-ground boolean
+                       :highlight boolean}
+      dispatch-fn (fn [brancher]
+                     (fn dispatch [cnd]
+                       (cond
+                         (and (map? cnd) (:hull-around cnd)) (brancher cnd)
+                         (string? (first cnd)) (apply leaf cnd)
+                         (and (map? cnd) (:anchoring cnd)) (leaf cnd)
+                         :else (map dispatch cnd))))
+      tail (fn parse [candidate]
+             ((map-like (merge branch-skeleton
+                               {:hull-around (dispatch-fn parse)}))
+              candidate))]
+  (def tweak-grove
+    "Parse the tweak configuration.
 
-(defn case-tweaks
-  "Parse a tweak. This can be a lazy sequence describing a single
-  point, a lazy sequence of such sequences, or a map. If it is a
-  map, it may contain a similar nested structure."
-  [candidate]
-  (cond
-    (string? (first candidate)) (apply case-tweak-position candidate)
-    (map? candidate) ((map-like {:chunk-size int
-                                 :at-ground boolean
-                                 :above-ground boolean
-                                 :highlight boolean
-                                 :hull-around case-tweaks})
-                      candidate)
-    :else (map case-tweaks candidate)))
+    In local nomenclature, the “tweaks” parameter is a grove of trees. Each
+    non-leaf node beneath the name level of the grove is a tree that can have
+    some extra properties. Lower-level non-leaf nodes are just branches and
+    cannot have these extra properties.
 
-(def case-tweak-map
-  "A parser of a map of names to tweaks."
-  (map-of keyword case-tweaks))
+    The grove is parsed using a pair of dispatchers, each with its own branch
+    parser. The top-level dispatcher replaces itself with the lower-level
+    dispatcher each time it passes a non-leaf node, and the lower-level
+    dispatcher sustains itself by the trick of its parser being a function that
+    refers to itself and thereby passes itself along by recreating the
+    lower-lever dispatcher on each pass.
+
+    A candidate to the dispatcher can be a lazy sequence describing a single
+    point (a leaf), a lazy sequence of such sequences, or a map. If it is a
+    map, it may contain a similar nested structure, or a predigested leaf.
+
+    The leaf parser is permissive, having multiple arities where any positional
+    argument can be replaced by a map.  The base case is one anchor, typically
+    a key alias, with ordinary specifiers for a side and vertical segment off
+    that anchor. However, the parser also accepts a second segment ID to form a
+    sweep across a range of segments, and in place of any or all positional
+    arguments after the first (typically coming in last), the parser takes a
+    map of extras that may overlap the meaning of the positional arguments."
+    (map-of keyword
+            (dispatch-fn
+              (map-like (merge branch-skeleton
+                               {:hull-around (dispatch-fn tail)
+                                :at-ground boolean
+                                :body keyword}))))))
 
 (def keycap-map
   "A parser for the options exposed by the dmote-keycap library.
@@ -230,9 +251,7 @@
 (spec/def ::highlight boolean?)
 (spec/def ::at-ground boolean?)
 (spec/def ::above-ground boolean?)
-(spec/def ::chunk-size (spec/and int? #(> % 1)))
-(spec/def ::hull-around (spec/coll-of (spec/or :leaf ::tweak-plate-leaf
-                                               :map ::tweak-plate-map)))
+(spec/def :tweak/chunk-size (spec/and int? #(> % 1)))
 (spec/def ::spline-point
   (spec/keys :req-un [::position]  ; 2D.
              :opt-un [::alias]))
@@ -295,10 +314,15 @@
   (spec/coll-of
     (spec/keys :req-un [::alias :intercardinal/side]
                :opt-un [:flexible/offset])))
-(spec/def ::tweak-name-map (spec/map-of keyword? ::hull-around))
-(spec/def ::tweak-plate-map
-  (spec/keys :req-un [::hull-around]
-             :opt-un [::highlight ::chunk-size ::at-ground ::above-ground]))
+(spec/def :tweak/hull-around (spec/coll-of (spec/or :leaf ::tweak-leaf
+                                                    :map ::tweak-branch)))
+(spec/def ::tweak-name-map (spec/map-of keyword? :tweak/hull-around))
+(spec/def ::tweak-branch
+  (spec/keys :req-un [:tweak/hull-around]
+             :opt-un [::highlight :tweak/chunk-size ::above-ground
+                      ;; Additional keys expected in trees only:
+                      ::at-ground ::body]))
+
 (spec/def ::nameable-spline (spec/coll-of ::spline-point))
 
 ;; Other:
@@ -319,7 +343,7 @@
 (spec/def ::key-coordinates ::flexcoord-2d)  ; Exposed for unit testing.
 (spec/def ::wall-segment ::segment)
 (spec/def ::wall-extent (spec/or :partial ::wall-segment :full #{:full}))
-(spec/def ::tweak-plate-leaf
+(spec/def ::tweak-leaf
   (spec/and
     (spec/keys :req-un [::anchoring ::sweep])
     ;; Require a start to a sweep

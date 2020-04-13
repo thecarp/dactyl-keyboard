@@ -19,9 +19,7 @@
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.key :as key]
             [dactyl-keyboard.param.schema :as schema]
-            [dactyl-keyboard.param.access :refer [resolve-anchor
-                                                  main-body-tweak-data
-                                                  central-tweak-data]]
+            [dactyl-keyboard.param.access :refer [resolve-anchor]]
             [dactyl-keyboard.param.proc.anch :as anch]))
 
 
@@ -29,12 +27,25 @@
 ;; General ;;
 ;;;;;;;;;;;;;
 
-(defn- classify-node [node]
+(defn- get-node-type [node]
   (cond
-    (spec/valid? ::schema/tweak-plate-map node) ::branch
-    (spec/valid? ::schema/tweak-plate-leaf node) ::leaf
+    (spec/valid? ::schema/tweak-branch node) ::branch
+    (spec/valid? ::schema/tweak-leaf node) ::leaf
     :else (throw (ex-info "Unclassifiable tweak node."
                    {:node node}))))
+
+(defn- get-first-leaf [node]
+  (case (get-node-type node)
+    ::branch (get-first-leaf (-> node :hull-around first))
+    ::leaf node))
+
+(defn- get-body
+  "Retrieve a non-auto body ID for a node.
+  This takes either a leaf or branch."
+  [getopt node]
+  (anch/resolve-body getopt
+    (get node :body :auto)
+    (get-in (get-first-leaf node) [:anchoring :anchor])))
 
 (defn- segment-range
   [{:keys [anchoring sweep]}]
@@ -53,6 +64,10 @@
     (map (partial single-step-node node) (segment-range node))
     [node]))
 
+(defn- forest [getopt]
+  "Retrieve the complete set of nodes, sans names."
+  (apply concat (vals (getopt :main-body :tweaks))))
+
 
 ;;;;;;;;
 ;; 3D ;;
@@ -65,7 +80,7 @@
   By default, use the most specific dimensions available for the post,
   defaulting to a post for key-cluster webbing."
   [getopt {:keys [anchoring] :as node}]
-  {:pre [(spec/valid? ::schema/tweak-plate-leaf node)]}
+  {:pre [(spec/valid? ::schema/tweak-leaf node)]}
   (let [{:keys [anchor side segment offset]} anchoring
         {::anch/keys [type primary]} (resolve-anchor getopt anchor)]
     (case type
@@ -105,7 +120,7 @@
 (defn- leaf-blade-3d
   "One model at one vertical segment of one feature."
   [getopt {:keys [anchoring] :as node}]
-  {:pre [(spec/valid? ::schema/tweak-plate-leaf node)]}
+  {:pre [(spec/valid? ::schema/tweak-leaf node)]}
   (let [[placed item] (pick-3d-shape getopt node)]
     (if placed
       item
@@ -116,38 +131,34 @@
   [getopt node]
   (apply maybe/hull (map (partial leaf-blade-3d getopt) (splay node))))
 
-(declare plating)
+(declare model-node-3d)
 
 (defn- model-branch-3d
-  [getopt {:keys [at-ground above-ground hull-around chunk-size highlight]
-           :or {above-ground true}}]
+  [getopt {:keys [at-ground hull-around chunk-size highlight]}]
   (let [prefix (if highlight model/-# identity)
-        shapes (reduce (partial plating getopt) [] hull-around)
-        hull (if at-ground misc/bottom-hull model/hull)]
-    (when above-ground
-      (prefix
-        (apply (if chunk-size model/union hull)
-          (if chunk-size
-            (map (partial apply hull) (partition chunk-size 1 shapes))
-            shapes))))))
+        shapes (map (partial model-node-3d getopt) hull-around)
+        hull (if at-ground misc/bottom-hull maybe/hull)]
+    (prefix
+      (apply (if chunk-size model/union hull)
+        (if chunk-size
+          (map (partial apply hull) (partition chunk-size 1 shapes))
+          shapes)))))
 
-(defn- plating
+(defn- model-node-3d
   "A reducer."
-  [getopt coll node]
-  (conj coll
-    (case (classify-node node)
-      ::branch (model-branch-3d getopt node)
-      ::leaf (model-leaf-3d getopt node))))
+  [getopt node]
+  (case (get-node-type node)
+    ::branch (model-branch-3d getopt node)
+    ::leaf (model-leaf-3d getopt node)))
 
-(defn- union
-  [getopt data-fn]
-  "User-requested additional shapes from some data."
-  [getopt]
+(defn plating
+  "User-requested additional shapes for some body, in 3D."
+  [getopt body]
   (apply maybe/union
-    (reduce (partial plating getopt) [] (data-fn getopt))))
-
-(defn all-main-body [getopt] (union getopt main-body-tweak-data))
-(defn all-central-housing [getopt] (union getopt central-tweak-data))
+    (map (partial model-node-3d getopt)
+         (->> (forest getopt)
+           (filter #(= (get-body getopt %) body))
+           (filter #(get % :above-ground true))))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -159,10 +170,10 @@
   Pick just one leaf in a branch node, and just one post in a leaf, on the
   assumption that they’re not all ringing the case."
   [getopt [post-picker segment-picker bottom] coll node]
-  {:pre [(spec/valid? ::schema/tweak-plate-leaf node)]
+  {:pre [(spec/valid? ::schema/tweak-leaf node)]
    :post [(spec/valid? ::tarmi-core/point-coll-2d %)]}
   (conj coll
-    (as-> (case (classify-node node)
+    (as-> (case (get-node-type node)
             ::branch (post-picker (:hull-around node))
             ::leaf node)
           point
@@ -192,10 +203,10 @@
         [post [first last], segment [first last], bottom [false true]]
         (plate-polygon getopt [post segment bottom] node-list)))))
 
-(defn all-shadows
-  "The footprint of all user-requested additional shapes that go to the floor."
+(defn floor-polygons
+  "The combined footprint of user-requested additional shapes that go to the floor in a particular body."
   [getopt]
   (apply maybe/union
     (map #(plate-shadows getopt (:hull-around %))
-         (filter :at-ground (main-body-tweak-data getopt)))))
+         (filter :at-ground (forest getopt)))))
 

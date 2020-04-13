@@ -4,8 +4,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns dactyl-keyboard.cad.bottom
-  (:require [clojure.spec.alpha :as spec]
-            [scad-clj.model :as model]
+  (:require [scad-clj.model :as model]
             [scad-klupe.iso :as threaded]
             [scad-tarmi.core :refer [π] :as tarmi-core]
             [scad-tarmi.maybe :as maybe]
@@ -20,7 +19,7 @@
             [dactyl-keyboard.cad.tweak :as tweak]
             [dactyl-keyboard.cad.wrist :as wrist]
             [dactyl-keyboard.param.access
-             :refer [most-specific main-body-tweak-data]]))
+             :refer [most-specific]]))
 
 
 ;;;;;;;;;;;
@@ -240,7 +239,7 @@
     (mask-3d getopt)
     (maybe/union
       (key/metacluster body/cluster-wall getopt)
-      (tweak/all-main-body getopt))))
+      (tweak/plating getopt :main-body))))
 
 (defn- floor-finder
   "Make a function that takes a key mount and returns a 2D vertex
@@ -317,7 +316,7 @@
   (maybe/union
     (key/metacluster cluster-floor-polygon getopt)
     (masked-cut getopt (anchors-for-main-plate getopt))
-    (tweak/all-shadows getopt)
+    (tweak/floor-polygons getopt)
     (when (getopt :central-housing :derived :include-main)
       (chousing-floor-polygon getopt))
     (when (getopt :central-housing :derived :include-adapter)

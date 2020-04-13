@@ -334,6 +334,6 @@
     "radians. This property controls the facing of a projection. Typically, "
     "you want it facing the central housing’s nearest wall."]
    [:parameter [:tweaks]
-    {:default [] :parse-fn schema/case-tweak-map
+    {:default [] :parse-fn schema/tweak-grove
      :validate [::schema/tweak-name-map]}
     "Precisely like `case` → `tweaks` but just for the central housing."]])

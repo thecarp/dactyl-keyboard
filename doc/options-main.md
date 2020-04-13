@@ -541,24 +541,28 @@ The names at the top level are arbitrary but should be distinct and descriptive.
 Below the names, each item in each list can follow one of the following patterns:
 
 - A leaf node. This is a list 1 to 5 elements specified below.
-- A map, representing an instruction to combine nested items in a specific way.
+- A non-leaf node, representing an instruction to combine nested items   in a specific way.
 - A list of any combination of the other two types. This type exists at the second level from the top and as the immediate child of each map node.
 
-Each leaf node identifies a particular named feature of the keyboard and places a cuboid shape there. The elements of a leaf are, in order:
+Each leaf node identifies a particular named feature of the keyboard and places a cuboid there. This is ordinary [anchoring](configuration.md) of very simple shapes. The elements of a leaf are, in order:
 
-1. Mandatory: An anchor. This is the name of a feature, such as a key by its `alias`.
-2. Optional: A compass point code, such as `SW` for south-west or `NNE` for north by north-east, identifying a side of the anchor. There is no default value. If this code is omitted, i.e. if only the mandatory element is given, the tweak will use the middle of the named feature.
-3. Optional: A starting vertical segment ID, which is an integer from 0 up to a maximum number that varies with the type of the anchor. Again there is no default.
+1. Mandatory: An anchor.
+2. Optional: A compass point code. There is no default value.
+3. Optional: A starting vertical segment ID. Again there is no default value.
 4. Optional: A stopping wall segment ID. If this is provided, it must be at least as great as the starting segment ID, in which case the leaf will represent the convex hull of the two indicated segments plus all segments between them, off the same anchor.
-5. Optional: A map of additional settings.
+5. Optional: A map of additional leaf settings.
 
-By default, a map node will create a convex hull around its child nodes. However, this behaviour can be modified. The following keys are recognized:
+By default, a non-leaf node will create a convex hull around its child nodes. However, this behaviour can be modified. The following keys are recognized:
 
-- `at-ground`: If `true`, child nodes will be extended vertically down to the ground plane, as with a `full` wall. The default value for this key is `false`. See also: `bottom-plate`.
-- `above-ground`: If `true`, child nodes will be visible as part of the case. The default value for this key is `true`.
-- `chunk-size`: Any integer greater than 1. If this is set, child nodes will not share a single convex hull. Instead, there will be a sequence of smaller hulls, each encompassing this many items.
-- `highlight`: If `true`, render the node in OpenSCAD’s highlighting style. This is convenient while you work.
-- `hull-around`: The list of child nodes. Required.
+- `hull-around` (required): The list of child nodes.
+- `above-ground` (optional): If `true`, child nodes will be visible as part of the case. The default value is `true`.
+- `chunk-size` (optional): Any integer greater than 1. If this is set, child nodes will not share a single convex hull. Instead, there will be a sequence of smaller hulls, each encompassing this many items.
+- `highlight` (optional): If `true`, render the node in OpenSCAD’s highlighting style. This is convenient while you work.
+
+Top level non-leaf nodes may contain the following extra keys:
+
+- `at-ground` (optional): If `true`, child nodes will be extended vertically down to the ground plane, as with a `full` wall. The default value is `false`. See also: `bottom-plate`.
+- `body` (optional): Refer to general documentation [here](configuration.md).
 
 In the following example, `A` and `B` are key aliases that would be defined elsewhere. The example is interpreted to mean that a plate should be created stretching from the south-by-southeast corner of `A` to the north-by-northeast corner of `B`. Due to `chunk-size` 2, that first plate will be joined, not hulled, with a second plate from `B` back to a different corner of `A`, with a longer stretch of (all) wall segments down the corner of `A`.
 
@@ -571,8 +575,6 @@ In the following example, `A` and `B` are key aliases that would be defined else
         - [B, NNE, 0]
         - [A, SSW, 0, 4]
 ```
-
-Note that tweaks listed here will be considered part of the main body of the keyboard. A separate parameter is available for tweaking the central housing.
 
 ### Section <a id="main-body-foot-plates">`foot-plates`</a>
 
@@ -642,7 +644,7 @@ Where to place the MCU PCBA after intrinsic rotation. The concept of anchoring i
 
 #### Parameter <a id="mcu-anchoring-anchor">`anchor`</a>
 
-{:default :origin, :parse-fn #object[clojure.core$keyword 0x47ab3688 "clojure.core$keyword@47ab3688"], :validate [:dactyl-keyboard.param.schema/anchor]}A code identifying an anchor point. This can the default value (`origin`) or a name (built-in or alias) identifying a feature.
+{:default :origin, :parse-fn #object[clojure.core$keyword 0x6413eeb7 "clojure.core$keyword@6413eeb7"], :validate [:dactyl-keyboard.param.schema/anchor]}A code identifying an anchor point. This can the default value (`origin`) or a name (built-in or alias) identifying a feature.
 
 #### Parameter <a id="mcu-anchoring-side">`side`</a>
 

@@ -92,7 +92,7 @@
       (auxf/backplate-block getopt))
     (when (getopt :main-body :rear-housing :include)
       (body/rear-housing getopt))
-    (tweak/all-main-body getopt)
+    (tweak/plating getopt :main-body)
     (when (getopt :main-body :bottom-plate :include)
       (bottom/anchors-in-main-body getopt))
     (auxf/foot-plates getopt)
@@ -152,7 +152,7 @@
               (when (getopt :central-housing :derived :include-adapter)
                 (bilateral (central/adapter-fastener-receivers getopt)))
               (auxf/ports-positive getopt :central-housing)
-              (tweak/all-central-housing getopt))
+              (tweak/plating getopt :central-housing))
             (when (getopt :central-housing :derived :include-adapter)
               (bilateral
                 (central/adapter-right-fasteners getopt)
@@ -244,7 +244,7 @@
       (wrist/unified-preview getopt)
       (bottom/wrist-anchors-positive getopt)
       (when (= (getopt :wrist-rest :style) :solid)
-        (tweak/all-main-body getopt)))))
+        (tweak/plating getopt :main-body)))))
 
 (defn build-rubber-pad-right
   "Right-hand-side wrist-rest pad model. Useful in visualization and
@@ -257,7 +257,7 @@
         (wrist/rubber-insert-positive getopt))
       (bottom/wrist-anchors-positive getopt)
       (when (= (getopt :wrist-rest :style) :solid)
-        (tweak/all-main-body getopt)))))
+        (tweak/plating getopt :main-body)))))
 
 (def derivers-static
   "A vector of configuration locations and functions for expanding them."
