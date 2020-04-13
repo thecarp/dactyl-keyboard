@@ -10,7 +10,6 @@
             [scad-klupe.iso :refer [nut]]
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.cad.place :as place]
-            [dactyl-keyboard.param.access :refer [resolve-anchor]]
             [dactyl-keyboard.param.proc.anch :as anch]))
 
 
@@ -161,10 +160,14 @@
 
 (defn- port-set
   "The positive or negative space for all ports."
-  [getopt positive]
+  [getopt body positive]
   (apply maybe/union
     (map (fn [id]
            (when (and (getopt :ports id :include)
+                      (= (anch/resolve-body getopt
+                           (getopt :ports id :body)
+                           (getopt :ports id :position :anchor))
+                         body)
                       (or (not positive)
                           (getopt :ports id :holder :include)))
              (place/port-place getopt id
@@ -172,8 +175,8 @@
          (keys (getopt :ports)))))
 
 ;; Unions of the positive and negative spaces for holding all ports, in place.
-(defn ports-positive [getopt] (port-set getopt true))
-(defn ports-negative [getopt] (port-set getopt false))
+(defn ports-positive [getopt body] (port-set getopt body true))
+(defn ports-negative [getopt body] (port-set getopt body false))
 
 
 ;;;;;;;;;;;;;;;;;;;;

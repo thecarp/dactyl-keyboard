@@ -45,6 +45,9 @@
     "disabling ports defined in other configuration files. "
     "The default value is `false` for consistency with other inclusion "
     "parameters."]
+   [:parameter [:body]
+    {:default :auto :parse-fn keyword :validate [::schema/body]}
+    "A code identifying the [body](configuration.md) in which the port is cut."]
    [:parameter [:type]
     {:default :custom :parse-fn keyword
      :validate [(set (conj (keys cots/port-facts) :custom))]}
