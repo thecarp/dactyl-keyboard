@@ -423,7 +423,7 @@
                (conditional-bottom-plate-modules getopt)
                (get-key-modules getopt :module-keycap :module-switch))
     :model-precursor build-main-body-right
-    :chiral (getopt :reflect)}
+    :chiral (getopt :main-body :reflect)}
    (when (getopt :central-housing :derived :include-main)
      {:name (str "case-central"  ; With conditional suffix.
               (when (getopt :central-housing :derived :include-sections)
@@ -441,12 +441,12 @@
       :modules (conditional-bottom-plate-modules getopt)
       :model-precursor build-rubber-casting-mould-right
       :rotation [π 0 0]
-      :chiral (getopt :reflect)})  ; Chirality is possible but not guaranteed.
+      :chiral (getopt :main-body :reflect)})  ; Chirality is possible but not guaranteed.
    (when (getopt :wrist-rest :include)
      {:name "pad-shape"
       :modules (conditional-bottom-plate-modules getopt)
       :model-precursor build-rubber-pad-right
-      :chiral (getopt :reflect)})
+      :chiral (getopt :main-body :reflect)})
    (when (and (getopt :wrist-rest :include)
               (not (= (getopt :wrist-rest :style) :solid)))
      {:name "wrist-rest-main"
@@ -454,7 +454,7 @@
                        (when (getopt :wrist-rest :sprues :include)
                          ["sprue_negative"]))
       :model-precursor build-plinth-right
-      :chiral (getopt :reflect)})
+      :chiral (getopt :main-body :reflect)})
    ;; Bottom plate(s):
    (when (and (getopt :main-body :bottom-plate :include)
               (not (and (getopt :main-body :bottom-plate :combine)
@@ -463,7 +463,7 @@
       :modules (conditional-bottom-plate-modules getopt)
       :model-precursor bottom/case-complete
       :rotation [0 π 0]
-      :chiral (getopt :reflect)})
+      :chiral (getopt :main-body :reflect)})
    (when (and (getopt :wrist-rest :include)
               (getopt :wrist-rest :bottom-plate :include)
               (not (and (getopt :main-body :bottom-plate :include)
@@ -472,7 +472,7 @@
       :modules (conditional-bottom-plate-modules getopt)
       :model-precursor bottom/wrist-complete
       :rotation [0 π 0]
-      :chiral (getopt :reflect)})
+      :chiral (getopt :main-body :reflect)})
    (when (and (getopt :main-body :bottom-plate :include)
               (getopt :main-body :bottom-plate :combine)
               (getopt :wrist-rest :include)
@@ -481,7 +481,7 @@
       :modules (conditional-bottom-plate-modules getopt)
       :model-precursor bottom/combined-complete
       :rotation [0 π 0]
-      :chiral (getopt :reflect)})])
+      :chiral (getopt :main-body :reflect)})])
 
 (defn get-key-style-precursors
   "Collate key-style precursors. No maquettes though; they’re no fun to print."

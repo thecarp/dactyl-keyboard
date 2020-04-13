@@ -11,7 +11,6 @@
 # The keys are arranged so tightly in places that other types of caps and
 # switches should be expected to require adjustment of the keyboard design.
 
-reflect: true
 keys:
   styles:
     kss:  # Key style “small”, a printable keycap with a thin top.
@@ -346,6 +345,7 @@ by-key:
                   east:
                     perpendicular: -15
 main-body:
+  reflect: true
   bottom-plate:
     include: true
     thickness: 2

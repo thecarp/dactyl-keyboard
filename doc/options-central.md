@@ -41,7 +41,7 @@ When present, a central housing naturally determines the position of each other 
 
 ## Parameter <a id="include">`include`</a>
 
-If this and `reflect` are both true, add a central housing.
+If this and `main-body` → `reflect` are both true, add a central housing.
 
 ## Parameter <a id="preview">`preview`</a>
 

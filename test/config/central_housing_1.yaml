@@ -8,7 +8,8 @@
 # All sixteen receivers for fasteners should form a regular pattern on the
 # adapter in the main case file output(s).
 
-reflect: true
+main-body:
+  reflect: true
 central-housing:
   include: true
   shape:

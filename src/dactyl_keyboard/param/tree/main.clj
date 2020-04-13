@@ -39,16 +39,6 @@
     "Each heading in this document represents a recognized configuration key "
     "in the main body of a YAML file for a DMOTE variant. Other documents "
     "cover special sections of this one in more detail."]
-   [:parameter [:reflect]
-    {:default false :parse-fn boolean}
-    "If `true`, mirror the case, producing one version for the right hand "
-    "and another for the left. The two halves will be almost identical: "
-    "Only chiral parts, such as threaded holes, are exempt from mirroring "
-    "with `reflect`.\n\n"
-    "You can use this option to make a ‘split’ keyboard, though the two "
-    "halves are typically connected by a signalling cable, by a rigid "
-    "`central-housing`, or by one or more rods anchored to "
-    "some feature such as `rear-housing` or `back-plate`."]
    [:section [:keys]
     "Keys, that is keycaps and electrical switches, are not the main focus of "
     "this application, but they influence the shape of the case."]
@@ -156,6 +146,16 @@
     "Much of this part of the case is generated from the `wall` parameters "
     "described [here](options-nested.md). "
     "This section deals with lesser features of the main body."]
+   [:parameter [:main-body :reflect]
+    {:default false :parse-fn boolean}
+    "If `true`, mirror the main body, producing one version for the right hand "
+    "and another for the left. The two halves will be almost identical: "
+    "Only chiral parts, such as threaded holes, are exempt from mirroring "
+    "with `main-body` → `reflect`.\n\n"
+    "You can use this option to make a ‘split’ keyboard, though the two "
+    "halves are typically connected by a signalling cable, by a rigid "
+    "`central-housing`, or by one or more rods anchored to "
+    "some feature such as `rear-housing` or `back-plate`."]
    [:parameter [:main-body :key-mount-thickness]
     {:default 1 :parse-fn num}
     "The thickness in mm of each switch key mounting plate."]
@@ -513,10 +513,10 @@
     "The total number of MCUs is governed by more than one setting, roughly "
     "in the following order:\n\n"
     "* If `mcu` → `include` is `false`, there is no MCU.\n"
-    "* If `mcu` → `include` is `true` but `reflect` is `false`, there is one "
-    "MCU.\n"
-    "* If `mcu` → `include` and `reflect` and `mcu` → `position` → `central` "
-    "are all `true`, there is (again) one MCU.\n"
+    "* If `mcu` → `include` is `true` but `main-body` → `reflect` is `false`, "
+    "there is one MCU.\n"
+    "* If `mcu` → `include` and `main-body` → `reflect` and `mcu` → `position` "
+    " → `central` are all `true`, there is (again) one MCU.\n"
     "* Otherwise, there are two MCUs: One in each half of the case, because "
     "of reflection."]
    [:parameter [:mcu :include]
@@ -548,7 +548,8 @@
    [:parameter [:mcu :position :central]
     {:default false :parse-fn boolean}
     "If `true`, treat the MCU as central even on a reflected keyboard. "
-    "When this setting and `reflect` are both `true` and a central housing "
+    "When this setting and `main-body` → `reflect` are both `true` and a "
+    "central housing "
     "is set to be included, MCU support will go in the central housing file, "
     "not the main case files.\n\n"
     "This setting is related to `central-housing` but, for flexibility, their "
@@ -558,10 +559,10 @@
     "The name of a feature at which to place the PCBA. "
     "Typically a key alias, central housing point or `rear-housing`.\n\n"
     "To ensure harmony, when you enable `central` (above), you would normally "
-    "enable both `reflect` and `central-housing` *and* set this `anchor` to "
-    "`origin` or to a point on the central housing, in such a way that the "
-    "MCU support will be physically attached to and supported by the central "
-    "housing wall."]
+    "enable both `main-body` → `reflect` and `central-housing` *and* set this "
+    "`anchor` to `origin` or to a point on the central housing, in such a way "
+    "that the MCU support will be physically attached to and supported by the "
+    "central housing wall."]
    [:parameter [:mcu :position :side]
     stock/anchor-side-metadata
     stock/anchor-side-documentation]

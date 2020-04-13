@@ -5,7 +5,6 @@
 Each heading in this document represents a recognized configuration key in the main body of a YAML file for a DMOTE variant. Other documents cover special sections of this one in more detail.
 
 ## Table of contents
-- Parameter <a href="#user-content-reflect">`reflect`</a>
 - Section <a href="#user-content-keys">`keys`</a>
     - Parameter <a href="#user-content-keys-preview">`preview`</a>
     - Parameter <a href="#user-content-keys-styles">`styles`</a>
@@ -15,6 +14,7 @@ Each heading in this document represents a recognized configuration key in the m
     - Special section <a href="#user-content-by-key-clusters">`clusters`</a> ← overrides go in here
 - Parameter <a href="#user-content-secondaries">`secondaries`</a>
 - Section <a href="#user-content-main-body">`main-body`</a>
+    - Parameter <a href="#user-content-main-body-reflect">`reflect`</a>
     - Parameter <a href="#user-content-main-body-key-mount-thickness">`key-mount-thickness`</a>
     - Parameter <a href="#user-content-main-body-key-mount-corner-margin">`key-mount-corner-margin`</a>
     - Parameter <a href="#user-content-main-body-web-thickness">`web-thickness`</a>
@@ -183,12 +183,6 @@ Each heading in this document represents a recognized configuration key in the m
     - Parameter <a href="#user-content-mask-size">`size`</a>
     - Parameter <a href="#user-content-mask-center">`center`</a>
 
-## Parameter <a id="reflect">`reflect`</a>
-
-If `true`, mirror the case, producing one version for the right hand and another for the left. The two halves will be almost identical: Only chiral parts, such as threaded holes, are exempt from mirroring with `reflect`.
-
-You can use this option to make a ‘split’ keyboard, though the two halves are typically connected by a signalling cable, by a rigid `central-housing`, or by one or more rods anchored to some feature such as `rear-housing` or `back-plate`.
-
 ## Section <a id="keys">`keys`</a>
 
 Keys, that is keycaps and electrical switches, are not the main focus of this application, but they influence the shape of the case.
@@ -246,6 +240,12 @@ In the example, `s0` is a position 1 mm to the local right of the south-east cor
 ## Section <a id="main-body">`main-body`</a>
 
 The main body of the keyboard is the main output of this application. It may be the only body. Much of this part of the case is generated from the `wall` parameters described [here](options-nested.md). This section deals with lesser features of the main body.
+
+### Parameter <a id="main-body-reflect">`reflect`</a>
+
+If `true`, mirror the main body, producing one version for the right hand and another for the left. The two halves will be almost identical: Only chiral parts, such as threaded holes, are exempt from mirroring with `main-body` → `reflect`.
+
+You can use this option to make a ‘split’ keyboard, though the two halves are typically connected by a signalling cable, by a rigid `central-housing`, or by one or more rods anchored to some feature such as `rear-housing` or `back-plate`.
 
 ### Parameter <a id="main-body-key-mount-thickness">`key-mount-thickness`</a>
 
@@ -601,8 +601,8 @@ MCU is short for ”micro-controller unit”. You need at least one of these, it
 The total number of MCUs is governed by more than one setting, roughly in the following order:
 
 * If `mcu` → `include` is `false`, there is no MCU.
-* If `mcu` → `include` is `true` but `reflect` is `false`, there is one MCU.
-* If `mcu` → `include` and `reflect` and `mcu` → `position` → `central` are all `true`, there is (again) one MCU.
+* If `mcu` → `include` is `true` but `main-body` → `reflect` is `false`, there is one MCU.
+* If `mcu` → `include` and `main-body` → `reflect` and `mcu` → `position`  → `central` are all `true`, there is (again) one MCU.
 * Otherwise, there are two MCUs: One in each half of the case, because of reflection.
 
 ### Parameter <a id="mcu-include">`include`</a>
@@ -638,7 +638,7 @@ Where to place the MCU PCBA after intrinsic rotation.
 
 #### Parameter <a id="mcu-position-central">`central`</a>
 
-If `true`, treat the MCU as central even on a reflected keyboard. When this setting and `reflect` are both `true` and a central housing is set to be included, MCU support will go in the central housing file, not the main case files.
+If `true`, treat the MCU as central even on a reflected keyboard. When this setting and `main-body` → `reflect` are both `true` and a central housing is set to be included, MCU support will go in the central housing file, not the main case files.
 
 This setting is related to `central-housing` but, for flexibility, their relationship does not take `anchor` into account.
 
@@ -646,7 +646,7 @@ This setting is related to `central-housing` but, for flexibility, their relatio
 
 The name of a feature at which to place the PCBA. Typically a key alias, central housing point or `rear-housing`.
 
-To ensure harmony, when you enable `central` (above), you would normally enable both `reflect` and `central-housing` *and* set this `anchor` to `origin` or to a point on the central housing, in such a way that the MCU support will be physically attached to and supported by the central housing wall.
+To ensure harmony, when you enable `central` (above), you would normally enable both `main-body` → `reflect` and `central-housing` *and* set this `anchor` to `origin` or to a point on the central housing, in such a way that the MCU support will be physically attached to and supported by the central housing wall.
 
 #### Parameter <a id="mcu-position-side">`side`</a>
 

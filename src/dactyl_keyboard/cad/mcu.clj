@@ -42,7 +42,7 @@
    {:include-centrally (and (getopt :mcu :include)
                             (getopt :mcu :position :central))
     :include-laterally (and (getopt :mcu :include)
-                            (not (and (getopt :reflect)
+                            (not (and (getopt :main-body :reflect)
                                       (getopt :central-housing :include)
                                       (getopt :mcu :position :central))))
     ;; Add [x y z] coordinates of the four corners of the PCB. No DFM.

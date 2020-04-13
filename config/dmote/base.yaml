@@ -1,6 +1,5 @@
 # Configuration fragment for the base of a 62-key DMOTE.
 
-reflect: true
 keys:
   styles:
     minimal-short:  # A printable minimal key with a thin top.
@@ -443,6 +442,7 @@ secondaries:
       segment: 2
     translation: [0, 0, -10]
 main-body:
+  reflect: true
   rear-housing:
     include: true
     position:

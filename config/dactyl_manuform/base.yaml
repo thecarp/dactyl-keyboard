@@ -6,7 +6,6 @@
 # feature on the original Dactyl-ManuForm, and vertex-perfect imitation
 # would be laborious.
 
-reflect: true
 keys:
   styles:
     default:  # Rough approximation of SA family.
@@ -236,6 +235,7 @@ secondaries:
       segment: 3
     override: [null, null, 3]
 main-body:
+  reflect: true
   key-mount-thickness: 4
   key-mount-corner-margin: 1.5
   web-thickness: 3.5

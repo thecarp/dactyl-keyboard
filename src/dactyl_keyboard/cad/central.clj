@@ -241,7 +241,7 @@
 (defn- prepare-criteria
   "Derive quick-access flags for component inclusion."
   [getopt]
-  (let [main (and (getopt :reflect)
+  (let [main (and (getopt :main-body :reflect)
                   (getopt :central-housing :include))
         adapter (and main
                      (getopt :central-housing :adapter :include))]

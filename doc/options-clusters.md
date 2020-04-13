@@ -27,7 +27,7 @@ In that first column, to continue the QWERTY pattern, you will want `rows-above-
 
 Still in that first column, to finish the QWERTY pattern, you will want `rows-below-home` set to 2, where the two keys below H are N (coordinates `[0, -1]`) and Space (coordinates `[0, -2]`).
 
-The next item in the list will be column 1, with J as `[1, 0]` and so on. On the left-hand side of a keyboard with `reflect`, everything is mirrored so that `[0, 0]` will be G instead of H in QWERTY, `[1, 0]` will be F instead of J, and so on.
+The next item in the list will be column 1, with J as `[1, 0]` and so on. On the left-hand side of a keyboard with `main-body` → `reflect`, main-body key clusters are mirrored so that `[0, 0]` will be G instead of H in QWERTY, `[1, 0]` will be F instead of J, and so on.
 
 ## Parameter <a id="style">`style`</a>
 

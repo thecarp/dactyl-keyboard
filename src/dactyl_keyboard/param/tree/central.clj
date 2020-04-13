@@ -21,7 +21,7 @@
     "main body should be anchored to points on the central housing."]
    [:parameter [:include]
     {:default false :parse-fn boolean}
-    "If this and `reflect` are both true, add a central housing."]
+    "If this and `main-body` → `reflect` are both true, add a central housing."]
    [:parameter [:preview]
     {:default false :parse-fn boolean}
     "If `true`, include the central housing when rendering each half of the "

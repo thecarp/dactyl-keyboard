@@ -8,11 +8,11 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - Moved and replaced some parameters:
     - The `case` section of parameters was **renamed** to `main-body` to
       avoid ambiguity with respect to the new central housing.
+          - The top-level parameter `split` was both moved into the `main-body`
+            section and renamed to `reflect` to avoid misleading the user about
+            how it interacts with the new `central-housing` feature.
           - The `case-side` style of mounting wrist rests was similarly renamed
             to `main-side`.
-    - The top-level parameter `split` was **renamed** to `reflect` to avoid
-      misleading the user about how it interacts with the new `central-housing`
-      feature.
     - Parameters named `corner` have been **renamed** to `side`. They now take
       codes for cardinal compass points as well as actual corners. The default
       side for anchoring has changed to the north.

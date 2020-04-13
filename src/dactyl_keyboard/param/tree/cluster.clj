@@ -52,9 +52,9 @@
     "(coordinates `[0, -1]`) and Space (coordinates `[0, -2]`).\n"
     "\n"
     "The next item in the list will be column 1, with J as `[1, 0]` and so "
-    "on. On the left-hand side of a keyboard with `reflect`, everything is "
-    "mirrored so that `[0, 0]` will be G instead of H in QWERTY, `[1, 0]` "
-    "will be F instead of J, and so on."]
+    "on. On the left-hand side of a keyboard with `main-body` → `reflect`, "
+    "main-body key clusters are mirrored so that `[0, 0]` will be G instead "
+    "of H in QWERTY, `[1, 0]` will be F instead of J, and so on."]
    [:parameter [:style]
     {:default :standard :parse-fn keyword :validate [::schema/cluster-style]}
     "Cluster layout style. One of:\n\n"
