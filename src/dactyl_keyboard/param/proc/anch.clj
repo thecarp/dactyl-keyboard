@@ -136,3 +136,31 @@
                                    :override [nil nil nil]
                                    :translation [0 0 0]}
                                   v)}]))))
+
+(defn- auto-body
+  "Determine the default body of an anchor."
+  [getopt anchor]
+  (case (getopt :derived :anchors anchor ::type)
+    :origin (if (and (getopt :main-body :reflect)
+                     (getopt :central-housing :include))
+              :central-housing
+              :main-body)
+    :port-hole (auto-body getopt (getopt :ports anchor :position :anchor))
+    :port-anchor (auto-body getopt (getopt :ports anchor :position :anchor))
+    :mcu-lock-plate (auto-body getopt (getopt :mcu :position :anchor))
+    :secondary (auto-body getopt (getopt :secondaries anchor :anchoring :anchor))
+    :central-housing :central-housing
+    ;; Default:
+    :main-body))
+
+(defn resolve-body
+  "Take a body setting for a feature. Return a non-auto body ID."
+  [getopt setting anchor]
+  {:post [#{:main-body :central-housing}]}
+  (case setting
+    :auto (let [resolved (auto-body getopt anchor)]
+            (if (= resolved :auto)
+              :main-body  ; Fall back to the main body if autos are chained up.
+              resolved))
+  ;; Default:
+    setting))

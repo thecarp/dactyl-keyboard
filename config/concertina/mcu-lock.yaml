@@ -11,7 +11,6 @@ central-housing:
       - [mcu-plate, NW]
 mcu:
   position:
-    central: true
     anchor: ci-far-base
     side: NNE
     offset: [-18, -2, -3]

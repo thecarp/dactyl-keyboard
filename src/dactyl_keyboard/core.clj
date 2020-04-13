@@ -81,7 +81,7 @@
     (key/metacluster key/cluster-plates getopt)
     (key/metacluster body/cluster-web getopt)
     (key/metacluster body/cluster-wall getopt)
-    (when (and (getopt :mcu :derived :include-laterally)
+    (when (and (getopt :mcu :derived :include-mainly)
                (getopt :mcu :support :shelf :include))
       (mcu/shelf-model getopt))
     (when (and (getopt :wrist-rest :include)
@@ -197,7 +197,7 @@
             ;; thin.
             (central/lip-body-right getopt))
           (auxf/ports-negative getopt)
-          (when (getopt :mcu :derived :include-laterally)
+          (when (getopt :mcu :derived :include-mainly)
             (mcu/negative-composite getopt))
           (when (getopt :main-body :leds :include)
             (auxf/led-holes getopt))
@@ -208,7 +208,7 @@
             (wrist/all-fasteners getopt))
           (sandbox/negative getopt))
         ;; Outer positives, subject only to outer negatives:
-        (when (and (getopt :mcu :derived :include-laterally)
+        (when (and (getopt :mcu :derived :include-mainly)
                    (getopt :mcu :support :lock :include))
           (mcu/lock-fixture-composite getopt)))
       ;; Outer negatives:
@@ -223,7 +223,7 @@
     ;; The remaining elements are visualizations for use in development.
     (when (getopt :keys :preview)
       (key/metacluster key/cluster-keycaps getopt))
-    (when (and (getopt :mcu :derived :include-laterally)
+    (when (and (getopt :mcu :derived :include-mainly)
                (getopt :mcu :preview))
       (mcu/preview-composite getopt))
     (when (and (getopt :central-housing :derived :include-main)

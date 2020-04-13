@@ -84,10 +84,10 @@ Each heading in this document represents a recognized configuration key in the m
 - Section <a href="#user-content-mcu">`mcu`</a>
     - Parameter <a href="#user-content-mcu-include">`include`</a>
     - Parameter <a href="#user-content-mcu-preview">`preview`</a>
+    - Parameter <a href="#user-content-mcu-body">`body`</a>
     - Parameter <a href="#user-content-mcu-type">`type`</a>
     - Parameter <a href="#user-content-mcu-intrinsic-rotation">`intrinsic-rotation`</a>
     - Section <a href="#user-content-mcu-position">`position`</a>
-        - Parameter <a href="#user-content-mcu-position-central">`central`</a>
         - Parameter <a href="#user-content-mcu-position-anchor">`anchor`</a>
         - Parameter <a href="#user-content-mcu-position-side">`side`</a>
         - Parameter <a href="#user-content-mcu-position-segment">`segment`</a>
@@ -613,6 +613,10 @@ If `true`, make space for at least one MCU PCBA.
 
 If `true`, render a visualization of the MCU PCBA. For use in development.
 
+### Parameter <a id="mcu-body">`body`</a>
+
+A code identifying the [body](configuration.md) that houses the MCU.
+
 ### Parameter <a id="mcu-type">`type`</a>
 
 A code name for a form factor. The following values are supported, representing a selection of designs for commercial products from PJRC, SparkFun, the QMK team and others:
@@ -636,17 +640,9 @@ As an example, to have the PCBA standing on its long edge instead of lying flat,
 
 Where to place the MCU PCBA after intrinsic rotation.
 
-#### Parameter <a id="mcu-position-central">`central`</a>
-
-If `true`, treat the MCU as central even on a reflected keyboard. When this setting and `main-body` → `reflect` are both `true` and a central housing is set to be included, MCU support will go in the central housing file, not the main case files.
-
-This setting is related to `central-housing` but, for flexibility, their relationship does not take `anchor` into account.
-
 #### Parameter <a id="mcu-position-anchor">`anchor`</a>
 
-The name of a feature at which to place the PCBA. Typically a key alias, central housing point or `rear-housing`.
-
-To ensure harmony, when you enable `central` (above), you would normally enable both `main-body` → `reflect` and `central-housing` *and* set this `anchor` to `origin` or to a point on the central housing, in such a way that the MCU support will be physically attached to and supported by the central housing wall.
+The name of a feature at which to place the PCBA.
 
 #### Parameter <a id="mcu-position-side">`side`</a>
 

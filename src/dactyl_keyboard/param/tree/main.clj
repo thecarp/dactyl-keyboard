@@ -526,6 +526,9 @@
     {:default false :parse-fn boolean}
     "If `true`, render a visualization of the MCU PCBA. "
     "For use in development."]
+   [:parameter [:mcu :body]
+    {:default :auto :parse-fn keyword :validate [::schema/body]}
+    "A code identifying the [body](configuration.md) that houses the MCU."]
    [:parameter [:mcu :type]
     {:default :promicro :parse-fn keyword
      :validate [(partial contains? cots/mcu-facts)]}
@@ -545,24 +548,9 @@
     "middle number being roughly π/2."]
    [:section [:mcu :position]
     "Where to place the MCU PCBA after intrinsic rotation."]
-   [:parameter [:mcu :position :central]
-    {:default false :parse-fn boolean}
-    "If `true`, treat the MCU as central even on a reflected keyboard. "
-    "When this setting and `main-body` → `reflect` are both `true` and a "
-    "central housing "
-    "is set to be included, MCU support will go in the central housing file, "
-    "not the main case files.\n\n"
-    "This setting is related to `central-housing` but, for flexibility, their "
-    "relationship does not take `anchor` into account."]
    [:parameter [:mcu :position :anchor]
     {:default :origin :parse-fn keyword :validate [::schema/anchor]}
-    "The name of a feature at which to place the PCBA. "
-    "Typically a key alias, central housing point or `rear-housing`.\n\n"
-    "To ensure harmony, when you enable `central` (above), you would normally "
-    "enable both `main-body` → `reflect` and `central-housing` *and* set this "
-    "`anchor` to `origin` or to a point on the central housing, in such a way "
-    "that the MCU support will be physically attached to and supported by the "
-    "central housing wall."]
+    "The name of a feature at which to place the PCBA."]
    [:parameter [:mcu :position :side]
     stock/anchor-side-metadata
     stock/anchor-side-documentation]

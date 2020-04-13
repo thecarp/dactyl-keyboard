@@ -12,7 +12,8 @@
             [dactyl-keyboard.misc :refer [colours]]
             [dactyl-keyboard.cots :as cots]
             [dactyl-keyboard.cad.misc :refer [map-to-3d-vec merge-bolt wafer]]
-            [dactyl-keyboard.cad.place :as place]))
+            [dactyl-keyboard.cad.place :as place]
+            [dactyl-keyboard.param.proc.anch :refer [resolve-body]]))
 
 
 ;;;;;;;;;;;;
@@ -38,13 +39,11 @@
         plate-corners {:NW (mapv + plate-sw [0 yₜ 0])
                        :NE (mapv + plate-sw [xₜ yₜ 0])
                        :SE (mapv + plate-sw [xₜ 0 0])
-                       :SW plate-sw}]
-   {:include-centrally (and (getopt :mcu :include)
-                            (getopt :mcu :position :central))
-    :include-laterally (and (getopt :mcu :include)
-                            (not (and (getopt :main-body :reflect)
-                                      (getopt :central-housing :include)
-                                      (getopt :mcu :position :central))))
+                       :SW plate-sw}
+        body (resolve-body getopt
+               (getopt :mcu :body) (getopt :mcu :position :anchor))]
+   {:include-centrally (and (getopt :mcu :include) (= body :central-housing))
+    :include-mainly (and (getopt :mcu :include) (= body :main-body))
     ;; Add [x y z] coordinates of the four corners of the PCB. No DFM.
     :pcb (merge pcb-base pcb-corners)
     :connector (get cots/port-facts (:port-type pcb-base))

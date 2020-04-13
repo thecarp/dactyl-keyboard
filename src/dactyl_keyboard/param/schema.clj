@@ -219,6 +219,7 @@
 
 ;; Used with spec/keys, making the names sensitive:
 (spec/def ::include boolean?)
+(spec/def ::body #{:auto :main-body :central-housing})
 (spec/def ::anchor keyword?)
 (spec/def ::alias (spec/and keyword?
                             #(not (= :origin %))
