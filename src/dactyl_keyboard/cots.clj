@@ -27,7 +27,7 @@
   housing of alternate versions standing on end."
   {:usb-full-a {:width 10 :depth 13.6 :height 6.5
                 :description "full-size USB A"}
-   :usb-full-2b {:width 12.1 :depth 16.6 :height 11
+   :usb-full-2b {:width 12.1 :depth 16.1 :height 11
                  :description "full-size USB 2 B"}
    :usb-full-3b {:width 12 :depth 18.3 :height 12.9
                  :description "full-size USB 3 B"}

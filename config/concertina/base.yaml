@@ -704,6 +704,20 @@ tweaks:
     - [m2L, NNW, 3]
     - [m1L, NNE, 3]
     - [m1L, NNW, 3]
+  # Tweaks for fitting an external USB port and printing the central housing
+  # standing on end.
+  external-usb:
+  - hull-around:
+    - [ext-usb-holder]
+    - [ext-usb-holder,
+       {anchoring: {side: NW, segment: 1, offset: [-10, 0, 0]}}]
+    - [ext-usb-holder,
+       {anchoring: {side: NE, segment: 1, offset: [5, 0, 0]}}]
+  - positive: false  # A dent in the interior wall, for DFM.
+    hull-around:
+    - [ext-usb-hole]
+    - [ext-usb-hole,
+       {anchoring: {side: E, segment: 1, offset: [1, 0, 0]}}]
   bottom:
   # A thin strip along the east side of the main cluster.
   # This comes in two parts because hulling the entire strip would extend the
@@ -737,7 +751,7 @@ mcu:
   intrinsic-rotation: [-1.5708, 0.785398, 3.14159]  # π/2, π/4, π.
   anchoring:
     anchor: ci-far-base
-    offset: [-28, -5, 25]
+    offset: [-28, -5, 65]
   support:
     shelf:
       include: true
@@ -751,7 +765,7 @@ mcu:
         overhang-width: 0.5
         offsets: [10, 10]
 ports:
-  external-usb:
+  ext-usb-hole:
     include: true
     type: usb-full-2b
     anchoring:
@@ -759,6 +773,7 @@ ports:
       offset: [-20, 0, 25]
     holder:
       include: true
+      alias: ext-usb-holder
       thickness: 2
 secondaries:
   m5L1:
