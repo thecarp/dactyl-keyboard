@@ -84,7 +84,10 @@
   (let [{:keys [anchor side segment offset]} anchoring
         {::anch/keys [type primary]} (resolve-anchor getopt anchor)]
     (case type
-      :central-housing
+      ::anch/central-gabel
+        [true
+         (central/tweak-post getopt anchor)]
+      ::anch/central-adapter
         [true
          (central/tweak-post getopt anchor)]
       :rear-housing

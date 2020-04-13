@@ -39,13 +39,12 @@
   central housing’s interface array. Data about the item is expected to have
   been enriched by the cross-index function for this purpose."
   [source-index item]
-  (let [props {::type :central-housing, :index source-index}
-        pluck (fn [path part extra]
+  (let [pluck (fn [path type extra]
                 (when-let [alias (get-in item path)]
-                  [alias (merge props {:part part} extra)]))]
-    [(pluck [:base :right-hand-alias] :gabel {:side :right})
-     (pluck [:base :left-hand-alias] :gabel {:side :left})
-     (pluck [:adapter :alias] :adapter {})]))
+                  [alias (merge {::type type, :index source-index} extra)]))]
+    [(pluck [:base :right-hand-alias] ::central-gabel {:side :right})
+     (pluck [:base :left-hand-alias] ::central-gabel {:side :left})
+     (pluck [:adapter :alias] ::central-adapter {})]))
 
 (defn- wrist-rest-block-alias
   [getopt mount-index]
@@ -140,18 +139,22 @@
 (defn- auto-body
   "Determine the default body of an anchor."
   [getopt anchor]
-  (case (getopt :derived :anchors anchor ::type)
-    :origin (if (and (getopt :main-body :reflect)
-                     (getopt :central-housing :include))
-              :central-housing
-              :main-body)
-    :port-hole (auto-body getopt (getopt :ports anchor :anchoring :anchor))
-    :port-anchor (auto-body getopt (getopt :ports anchor :anchoring :anchor))
-    :mcu-lock-plate (auto-body getopt (getopt :mcu :anchoring :anchor))
-    :secondary (auto-body getopt (getopt :secondaries anchor :anchoring :anchor))
-    :central-housing :central-housing
-    ;; Default:
-    :main-body))
+  (let [recurse (fn [fragment]  ; Look up a parent/primary anchor.
+                  (auto-body getopt
+                    (apply getopt (concat fragment [:anchoring :anchor]))))]
+    (case (getopt :derived :anchors anchor ::type)
+      :origin (if (and (getopt :main-body :reflect)
+                       (getopt :central-housing :include))
+                :central-housing
+                :main-body)
+      ::central-gabel :central-housing
+      ::central-adapter :main-body   ; Sic.
+      :mcu-lock-plate (recurse :mcu)
+      :port-hole (recurse :ports anchor)
+      :port-anchor (recurse :ports anchor)
+      :secondary (recurse :secondaries anchor)
+      ;; Default:
+      :main-body)))
 
 (defn resolve-body
   "Take a body setting for a feature. Return a non-auto body ID."

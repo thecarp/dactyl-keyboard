@@ -297,7 +297,8 @@
   the body of the central housing over more ethereral vertices that are not
   part of the body but correspond to its outer shell."
   [getopt index part side depth subject]
-  {:pre [(nat-int? index), (keyword? part), (keyword? depth)]}
+  {:pre [(nat-int? index), (keyword? part), (keyword? depth),
+         (#{:gabel :adapter} part)]}
   (let [points (getopt :central-housing :derived :interface index :points)
         coord (or  ; Pick the first of a number of candidates.
                (get-in points [:above-ground part side depth])  ; Gabel.
@@ -325,9 +326,7 @@
   ;; complex central-housing adapters and wall tweaks. Custom offsets and
   ;; angles may need to be added to the parameter set.
   [getopt {:keys [starting-point direction-point lateral-offset radial-offset]} subject]
-  (let [pred (fn [feature]
-               (and (= (::anch/type feature) :central-housing)
-                    (= (:part feature) :gabel)))
+  (let [pred (fn [{::anch/keys [type]}] (= type ::anch/central-gabel))
         anchor (resolve-anchor getopt starting-point pred)
         starting-coord (vec3 (reckon-from-anchor getopt starting-point {}))
         target-coord (chousing-fastener-landmark
@@ -562,9 +561,13 @@
   [_ {:keys [initial]}]
   initial)
 
-(defmethod by-type :central-housing
-  [getopt {:keys [index initial part side depth] :or {depth :outer}}]
-  (chousing-place getopt index part side depth initial))
+(defmethod by-type ::anch/central-gabel
+  [getopt {:keys [index initial side depth] :or {depth :outer}}]
+  (chousing-place getopt index :gabel side depth initial))
+
+(defmethod by-type ::anch/central-adapter
+  [getopt {:keys [index initial side depth] :or {depth :outer}}]
+  (chousing-place getopt index :adapter side depth initial))
 
 (defmethod by-type :rear-housing
   [getopt {:keys [side segment initial] :or {segment 3}}]
