@@ -365,218 +365,6 @@ main-body:
         - anchor: m5M
           side: ESE
           offset: [4, -2.5]
-  tweaks:
-    near-wall:  # Up the south side of the main key cluster:
-    - hull-around:
-      - [ca-near-base]
-      - [m5F, SSE, 3]
-      - [m5F, SSW, 3]
-      - [ca-near-lower-1]
-    - hull-around:
-      - [ca-near-lower-1]
-      - [m5F, SSW, 3]
-      - [m4F, SSE, 3]
-      - [m4F, SSW, 3]
-      - [ca-near-lower-2]
-    - hull-around:
-      - [ca-near-lower-2]
-      - [m4F, SSW, 3]
-      - [m3F, SSE, 3]
-      - [m3F, SSW, 3]
-      - [ca-near-upper-1]
-    - chunk-size: 3
-      hull-around:
-      - [m3F, SSW, 3]
-      - [ca-near-upper-1]
-      - [m2F, ENE, 4]
-      - [ca-near-upper-2]
-      - hull-around:
-        - [m2F, ESE, 4]
-        - [m2F, SSE, 4]
-      - [ca-near-upper-3]
-      - [m2F, SSW, 4]
-    top-wall:  # The roof of the main key cluster.
-    - chunk-size: 3
-      hull-around:
-      - [m1L, NNW, 3]
-      - [m0L, NNE, 3]
-      - [ca-far-wall]
-      - [m0L, NNW, 3]
-      - [ca-far-roof]
-      - [m0L, WNW, 1]
-      - [ca-mid-4]
-      - [m0L, WSW, 1]
-    - chunk-size: 3
-      hull-around:
-      - [ca-mid-4]
-      - [m0L, WSW, 1]
-      - [ca-mid-3]
-      - [m00, WNW, 1]
-      - [ca-mid-2]
-      - [m00, WSW, 1]
-    thumb-wall:  # Aditional thumb cluster walling.
-    # The upper left corner:
-    - chunk-size: 3
-      hull-around:
-      - [t0L, WNW, 3]
-      - [ca-thumb-1]
-      - [t0L, NNW, 3]
-      - [ca-mid-1]
-      - [t0L, NNE, 3]
-    # Between the upper left corner and the central-housing adapter:
-    - chunk-size: 3
-      hull-around:
-      - [ca-mid-1]
-      - hull-around:
-        - [t1L, WNW, 3]
-        - [t0L, NNE, 3]
-      - [ca-mid-2]
-      - [t1L, NNW, 4]
-      - [t2L, NNE, 4]
-    - chunk-size: 3
-      hull-around:
-      - [ca-mid-2]
-      - [t2L, NNE, 4]
-      - [m0F, WNW, 0]
-      - [t2L, ENE, 4]
-      - [m0F, WSW, 0]
-      - [t3L, WNW, 3, 4]
-    # The inside wall between the key clusters:
-    - chunk-size: 3
-      hull-around:
-      - [t3L, ESE, 4]
-      - [t3L, NNE, 4]
-      - [m0F, SSW, 0]
-      - [t3L, NNW, 4]
-    - chunk-size: 3
-      hull-around:
-      - [m0F, SSW, 0]
-      - [t3L, ESE, 4]
-      - [m0F, SSE, 0]
-      - [t3F, ENE, 4]
-      - [m1F, WSW, 0]
-      - [m2F, WNW, 1]
-      - [m1F, ESE, 0]
-    - chunk-size: 3
-      hull-around:
-      - [m2F, WNW, 1]
-      - [t3F, ENE, 4]
-      - hull-around:
-        - [m2F, WSW, 1]
-        - [m2F, SSW, 1]
-      - [t3F, ESE, 4]
-      - [m2F, SSW, 3, 4]
-      - [t3F, SSE, 4]
-      - [m2F, SSW, 4]
-      - [t3F, SSW, 4]
-      - [ca-near-upper-3]
-    # Between the thumb cluster and the near side of the central housing:
-    - chunk-size: 3
-      hull-around:
-      - [t3F, SSW, 4]
-      - [ca-near-upper-3]
-      - [t2F, SSE, 4]
-      - [t0F1]
-      - hull-around:
-        - [t1F, SSW, 4]
-        - [t1F, WSW, 4]
-      - [t0F, SSE, 4]
-    - chunk-size: 3
-      hull-around:
-      - [t0F, SSE, 4]
-      - [t0F1]
-      - hull-around:
-        - [t0F, WSW, 3]
-        - [t0F, SSW, 3, 4]
-      - [ca-near-upper-4]
-      - hull-around:
-        - [t0F, WNW, 3]
-        - [ca-near-upper-5]
-    - chunk-size: 3
-      hull-around:
-      - [t0F, WNW, 3]
-      - [ca-near-upper-5]
-      - [t0L, WSW, 3]
-      - [ca-near-roof]
-      - [t0L, WNW, 3]
-    gap-fill:  # Miscellaneous triangular fillers.
-    - hull-around:
-      - [ca-mid-2]
-      - [m00, WSW, 0, 1]
-      - [m0F, WNW, 0]
-    - hull-around:
-      - [m0F, ESE, 0]
-      - [m1F, WNW, 0]
-      - [m1F, WSW, 0]
-    - hull-around:
-      - [m1F, ESE, 0]
-      - [m2F, WNW, 0, 1]
-    - hull-around:
-      - [ca-near-upper-3]
-      - [ca-near-upper-4]
-      - [t0F1]
-    far-wall:  # The far side of the main cluster.
-    # A fairly rectangular plate past m5L and a larger plate for m4L, up to
-    # the side of m3L.
-    - chunk-size: 3
-      hull-around:
-      - [m5L, NNE, 0]
-      - [m5L1]
-      - [m5L, NNW, 0]
-      - [m5L2]
-      - [m4L, NNE, 0]
-      - [m5L2]
-      - [m4L, NNW, 0]
-      - hull-around:
-        - [m3L, ESE, 0, 1]
-        - [m3L, ENE, 1]
-        - [m3L, NNE, 0, 4]
-    # Cosmetic fix for the tiny gap between m3L and m4L.
-    - hull-around:
-      - [m3L, NNE, 4]
-      - [m3L, NNW, 4]
-      - [m2L, NNE, 1]
-    # A long, thin, complicated sliver joining the north edge of the web to the
-    # central-housing adapter.
-    - hull-around:
-      - [ca-far-base]
-      - [ca-far-wall]
-      - [m5L1]
-      - [m5L2]
-      - [m3L, NNE, 3]
-      - [m3L, NNW, 3]
-      - [m2L, NNE, 3]
-      - [m2L, NNW, 3]
-      - [m1L, NNE, 3]
-      - [m1L, NNW, 3]
-    bottom:
-    # A thin strip along the east side of the main cluster.
-    # This comes in two parts because hulling the entire strip would extend the
-    # bottom plate outside the case.
-    - at-ground: true
-      hull-around:
-      - [ca-bottom-1]
-      - [ci-near-base]
-      - [ca-near-base]
-      - [m5F, SSE, 0, 3]
-      - [m5F, ESE, 0]
-      - [m5F, ENE, 0]
-    - at-ground: true
-      hull-around:
-      - [ca-bottom-1]
-      - [m5F, ENE, 0]
-      - [m5M, ESE, 0]
-      - [m5M, ENE, 0]
-      - [ca-bottom-2]
-    - at-ground: true
-      hull-around:
-      - [m5M, ENE, 0]
-      - [m5L, ESE, 0]
-      - [m5L, ENE, 0]
-      - [m5L1]
-      - [ca-far-base]
-      - [ci-far-base]
-      - [ca-bottom-2]
 central-housing:
   include: true
   shape:
@@ -732,6 +520,218 @@ central-housing:
     - anchor: ci-far-base
       offset: [-42, -4]
       direction: north
+tweaks:
+  near-wall:  # Up the south side of the main key cluster:
+  - hull-around:
+    - [ca-near-base]
+    - [m5F, SSE, 3]
+    - [m5F, SSW, 3]
+    - [ca-near-lower-1]
+  - hull-around:
+    - [ca-near-lower-1]
+    - [m5F, SSW, 3]
+    - [m4F, SSE, 3]
+    - [m4F, SSW, 3]
+    - [ca-near-lower-2]
+  - hull-around:
+    - [ca-near-lower-2]
+    - [m4F, SSW, 3]
+    - [m3F, SSE, 3]
+    - [m3F, SSW, 3]
+    - [ca-near-upper-1]
+  - chunk-size: 3
+    hull-around:
+    - [m3F, SSW, 3]
+    - [ca-near-upper-1]
+    - [m2F, ENE, 4]
+    - [ca-near-upper-2]
+    - hull-around:
+      - [m2F, ESE, 4]
+      - [m2F, SSE, 4]
+    - [ca-near-upper-3]
+    - [m2F, SSW, 4]
+  top-wall:  # The roof of the main key cluster.
+  - chunk-size: 3
+    hull-around:
+    - [m1L, NNW, 3]
+    - [m0L, NNE, 3]
+    - [ca-far-wall]
+    - [m0L, NNW, 3]
+    - [ca-far-roof]
+    - [m0L, WNW, 1]
+    - [ca-mid-4]
+    - [m0L, WSW, 1]
+  - chunk-size: 3
+    hull-around:
+    - [ca-mid-4]
+    - [m0L, WSW, 1]
+    - [ca-mid-3]
+    - [m00, WNW, 1]
+    - [ca-mid-2]
+    - [m00, WSW, 1]
+  thumb-wall:  # Aditional thumb cluster walling.
+  # The upper left corner:
+  - chunk-size: 3
+    hull-around:
+    - [t0L, WNW, 3]
+    - [ca-thumb-1]
+    - [t0L, NNW, 3]
+    - [ca-mid-1]
+    - [t0L, NNE, 3]
+  # Between the upper left corner and the central-housing adapter:
+  - chunk-size: 3
+    hull-around:
+    - [ca-mid-1]
+    - hull-around:
+      - [t1L, WNW, 3]
+      - [t0L, NNE, 3]
+    - [ca-mid-2]
+    - [t1L, NNW, 4]
+    - [t2L, NNE, 4]
+  - chunk-size: 3
+    hull-around:
+    - [ca-mid-2]
+    - [t2L, NNE, 4]
+    - [m0F, WNW, 0]
+    - [t2L, ENE, 4]
+    - [m0F, WSW, 0]
+    - [t3L, WNW, 3, 4]
+  # The inside wall between the key clusters:
+  - chunk-size: 3
+    hull-around:
+    - [t3L, ESE, 4]
+    - [t3L, NNE, 4]
+    - [m0F, SSW, 0]
+    - [t3L, NNW, 4]
+  - chunk-size: 3
+    hull-around:
+    - [m0F, SSW, 0]
+    - [t3L, ESE, 4]
+    - [m0F, SSE, 0]
+    - [t3F, ENE, 4]
+    - [m1F, WSW, 0]
+    - [m2F, WNW, 1]
+    - [m1F, ESE, 0]
+  - chunk-size: 3
+    hull-around:
+    - [m2F, WNW, 1]
+    - [t3F, ENE, 4]
+    - hull-around:
+      - [m2F, WSW, 1]
+      - [m2F, SSW, 1]
+    - [t3F, ESE, 4]
+    - [m2F, SSW, 3, 4]
+    - [t3F, SSE, 4]
+    - [m2F, SSW, 4]
+    - [t3F, SSW, 4]
+    - [ca-near-upper-3]
+  # Between the thumb cluster and the near side of the central housing:
+  - chunk-size: 3
+    hull-around:
+    - [t3F, SSW, 4]
+    - [ca-near-upper-3]
+    - [t2F, SSE, 4]
+    - [t0F1]
+    - hull-around:
+      - [t1F, SSW, 4]
+      - [t1F, WSW, 4]
+    - [t0F, SSE, 4]
+  - chunk-size: 3
+    hull-around:
+    - [t0F, SSE, 4]
+    - [t0F1]
+    - hull-around:
+      - [t0F, WSW, 3]
+      - [t0F, SSW, 3, 4]
+    - [ca-near-upper-4]
+    - hull-around:
+      - [t0F, WNW, 3]
+      - [ca-near-upper-5]
+  - chunk-size: 3
+    hull-around:
+    - [t0F, WNW, 3]
+    - [ca-near-upper-5]
+    - [t0L, WSW, 3]
+    - [ca-near-roof]
+    - [t0L, WNW, 3]
+  gap-fill:  # Miscellaneous triangular fillers.
+  - hull-around:
+    - [ca-mid-2]
+    - [m00, WSW, 0, 1]
+    - [m0F, WNW, 0]
+  - hull-around:
+    - [m0F, ESE, 0]
+    - [m1F, WNW, 0]
+    - [m1F, WSW, 0]
+  - hull-around:
+    - [m1F, ESE, 0]
+    - [m2F, WNW, 0, 1]
+  - hull-around:
+    - [ca-near-upper-3]
+    - [ca-near-upper-4]
+    - [t0F1]
+  far-wall:  # The far side of the main cluster.
+  # A fairly rectangular plate past m5L and a larger plate for m4L, up to
+  # the side of m3L.
+  - chunk-size: 3
+    hull-around:
+    - [m5L, NNE, 0]
+    - [m5L1]
+    - [m5L, NNW, 0]
+    - [m5L2]
+    - [m4L, NNE, 0]
+    - [m5L2]
+    - [m4L, NNW, 0]
+    - hull-around:
+      - [m3L, ESE, 0, 1]
+      - [m3L, ENE, 1]
+      - [m3L, NNE, 0, 4]
+  # Cosmetic fix for the tiny gap between m3L and m4L.
+  - hull-around:
+    - [m3L, NNE, 4]
+    - [m3L, NNW, 4]
+    - [m2L, NNE, 1]
+  # A long, thin, complicated sliver joining the north edge of the web to the
+  # central-housing adapter.
+  - hull-around:
+    - [ca-far-base]
+    - [ca-far-wall]
+    - [m5L1]
+    - [m5L2]
+    - [m3L, NNE, 3]
+    - [m3L, NNW, 3]
+    - [m2L, NNE, 3]
+    - [m2L, NNW, 3]
+    - [m1L, NNE, 3]
+    - [m1L, NNW, 3]
+  bottom:
+  # A thin strip along the east side of the main cluster.
+  # This comes in two parts because hulling the entire strip would extend the
+  # bottom plate outside the case.
+  - at-ground: true
+    hull-around:
+    - [ca-bottom-1]
+    - [ci-near-base]
+    - [ca-near-base]
+    - [m5F, SSE, 0, 3]
+    - [m5F, ESE, 0]
+    - [m5F, ENE, 0]
+  - at-ground: true
+    hull-around:
+    - [ca-bottom-1]
+    - [m5F, ENE, 0]
+    - [m5M, ESE, 0]
+    - [m5M, ENE, 0]
+    - [ca-bottom-2]
+  - at-ground: true
+    hull-around:
+    - [m5M, ENE, 0]
+    - [m5L, ESE, 0]
+    - [m5L, ENE, 0]
+    - [m5L1]
+    - [ca-far-base]
+    - [ci-far-base]
+    - [ca-bottom-2]
 mcu:
   include: true
   intrinsic-rotation: [-1.5708, 0.785398, 3.14159]  # π/2, π/4, π.

@@ -272,86 +272,86 @@ main-body:
         - anchor: right0
           side: ESE
           offset: [-1, 10]
-  tweaks:
-    webbing:
-      - chunk-size: 3
-        hull-around:  # Between the two thumb clusters.
-        - [thumb-tl, WNW, 0]
-        - [thumb-ml, ENE, 0]
-        - [thumb-tl, WSW, 0]
-        - [thumb-ml, ESE, 0]
-        - [thumb-tl, SSE, 0]
-        - [thumb-mr, ENE, 0]
-        - [thumb-tr, SSW, 0]
-        - [thumb-mr, SSE, 0]
-        - [thumb-tr, SSE, 0]
-      - chunk-size: 3
-        hull-around:  # Between thumb0 and the main cluster.
-        - [thumb-tl, NNW, 0]
-        - [m00, SSW, 0]
-        - [thumb-tl, NNE, 0]
-        - [m00, SSE, 0]
-        - [thumb-tr, NNW, 0]
-        - [m01, SSW, 0]
-        - [thumb-tr, NNE, 0]
-        - hull-around:
-          - [m01, SSE, 0]
-          - [m02, WNW, 0]
-        - [thumb-tr, ENE, 0]
-        - hull-around:
-          - [m02, WNW, 0]
-          - [m02, WSW, 0]
-        - [thumb-tr, ESE, 0]
-        - [m02, SSW, 0]
-        - hull-around:
-          - [m02, SSE, 0]
-          - [m03, WSW, 0]
-    to-floor:
-      - at-ground: true
-        hull-around:
-        - [m00, WSW, 3, 4]
-        - [thumb-ml, NNE, 3, 4]
-      - at-ground: true
-        hull-around:
-        - [thumb-ml, NNW, 3, 4]
-        - [thumb-bl, NNE, 3, 4]
-      - at-ground: true
-        hull-around:
-        - [m03, SSW, 3, 4]
-        - [thumb-tr, SSE, 3, 4]
-      - at-ground: true
-        hull-around:
-        - [thumb-tr, SSE, 3, 4]
-        - [thumb-mr, SSE, 3, 4]
-      - at-ground: true
-        hull-around:
-        - [thumb-mr, SSW, 3, 4]
-        - [thumb-br, SSE, 3, 4]
-      - at-ground: true
-        above-ground: false  # Extend the bottom plate only.
-        hull-around:
-        - [m03, SSW, 3]
-        - [thumb-tr, SSE, 3]
-        - [thumb-ml, NNE, 3]
-        - [m00, WSW, 3]
-      - at-ground: true
-        above-ground: false  # Extend the bottom plate only.
-        hull-around:
-        - [thumb-mr, SSE, 3]
-        - [thumb-ml, NNE, 3]
-        - [thumb-tr, SSE, 3]
-    thumb-to-finger-gap:
-      - chunk-size: 3
-        hull-around:
-        - [m00, WSW, 0, 2]
-        - [m00, WSW, 3, 4]
-        - [thumb-tl, WNW, 0]
-        - [thumb-ml, NNE, 0, 4]
-      - chunk-size: 2
-        hull-around:
-        - [thumb-mr, SSE, 0, 4]
-        - [thumb-tr, SSE, 0, 4]
-        - [m03, SSW, 0, 4]
+tweaks:
+  webbing:
+    - chunk-size: 3
+      hull-around:  # Between the two thumb clusters.
+      - [thumb-tl, WNW, 0]
+      - [thumb-ml, ENE, 0]
+      - [thumb-tl, WSW, 0]
+      - [thumb-ml, ESE, 0]
+      - [thumb-tl, SSE, 0]
+      - [thumb-mr, ENE, 0]
+      - [thumb-tr, SSW, 0]
+      - [thumb-mr, SSE, 0]
+      - [thumb-tr, SSE, 0]
+    - chunk-size: 3
+      hull-around:  # Between thumb0 and the main cluster.
+      - [thumb-tl, NNW, 0]
+      - [m00, SSW, 0]
+      - [thumb-tl, NNE, 0]
+      - [m00, SSE, 0]
+      - [thumb-tr, NNW, 0]
+      - [m01, SSW, 0]
+      - [thumb-tr, NNE, 0]
+      - hull-around:
+        - [m01, SSE, 0]
+        - [m02, WNW, 0]
+      - [thumb-tr, ENE, 0]
+      - hull-around:
+        - [m02, WNW, 0]
+        - [m02, WSW, 0]
+      - [thumb-tr, ESE, 0]
+      - [m02, SSW, 0]
+      - hull-around:
+        - [m02, SSE, 0]
+        - [m03, WSW, 0]
+  to-floor:
+    - at-ground: true
+      hull-around:
+      - [m00, WSW, 3, 4]
+      - [thumb-ml, NNE, 3, 4]
+    - at-ground: true
+      hull-around:
+      - [thumb-ml, NNW, 3, 4]
+      - [thumb-bl, NNE, 3, 4]
+    - at-ground: true
+      hull-around:
+      - [m03, SSW, 3, 4]
+      - [thumb-tr, SSE, 3, 4]
+    - at-ground: true
+      hull-around:
+      - [thumb-tr, SSE, 3, 4]
+      - [thumb-mr, SSE, 3, 4]
+    - at-ground: true
+      hull-around:
+      - [thumb-mr, SSW, 3, 4]
+      - [thumb-br, SSE, 3, 4]
+    - at-ground: true
+      above-ground: false  # Extend the bottom plate only.
+      hull-around:
+      - [m03, SSW, 3]
+      - [thumb-tr, SSE, 3]
+      - [thumb-ml, NNE, 3]
+      - [m00, WSW, 3]
+    - at-ground: true
+      above-ground: false  # Extend the bottom plate only.
+      hull-around:
+      - [thumb-mr, SSE, 3]
+      - [thumb-ml, NNE, 3]
+      - [thumb-tr, SSE, 3]
+  thumb-to-finger-gap:
+    - chunk-size: 3
+      hull-around:
+      - [m00, WSW, 0, 2]
+      - [m00, WSW, 3, 4]
+      - [thumb-tl, WNW, 0]
+      - [thumb-ml, NNE, 0, 4]
+    - chunk-size: 2
+      hull-around:
+      - [thumb-mr, SSE, 0, 4]
+      - [thumb-tr, SSE, 0, 4]
+      - [m03, SSW, 0, 4]
 mcu:
   include: true
   type: promicro

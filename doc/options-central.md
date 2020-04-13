@@ -37,7 +37,6 @@ When present, a central housing naturally determines the position of each other 
         - Parameter <a href="#user-content-bottom-plate-projections-include">`include`</a>
         - Parameter <a href="#user-content-bottom-plate-projections-scale">`scale`</a>
     - Parameter <a href="#user-content-bottom-plate-fastener-positions">`fastener-positions`</a>
-- Parameter <a href="#user-content-tweaks">`tweaks`</a>
 
 ## Parameter <a id="include">`include`</a>
 
@@ -116,7 +115,7 @@ The DMOTE application uses the `interface` to construct OpenSCAD polyhedrons. Op
 
 The central housing can connect to key clusters through an adapter: A part that is shaped like the central housing and extends the rest of the case to meet the central housing at an interface.
 
-Using `main-body` → `tweaks`, points on the adapter should be connected to key cluster walls to close the case around the adapter but leave the adapter itself open.
+Using `tweaks`, points on the adapter should be connected to key cluster walls to close the case around the adapter but leave the adapter itself open.
 
 ### Parameter <a id="adapter-include">`include`</a>
 
@@ -243,10 +242,6 @@ The scale of each projection, as a 2-tuple of horizontal and vertical factors. T
 ### Parameter <a id="bottom-plate-fastener-positions">`fastener-positions`</a>
 
 The positions of threaded fasteners used to attach the bottom plate to the body of the central housing. In addition to the properties permitted in similar lists of such anchors, the central housing permits a `direction`, formulated as a point on the compass or an angle in radians. This property controls the facing of a projection. Typically, you want it facing the central housing’s nearest wall.
-
-## Parameter <a id="tweaks">`tweaks`</a>
-
-Precisely like `case` → `tweaks` but just for the central housing.
 
 ⸻
 

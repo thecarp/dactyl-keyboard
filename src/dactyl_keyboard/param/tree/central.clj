@@ -181,7 +181,7 @@
     "The central housing can connect to key clusters through an adapter: "
     "A part that is shaped like the central housing and extends the "
     "rest of the case to meet the central housing at an interface.\n\n"
-    "Using `main-body` → `tweaks`, points on the adapter should be connected to key "
+    "Using `tweaks`, points on the adapter should be connected to key "
     "cluster walls to close the case around the adapter but leave the adapter "
     "itself open."]
    [:parameter [:adapter :include]
@@ -332,8 +332,4 @@
     "in similar lists of such anchors, the central housing permits a "
     "`direction`, formulated as a point on the compass or an angle in "
     "radians. This property controls the facing of a projection. Typically, "
-    "you want it facing the central housing’s nearest wall."]
-   [:parameter [:tweaks]
-    {:default [] :parse-fn schema/tweak-grove
-     :validate [::schema/tweak-name-map]}
-    "Precisely like `case` → `tweaks` but just for the central housing."]])
+    "you want it facing the central housing’s nearest wall."]])

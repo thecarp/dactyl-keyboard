@@ -75,12 +75,12 @@ Each heading in this document represents a recognized configuration key in the m
         - Parameter <a href="#user-content-main-body-leds-housing-size">`housing-size`</a>
         - Parameter <a href="#user-content-main-body-leds-emitter-diameter">`emitter-diameter`</a>
         - Parameter <a href="#user-content-main-body-leds-interval">`interval`</a>
-    - Parameter <a href="#user-content-main-body-tweaks">`tweaks`</a>
     - Section <a href="#user-content-main-body-foot-plates">`foot-plates`</a>
         - Parameter <a href="#user-content-main-body-foot-plates-include">`include`</a>
         - Parameter <a href="#user-content-main-body-foot-plates-height">`height`</a>
         - Parameter <a href="#user-content-main-body-foot-plates-polygons">`polygons`</a>
 - Section <a href="#user-content-central-housing">`central-housing`</a>
+- Parameter <a href="#user-content-tweaks">`tweaks`</a>
 - Section <a href="#user-content-mcu">`mcu`</a>
     - Parameter <a href="#user-content-mcu-include">`include`</a>
     - Parameter <a href="#user-content-mcu-preview">`preview`</a>
@@ -532,9 +532,29 @@ The diameter of a round hole for the light of an LED.
 
 The distance between LEDs on the strip. You may want to apply a setting slightly shorter than the real distance, since the algorithm carving the holes does not account for wall curvature.
 
-### Parameter <a id="main-body-tweaks">`tweaks`</a>
+### Section <a id="main-body-foot-plates">`foot-plates`</a>
 
-Additional shapes. This is usually needed to bridge gaps between the walls of the key clusters. The expected value here is an arbitrarily nested structure starting with a map of names to lists.
+Optional flat surfaces at ground level for adding silicone rubber feet or cork strips etc. to the bottom of the keyboard to increase friction and/or improve feel, sound and ground clearance.
+
+#### Parameter <a id="main-body-foot-plates-include">`include`</a>
+
+If `true`, include foot plates.
+
+#### Parameter <a id="main-body-foot-plates-height">`height`</a>
+
+The height in mm of each mounting plate.
+
+#### Parameter <a id="main-body-foot-plates-polygons">`polygons`</a>
+
+A list describing the horizontal shape, size and position of each mounting plate as a polygon.
+
+## Section <a id="central-housing">`central-housing`</a>
+
+A major body separate from the main body, located in between and connecting the two halves of a reflected main body. The central housing is documented in detail [here](options-central.md).
+
+## Parameter <a id="tweaks">`tweaks`</a>
+
+Additional shapes. This is usually needed to bridge gaps between the walls of key clusters. The expected value here is an arbitrarily nested structure starting with a map of names to lists.
 
 The names at the top level are arbitrary but should be distinct and descriptive. They cannot serve as anchors. Their only technical significance lies in the fact that when you combine multiple configuration files, a later tweak will override a previous tweak if and only if they share the same name.
 
@@ -575,26 +595,6 @@ In the following example, `A` and `B` are key aliases that would be defined else
         - [B, NNE, 0]
         - [A, SSW, 0, 4]
 ```
-
-### Section <a id="main-body-foot-plates">`foot-plates`</a>
-
-Optional flat surfaces at ground level for adding silicone rubber feet or cork strips etc. to the bottom of the keyboard to increase friction and/or improve feel, sound and ground clearance.
-
-#### Parameter <a id="main-body-foot-plates-include">`include`</a>
-
-If `true`, include foot plates.
-
-#### Parameter <a id="main-body-foot-plates-height">`height`</a>
-
-The height in mm of each mounting plate.
-
-#### Parameter <a id="main-body-foot-plates-polygons">`polygons`</a>
-
-A list describing the horizontal shape, size and position of each mounting plate as a polygon.
-
-## Section <a id="central-housing">`central-housing`</a>
-
-A major body separate from the main body, located in between and connecting the two halves of a reflected main body. The central housing is documented in detail [here](options-central.md).
 
 ## Section <a id="mcu">`mcu`</a>
 

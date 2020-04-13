@@ -403,11 +403,33 @@
     "The distance between LEDs on the strip. You may want to apply a setting "
     "slightly shorter than the real distance, since the algorithm carving the "
     "holes does not account for wall curvature."]
-   [:parameter [:main-body :tweaks]
-    {:default [] :parse-fn schema/tweak-grove
+   [:section [:main-body :foot-plates]
+    "Optional flat surfaces at ground level for adding silicone rubber feet "
+    "or cork strips etc. to the bottom of the keyboard to increase friction "
+    "and/or improve feel, sound and ground clearance."]
+   [:parameter [:main-body :foot-plates :include]
+    {:default false :parse-fn boolean} "If `true`, include foot plates."]
+   [:parameter [:main-body :foot-plates :height]
+    {:default 4 :parse-fn num} "The height in mm of each mounting plate."]
+   [:parameter [:main-body :foot-plates :polygons]
+    {:default []
+     :parse-fn schema/anchored-polygons
+     :validate [::schema/foot-plate-polygons]}
+    "A list describing the horizontal shape, size and "
+    "position of each mounting plate as a polygon."]
+   [:parameter [:central-housing]
+    {:heading-template "Section %s"
+     :default (base/extract-defaults central/raws)
+     :parse-fn (base/parser-with-defaults central/raws)
+     :validate [(base/delegated-validation central/raws)]}
+    "A major body separate from the main body, located in between and "
+    "connecting the two halves of a reflected main body. "
+    "The central housing is documented in detail [here](options-central.md)."]
+   [:parameter [:tweaks]
+    {:default {} :parse-fn schema/tweak-grove
      :validate [::schema/tweak-name-map]}
     "Additional shapes. This is usually needed to bridge gaps between the "
-    "walls of the key clusters. The expected value here is an arbitrarily "
+    "walls of key clusters. The expected value here is an arbitrarily "
     "nested structure starting with a map of names to lists.\n"
     "\n"
     "The names at the top level are arbitrary but should be distinct and "
@@ -480,28 +502,6 @@
     "        - [A, SSE, 0]\n"
     "        - [B, NNE, 0]\n"
     "        - [A, SSW, 0, 4]\n```"]
-   [:section [:main-body :foot-plates]
-    "Optional flat surfaces at ground level for adding silicone rubber feet "
-    "or cork strips etc. to the bottom of the keyboard to increase friction "
-    "and/or improve feel, sound and ground clearance."]
-   [:parameter [:main-body :foot-plates :include]
-    {:default false :parse-fn boolean} "If `true`, include foot plates."]
-   [:parameter [:main-body :foot-plates :height]
-    {:default 4 :parse-fn num} "The height in mm of each mounting plate."]
-   [:parameter [:main-body :foot-plates :polygons]
-    {:default []
-     :parse-fn schema/anchored-polygons
-     :validate [::schema/foot-plate-polygons]}
-    "A list describing the horizontal shape, size and "
-    "position of each mounting plate as a polygon."]
-   [:parameter [:central-housing]
-    {:heading-template "Section %s"
-     :default (base/extract-defaults central/raws)
-     :parse-fn (base/parser-with-defaults central/raws)
-     :validate [(base/delegated-validation central/raws)]}
-    "A major body separate from the main body, located in between and "
-    "connecting the two halves of a reflected main body. "
-    "The central housing is documented in detail [here](options-central.md)."]
    [:section [:mcu]
     "MCU is short for ”micro-controller unit”. You need at least one of "
     "these, it’s assumed to be mounted on a PCB, and you typically want some "

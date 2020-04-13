@@ -2,36 +2,35 @@
 # replacing the MCU shelf with a slim gripper that exposes the
 # connector on the MCU directly through the case wall.
 
-main-body:
-  tweaks:
-    mcu-grip:
-      - chunk-size: 2
-        hull-around:
-        - [grip-west-corner-forward]
-        - [grip-west-corner-backward]
-        - [grip-west-center-outermost]
-      - chunk-size: 2
-        hull-around:
-        - [grip-east-corner-forward]
-        - [grip-east-corner-backward]
-        - [grip-east-center-outermost]
-      - hull-around:
-        - [grip-west-center-outermost]
-        - [grip-west-center-innermost]
-        - [grip-east-center-innermost]
-        - [grip-east-center-outermost]
-    grip-to-web:
-      - hull-around:
-        - [grip-west-center-outermost]
-        - [grip-east-center-outermost]
-        - [grip-rear-west]
-        - [grip-rear-east]
-      - hull-around:
-        - [grip-rear-west]
-        - [grip-rear-east]
-        - [back0, ESE, 0]
-        - [back1, WSW, 0]
-        - [mcu-base-key, ENE, 0]
+tweaks:
+  mcu-grip:
+    - chunk-size: 2
+      hull-around:
+      - [grip-west-corner-forward]
+      - [grip-west-corner-backward]
+      - [grip-west-center-outermost]
+    - chunk-size: 2
+      hull-around:
+      - [grip-east-corner-forward]
+      - [grip-east-corner-backward]
+      - [grip-east-center-outermost]
+    - hull-around:
+      - [grip-west-center-outermost]
+      - [grip-west-center-innermost]
+      - [grip-east-center-innermost]
+      - [grip-east-center-outermost]
+  grip-to-web:
+    - hull-around:
+      - [grip-west-center-outermost]
+      - [grip-east-center-outermost]
+      - [grip-rear-west]
+      - [grip-rear-east]
+    - hull-around:
+      - [grip-rear-west]
+      - [grip-rear-east]
+      - [back0, ESE, 0]
+      - [back1, WSW, 0]
+      - [mcu-base-key, ENE, 0]
 mcu:
   type: promicro
   intrinsic-rotation: [0, 0, 0]  # Lie flat.

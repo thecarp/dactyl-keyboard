@@ -82,56 +82,55 @@ secondaries:
     anchoring:
       anchor: wrb4c
     translation: [0, -10, 0]
-main-body:
-  tweaks:
-    wrist-rest-bridge-main-body:
-      - chunk-size: 2
-        at-ground: true
-        hull-around:
-        - hull-around:
-          - [wrb1a]
-          - [wrb1b]
-          - [wrb1c]
-          - [wrb1d]
-        - hull-around:
-          - [wrb2a]
-          - [wrb2b]
-          - [wrb2c]
-          - [wrb2d]
-    wrist-rest-bridge-middle:
-      - chunk-size: 2
-        at-ground: true
-        hull-around:
-        - hull-around:
-          - [wrb2a]
-          - [wrb2b]
-          - [wrb2c]
-          - [wrb2d]
-        - hull-around:
-          - [wrb3a]
-          - [wrb3b]
-          - [wrb3c]
-          - [wrb3d]
-    wrist-rest-bridge-rest:
-      - chunk-size: 2
-        at-ground: true
-        hull-around:
-        - hull-around:
-          - [wrb3a]
-          - [wrb3b]
-          - [wrb3c]
-          - [wrb3d]
-        - hull-around:
-          - [wrb4a]
-          - [wrb4b]
-          - [wrb4c]
-          - [wrb4d]
-        - hull-around:
-          - [wrb-rest]
-          - [plinth-mid0]
-          - [plinth-mid1]
-          - [wrb5b]
-          - [wrb5c]
+tweaks:
+  wrist-rest-bridge-main-body:
+    - chunk-size: 2
+      at-ground: true
+      hull-around:
+      - hull-around:
+        - [wrb1a]
+        - [wrb1b]
+        - [wrb1c]
+        - [wrb1d]
+      - hull-around:
+        - [wrb2a]
+        - [wrb2b]
+        - [wrb2c]
+        - [wrb2d]
+  wrist-rest-bridge-middle:
+    - chunk-size: 2
+      at-ground: true
+      hull-around:
+      - hull-around:
+        - [wrb2a]
+        - [wrb2b]
+        - [wrb2c]
+        - [wrb2d]
+      - hull-around:
+        - [wrb3a]
+        - [wrb3b]
+        - [wrb3c]
+        - [wrb3d]
+  wrist-rest-bridge-rest:
+    - chunk-size: 2
+      at-ground: true
+      hull-around:
+      - hull-around:
+        - [wrb3a]
+        - [wrb3b]
+        - [wrb3c]
+        - [wrb3d]
+      - hull-around:
+        - [wrb4a]
+        - [wrb4b]
+        - [wrb4c]
+        - [wrb4d]
+      - hull-around:
+        - [wrb-rest]
+        - [plinth-mid0]
+        - [plinth-mid1]
+        - [wrb5b]
+        - [wrb5c]
 wrist-rest:
   include: true
   style: solid

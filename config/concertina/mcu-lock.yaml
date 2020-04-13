@@ -1,14 +1,14 @@
 # Configuration fragment for an MCU lock on a Concertina.
 
-central-housing:
-  tweaks:  # Tweaks for the central housing.
-    mcu-holder:
-    - at-ground: true
-      hull-around:
-      - [mcu-plate, NE]
-      - [mcu-SE]
-      - [mcu-SW]
-      - [mcu-plate, NW]
+tweaks:
+  mcu-holder:
+  - at-ground: true
+    body: central-housing
+    hull-around:
+    - [mcu-plate, NE]
+    - [mcu-SE]
+    - [mcu-SW]
+    - [mcu-plate, NW]
 mcu:
   anchoring:
     anchor: ci-far-base

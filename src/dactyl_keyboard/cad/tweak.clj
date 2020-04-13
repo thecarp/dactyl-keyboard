@@ -66,7 +66,7 @@
 
 (defn- forest [getopt]
   "Retrieve the complete set of nodes, sans names."
-  (apply concat (vals (getopt :main-body :tweaks))))
+  (apply concat (vals (getopt :tweaks))))
 
 
 ;;;;;;;;

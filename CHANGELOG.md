@@ -13,6 +13,8 @@ version 0.2.0, thus covering only a fraction of the project’s history.
           how it interacts with the new `central-housing` feature.
         - The `case-side` style of mounting wrist rests was similarly renamed
           to `main-side`.
+        - The `tweaks` parameter has moved out of `main-body` to the top level,
+          because it can also be used for other bodies.
     - Multiple sections for anchoring have been **renamed** from `position` to
       `anchoring` to reduce ambiguity with respect to bodies.
         - Parameters named `corner` have been **renamed** to `side`. They now
