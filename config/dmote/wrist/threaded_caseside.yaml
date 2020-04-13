@@ -18,7 +18,7 @@ wrist-rest:
       distance: 37
       width: 10
       main-side:
-        position:
+        anchoring:
           anchor: t4
           side: NNE
           offset: [5, 8.5]
@@ -41,7 +41,7 @@ wrist-rest:
       distance: 30
       width: 10
       main-side:
-        position:
+        anchoring:
           anchor: near-right
           side: SSW
           offset: [-5, 0]

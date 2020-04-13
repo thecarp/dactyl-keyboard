@@ -19,18 +19,18 @@ This specific document describes options for each “mount”, a pair of cuboid 
     - Parameter <a href="#user-content-blocks-distance">`distance`</a>
     - Parameter <a href="#user-content-blocks-width">`width`</a>
     - Section <a href="#user-content-blocks-main-side">`main-side`</a>
-        - Section <a href="#user-content-blocks-main-side-position">`position`</a>
-            - Parameter <a href="#user-content-blocks-main-side-position-anchor">`anchor`</a>
-            - Parameter <a href="#user-content-blocks-main-side-position-side">`side`</a>
-            - Parameter <a href="#user-content-blocks-main-side-position-offset">`offset`</a>
+        - Section <a href="#user-content-blocks-main-side-anchoring">`anchoring`</a>
+            - Parameter <a href="#user-content-blocks-main-side-anchoring-anchor">`anchor`</a>
+            - Parameter <a href="#user-content-blocks-main-side-anchoring-side">`side`</a>
+            - Parameter <a href="#user-content-blocks-main-side-anchoring-offset">`offset`</a>
         - Parameter <a href="#user-content-blocks-main-side-depth">`depth`</a>
         - Section <a href="#user-content-blocks-main-side-nuts">`nuts`</a>
             - Section <a href="#user-content-blocks-main-side-nuts-bosses">`bosses`</a>
                 - Parameter <a href="#user-content-blocks-main-side-nuts-bosses-include">`include`</a>
     - Section <a href="#user-content-blocks-plinth-side">`plinth-side`</a>
-        - Section <a href="#user-content-blocks-plinth-side-position">`position`</a>
-            - Parameter <a href="#user-content-blocks-plinth-side-position-anchor">`anchor`</a>
-            - Parameter <a href="#user-content-blocks-plinth-side-position-offset">`offset`</a>
+        - Section <a href="#user-content-blocks-plinth-side-anchoring">`anchoring`</a>
+            - Parameter <a href="#user-content-blocks-plinth-side-anchoring-anchor">`anchor`</a>
+            - Parameter <a href="#user-content-blocks-plinth-side-anchoring-offset">`offset`</a>
         - Parameter <a href="#user-content-blocks-plinth-side-depth">`depth`</a>
         - Parameter <a href="#user-content-blocks-plinth-side-pocket-height">`pocket-height`</a>
     - Parameter <a href="#user-content-blocks-aliases">`aliases`</a>
@@ -71,7 +71,7 @@ The vertical distance in mm from the center of each fastener to the center of th
 
 One of:
 
-- `main-side`: The `angle` parameter in this section determines the angle of the blocks and threaded fasteners in the mount. In effect, the plinth-side block is placed by `angle` and `distance`, while its own explicit `position` section of parameters is ignored.
+- `main-side`: The `angle` parameter in this section determines the angle of the blocks and threaded fasteners in the mount. In effect, the plinth-side block is placed by `angle` and `distance`, while its own explicit `anchoring` section of parameters is ignored.
 - `mutual`: The `angle` and `distance` parameters are ignored. Each block is anchored to a separate and independent feature. The angle and distance between these two features determines the angle of the fasteners and the distance between the blocks.
 
 ## Parameter <a id="angle">`angle`</a>
@@ -94,19 +94,19 @@ The width in mm of the face or front bezel on each block that will anchor a fast
 
 A block on the side of the keyboard case is mandatory.
 
-#### Section <a id="blocks-main-side-position">`position`</a>
+#### Section <a id="blocks-main-side-anchoring">`anchoring`</a>
 
 Where to place the block.
 
-##### Parameter <a id="blocks-main-side-position-anchor">`anchor`</a>
+##### Parameter <a id="blocks-main-side-anchoring-anchor">`anchor`</a>
 
 An alias referring to a feature that anchors the block.
 
-##### Parameter <a id="blocks-main-side-position-side">`side`</a>
+##### Parameter <a id="blocks-main-side-anchoring-side">`side`</a>
 
 A compass-point code for one side of the feature named in `anchor`. The default is `N`, signifying the north side.
 
-##### Parameter <a id="blocks-main-side-position-offset">`offset`</a>
+##### Parameter <a id="blocks-main-side-anchoring-offset">`offset`</a>
 
 A two-dimensional offset in mm from the feature named in `anchor`.
 
@@ -130,15 +130,15 @@ If `true`, include bosses.
 
 A block on the side of the wrist rest.
 
-#### Section <a id="blocks-plinth-side-position">`position`</a>
+#### Section <a id="blocks-plinth-side-anchoring">`anchoring`</a>
 
 Where to place the block. This entire section is ignored in the `main-side` style of anchoring.
 
-##### Parameter <a id="blocks-plinth-side-position-anchor">`anchor`</a>
+##### Parameter <a id="blocks-plinth-side-anchoring-anchor">`anchor`</a>
 
 An alias referring to a feature that anchors the block. Whereas the main-side mount is typically anchored to a key, the plinth-side mount is typically anchored to a named point on the plinth.
 
-##### Parameter <a id="blocks-plinth-side-position-offset">`offset`</a>
+##### Parameter <a id="blocks-plinth-side-anchoring-offset">`offset`</a>
 
 An offset in mm from the named feature to the block.
 

@@ -44,7 +44,7 @@
     "- `main-side`: The `angle` parameter in this section determines the angle "
     "of the blocks and threaded fasteners in the mount. In effect, the "
     "plinth-side block is placed by `angle` and `distance`, while its own "
-    "explicit `position` section of parameters is ignored.\n"
+    "explicit `anchoring` section of parameters is ignored.\n"
     "- `mutual`: The `angle` and `distance` parameters are ignored. Each "
     "block is anchored to a separate and independent feature. The angle and "
     "distance between these two features determines the angle of the "
@@ -65,15 +65,15 @@
     "block that will anchor a fastener."]
    [:section [:blocks :main-side]
     "A block on the side of the keyboard case is mandatory."]
-   [:section [:blocks :main-side :position]
+   [:section [:blocks :main-side :anchoring]
     "Where to place the block."]
-   [:parameter [:blocks :main-side :position :anchor]
+   [:parameter [:blocks :main-side :anchoring :anchor]
     {:default :origin :parse-fn keyword :validate [::schema/anchor]}
     "An alias referring to a feature that anchors the block."]
-   [:parameter [:blocks :main-side :position :side]
+   [:parameter [:blocks :main-side :anchoring :side]
     stock/anchor-side-metadata
     stock/anchor-side-documentation]
-   [:parameter [:blocks :main-side :position :offset]
+   [:parameter [:blocks :main-side :anchoring :offset]
     stock/anchor-2d-vector-metadata
     stock/anchor-2d-offset-documentation]
    [:parameter [:blocks :main-side :depth]
@@ -90,15 +90,15 @@
     "If `true`, include bosses."]
    [:section [:blocks :plinth-side]
     "A block on the side of the wrist rest."]
-   [:section [:blocks :plinth-side :position]
+   [:section [:blocks :plinth-side :anchoring]
     "Where to place the block. This entire section is ignored in the "
     "`main-side` style of anchoring."]
-   [:parameter [:blocks :plinth-side :position :anchor]
+   [:parameter [:blocks :plinth-side :anchoring :anchor]
     {:default :origin :parse-fn keyword :validate [::schema/anchor]}
     "An alias referring to a feature that anchors the block. Whereas the "
     "main-side mount is typically anchored to a key, the plinth-side mount "
     "is typically anchored to a named point on the plinth."]
-   [:parameter [:blocks :plinth-side :position :offset]
+   [:parameter [:blocks :plinth-side :anchoring :offset]
     {:default [0 0] :parse-fn vec}
     "An offset in mm from the named feature to the block."]
    [:parameter [:blocks :plinth-side :depth]

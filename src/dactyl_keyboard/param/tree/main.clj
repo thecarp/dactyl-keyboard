@@ -268,14 +268,12 @@
    [:parameter [:main-body :back-plate :fasteners :bosses]
     {:default false :parse-fn boolean}
     "If `true`, cut nut bosses into the inside wall of the block."]
-   [:section [:main-body :back-plate :position]
-    "The block is positioned in relation to a named feature."]
-   [:parameter [:main-body :back-plate :position :anchor]
-    {:default :origin :parse-fn keyword :validate [::schema/anchor]}
-    "The name of a feature where the block will attach."]
-   [:parameter [:main-body :back-plate :position :offset]
-    stock/anchor-3d-vector-metadata
-    stock/anchor-3d-offset-documentation]
+   [:section [:main-body :back-plate :anchoring]
+    stock/anchoring-documentation]
+   [:parameter [:main-body :back-plate :anchoring :anchor]
+    stock/anchor-metadata stock/anchor-documentation]
+   [:parameter [:main-body :back-plate :anchoring :offset]
+    stock/anchor-3d-vector-metadata stock/anchor-3d-offset-documentation]
    [:section [:main-body :bottom-plate]
     "A bottom plate can be added to close the case. This is useful mainly to "
     "simplify transportation.\n"
@@ -546,18 +544,20 @@
     "As an example, to have the PCBA standing on its long edge instead of "
     "lying flat, you would set this parameter like `[0, 1.5708, 0]`, the "
     "middle number being roughly π/2."]
-   [:section [:mcu :position]
-    "Where to place the MCU PCBA after intrinsic rotation."]
-   [:parameter [:mcu :position :anchor]
+   [:section [:mcu :anchoring]
+    "Where to place the MCU PCBA after intrinsic rotation. "
+    stock/anchoring-documentation]
+   [:parameter [:mcu :anchoring :anchor]
     {:default :origin :parse-fn keyword :validate [::schema/anchor]}
-    "The name of a feature at which to place the PCBA."]
-   [:parameter [:mcu :position :side]
+    stock/anchor-metadata
+    stock/anchor-documentation]
+   [:parameter [:mcu :anchoring :side]
     stock/anchor-side-metadata
     stock/anchor-side-documentation]
-   [:parameter [:mcu :position :segment]
+   [:parameter [:mcu :anchoring :segment]
     stock/anchor-segment-metadata
     stock/anchor-segment-documentation]
-   [:parameter [:mcu :position :offset]
+   [:parameter [:mcu :anchoring :offset]
     stock/anchor-3d-vector-metadata
     stock/anchor-3d-offset-documentation]
    [:section [:mcu :support]
@@ -781,17 +781,17 @@
     "Preview mode. If `true`, this puts a model of the wrist rest in the same "
     "OpenSCAD file as the case. That model is simplified, intended for gauging "
     "distance, not for printing."]
-   [:section [:wrist-rest :position]
-    "The wrist rest is positioned in relation to a named feature."]
-   [:parameter [:wrist-rest :position :anchor]
-    {:default :origin :parse-fn keyword :validate [::schema/anchor]}
-    "The name of a feature where the wrist rest will attach. "
-    "The vertical component of its position will be ignored."]
-   [:parameter [:wrist-rest :position :side]
+   [:section [:wrist-rest :anchoring]
+    stock/anchoring-documentation " "
+    "For wrist rests, the vertical component of the anchor’s position is "
+    "ignored."]
+   [:parameter [:wrist-rest :anchoring :anchor]
+    stock/anchor-metadata stock/anchor-documentation]
+   [:parameter [:wrist-rest :anchoring :side]
     stock/anchor-side-metadata stock/anchor-side-documentation]
-   [:parameter [:wrist-rest :position :segment]
+   [:parameter [:wrist-rest :anchoring :segment]
     stock/anchor-segment-metadata stock/anchor-segment-documentation]
-   [:parameter [:wrist-rest :position :offset]
+   [:parameter [:wrist-rest :anchoring :offset]
     stock/anchor-2d-vector-metadata stock/anchor-2d-offset-documentation]
    [:parameter [:wrist-rest :plinth-height]
     {:default 1 :parse-fn num}

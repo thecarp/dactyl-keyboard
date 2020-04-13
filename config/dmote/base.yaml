@@ -12,7 +12,7 @@ keys:
       skirt-thickness: 2.4
 key-clusters:
   main:
-    position:
+    anchoring:
       anchor: origin
       offset: [0, 0, 19.5]
     matrix-columns:
@@ -39,7 +39,7 @@ key-clusters:
       m13: [last, last]
       near-right: [last, first]
   thumb0:
-    position:
+    anchoring:
       anchor: m01
       offset: [-8, -16, 29]
     matrix-columns:
@@ -53,7 +53,7 @@ key-clusters:
       t3: [last, first]
       t4: [first, first]
   thumb1:
-    position:
+    anchoring:
       anchor: t4
       offset: [-12, 5, -17.5]
     matrix-columns:
@@ -62,7 +62,7 @@ key-clusters:
       t0: [first, last]
       t5: [first, first]
   aux0:
-    position:
+    anchoring:
       anchor: m12
       offset: [1.5, 17, 6]
     matrix-columns:
@@ -471,7 +471,7 @@ main-body:
         m-diameter: 6
         head-type: socket
       distance: 30
-    position:
+    anchoring:
       anchor: back1
       offset: [0, 0, 0]
   bottom-plate:
@@ -757,7 +757,7 @@ mcu:
   include: true
   # Stand on the long edge, folded into the rear housing.
   intrinsic-rotation: [0, 1.5708, -1.5708]
-  position:
+  anchoring:
     anchor: rear-housing
     side: NE
     segment: 3  # Floor level.
@@ -773,7 +773,7 @@ ports:
     include: true
     type: modular-4p4c-616e
     intrinsic-rotation: [0, 0, -1.5708]
-    position:
+    anchoring:
       anchor: rear-housing
       side: E
       segment: 1
@@ -783,7 +783,7 @@ ports:
       alias: reflection-port-holder
       thickness: 2
 wrist-rest:
-  position:
+  anchoring:
     offset: [83, -90]
   plinth-height: 2
   shape:

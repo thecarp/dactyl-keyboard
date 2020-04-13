@@ -24,7 +24,7 @@
   (->>
     shape
     (model/translate
-      (place/offset-from-anchor getopt (getopt :main-body :back-plate :position) 3))
+      (place/offset-from-anchor getopt (getopt :main-body :back-plate :anchoring) 3))
     (model/translate [0 0 (/ (getopt :main-body :back-plate :beam-height) -2)])))
 
 (defn backplate-shape
@@ -166,7 +166,7 @@
            (when (and (getopt :ports id :include)
                       (= (anch/resolve-body getopt
                            (getopt :ports id :body)
-                           (getopt :ports id :position :anchor))
+                           (getopt :ports id :anchoring :anchor))
                          body)
                       (or (not positive)
                           (getopt :ports id :holder :include)))

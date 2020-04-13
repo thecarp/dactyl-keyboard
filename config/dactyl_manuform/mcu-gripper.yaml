@@ -35,7 +35,7 @@ main-body:
 mcu:
   type: promicro
   intrinsic-rotation: [0, 0, 0]  # Lie flat.
-  position:
+  anchoring:
     anchor: big-port
     offset: [18, -4, -16]
   support:

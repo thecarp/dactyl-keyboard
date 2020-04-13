@@ -147,7 +147,7 @@
   Return a unary function: A partial translator."
   [getopt subject-cluster]
   (let [settings (getopt :key-clusters subject-cluster)
-        {:keys [anchor offset] :or {offset [0 0 0]}} (:position settings)
+        {:keys [anchor offset] :or {offset [0 0 0]}} (:anchoring settings)
         feature (reckon-feature getopt (resolve-anchor getopt anchor))]
    (partial flex/translate (mapv + feature offset))))
 
@@ -395,7 +395,7 @@
   [getopt subject]
   (->> subject
     (flex/rotate (getopt :mcu :intrinsic-rotation))
-    (flex/translate (reckon-with-anchor getopt (getopt :mcu :position)))))
+    (flex/translate (reckon-with-anchor getopt (getopt :mcu :anchoring)))))
 
 
 ;; Ports.
@@ -469,7 +469,7 @@
   (->> obj
     (flex/translate (port-alignment-offset getopt id))
     (flex/rotate (getopt :ports id :intrinsic-rotation))
-    (flex/translate (reckon-with-anchor getopt (getopt :ports id :position)))))
+    (flex/translate (reckon-with-anchor getopt (getopt :ports id :anchoring)))))
 
 
 ;; Wrist rests.

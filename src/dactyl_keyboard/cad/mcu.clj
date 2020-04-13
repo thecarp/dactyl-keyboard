@@ -41,7 +41,7 @@
                        :SE (mapv + plate-sw [xₜ 0 0])
                        :SW plate-sw}
         body (resolve-body getopt
-               (getopt :mcu :body) (getopt :mcu :position :anchor))]
+               (getopt :mcu :body) (getopt :mcu :anchoring :anchor))]
    {:include-centrally (and (getopt :mcu :include) (= body :central-housing))
     :include-mainly (and (getopt :mcu :include) (= body :main-body))
     ;; Add [x y z] coordinates of the four corners of the PCB. No DFM.
@@ -200,7 +200,7 @@
   (let [d (getopt :mcu :support :lock :fastener-properties :m-diameter)
         head-type (getopt :mcu :support :lock :fastener-properties :head-type)
         l0 (head-length d head-type)
-        l1 (if (= (getopt :mcu :position :anchor) :rear-housing)
+        l1 (if (= (getopt :mcu :anchoring :anchor) :rear-housing)
              (getopt :main-body :rear-housing :wall-thickness)
              (getopt :main-body :web-thickness))
         [_ pcb-y pcb-z] (map-to-3d-vec (getopt :mcu :derived :pcb))

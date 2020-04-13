@@ -25,11 +25,11 @@ Notice ports attached directly to microcontroller boards are treated in the `mcu
     - Parameter <a href="#user-content-alignment-segment">`segment`</a>
     - Parameter <a href="#user-content-alignment-side">`side`</a>
 - Parameter <a href="#user-content-intrinsic-rotation">`intrinsic-rotation`</a>
-- Section <a href="#user-content-position">`position`</a>
-    - Parameter <a href="#user-content-position-anchor">`anchor`</a>
-    - Parameter <a href="#user-content-position-side">`side`</a>
-    - Parameter <a href="#user-content-position-segment">`segment`</a>
-    - Parameter <a href="#user-content-position-offset">`offset`</a>
+- Section <a href="#user-content-anchoring">`anchoring`</a>
+    - Parameter <a href="#user-content-anchoring-anchor">`anchor`</a>
+    - Parameter <a href="#user-content-anchoring-side">`side`</a>
+    - Parameter <a href="#user-content-anchoring-segment">`segment`</a>
+    - Parameter <a href="#user-content-anchoring-offset">`offset`</a>
 - Section <a href="#user-content-holder">`holder`</a>
     - Parameter <a href="#user-content-holder-include">`include`</a>
     - Parameter <a href="#user-content-holder-alias">`alias`</a>
@@ -68,33 +68,33 @@ How the port lines itself up at its position.
 
 ### Parameter <a id="alignment-segment">`segment`</a>
 
-Which vertical segment of the port itself to place at `position` below. The default value here is 0, meaning the ceiling of the port.
+Which vertical segment of the port itself to place at its anchor. The default value here is 0, meaning the ceiling of the port.
 
 ### Parameter <a id="alignment-side">`side`</a>
 
-Which wall or corner of the port itself to place at `position`. The default value here is `N` (nominal north), which is the open face of the port.
+Which wall or corner of the port itself to place at its anchor. The default value here is `N` (nominal north), which is the open face of the port.
 
 ## Parameter <a id="intrinsic-rotation">`intrinsic-rotation`</a>
 
-An `[x, y, z]` vector of radians, rotating the port around its point of `alignment` before moving it to `position`.
+An `[x, y, z]` vector of radians, rotating the port around its point of `alignment` before moving it to `anchor`.
 
-## Section <a id="position">`position`</a>
+## Section <a id="anchoring">`anchoring`</a>
 
-This section collects the most important factors for placing the aligned port on the keyboard.
+The concept of anchoring is explained [here](configuration.md).
 
-### Parameter <a id="position-anchor">`anchor`</a>
+### Parameter <a id="anchoring-anchor">`anchor`</a>
 
-The name of a feature at which to place the port.
+A code identifying an anchor point. This can the default value (`origin`) or a name (built-in or alias) identifying a feature.
 
-### Parameter <a id="position-side">`side`</a>
+### Parameter <a id="anchoring-side">`side`</a>
 
 A compass-point code for one side of the feature named in `anchor`. The default is `N`, signifying the north side.
 
-### Parameter <a id="position-segment">`segment`</a>
+### Parameter <a id="anchoring-segment">`segment`</a>
 
 An integer identifying one vertical segment of the feature named in `anchor`. The default is `0`, signifying the topmost part of the anchor.
 
-### Parameter <a id="position-offset">`offset`</a>
+### Parameter <a id="anchoring-offset">`offset`</a>
 
 A three-dimensional offset in mm from the feature named in `anchor`. This is applied in the anchor’s local frame of reference and may therefore be subject to various rotations etc.
 

@@ -68,32 +68,27 @@
     "How the port lines itself up at its position."]
    [:parameter [:alignment :segment]
     stock/anchor-segment-metadata
-    "Which vertical segment of the port itself to place at `position` below. "
+    "Which vertical segment of the port itself to place at its anchor. "
     "The default value here is 0, meaning the ceiling of the port."]
    [:parameter [:alignment :side]
     stock/anchor-side-metadata
-    "Which wall or corner of the port itself to place at `position`. "
+    "Which wall or corner of the port itself to place at its anchor. "
     "The default value here is `N` (nominal north), which is the open face "
     "of the port."]
    [:parameter [:intrinsic-rotation]
     stock/anchor-3d-vector-metadata
     "An `[x, y, z]` vector of radians, rotating the port around its point "
-    "of `alignment` before moving it to `position`."]
-   [:section [:position]
-    "This section collects the most important factors for placing the "
-    "aligned port on the keyboard."]
-   [:parameter [:position :anchor]
-    {:default :origin :parse-fn keyword :validate [::schema/anchor]}
-    "The name of a feature at which to place the port."]
-   [:parameter [:position :side]
-    stock/anchor-side-metadata
-    stock/anchor-side-documentation]
-   [:parameter [:position :segment]
-    stock/anchor-segment-metadata
-    stock/anchor-segment-documentation]
-   [:parameter [:position :offset]
-    stock/anchor-3d-vector-metadata
-    stock/anchor-3d-offset-documentation]
+    "of `alignment` before moving it to `anchor`."]
+   [:section [:anchoring]
+    stock/anchoring-documentation]
+   [:parameter [:anchoring :anchor]
+    stock/anchor-metadata stock/anchor-documentation]
+   [:parameter [:anchoring :side]
+    stock/anchor-side-metadata stock/anchor-side-documentation]
+   [:parameter [:anchoring :segment]
+    stock/anchor-segment-metadata stock/anchor-segment-documentation]
+   [:parameter [:anchoring :offset]
+    stock/anchor-3d-vector-metadata stock/anchor-3d-offset-documentation]
    [:section [:holder]
     "A map describing a positive addition to the case on five "
     "sides of the port: Every side but the front."]

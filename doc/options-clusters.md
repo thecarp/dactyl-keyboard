@@ -10,9 +10,9 @@ This specific document describes options for the general outline and position of
 - Parameter <a href="#user-content-matrix-columns">`matrix-columns`</a>
 - Parameter <a href="#user-content-style">`style`</a>
 - Parameter <a href="#user-content-aliases">`aliases`</a>
-- Section <a href="#user-content-position">`position`</a>
-    - Parameter <a href="#user-content-position-anchor">`anchor`</a>
-    - Parameter <a href="#user-content-position-offset">`offset`</a>
+- Section <a href="#user-content-anchoring">`anchoring`</a>
+    - Parameter <a href="#user-content-anchoring-anchor">`anchor`</a>
+    - Parameter <a href="#user-content-anchoring-offset">`offset`</a>
 
 ## Parameter <a id="matrix-columns">`matrix-columns`</a>
 
@@ -38,26 +38,19 @@ Cluster layout style. One of:
 
 ## Parameter <a id="aliases">`aliases`</a>
 
-A map of short names to specific keys by coordinate pair. Such aliases are for use elsewhere in the configuration.
+A map of short names to specific keys by coordinate pair. These names can be used as anchors for other features.
 
-## Section <a id="position">`position`</a>
+## Section <a id="anchoring">`anchoring`</a>
 
-The position of the key cluster relative to something else.
+The position of the key cluster relative to something else. The concept of anchoring is explained [here](configuration.md).
 
-### Parameter <a id="position-anchor">`anchor`</a>
+### Parameter <a id="anchoring-anchor">`anchor`</a>
 
-A named feature. More specifically, one of:
+A code identifying an anchor point. This can the default value (`origin`) or a name (built-in or alias) identifying a feature.
 
-- `origin`: The origin of the coordinate system.
-- A named key in some other cluster, as named in any of the `aliases` sections described above.
+### Parameter <a id="anchoring-offset">`offset`</a>
 
-Take care not to create circular dependencies between clusters.
-
-### Parameter <a id="position-offset">`offset`</a>
-
-A 3-dimensional offset in mm from the indicated key or else from the origin of the coordinate system.
-
-The z-coordinate, which is the last number in this offset, is vertical adjustment of the key cluster. Set for your main cluster, it controls the overall height of the keyboard, including the height of its case.
+A three-dimensional offset in mm from the feature named in `anchor`. This is applied in the anchor’s local frame of reference and may therefore be subject to various rotations etc.
 
 ⸻
 

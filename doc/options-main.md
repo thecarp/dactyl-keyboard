@@ -46,9 +46,9 @@ Each heading in this document represents a recognized configuration key in the m
             - Parameter <a href="#user-content-main-body-back-plate-fasteners-bolt-properties">`bolt-properties`</a>
             - Parameter <a href="#user-content-main-body-back-plate-fasteners-distance">`distance`</a>
             - Parameter <a href="#user-content-main-body-back-plate-fasteners-bosses">`bosses`</a>
-        - Section <a href="#user-content-main-body-back-plate-position">`position`</a>
-            - Parameter <a href="#user-content-main-body-back-plate-position-anchor">`anchor`</a>
-            - Parameter <a href="#user-content-main-body-back-plate-position-offset">`offset`</a>
+        - Section <a href="#user-content-main-body-back-plate-anchoring">`anchoring`</a>
+            - Parameter <a href="#user-content-main-body-back-plate-anchoring-anchor">`anchor`</a>
+            - Parameter <a href="#user-content-main-body-back-plate-anchoring-offset">`offset`</a>
     - Section <a href="#user-content-main-body-bottom-plate">`bottom-plate`</a>
         - Parameter <a href="#user-content-main-body-bottom-plate-include">`include`</a>
         - Parameter <a href="#user-content-main-body-bottom-plate-preview">`preview`</a>
@@ -87,11 +87,11 @@ Each heading in this document represents a recognized configuration key in the m
     - Parameter <a href="#user-content-mcu-body">`body`</a>
     - Parameter <a href="#user-content-mcu-type">`type`</a>
     - Parameter <a href="#user-content-mcu-intrinsic-rotation">`intrinsic-rotation`</a>
-    - Section <a href="#user-content-mcu-position">`position`</a>
-        - Parameter <a href="#user-content-mcu-position-anchor">`anchor`</a>
-        - Parameter <a href="#user-content-mcu-position-side">`side`</a>
-        - Parameter <a href="#user-content-mcu-position-segment">`segment`</a>
-        - Parameter <a href="#user-content-mcu-position-offset">`offset`</a>
+    - Section <a href="#user-content-mcu-anchoring">`anchoring`</a>
+        - Parameter <a href="#user-content-mcu-anchoring-anchor">`anchor`</a>
+        - Parameter <a href="#user-content-mcu-anchoring-side">`side`</a>
+        - Parameter <a href="#user-content-mcu-anchoring-segment">`segment`</a>
+        - Parameter <a href="#user-content-mcu-anchoring-offset">`offset`</a>
     - Section <a href="#user-content-mcu-support">`support`</a>
         - Parameter <a href="#user-content-mcu-support-preview">`preview`</a>
         - Section <a href="#user-content-mcu-support-shelf">`shelf`</a>
@@ -127,11 +127,11 @@ Each heading in this document represents a recognized configuration key in the m
     - Parameter <a href="#user-content-wrist-rest-include">`include`</a>
     - Parameter <a href="#user-content-wrist-rest-style">`style`</a>
     - Parameter <a href="#user-content-wrist-rest-preview">`preview`</a>
-    - Section <a href="#user-content-wrist-rest-position">`position`</a>
-        - Parameter <a href="#user-content-wrist-rest-position-anchor">`anchor`</a>
-        - Parameter <a href="#user-content-wrist-rest-position-side">`side`</a>
-        - Parameter <a href="#user-content-wrist-rest-position-segment">`segment`</a>
-        - Parameter <a href="#user-content-wrist-rest-position-offset">`offset`</a>
+    - Section <a href="#user-content-wrist-rest-anchoring">`anchoring`</a>
+        - Parameter <a href="#user-content-wrist-rest-anchoring-anchor">`anchor`</a>
+        - Parameter <a href="#user-content-wrist-rest-anchoring-side">`side`</a>
+        - Parameter <a href="#user-content-wrist-rest-anchoring-segment">`segment`</a>
+        - Parameter <a href="#user-content-wrist-rest-anchoring-offset">`offset`</a>
     - Parameter <a href="#user-content-wrist-rest-plinth-height">`plinth-height`</a>
     - Section <a href="#user-content-wrist-rest-shape">`shape`</a>
         - Section <a href="#user-content-wrist-rest-shape-spline">`spline`</a>
@@ -391,15 +391,15 @@ The horizontal distance between the bolts.
 
 If `true`, cut nut bosses into the inside wall of the block.
 
-#### Section <a id="main-body-back-plate-position">`position`</a>
+#### Section <a id="main-body-back-plate-anchoring">`anchoring`</a>
 
-The block is positioned in relation to a named feature.
+The concept of anchoring is explained [here](configuration.md).
 
-##### Parameter <a id="main-body-back-plate-position-anchor">`anchor`</a>
+##### Parameter <a id="main-body-back-plate-anchoring-anchor">`anchor`</a>
 
-The name of a feature where the block will attach.
+A code identifying an anchor point. This can the default value (`origin`) or a name (built-in or alias) identifying a feature.
 
-##### Parameter <a id="main-body-back-plate-position-offset">`offset`</a>
+##### Parameter <a id="main-body-back-plate-anchoring-offset">`offset`</a>
 
 A three-dimensional offset in mm from the feature named in `anchor`. This is applied in the anchor’s local frame of reference and may therefore be subject to various rotations etc.
 
@@ -636,23 +636,23 @@ By default, the PCBA appears lying flat, with the MCU side up and the connector 
 
 As an example, to have the PCBA standing on its long edge instead of lying flat, you would set this parameter like `[0, 1.5708, 0]`, the middle number being roughly π/2.
 
-### Section <a id="mcu-position">`position`</a>
+### Section <a id="mcu-anchoring">`anchoring`</a>
 
-Where to place the MCU PCBA after intrinsic rotation.
+Where to place the MCU PCBA after intrinsic rotation. The concept of anchoring is explained [here](configuration.md).
 
-#### Parameter <a id="mcu-position-anchor">`anchor`</a>
+#### Parameter <a id="mcu-anchoring-anchor">`anchor`</a>
 
-The name of a feature at which to place the PCBA.
+{:default :origin, :parse-fn #object[clojure.core$keyword 0x47ab3688 "clojure.core$keyword@47ab3688"], :validate [:dactyl-keyboard.param.schema/anchor]}A code identifying an anchor point. This can the default value (`origin`) or a name (built-in or alias) identifying a feature.
 
-#### Parameter <a id="mcu-position-side">`side`</a>
+#### Parameter <a id="mcu-anchoring-side">`side`</a>
 
 A compass-point code for one side of the feature named in `anchor`. The default is `N`, signifying the north side.
 
-#### Parameter <a id="mcu-position-segment">`segment`</a>
+#### Parameter <a id="mcu-anchoring-segment">`segment`</a>
 
 An integer identifying one vertical segment of the feature named in `anchor`. The default is `0`, signifying the topmost part of the anchor.
 
-#### Parameter <a id="mcu-position-offset">`offset`</a>
+#### Parameter <a id="mcu-anchoring-offset">`offset`</a>
 
 A three-dimensional offset in mm from the feature named in `anchor`. This is applied in the anchor’s local frame of reference and may therefore be subject to various rotations etc.
 
@@ -842,23 +842,23 @@ The style of the wrist rest. Available styles are:
 
 Preview mode. If `true`, this puts a model of the wrist rest in the same OpenSCAD file as the case. That model is simplified, intended for gauging distance, not for printing.
 
-### Section <a id="wrist-rest-position">`position`</a>
+### Section <a id="wrist-rest-anchoring">`anchoring`</a>
 
-The wrist rest is positioned in relation to a named feature.
+The concept of anchoring is explained [here](configuration.md). For wrist rests, the vertical component of the anchor’s position is ignored.
 
-#### Parameter <a id="wrist-rest-position-anchor">`anchor`</a>
+#### Parameter <a id="wrist-rest-anchoring-anchor">`anchor`</a>
 
-The name of a feature where the wrist rest will attach. The vertical component of its position will be ignored.
+A code identifying an anchor point. This can the default value (`origin`) or a name (built-in or alias) identifying a feature.
 
-#### Parameter <a id="wrist-rest-position-side">`side`</a>
+#### Parameter <a id="wrist-rest-anchoring-side">`side`</a>
 
 A compass-point code for one side of the feature named in `anchor`. The default is `N`, signifying the north side.
 
-#### Parameter <a id="wrist-rest-position-segment">`segment`</a>
+#### Parameter <a id="wrist-rest-anchoring-segment">`segment`</a>
 
 An integer identifying one vertical segment of the feature named in `anchor`. The default is `0`, signifying the topmost part of the anchor.
 
-#### Parameter <a id="wrist-rest-position-offset">`offset`</a>
+#### Parameter <a id="wrist-rest-anchoring-offset">`offset`</a>
 
 A two-dimensional offset in mm from the feature named in `anchor`.
 

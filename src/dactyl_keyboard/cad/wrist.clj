@@ -302,7 +302,7 @@
         z4 (+ z3 pad-above)
         z5 (+ z4 (getopt :wrist-rest :mould-thickness))
         absolute-ne
-          (place/offset-from-anchor getopt (getopt :wrist-rest :position) 2)
+          (place/offset-from-anchor getopt (getopt :wrist-rest :anchoring) 2)
         absolute-center (mapv - absolute-ne bound-center)]
    {:base-polygon (polygon2 raw-outline)
     :relative-to-base-fn around-origin
@@ -331,7 +331,7 @@
           (+ (/ (prop :fasteners :bolt-properties :m-diameter) 2)
              (prop :fasteners :height :first))
         to-3d #(misc/pad-to-3d % threaded-center-height)
-        ofa #(place/offset-from-anchor getopt (prop :blocks % :position) 2)
+        ofa #(place/offset-from-anchor getopt (prop :blocks % :anchoring) 2)
         main-side (to-3d (ofa :main-side))
         plinth-side
           ;; Find the position of the plinth-side block.

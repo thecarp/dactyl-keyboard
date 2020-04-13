@@ -8,14 +8,16 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - Moved and replaced some parameters:
     - The `case` section of parameters was **renamed** to `main-body` to
       avoid ambiguity with respect to the new central housing.
-          - The top-level parameter `split` was both moved into the `main-body`
-            section and renamed to `reflect` to avoid misleading the user about
-            how it interacts with the new `central-housing` feature.
-          - The `case-side` style of mounting wrist rests was similarly renamed
-            to `main-side`.
-    - Parameters named `corner` have been **renamed** to `side`. They now take
-      codes for cardinal compass points as well as actual corners. The default
-      side for anchoring has changed to the north.
+        - The top-level parameter `split` was both moved into the `main-body`
+          section and renamed to `reflect` to avoid misleading the user about
+          how it interacts with the new `central-housing` feature.
+        - The `case-side` style of mounting wrist rests was similarly renamed
+          to `main-side`.
+    - Multiple sections for anchoring have been **renamed** from `position` to
+      `anchoring` to reduce ambiguity with respect to bodies.
+        - Parameters named `corner` have been **renamed** to `side`. They now
+          take codes for cardinal compass points as well as actual corners. The
+          default side for anchoring has changed to the north.
     - All parameters governing individual properties of threaded bolts have
       been removed in favour of more powerful new parameters based on options
       exposed by a new library (`scad-klupe`) that draws bolts for the
@@ -76,7 +78,9 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 ### Added
 - Documentation:
     - An execution guide, as a new document branched off from the introduction.
+    - A general guide to concepts in the configuration layer.
     - Tables of content in auto-generated documents.
+    - Stock descriptions of recurring parameters.
 - Support for a number of different types of MCUs beyond the Pro Micro:
   Common Teensies as well as the Elite-C and Proton C.
 - Central housing, a new feature.

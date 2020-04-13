@@ -16,13 +16,13 @@ wrist-rest:
     blocks:
       width: 15
       main-side:
-        position:
+        anchoring:
           anchor: t4
           side: NNE
           offset: [7, -9]
         depth: 9
       plinth-side:
-        position:
+        anchoring:
           anchor: plinth-left
           offset: [10, 4]
         depth: 9.8

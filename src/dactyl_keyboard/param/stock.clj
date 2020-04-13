@@ -18,6 +18,15 @@
 ;;;;;;;;;;;;;;
 
 
+(def anchoring-documentation
+  (str "The concept of anchoring is explained [here](configuration.md)."))
+
+(def anchor-metadata
+  {:default :origin :parse-fn keyword :validate [::schema/anchor]})
+(def anchor-documentation
+  (str "A code identifying an anchor point. This can the default value "
+       "(`origin`) or a name (built-in or alias) identifying a feature."))
+
 (def anchor-side-metadata
   {:default :N, :parse-fn schema/any-compass-point
    :validate [compass/all-short]})

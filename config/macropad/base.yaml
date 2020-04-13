@@ -3,7 +3,7 @@
 
 key-clusters:
   main:
-    position:
+    anchoring:
       anchor: origin
       offset: [0, 0, 4.5]
     matrix-columns:
@@ -50,7 +50,7 @@ mcu:
   include: true
   # Stand on the long edge folded into the rear housing.
   intrinsic-rotation: [0, 1.5708, -1.5708]
-  position:
+  anchoring:
     anchor: rear-housing
     side: ENE
     segment: 2  # Midway up the wall.

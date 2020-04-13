@@ -145,9 +145,9 @@
                      (getopt :central-housing :include))
               :central-housing
               :main-body)
-    :port-hole (auto-body getopt (getopt :ports anchor :position :anchor))
-    :port-anchor (auto-body getopt (getopt :ports anchor :position :anchor))
-    :mcu-lock-plate (auto-body getopt (getopt :mcu :position :anchor))
+    :port-hole (auto-body getopt (getopt :ports anchor :anchoring :anchor))
+    :port-anchor (auto-body getopt (getopt :ports anchor :anchoring :anchor))
+    :mcu-lock-plate (auto-body getopt (getopt :mcu :anchoring :anchor))
     :secondary (auto-body getopt (getopt :secondaries anchor :anchoring :anchor))
     :central-housing :central-housing
     ;; Default:

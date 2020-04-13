@@ -5,8 +5,8 @@
 
 (ns dactyl-keyboard.param.tree.cluster
   (:require [clojure.spec.alpha :as spec]
-            [scad-tarmi.core :as tarmi-core]
-            [dactyl-keyboard.param.schema :as schema]))
+            [dactyl-keyboard.param.schema :as schema]
+            [dactyl-keyboard.param.stock :as stock]))
 
 (def raws
   "A flat version of a special part of a user configuration.
@@ -69,21 +69,13 @@
                               (schema/tuple-of schema/keyword-or-integer))
      :validate [(spec/map-of keyword? ::schema/flexcoord-2d)]}
     "A map of short names to specific keys by coordinate pair. "
-    "Such aliases are for use elsewhere in the configuration."]
-   [:section [:position]
-    "The position of the key cluster relative to something else."]
-   [:parameter [:position :anchor]
-    {:default :origin :parse-fn keyword :validate [::schema/anchor]}
-    "A named feature. More specifically, one of:\n\n"
-    "- `origin`: The origin of the coordinate system.\n"
-    "- A named key in some other cluster, as named in any of the `aliases` "
-    "sections described above.\n\n"
-    "Take care not to create circular dependencies between clusters."]
-   [:parameter [:position :offset]
-    {:default [0 0 0] :parse-fn vec :validate [::tarmi-core/point-3d]}
-    "A 3-dimensional offset in mm from the indicated key or else from the "
-    "origin of the coordinate system.\n"
-    "\n"
-    "The z-coordinate, which is the last number in this offset, is vertical "
-    "adjustment of the key cluster. Set for your main cluster, it controls "
-    "the overall height of the keyboard, including the height of its case."]])
+    "These names can be used as anchors for other features."]
+   [:section [:anchoring]
+    "The position of the key cluster relative to something else. "
+     stock/anchoring-documentation]
+   [:parameter [:anchoring :anchor]
+     stock/anchor-metadata
+     stock/anchor-documentation]
+   [:parameter [:anchoring :offset]
+     stock/anchor-3d-vector-metadata
+     stock/anchor-3d-offset-documentation]])
