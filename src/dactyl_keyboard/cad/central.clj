@@ -76,7 +76,7 @@
   "The union of all features produced by a given model function at the sites of
   all adapter fasteners matching a predicate function, on the right-hand side."
   [getopt pred model-fn]
-  (let [positions (getopt :case :central-housing :adapter :fasteners :positions)
+  (let [positions (getopt :central-housing :adapter :fasteners :positions)
         subject-fn #(place/chousing-fastener getopt % (model-fn getopt %))]
     (apply maybe/union (map subject-fn (filter pred positions)))))
 
@@ -97,10 +97,10 @@
   fastener. This design is a bit rough; more parameters would be needed to
   account for the possibility of wall surfaces angled on the x or y axes."
   [getopt {:keys [lateral-offset]}]
-  (let [rprop (partial getopt :case :central-housing :adapter :receivers)
-        fprop (partial getopt :case :central-housing :adapter :fasteners)
+  (let [rprop (partial getopt :central-housing :adapter :receivers)
+        fprop (partial getopt :central-housing :adapter :fasteners)
         diameter (fprop :bolt-properties :m-diameter)
-        z-wall (getopt :case :web-thickness)
+        z-wall (getopt :main-body :web-thickness)
         width (+ diameter (* 2 (rprop :thickness :rim)))
         z-hole (- (iso/bolt-length (fprop :bolt-properties)) z-wall)
         z-bridge (min z-hole (rprop :thickness :bridge))
@@ -139,8 +139,8 @@
   "Get half the width of the central housing and the full width of its
   adapter."
   [getopt]
-  [(/ (getopt :case :central-housing :shape :width) 2)
-   (getopt :case :central-housing :adapter :width)])
+  [(/ (getopt :central-housing :shape :width) 2)
+   (getopt :central-housing :adapter :width)])
 
 (defn- resolve-offsets
   "Find the 3D coordinates of points on the outer shell of passed interface."
@@ -189,7 +189,7 @@
   "Derive 3D coordinates on the main body of the central housing."
   [getopt interface]
   (let [[half-width _] (get-widths getopt)
-        thickness (getopt :case :web-thickness)
+        thickness (getopt :main-body :web-thickness)
         [cross-indexed items] (index-map interface :above-ground)
         [base-offsets _] (get-offsets items)
         [right-gabel-outer adapter-outer] (resolve-offsets getopt items)
@@ -206,8 +206,8 @@
   "Derive 3D coordinates on the adapter lip of the central housing."
   [getopt interface]
   (let [[cross-indexed items] (index-map interface :above-ground)
-        thickness (getopt :case :central-housing :adapter :lip :thickness)
-        width (partial getopt :case :central-housing :adapter :lip :width)
+        thickness (getopt :central-housing :adapter :lip :thickness)
+        width (partial getopt :central-housing :adapter :lip :width)
         base (map #(get-in % [:points :above-ground :gabel :right :inner]) items)
         shift-in (partial shift-points base)]
     (annotate-interface interface cross-indexed [:points :above-ground]
@@ -242,15 +242,15 @@
   "Derive quick-access flags for component inclusion."
   [getopt]
   (let [main (and (getopt :reflect)
-                  (getopt :case :central-housing :include))
+                  (getopt :central-housing :include))
         adapter (and main
-                     (getopt :case :central-housing :adapter :include))]
+                     (getopt :central-housing :adapter :include))]
     {:include-main main
      :include-sections (and main
                             (not (empty? (getopt :dfm :central-housing :sections))))
      :include-adapter adapter
      :include-lip (and adapter
-                       (getopt :case :central-housing :adapter :lip :include))}))
+                       (getopt :central-housing :adapter :lip :include))}))
 
 (defn categorize-explicitly
   "Annotate an interface item with explicit category tags.
@@ -271,7 +271,7 @@
   (merge
     (prepare-criteria getopt)
     {:interface  ; An annotated version of the interface list.
-      (->> (getopt :case :central-housing :shape :interface)
+      (->> (getopt :central-housing :shape :interface)
         (map categorize-explicitly)
         (locate-above-ground-points getopt)
         (locate-lip getopt)  ; Uses results from locate-above-ground-points.
@@ -283,7 +283,7 @@
   "Access some precomputed set of coordinates from derive-properties."
   [getopt pred item-path]
   (mapv #(get-in % item-path)
-        (filter pred (getopt :case :central-housing :derived :interface))))
+        (filter pred (getopt :central-housing :derived :interface))))
 
 (defn vertices
   "Access a coordinate sequence."
@@ -304,7 +304,7 @@
   [getopt]
   (merge-bolt
     {:compensator (getopt :dfm :derived :compensator), :negative true}
-    (getopt :case :central-housing :adapter :fasteners :bolt-properties)))
+    (getopt :central-housing :adapter :fasteners :bolt-properties)))
 
 (defn adapter-right-fasteners
   "All of the screws (negative space) for one side of the housing and adapter."

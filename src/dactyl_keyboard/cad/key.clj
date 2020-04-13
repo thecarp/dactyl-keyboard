@@ -147,7 +147,7 @@
         h1 (measure/pressed-clearance switch-type skirt-length)
         h2 (measure/resting-clearance switch-type skirt-length)]
     (model/color (:cap-negative misc/colours)
-      (model/translate [0 0 (getopt :case :key-mount-thickness)]
+      (model/translate [0 0 (getopt :main-body :key-mount-thickness)]
         (loft
           [(step (+ sx m) (+ sy m) (/ t 2)) ; A bottom plate for ease of mounting a switch.
            (step (+ sx m) (+ sy m) 1) ; Roughly the height of the foot of the switch.
@@ -166,7 +166,7 @@
     (merge {:supported supported} (getopt :keys :derived key-style))
     keycap
     (model/translate
-      [0 0 (+ (getopt :case :key-mount-thickness)
+      [0 0 (+ (getopt :main-body :key-mount-thickness)
               (getopt :keys :derived key-style :vertical-offset))])
     (model/color (:cap-body misc/colours))))
 
@@ -185,7 +185,7 @@
 
 (defn- plate-cutout-height
   [getopt switch-height-to-plate-top]
-  (- (* 2 switch-height-to-plate-top) (getopt :case :key-mount-thickness)))
+  (- (* 2 switch-height-to-plate-top) (getopt :main-body :key-mount-thickness)))
 
 (defn- alps-wing
   "Negative space for a pair of wings flaring out from the base of an
@@ -209,7 +209,7 @@
 (defn alps-switch
   "One ALPS-compatible cutout model."
   [getopt]
-  (let [thickness (getopt :case :key-mount-thickness)
+  (let [thickness (getopt :main-body :key-mount-thickness)
         {hole-x :x, hole-y :y} (get-in switch-properties [:alps :hole])
         height-to-plate-top 4.5
         {foot-x :x, foot-y :y} (get-in switch-properties [:alps :foot])]
@@ -230,7 +230,7 @@
 (defn mx-switch
   "One MX Cherry-compatible cutout model. Square."
   [getopt]
-  (let [thickness (getopt :case :key-mount-thickness)
+  (let [thickness (getopt :main-body :key-mount-thickness)
         hole-xy (get-in switch-properties [:mx :hole :x])
         foot-xy (get-in switch-properties [:mx :foot :x])
         height-to-plate-top 5.004
@@ -272,7 +272,7 @@
 (defn- single-plate
   "The shape of a key mounting plate."
   [getopt key-style]
-  (let [thickness (getopt :case :key-mount-thickness)
+  (let [thickness (getopt :main-body :key-mount-thickness)
         style-data (getopt :keys :derived key-style)
         [x y] (map measure/key-length (get style-data :unit-size [1 1]))]
    (model/translate [0 0 (/ thickness -2)]
@@ -281,9 +281,9 @@
 (defn web-post
   "A shape for attaching things to a corner of a switch mount."
   [getopt]
-  (model/cube (getopt :case :key-mount-corner-margin)
-              (getopt :case :key-mount-corner-margin)
-              (getopt :case :web-thickness)))
+  (model/cube (getopt :main-body :key-mount-corner-margin)
+              (getopt :main-body :key-mount-corner-margin)
+              (getopt :main-body :web-thickness)))
 
 (defn mount-corner-post
   "A post shape that comes offset for one corner of a key mount."

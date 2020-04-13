@@ -145,9 +145,9 @@
 (defn main-body-tweak-data
   "Retrieve payload data for case tweaks without their names."
   [getopt]
-  (apply concat (vals (getopt :case :tweaks))))
+  (apply concat (vals (getopt :main-body :tweaks))))
 
 (defn central-tweak-data
   "Same for the central housing."
   [getopt]
-  (apply concat (vals (getopt :case :central-housing :tweaks))))
+  (apply concat (vals (getopt :central-housing :tweaks))))

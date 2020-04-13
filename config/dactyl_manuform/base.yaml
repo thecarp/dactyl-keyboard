@@ -235,7 +235,7 @@ secondaries:
       side: NNE
       segment: 3
     override: [null, null, 3]
-case:
+main-body:
   key-mount-thickness: 4
   key-mount-corner-margin: 1.5
   web-thickness: 3.5

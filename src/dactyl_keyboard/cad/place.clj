@@ -92,11 +92,11 @@
   (let [style-data (getopt :keys :derived key-style)
         [subject-x subject-y] (map measure/key-length
                                 (get style-data :unit-size [1 1]))
-        m (getopt :case :key-mount-corner-margin)
+        m (getopt :main-body :key-mount-corner-margin)
         directions (side compass/intermediate-to-tuple)]
     [(* (apply compass/delta-x directions) (- (/ subject-x 2) (/ m 2)))
      (* (apply compass/delta-y directions) (- (/ subject-y 2) (/ m 2)))
-     (/ (getopt :case :web-thickness) -2)]))
+     (/ (getopt :main-body :web-thickness) -2)]))
 
 (defn- curver
   "Given an angle for progressive curvature, apply it. Else lay keys out flat."
@@ -205,8 +205,8 @@
 (defn- wall-vertex-offset
   "Compute a 3D offset from the center of a web post to a vertex on it."
   [getopt side keyopts]
-  (let [xy (/ (getopt :case :key-mount-corner-margin) 2)
-        z (/ (getopt :case :key-mount-thickness) 2)]
+  (let [xy (/ (getopt :main-body :key-mount-corner-margin) 2)
+        z (/ (getopt :main-body :key-mount-thickness) 2)]
     (matrix/cube-vertex-offset side [xy xy z] keyopts)))
 
 (defn wall-corner-offset
@@ -298,7 +298,7 @@
   part of the body but correspond to its outer shell."
   [getopt index part side depth subject]
   {:pre [(nat-int? index), (keyword? part), (keyword? depth)]}
-  (let [points (getopt :case :central-housing :derived :interface index :points)
+  (let [points (getopt :central-housing :derived :interface index :points)
         coord (or  ; Pick the first of a number of candidates.
                (get-in points [:above-ground part side depth])  ; Gabel.
                (get-in points [:above-ground part depth])  ; Adapter.
@@ -313,7 +313,7 @@
    :post [(spec/valid? ::tarmi-core/point-3d %)]}
   (if name
     (reckon-from-anchor getopt name {})
-    (let [prop (partial getopt :case :central-housing :shape)
+    (let [prop (partial getopt :central-housing :shape)
           index (misc/shallow-wrap (prop :interface)
                                    (+ base-index (math/sign distance)))]
       (mapv + [(/ (prop :width) 2) 0 0] (prop :interface index :base :offset)))))
@@ -350,10 +350,10 @@
   [getopt side segment]
   {:pre [(some? side)
          (compass/cardinals side)]}
-  (let [cluster (getopt :case :rear-housing :position :cluster)
+  (let [cluster (getopt :main-body :rear-housing :position :cluster)
         wall (fn [key] (wall-segment-offset
                          getopt cluster
-                         (getopt :case :rear-housing :derived :end-coord key)
+                         (getopt :main-body :rear-housing :derived :end-coord key)
                          side (min segment 1)))]
     (assoc  ; Replace the z coordinate.
        (case side
@@ -365,13 +365,13 @@
        (case segment
          0 0
          1 -1
-         2 (/ (getopt :case :rear-housing :height) -2)
-         (- (getopt :case :rear-housing :height))))))
+         2 (/ (getopt :main-body :rear-housing :height) -2)
+         (- (getopt :main-body :rear-housing :height))))))
 
 (defn rhousing-vertex-offset
   [getopt side]
   {:pre [(compass/noncardinals side)]}
-  (let [t (/ (getopt :case :web-thickness) 2)]
+  (let [t (/ (getopt :main-body :web-thickness) 2)]
     (matrix/cube-vertex-offset side [t t t] {})))
 
 (defn rhousing-place
@@ -380,7 +380,7 @@
   {:pre [(compass/all-short side)]}
   (flex/translate
     (mapv +
-      (getopt :case :rear-housing :derived :side
+      (getopt :main-body :rear-housing :derived :side
         (compass/convert-to-nonintermediate side))
       (rhousing-segment-offset
         getopt (compass/convert-to-cardinal side) segment))

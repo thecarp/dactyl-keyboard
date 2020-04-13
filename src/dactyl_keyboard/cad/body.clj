@@ -24,7 +24,7 @@
 (defn mask
   "Implement overall limits on passed shapes."
   [getopt with-plate & shapes]
-  (let [plate (if with-plate (getopt :case :bottom-plate :thickness) 0)]
+  (let [plate (if with-plate (getopt :main-body :bottom-plate :thickness) 0)]
     (model/intersection
       (maybe/translate [0 0 plate]
         (model/translate (getopt :mask :center)
@@ -181,19 +181,19 @@
 ;;;;;;;;;;;;;;;;;;
 
 (defn rhousing-post [getopt]
-  (let [xy (getopt :case :rear-housing :wall-thickness)]
-    (model/cube xy xy (getopt :case :rear-housing :roof-thickness))))
+  (let [xy (getopt :main-body :rear-housing :wall-thickness)]
+    (model/cube xy xy (getopt :main-body :rear-housing :roof-thickness))))
 
 (defn- rhousing-height
   "The precise height of (the center of) each top-level rhousing-post."
   [getopt]
-  (- (getopt :case :rear-housing :height)
-     (/ (getopt :case :rear-housing :roof-thickness) 2)))
+  (- (getopt :main-body :rear-housing :height)
+     (/ (getopt :main-body :rear-housing :roof-thickness) 2)))
 
 (defn rhousing-properties
   "Derive characteristics from parameters for the rear housing."
   [getopt]
-  (let [cluster (getopt :case :rear-housing :position :cluster)
+  (let [cluster (getopt :main-body :rear-housing :position :cluster)
         key-style (fn [coord] (most-specific getopt [:key-style] cluster coord))
         row (last (getopt :key-clusters :derived :by-cluster cluster :row-range))
         coords (getopt :key-clusters :derived :by-cluster cluster
@@ -203,7 +203,7 @@
                  (place/cluster-place getopt cluster coord
                    (place/mount-corner-offset getopt (key-style coord) side)))
         y-max (apply max (map #(second (getpos %)) pairs))
-        getoffset (partial getopt :case :rear-housing :position :offsets)
+        getoffset (partial getopt :main-body :rear-housing :position :offsets)
         y-roof-s (+ y-max (getoffset :south))
         y-roof-n (+ y-roof-s (getoffset :north))
         z (rhousing-height getopt)
@@ -227,7 +227,7 @@
 (defn- rhousing-roof
   "A cuboid shape between the four corners of the rear housing’s roof."
   [getopt]
-  (let [get-side (partial getopt :case :rear-housing :derived :side)]
+  (let [get-side (partial getopt :main-body :rear-housing :derived :side)]
     (apply model/hull
       (map #(maybe/translate (get-side %) (rhousing-post getopt))
            [:NW :NE :SE :SW]))))
@@ -240,12 +240,12 @@
   different."
   ;; TODO: Refactor this along the lines of the central housing.
   [getopt]
-  (let [cluster (getopt :case :rear-housing :position :cluster)
+  (let [cluster (getopt :main-body :rear-housing :position :cluster)
         cluster-pillar
           (fn [cardinal rhousing-turning-fn cluster-turning-fn]
             ;; Make a function for a part of the key cluster wall.
             (fn [reckon upper]
-              (let [coord (getopt :case :rear-housing :derived :end-coord cardinal)
+              (let [coord (getopt :main-body :rear-housing :derived :end-coord cardinal)
                     subject (if reckon [0 0 0] (key/web-post getopt))
                     ;; For reckoning, return a 3D coordinate vector.
                     ;; For building, return a sequence of web posts.
@@ -296,13 +296,13 @@
 (defn- rhousing-web
   "An extension of a key cluster’s webbing onto the roof of the rear housing."
   [getopt]
-  (let [cluster (getopt :case :rear-housing :position :cluster)
+  (let [cluster (getopt :main-body :rear-housing :position :cluster)
         key-style (fn [coord] (most-specific getopt [:key-style] cluster coord))
         pos-corner (fn [coord side]
                      (place/cluster-place getopt cluster coord
                        (place/mount-corner-offset getopt (key-style coord) side)))
-        sw (getopt :case :rear-housing :derived :side :SW)
-        se (getopt :case :rear-housing :derived :side :SE)
+        sw (getopt :main-body :rear-housing :derived :side :SW)
+        se (getopt :main-body :rear-housing :derived :side :SE)
         x (fn [coord side]
             (max (first sw)
                  (min (first (pos-corner coord side))
@@ -319,19 +319,19 @@
              (model/translate [(x coord side) y z]
                (rhousing-post getopt)))))
        []
-       (getopt :case :rear-housing :derived :coordinate-corner-pairs)))))
+       (getopt :main-body :rear-housing :derived :coordinate-corner-pairs)))))
 
 (defn- rhousing-mount-place [getopt side shape]
   {:pre [(compass/cardinals side)]}
-  (let [d (getopt :case :rear-housing :fasteners :bolt-properties :m-diameter)
-        offset (getopt :case :rear-housing :fasteners
+  (let [d (getopt :main-body :rear-housing :fasteners :bolt-properties :m-diameter)
+        offset (getopt :main-body :rear-housing :fasteners
                  (side compass/short-to-long) :offset)
-        n (getopt :case :rear-housing :position :offsets :north)
-        t (getopt :case :rear-housing :roof-thickness)
+        n (getopt :main-body :rear-housing :position :offsets :north)
+        t (getopt :main-body :rear-housing :roof-thickness)
         h (threaded/datum d :hex-nut-height)
         [sign base] (case side
-                      :W [+ (getopt :case :rear-housing :derived :side :SW)]
-                      :E [- (getopt :case :rear-housing :derived :side :SE)])
+                      :W [+ (getopt :main-body :rear-housing :derived :side :SW)]
+                      :E [- (getopt :main-body :rear-housing :derived :side :SE)])
         near (mapv + base [(+ (- (sign offset)) (sign d)) d (/ (+ t h) -2)])
         far (mapv + near [0 (- n d d) 0])]
    (model/hull
@@ -340,26 +340,26 @@
 
 (defn- rhousing-mount-positive [getopt side]
   {:pre [(compass/cardinals side)]}
-  (let [d (getopt :case :rear-housing :fasteners :bolt-properties :m-diameter)
+  (let [d (getopt :main-body :rear-housing :fasteners :bolt-properties :m-diameter)
         w (* 2.2 d)]
    (rhousing-mount-place getopt side
      (model/cube w w (threaded/datum d :hex-nut-height)))))
 
 (defn- rhousing-mount-negative [getopt side]
   {:pre [(compass/cardinals side)]}
-  (let [d (getopt :case :rear-housing :fasteners :bolt-properties :m-diameter)
+  (let [d (getopt :main-body :rear-housing :fasteners :bolt-properties :m-diameter)
         compensator (getopt :dfm :derived :compensator)]
    (model/union
      (rhousing-mount-place getopt side
        (model/cylinder (/ d 2) 20))
-     (if (getopt :case :rear-housing :fasteners :bosses)
+     (if (getopt :main-body :rear-housing :fasteners :bosses)
        (rhousing-mount-place getopt side
          (threaded/nut {:m-diameter d :compensator compensator :negative true}))))))
 
 (defn rear-housing
   "A squarish box at the far end of a key cluster."
   [getopt]
-  (let [prop (partial getopt :case :rear-housing :fasteners)
+  (let [prop (partial getopt :main-body :rear-housing :fasteners)
         pair (fn [function]
                (model/union
                  (when (prop :west :include) (function getopt :W))

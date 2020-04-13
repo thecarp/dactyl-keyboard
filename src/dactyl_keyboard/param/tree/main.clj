@@ -13,6 +13,7 @@
             [dactyl-keyboard.param.base :as base]
             [dactyl-keyboard.param.schema :as schema]
             [dactyl-keyboard.param.stock :as stock]
+            [dactyl-keyboard.param.tree.central :as central]
             [dactyl-keyboard.param.tree.cluster :as cluster]
             [dactyl-keyboard.param.tree.port :as port]
             [dactyl-keyboard.param.tree.nested :as nested]
@@ -149,418 +150,95 @@
     "south-east corner of vertical segment 2 of `f0`, projected onto the "
     "global x-y plane at z = 2 (i.e. 2 mm above the floor), and then shifted "
     "3 mm away from the user on that plane."]
-   [:section [:case]
-    "Much of the keyboard case is generated from the `wall` parameters "
+   [:section [:main-body]
+    "The main body of the keyboard is the main output of this application. "
+    "It may be the only body. "
+    "Much of this part of the case is generated from the `wall` parameters "
     "described [here](options-nested.md). "
-    "This section deals with lesser features of the case."]
-   [:parameter [:case :key-mount-thickness]
+    "This section deals with lesser features of the main body."]
+   [:parameter [:main-body :key-mount-thickness]
     {:default 1 :parse-fn num}
     "The thickness in mm of each switch key mounting plate."]
-   [:parameter [:case :key-mount-corner-margin]
+   [:parameter [:main-body :key-mount-corner-margin]
     {:default 1 :parse-fn num}
     "The thickness in mm of an imaginary “post” at each corner of each key "
     "mount. Copies of such posts project from the key mounts to form the main "
     "walls of the case.\n"
     "\n"
     "`key-mount-thickness` is similarly the height of each post."]
-   [:parameter [:case :web-thickness]
+   [:parameter [:main-body :web-thickness]
     {:default 1 :parse-fn num}
     "The thickness in mm of the webbing between switch key "
     "mounting plates, and of the rear housing’s walls and roof."]
-   [:section [:case :central-housing]
-    "A central housing can occupy the space between the key clusters, "
-    "providing a rigid mechanical connection and space for an MCU.\n\n"
-    "When present, a central housing naturally determines the position of each "
-    "other part of the keyboard: Key clusters on each side should be anchored "
-    "to points on the central housing, instead of being anchored to the "
-    "origin."]
-   [:parameter [:case :central-housing :include]
-    {:default false :parse-fn boolean}
-    "If this and `reflect` are both true, add a central housing."]
-   [:parameter [:case :central-housing :preview]
-    {:default false :parse-fn boolean}
-    "If `true`, include the central housing when rendering each half of the "
-    "main body of the keyboard."]
-   [:section [:case :central-housing :shape]
-    "The shape of the central housing determines, in part, how it connects "
-    "to the rest of the keyboard, including the general shape of an optional "
-    "adapter. "
-    "The adapter is also influenced, in part, by settings devoted to it, "
-    "in the next section.\n"
-    "\n"
-    "Assuming that adapters are included, you can think of a keyboard with "
-    "a central housing as a row of buildings: Terraced housing, also known "
-    "as row houses. "
-    "In this metaphor, the series of vertices placed with the `interface` "
-    "parameter in this section, and the `width`, determine the shape of each "
-    "house. "
-    "The adapters are the gables on either side of a particular house, "
-    "up against which two others house are built: The two mirrored halves of "
-    "the main body."]
-   [:parameter [:case :central-housing :shape :width]
-    {:default 1 :parse-fn num}
-    "The approximate extent of the housing itself, on the x axis, in mm."]
-   [:parameter [:case :central-housing :shape :interface]
-    {:default [] :parse-fn schema/central-housing-interface
-     :validate [::schema/central-housing-interface]}
-    "The `interface` setting is essentially a list of points in space. "
-    "Each of these points can influence the shape of the central housing "
-    "itself, its adapter, and/or the shape of its bottom plate.\n"
-    "\n"
-    "The question of which bodies will include each item in the list is "
-    "solved by the properties of each item in the list, including "
-    "the position of each point. Specifically, the `base` z-acis `offset` "
-    "coordinate (see below) controls the default values of the following "
-    "two optional properties if you omit them:\n"
-    "\n"
-    "* `at-ground`: If `true`, or if omitted and the `base` z coordinate is "
-    "not positive, the item will shape the bottom plate for the central "
-    "housing, if any.\n"
-    "* `above-ground`: If `true`, or if the `base` z coordinate is "
-    "not negative, the item will shape the main body of the central "
-    "housing itself. If an adapter is included, the item will shape that "
-    "too.\n"
-    "\n"
-    "Those items which are “above ground” determine the shape of each outer "
-    "edge of the housing, at the interface between the housing itself and "
-    "the rest of the case. They do this as an ordered list of "
-    "vertices, each defined primarily by an offset in a little section under "
-    "the `base` key. The following keys are allowed in the value of `base`:\n"
-    "\n"
-    "* `offset` (required): A three-dimensional position in mm. This offset "
-    "is from a point that is already displaced from the origin of the "
-    "coordinate system by exactly one half of the `width` set above. "
-    "The last coordinate (z coordinate) in this value determines the default "
-    "settings for both `at-ground` and `above-ground`, above.\n"
-    "* `left-hand-alias` (optional): A symbolic name for this point on the "
-    "interface. Specifically, `left-hand-alias` will identify the point on "
-    "the left-hand edge of the housing in its standard orientation.\n"
-    "* `right-hand-alias` (optional): A symbolic name for the point on the "
-    "right-hand-side edge. Because the right-hand side of the main body of "
-    "the keyboard is the source of the left-hand side (with `reflect`, hence "
-    "with a central housing), a `right-hand-alias` has more general utility.\n"
-    "\n"
-    "In addition to all properties named thus far, each item in the "
-    "`interface` list may also include an `adapter` section. "
-    "This section, and everything in it, is optional and relates to the "
-    "central housing adapter feature. "
-    "Briefly, the adapter fits precisely onto each interface of the housing. "
-    "Here’s what the `adapter` section can contain:"
-    "\n"
-    "* `offset`: Not to be confused with the base offset, this one is also "
-    "three-dimensional and in mm. It’s added to the width of the adapter "
-    "and the base position.\n"
-    "* `alias`: A symbolic name for this point on the side of the adapter "
-    "facing away from the central housing. Notice that the side facing toward "
-    "the central housing is coterminous with the interface itself, so the "
-    "corresponding point on it is named by `right-hand-alias`.\n"
-    "\n"
-    "The following example covers only one vertex on the housing and one "
-    "corresponding vertex on its adapter, and is therefore not a complete "
-    "interface. That said, it does show all of the properties one item in "
-    "the `interface` list can have, with realistic values.\n"
-    "\n"
-    "```\n"
-    "  interface:\n"
-    "  - at-ground: true\n"
-    "    above-ground: true\n"
-    "    base:\n"
-    "      offset: [0, 20, 40]\n"
-    "      left-hand-alias: housing-side-1L\n"
-    "      right-hand-alias: housing-side-1R\n"
-    "    adapter:\n"
-    "      offset: [10, 0, 0]\n"
-    "      alias: adapter-side-1\n```"
-    "\n"
-    "In this example, the vertex named `adapter-side-1` will be placed 10 mm "
-    "plus the overall width of the adapter away from `housing-side-1R`, with "
-    "the body of the adapter covering the intervening distance, so that the "
-    "shell of the adapter touches both vertices, and the housing only touches "
-    "one. Given that the `base` z cooridinate is zero, both `at-ground` and "
-    "`above-ground` have their default values and are therefore redundant.\n"
-    "\n"
-    "Aliases for vertices on the interface itself, as opposed to the adapter, "
-    "are useful mainly when you anchor features like an MCU holder to the "
-    "central housing. Doing so, you need to be aware that the central housing "
-    "has both symmetric and asymmetric properties. Its basic shape, including "
-    "everything you can determine with `interface`, will be bilaterally "
-    "symmetric. Adapters and their fasteners, and bottom plates, are also "
-    "symmetric, except for threaded holes. By contrast, "
-    "central-housing-specific `tweaks` and MCU holders will only appear on "
-    "the specific side of the housing that you indicate, breaking symmetry.\n"
-    "\n"
-    "Here’s an example of a valid, minimal, triangular profile, like a little "
-    "ridge tent:\n"
-    "\n"
-    "```\n"
-    "  interface:\n"
-    "  - base:\n"
-    "      offset: [0, -10, 0]\n"
-    "  - base:\n"
-    "      offset: [4, 0, 10]\n"
-    "  - base:\n"
-    "      offset: [0, 10, 0]\n```"
-    "\n"
-    "In this example, the high point in the middle is offset on the x axis, "
-    "giving the edge of the central housing a slant as seen from infinite y. "
-    "Notice also that the lowest z coordinate is 0, "
-    "which places this central housing on the floor, inside the `mask`. "
-    "This is not required. A lower z coordinate will cause the `mask` to open "
-    "the bottom of the central housing, which is usually more practical for "
-    "running wires through the keyboard. "
-    "Notice that if you do use a lower z coordinate and you still want "
-    "the two lower points to be included in the body of the central housing, "
-    "you will need to set `above-ground` to `true`, as an explicit addition "
-    "to the two items at the extremes.\n"
-    "\n"
-    "It may not be obvious why `at-ground` and `above-ground` are mutually "
-    "independent of one another and of the `base` z coordinate that gives them "
-    "their default values. The main reason for this design is to allow points "
-    "that are “ethereal”, appearing in neither body. Ethereal points are "
-    "similar to `secondaries`, but unlike `secondaries`, they are influenced "
-    "by central-housing width settings and not tied to other points on the "
-    "interface. They are intended as anchors for key clusters and tweaks, "
-    "where their responsiveness to width alone comes in handy as you work out "
-    "the precise shape of the housing.\n"
-    "\n"
-    "The DMOTE application uses the `interface` to construct OpenSCAD "
-    "polyhedrons. OpenSCAD and CGAL have many requirements upon polyhedrons "
-    "and a carelessly constructed interface will violate them, resulting in "
-    "a central housing that cannot be rendered or printed. "
-    "As a rule of thumb, define your interface moving clockwise from the "
-    "point of view of positive infinite x, like the tent example. "
-    "Be especially careful with `adapter` offsets on the y and z axes, "
-    "and try to keep the housing itself more than twice as broad as its wall "
-    "thickness.\n"]
-   [:section [:case :central-housing :adapter]
-    "The central housing can connect to key clusters through an adapter: "
-    "A part that is shaped like the central housing and extends the "
-    "rest of the case to meet the central housing at an interface.\n\n"
-    "Using `case` → `tweaks`, points on the adapter should be connected to key "
-    "cluster walls to close the case around the adapter but leave the adapter "
-    "itself open."]
-   [:parameter [:case :central-housing :adapter :include]
-    {:default false :parse-fn boolean}
-    "If this is `true`, add an adapter for the central housing."]
-   [:parameter [:case :central-housing :adapter :width]
-    {:default 1 :parse-fn num}
-    "The approximate width of the adapter on each side of the central housing, "
-    "along its axis (the x axis). Individual points on the adapter can be "
-    "offset from this width using the `interface` list."]
-   [:section [:case :central-housing :adapter :lip]
-    "To stabilize the connection between the central housing and the adapter, "
-    "the interface between them can include an interior lip."]
-   [:parameter [:case :central-housing :adapter :lip :include]
-    {:default false :parse-fn boolean}
-    "If `true`, attach a lip to the central housing."]
-   [:parameter [:case :central-housing :adapter :lip :thickness]
-    {:default 1 :parse-fn num}
-    "The thickness of the lip at each point along it, in mm."]
-   [:section [:case :central-housing :adapter :lip :width]
-    "The lip extends in both directions from the edge of the central housing: "
-    "Both into the adapter (the “outer” part) and into the housing itself "
-    "(the “inner” part), where it grows out of the inner wall with an optional "
-    "taper. The total width of the lip is the sum of all these sections."]
-   [:parameter [:case :central-housing :adapter :lip :width :outer]
-    {:default 1 :parse-fn num}
-    "The distance the lip protrudes outside the central housing and thence "
-    "into the adapter, in mm."]
-   [:parameter [:case :central-housing :adapter :lip :width :inner]
-    {:default 1 :parse-fn num}
-    "The width of the lip inside the central housing, before it starts to "
-    "taper, in mm."]
-   [:parameter [:case :central-housing :adapter :lip :width :taper]
-    {:default 0 :parse-fn num}
-    "The width of a taper from the inner portion of the lip to the inner "
-    "wall of the central housing, in mm.\n\n"
-    "The default value, zero, produces a right-angled transition. The higher "
-    "the value, the more gentle the transition becomes."]
-   [:section [:case :central-housing :adapter :fasteners]
-    "To connect the central housing and the adapter, threaded fasteners "
-    "can be driven through the wall of either, into receivers extending "
-    "from the other."]
-   [:parameter [:case :central-housing :adapter :fasteners :bolt-properties]
-    stock/implicit-threaded-bolt-metadata
-    stock/threaded-bolt-documentation]
-   [:parameter [:case :central-housing :adapter :fasteners :positions]
-    {:default []
-     :parse-fn schema/central-housing-normal-positions
-     :validate [::schema/central-housing-normal-positions]}
-    "A list of places where threaded fasteners will go through the wall.\n\n"
-    "Each item in this list is a map with three mandatory keys:\n"
-    "\n"
-    "* `starting-point`: The name of a vertex on the interface. This must be "
-    "a `base` point, not a point on the far side of the adapter.\n"
-    "* `radial-offset`: A distance in mm from the starting point, along the "
-    "interface.\n"
-    "* `lateral-offset`: A distance in mm from the starting point, along the "
-    "axis of the central housing, which is the x axis.\n"
-    "\n"
-    "Both of the two offsets are numbers: Simple scalars. Each of them can "
-    "be either positive or negative, but not zero. Zero is not allowed "
-    "because these numbers have side effects:\n"
-    "\n"
-    "* The radial offset follows the interface in the original order of its "
-    "definition. A positive radial offset moves along the interface "
-    "in the direction of that original order and a negative number moves "
-    "the other way around, “against” the interface. "
-    "A non-zero offset is needed here to identify that direction of travel "
-    "itself, which in turn is used to identify the next vertex on the "
-    "interface. Take care not to enter a number larger than the distance to "
-    "the next vertex.\n"
-    "* The lateral offset determines which model the fastener will be a part "
-    "of, as negative space. A positive lateral offset puts the hole through "
-    "the wall of the adapter, and a negative offset puts the hole through "
-    "the wall of the central housing. A non-zero offset is needed to pick a "
-    "side, and it has to be large enough to secure the fastener on that side, "
-    "so it won’t intersect the oppsite side.\n"
-    "\n"
-    "The following example map will start from a vertex named `apex` "
-    "and proceed from there, 5 mm forward toward the next point after `apex` "
-    "and 4 mm to the side, where a hole for a fastener will be left in the "
-    "wall of each end of the central housing.\n"
-    "\n"
-    "```positions:\n"
-    "  - starting-point: apex\n"
-    "    radial-offset: 5\n"
-    "    lateral-offset: -4\n```"
-    "\n"
-    "In addition to these mandatory properties, each fastener position can "
-    "include a more advanced property: `direction-point`. This allows you to "
-    "name an arbitrary anchor point anywhere on the keyboard, overriding the "
-    "side effect of `radial-offset` in choosing a neighbouring point on the "
-    "interface. "
-    "This feature may help resolve problems with sloping adapters or other "
-    "obstacles, but consider it experimental. More detailed overrides for "
-    "placement may be introduced in a future version, if they are needed."]
-   [:section [:case :central-housing :adapter :receivers]
-    "One receiver is created for each of the `fasteners`. Each of these "
-    "has a threaded hole to keep the fastener in place. Like the adapter lip, "
-    "receivers extend from the inside wall, but receivers are anchored across "
-    "the interface from their respective fasteners: A positive "
-    "`lateral-offset`, above, extends a receiver from the central housing "
-    "into the adapter."]
-   [:section [:case :central-housing :adapter :receivers :thickness]
-    "The thickness of material in various parts of each receiver."]
-   [:parameter [:case :central-housing :adapter :receivers :thickness :rim]
-    {:default 1 :parse-fn num}
-    "The maximum thickness of the loop of each receiver where it grabs the "
-    "fastener, in mm."]
-   [:parameter [:case :central-housing :adapter :receivers :thickness :bridge]
-    {:default 1 :parse-fn num}
-    "The thickness of the main body of each receiver where it extends across "
-    "the interface, in the plane of the housing wall, in mm."]
-   [:section [:case :central-housing :adapter :receivers :width]
-    "This section is analogous to lip `width`. The “outer” width of "
-    "each receiver is a function of its fastener’s lateral offset and cannot "
-    "be configured here."]
-   [:parameter [:case :central-housing :adapter :receivers :width :inner]
-    {:default 1 :parse-fn num}
-    "The width of the receiver at its base, before it starts to taper, in mm."]
-   [:parameter [:case :central-housing :adapter :receivers :width :taper]
-    {:default 0 :parse-fn num}
-    "The width of a taper, as with the lip."]
-   [:section [:case :central-housing :bottom-plate]
-    "Any bottom plating for the case will extend to the midpoint of the "
-    "central housing, on the assumption that bottom-plating anchors will "
-    "be used to attach it there."]
-   [:section [:case :central-housing :bottom-plate :projections]
-    "To facilitate printing a central housing standing on its edge, or to add "
-    "strength, you can extend bottom-plating anchors onto the nearest wall, "
-    "via a convex hull of each anchor and its projection. The result is an "
-    "internal chamfer resembling a primitive fillet."]
-   [:parameter [:case :central-housing :bottom-plate :projections :include]
-    {:default false :parse-fn boolean}
-    "If `true`, extend each bottom-plating anchor."]
-   [:parameter [:case :central-housing :bottom-plate :projections :scale]
-    {:default [1 1] :parse-fn vec :validate [::tarmi-core/point-2d]}
-    "The scale of each projection, as a 2-tuple of horizontal and vertical "
-    "factors. The horizontal factor controls the width of the projection and "
-    "the vertical factor its height. The length of the projection is fixed "
-    "at the distance between the center of the anchor and the outermost "
-    "part of its shell."]
-   [:parameter [:case :central-housing :bottom-plate :fastener-positions]
-    {:default [] :parse-fn schema/projecting-2d-positions
-     :validate [::schema/projecting-2d-list]}
-    "The positions of threaded fasteners used to attach the bottom plate to "
-    "the body of the central housing. In addition to the properties permitted "
-    "in similar lists of such anchors, the central housing permits a "
-    "`direction`, formulated as a point on the compass or an angle in "
-    "radians. This property controls the facing of a projection. Typically, "
-    "you want it facing the central housing’s nearest wall."]
-   [:parameter [:case :central-housing :tweaks]
-    {:default [] :parse-fn schema/case-tweak-map
-     :validate [::schema/tweak-name-map]}
-    "Precisely like `case` → `tweaks` but just for the central housing."]
-   [:section [:case :rear-housing]
+   [:section [:main-body :rear-housing]
     "The furthest row of a key cluster can be extended into a rear housing "
     "for the MCU and various other features."]
-   [:parameter [:case :rear-housing :include]
+   [:parameter [:main-body :rear-housing :include]
     {:default false :parse-fn boolean}
     "If `true`, add a rear housing. Please arrange case walls so as not to "
     "interfere, by removing them along the far side of the last row of key "
     "mounts in the indicated cluster."]
-   [:parameter [:case :rear-housing :wall-thickness]
+   [:parameter [:main-body :rear-housing :wall-thickness]
     {:default 1 :parse-fn num}
     "The horizontal thickness in mm of the walls."]
-   [:parameter [:case :rear-housing :roof-thickness]
+   [:parameter [:main-body :rear-housing :roof-thickness]
     {:default 1 :parse-fn num}
     "The vertical thickness in mm of the flat top."]
-   [:section [:case :rear-housing :position]
+   [:section [:main-body :rear-housing :position]
     "Where to put the rear housing. Unlike a central housing, a rear housing "
     "is placed in relation to a key cluster. By default, it sits all along "
     "the far (north) side of the `main` cluster but has no depth."]
-   [:parameter [:case :rear-housing :position :cluster]
+   [:parameter [:main-body :rear-housing :position :cluster]
     {:default :main :parse-fn keyword :validate [::schema/key-cluster]}
     "The key cluster at which to anchor the housing."]
-   [:section [:case :rear-housing :position :offsets]
+   [:section [:main-body :rear-housing :position :offsets]
     "Modifiers for where to put the four sides of the roof. All are in mm."]
-   [:parameter [:case :rear-housing :position :offsets :north]
+   [:parameter [:main-body :rear-housing :position :offsets :north]
     {:default 0 :parse-fn num}
     "The extent of the roof on the y axis; its horizontal depth."]
-   [:parameter [:case :rear-housing :position :offsets :west]
+   [:parameter [:main-body :rear-housing :position :offsets :west]
     {:default 0 :parse-fn num}
     "The extent on the x axis past the first key in the row."]
-   [:parameter [:case :rear-housing :position :offsets :east]
+   [:parameter [:main-body :rear-housing :position :offsets :east]
     {:default 0 :parse-fn num}
     "The extent on the x axis past the last key in the row."]
-   [:parameter [:case :rear-housing :position :offsets :south]
+   [:parameter [:main-body :rear-housing :position :offsets :south]
     {:default 0 :parse-fn num}
     "The horizontal distance in mm, on the y axis, between the furthest key "
     "in the row and the roof of the rear housing."]
-   [:parameter [:case :rear-housing :height]
+   [:parameter [:main-body :rear-housing :height]
     {:default 0 :parse-fn num}
     "The height in mm of the roof, over the floor."]
-   [:section [:case :rear-housing :fasteners]
+   [:section [:main-body :rear-housing :fasteners]
     "Threaded bolts can run through the roof of the rear housing, making it a "
     "hardpoint for attachments like a stabilizer to connect the two halves of "
     "a split keyboard."]
-   [:parameter [:case :rear-housing :fasteners :bolt-properties]
+   [:parameter [:main-body :rear-housing :fasteners :bolt-properties]
     stock/implicit-threaded-bolt-metadata
     stock/threaded-bolt-documentation]
-   [:parameter [:case :rear-housing :fasteners :bosses]
+   [:parameter [:main-body :rear-housing :fasteners :bosses]
     {:default false :parse-fn boolean}
     "If `true`, add nut bosses to the ceiling of the rear housing for each "
     "fastener. Space permitting, these bosses will have some play on the "
     "north-south axis, to permit adjustment of the angle of the keyboard "
     "halves under a stabilizer."]
-   [:section [:case :rear-housing :fasteners :west]
+   [:section [:main-body :rear-housing :fasteners :west]
     "A fastener on the inward-facing end of the rear housing."]
-   [:parameter [:case :rear-housing :fasteners :west :include]
+   [:parameter [:main-body :rear-housing :fasteners :west :include]
     {:default false :parse-fn boolean}
     "If `true`, include this fastener."]
-   [:parameter [:case :rear-housing :fasteners :west :offset]
+   [:parameter [:main-body :rear-housing :fasteners :west :offset]
     {:default 0 :parse-fn num}
     "A one-dimensional offset in mm from the inward edge of the rear "
     "housing to the fastener. You probably want a negative number if any."]
-   [:section [:case :rear-housing :fasteners :east]
+   [:section [:main-body :rear-housing :fasteners :east]
     "A fastener on the outward-facing end of the rear housing. All parameters "
     "are analogous to those for `west`."]
-   [:parameter [:case :rear-housing :fasteners :east :include]
+   [:parameter [:main-body :rear-housing :fasteners :east :include]
     {:default false :parse-fn boolean}]
-   [:parameter [:case :rear-housing :fasteners :east :offset]
+   [:parameter [:main-body :rear-housing :fasteners :east :offset]
     {:default 0 :parse-fn num}]
-   [:section [:case :back-plate]
+   [:section [:main-body :back-plate]
     "Given that independent movement of each half of a split keyboard is not "
     "useful, each half can include a mounting plate for a stabilizing rod. "
     "That is a straight piece of wood, aluminium, rigid plastic etc. to "
@@ -570,35 +248,35 @@
     "provides no interior space for an MCU etc. It is solid, with holes "
     "for threaded fasteners including the option of nut bosses. "
     "Its footprint is not part of a `bottom-plate`."]
-   [:parameter [:case :back-plate :include]
+   [:parameter [:main-body :back-plate :include]
     {:default false :parse-fn boolean}
     "If `true`, include a back plate block. This is not contingent upon "
     "`reflect`."]
-   [:parameter [:case :back-plate :beam-height]
+   [:parameter [:main-body :back-plate :beam-height]
     {:default 1 :parse-fn num}
     "The nominal vertical extent of the back plate in mm. "
     "Because the plate is bottom-hulled to the floor, the effect "
     "of this setting is on the area of the plate above its holes."]
-   [:section [:case :back-plate :fasteners]
+   [:section [:main-body :back-plate :fasteners]
     "Two threaded bolts run through the back plate."]
-   [:parameter [:case :back-plate :fasteners :bolt-properties]
+   [:parameter [:main-body :back-plate :fasteners :bolt-properties]
     stock/implicit-threaded-bolt-metadata
     stock/threaded-bolt-documentation]
-   [:parameter [:case :back-plate :fasteners :distance]
+   [:parameter [:main-body :back-plate :fasteners :distance]
     {:default 1 :parse-fn num}
     "The horizontal distance between the bolts."]
-   [:parameter [:case :back-plate :fasteners :bosses]
+   [:parameter [:main-body :back-plate :fasteners :bosses]
     {:default false :parse-fn boolean}
     "If `true`, cut nut bosses into the inside wall of the block."]
-   [:section [:case :back-plate :position]
+   [:section [:main-body :back-plate :position]
     "The block is positioned in relation to a named feature."]
-   [:parameter [:case :back-plate :position :anchor]
+   [:parameter [:main-body :back-plate :position :anchor]
     {:default :origin :parse-fn keyword :validate [::schema/anchor]}
     "The name of a feature where the block will attach."]
-   [:parameter [:case :back-plate :position :offset]
+   [:parameter [:main-body :back-plate :position :offset]
     stock/anchor-3d-vector-metadata
     stock/anchor-3d-offset-documentation]
-   [:section [:case :bottom-plate]
+   [:section [:main-body :bottom-plate]
     "A bottom plate can be added to close the case. This is useful mainly to "
     "simplify transportation.\n"
     "\n"
@@ -625,19 +303,19 @@
     "be inadequate. If you require a more exact match, do a projection of the "
     "case without a bottom plate, save it as DXF/SVG etc. and post-process "
     "that file to fill the interior gap.\n"]
-   [:parameter [:case :bottom-plate :include]
+   [:parameter [:main-body :bottom-plate :include]
     {:default false :parse-fn boolean}
     "If `true`, include a bottom plate for the case."]
-   [:parameter [:case :bottom-plate :preview]
+   [:parameter [:main-body :bottom-plate :preview]
     {:default false :parse-fn boolean}
     "Preview mode. If `true`, put a model of the plate in the same file as "
     "the case it closes. Not for printing."]
-   [:parameter [:case :bottom-plate :combine]
+   [:parameter [:main-body :bottom-plate :combine]
     {:default false :parse-fn boolean}
     "If `true`, combine wrist rests for the case and the bottom plate into a "
     "single model, when both are enabled. This is typically used with the "
     "`solid` style of wrest rest."]
-   [:parameter [:case :bottom-plate :thickness]
+   [:parameter [:main-body :bottom-plate :thickness]
     {:default 1 :parse-fn num}
     "The thickness (i.e. height) in mm of all bottom plates you choose to "
     "include. This covers plates for the case and for the wrist rest.\n"
@@ -645,16 +323,16 @@
     "The case will not be raised to compensate for this. Instead, the height "
     "of the bottom plate will be removed from the bottom of the main model so "
     "that it does not extend to z = 0."]
-   [:section [:case :bottom-plate :installation]
+   [:section [:main-body :bottom-plate :installation]
     "How your bottom plate is attached to the rest of your case."]
-   [:parameter [:case :bottom-plate :installation :style]
+   [:parameter [:main-body :bottom-plate :installation :style]
     {:default :threads :parse-fn keyword
      :validate [::schema/plate-installation-style]}
     "The general means of installation. This parameter has been reduced to a "
     "placeholder: The only available style is `threads`, signifying the use "
     "of threaded fasteners connecting the bottom plate to anchors in "
     "the body of the keyboard."]
-   [:parameter [:case :bottom-plate :installation :dome-caps]
+   [:parameter [:main-body :bottom-plate :installation :dome-caps]
     {:default false :parse-fn boolean}
     "If `true`, terminate each anchor with a hemispherical tip. This is "
     "an aesthetic feature, primarily intended for externally visible anchors "
@@ -662,55 +340,55 @@
     "If all of your anchors are completely internal to the case, and/or you "
     "intend to tap the screw holes after printing, dome caps are wasteful at "
     "best and counterproductive at worst."]
-   [:parameter [:case :bottom-plate :installation :thickness]
+   [:parameter [:main-body :bottom-plate :installation :thickness]
     {:default 1 :parse-fn num}
     "The thickness in mm of each wall of the anchor points for threaded "
     "fasteners."]
-   [:section [:case :bottom-plate :installation :inserts]
+   [:section [:main-body :bottom-plate :installation :inserts]
     "You can use heat-set inserts in the anchor points.\n\n"
     "It is assumed that, as in Tom Short’s Dactyl-ManuForm, the inserts are "
     "largely cylindrical."]
-   [:parameter [:case :bottom-plate :installation :inserts :include]
+   [:parameter [:main-body :bottom-plate :installation :inserts :include]
     {:default false :parse-fn boolean}
     "If `true`, make space for inserts."]
-   [:parameter [:case :bottom-plate :installation :inserts :length]
+   [:parameter [:main-body :bottom-plate :installation :inserts :length]
     {:default 1 :parse-fn num}
     "The length in mm of each insert."]
-   [:section [:case :bottom-plate :installation :inserts :diameter]
+   [:section [:main-body :bottom-plate :installation :inserts :diameter]
     "Inserts may vary in diameter across their length."]
-   [:parameter [:case :bottom-plate :installation :inserts :diameter :top]
+   [:parameter [:main-body :bottom-plate :installation :inserts :diameter :top]
     {:default 1 :parse-fn num}
     "Top diameter in mm."]
-   [:parameter [:case :bottom-plate :installation :inserts :diameter :bottom]
+   [:parameter [:main-body :bottom-plate :installation :inserts :diameter :bottom]
     {:default 1 :parse-fn num}
     "Bottom diameter in mm. This needs to be at least as large as the top "
     "diameter since the mounts for the inserts only open from the bottom."]
-   [:section [:case :bottom-plate :installation :fasteners]
+   [:section [:main-body :bottom-plate :installation :fasteners]
     "The type and positions of the threaded fasteners used to secure each "
     "bottom plate."]
-   [:parameter [:case :bottom-plate :installation :fasteners :bolt-properties]
+   [:parameter [:main-body :bottom-plate :installation :fasteners :bolt-properties]
     stock/implicit-threaded-bolt-metadata
     stock/threaded-bolt-documentation]
-   [:parameter [:case :bottom-plate :installation :fasteners :positions]
+   [:parameter [:main-body :bottom-plate :installation :fasteners :positions]
     {:default []
      :parse-fn schema/anchored-2d-positions
      :validate [::schema/anchored-2d-list]}
     "A list of places where threaded fasteners will connect the bottom plate "
     "to the rest of the case."]
-   [:section [:case :leds]
+   [:section [:main-body :leds]
     "Support for light-emitting diodes in the case walls."]
-   [:parameter [:case :leds :include]
+   [:parameter [:main-body :leds :include]
     {:default false :parse-fn boolean}
     "If `true`, cut slots for LEDs out of the case wall, facing "
     "the space between the two halves."]
-   [:section [:case :leds :position]
+   [:section [:main-body :leds :position]
     "Where to attach the LED strip."]
-   [:parameter [:case :leds :position :cluster]
+   [:parameter [:main-body :leds :position :cluster]
     {:default :main :parse-fn keyword :validate [::schema/key-cluster]}
     "The key cluster at which to anchor the strip."]
-   [:parameter [:case :leds :amount]
+   [:parameter [:main-body :leds :amount]
     {:default 1 :parse-fn int} "The number of LEDs."]
-   [:parameter [:case :leds :housing-size]
+   [:parameter [:main-body :leds :housing-size]
     {:default 1 :parse-fn num}
     "The length of the side on a square profile used to create negative space "
     "for the housings on a LED strip. This assumes the housings are squarish, "
@@ -719,15 +397,15 @@
     "The negative space is not supposed to penetrate the wall, just make it "
     "easier to hold the LED strip in place with tape, and direct its light. "
     "With that in mind, feel free to exaggerate by 10%."]
-   [:parameter [:case :leds :emitter-diameter]
+   [:parameter [:main-body :leds :emitter-diameter]
     {:default 1 :parse-fn num}
     "The diameter of a round hole for the light of an LED."]
-   [:parameter [:case :leds :interval]
+   [:parameter [:main-body :leds :interval]
     {:default 1 :parse-fn num}
     "The distance between LEDs on the strip. You may want to apply a setting "
     "slightly shorter than the real distance, since the algorithm carving the "
     "holes does not account for wall curvature."]
-   [:parameter [:case :tweaks]
+   [:parameter [:main-body :tweaks]
     {:default [] :parse-fn schema/case-tweak-map
      :validate [::schema/tweak-name-map]}
     "Additional shapes. This is usually needed to bridge gaps between the "
@@ -794,7 +472,7 @@
     "different corner of `A`, with a longer stretch of (all) wall "
     "segments down the corner of `A`.\n"
     "\n"
-    "```case:\n"
+    "```main-body:\n"
     "  tweaks:\n"
     "    bridge-between-A-and-B:\n"
     "      - chunk-size: 2\n"
@@ -806,20 +484,28 @@
     "Note that tweaks listed here will be considered part of the main body "
     "of the keyboard. A separate parameter is available for tweaking the "
     "central housing."]
-   [:section [:case :foot-plates]
+   [:section [:main-body :foot-plates]
     "Optional flat surfaces at ground level for adding silicone rubber feet "
     "or cork strips etc. to the bottom of the keyboard to increase friction "
     "and/or improve feel, sound and ground clearance."]
-   [:parameter [:case :foot-plates :include]
+   [:parameter [:main-body :foot-plates :include]
     {:default false :parse-fn boolean} "If `true`, include foot plates."]
-   [:parameter [:case :foot-plates :height]
+   [:parameter [:main-body :foot-plates :height]
     {:default 4 :parse-fn num} "The height in mm of each mounting plate."]
-   [:parameter [:case :foot-plates :polygons]
+   [:parameter [:main-body :foot-plates :polygons]
     {:default []
      :parse-fn schema/anchored-polygons
      :validate [::schema/foot-plate-polygons]}
     "A list describing the horizontal shape, size and "
     "position of each mounting plate as a polygon."]
+   [:parameter [:central-housing]
+    {:heading-template "Section %s"
+     :default (base/extract-defaults central/raws)
+     :parse-fn (base/parser-with-defaults central/raws)
+     :validate [(base/delegated-validation central/raws)]}
+    "A major body separate from the main body, located in between and "
+    "connecting the two halves of a reflected main body. "
+    "The central housing is documented in detail [here](options-central.md)."]
    [:section [:mcu]
     "MCU is short for ”micro-controller unit”. You need at least one of "
     "these, it’s assumed to be mounted on a PCB, and you typically want some "

@@ -6,6 +6,10 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 ## [Unreleased]
 ### Changed
 - Moved and replaced some parameters:
+    - The `case` section of parameters was **renamed** to `main-body` to
+      avoid ambiguity with respect to the new central housing.
+          - The `case-side` style of mounting wrist rests was similarly renamed
+            to `main-side`.
     - The top-level parameter `split` was **renamed** to `reflect` to avoid
       misleading the user about how it interacts with the new `central-housing`
       feature.
@@ -15,15 +19,13 @@ version 0.2.0, thus covering only a fraction of the project’s history.
     - All parameters governing individual properties of threaded bolts have
       been removed in favour of more powerful new parameters based on options
       exposed by a new library (`scad-klupe`) that draws bolts for the
-      application.  For example, both `case` → `central-housing` → `adapter` →
-      `fasteners` → `diameter` and its sibling `length` parameter have been
-      replaced by a `bolt-properties` parameter in the same section.
+      application.
       This change provides greater freedom to choose different bolt head types,
       partial threading, no threading (with a diameter suitable for tapping
       holes manually) etc.
     - The `connection` section has been replaced by a general `ports` map.
     - Heat-set inserts for attaching bottom plates are no longer a separate
-      style. Thus the `inserts` option has been removed from the `case` →
+      style. Thus the `inserts` option has been removed from the `main-body` →
       `bottom-plate` → `installation` → `style` parameter and replaced by a new
       `include` parameter, governing the same feature independently of style.
 - Removed much of the special treatment of the rear housing, no longer needed.
@@ -88,7 +90,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - Extensions to bottom plates for projections of the anchors used to fasten
   such plates to the case. This restores a feature of the upstream
   Dactyl-ManuForm.
-- The ability to target the plate of an MCU lock for case `tweaks`.
+- The ability to target the plate of an MCU lock, and ports, for case `tweaks`.
 - An extension of the concept of segments to the rear housing and the plate of
   an MCU lock for case `tweaks`.
 - The ability to override specific coordinates for secondary named positions.

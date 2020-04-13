@@ -39,7 +39,7 @@
   configuration specifies heat-set inserts of uneven diameter.
   Precautions against a paradoxical user configuration are minimal."
   [getopt]
-  (let [prop (partial getopt :case :bottom-plate :installation)
+  (let [prop (partial getopt :main-body :bottom-plate :installation)
         ins (partial prop :inserts)
         bolt-prop (prop :fasteners :bolt-properties)
         m-diameter (:m-diameter bolt-prop)
@@ -72,7 +72,7 @@
               (rest base)
               ;; Finally a bottom segment, from the level of the
               ;; bottom plate to the floor. Right-angled profile.
-              [[(last shell-radii) (getopt :case :bottom-plate :thickness)]
+              [[(last shell-radii) (getopt :main-body :bottom-plate :thickness)]
                [(last shell-radii) 0]])
             (remove nil?)
             (distinct)  ; In case the screw head stops at plate level.
@@ -81,7 +81,7 @@
 (defn- max-anchor-thickness
   "The maximum width of a screw anchor for attaching a bottom plate."
   [getopt]
-  (let [prop (partial getopt :case :bottom-plate :installation)
+  (let [prop (partial getopt :main-body :bottom-plate :installation)
         ins (partial prop :inserts)]
     (+ (/ (if (ins :include) (max (ins :diameter :top) (ins :diameter :bottom))
                              (prop :fasteners :bolt-properties :m-diameter))
@@ -98,7 +98,7 @@
   (let [base "bottom_plate_anchor_positive_nonprojecting"]
     (maybe/hull
       (model/call-module base)
-      (when (getopt :case :central-housing :bottom-plate :projections :include)
+      (when (getopt :central-housing :bottom-plate :projections :include)
         (->> (model/call-module base)
           ;; Get a 2D cut through the middle of the ordinary anchor, assuming
           ;; it’s rotationally symmetric in the x-y plane.
@@ -106,7 +106,7 @@
           (model/project)
           ;; Scale the 2D cut and extrude to 3D as a thin sliver.
           (model/scale
-            (getopt :case :central-housing :bottom-plate :projections :scale))
+            (getopt :central-housing :bottom-plate :projections :scale))
           (model/extrude-linear {:height wafer})
           ;; Rotate back up to stand beside the original.
           (model/rotate [(/ π -2) 0 0])
@@ -117,7 +117,7 @@
   "The shape of a screw and optionally a heat-set insert for that screw.
   Written for use as an OpenSCAD module."
   [getopt]
-  (let [prop (partial getopt :case :bottom-plate :installation)
+  (let [prop (partial getopt :main-body :bottom-plate :installation)
         bolt-prop (prop :fasteners :bolt-properties)
         head-type (prop :fasteners :bolt-properties :head-type)]
     (maybe/union
@@ -139,7 +139,7 @@
   "Build a 3D bottom plate from a 2D block."
   [getopt block]
   (model/extrude-linear
-    {:height (getopt :case :bottom-plate :thickness), :center false}
+    {:height (getopt :main-body :bottom-plate :thickness), :center false}
     block))
 
 
@@ -163,13 +163,13 @@
     (concat
       ;; Be sensitive to the relevant inclusion switches, so that the
       ;; higher-level model functions don’t always need to be.
-      (when (getopt :case :bottom-plate :include)
+      (when (getopt :main-body :bottom-plate :include)
         [[::main
-          [:case :bottom-plate :installation :fasteners :positions]]])
-      (when (and (getopt :case :bottom-plate :include)
-                 (getopt :case :central-housing :derived :include-main))
+          [:main-body :bottom-plate :installation :fasteners :positions]]])
+      (when (and (getopt :main-body :bottom-plate :include)
+                 (getopt :central-housing :derived :include-main))
         [[::centre
-          [:case :central-housing :bottom-plate :fastener-positions]]])
+          [:central-housing :bottom-plate :fastener-positions]]])
       (when (getopt :wrist-rest :bottom-plate :include)
         [[::wrist
           [:wrist-rest :bottom-plate :fastener-positions]]]))))
@@ -213,7 +213,7 @@
   "A shape akin to the body mask but restricted to bottom-plate height."
   [getopt]
   (let [[x y _] (getopt :mask :size)
-        z (getopt :case :bottom-plate :thickness)]
+        z (getopt :main-body :bottom-plate :thickness)]
     (maybe/translate [0 0 (/ z 2)]
       (model/cube x y z))))
 
@@ -222,7 +222,7 @@
   feature to the centre line."
   [getopt]
   (let [[x y _] (getopt :mask :size)]
-    (if (and (getopt :case :central-housing :derived :include-main))
+    (if (and (getopt :central-housing :derived :include-main))
       (maybe/translate [(/ x 4) 0]
         (model/square (/ x 2) y))
       (model/square x y))))
@@ -318,9 +318,9 @@
     (key/metacluster cluster-floor-polygon getopt)
     (masked-cut getopt (anchors-for-main-plate getopt))
     (tweak/all-shadows getopt)
-    (when (getopt :case :central-housing :derived :include-main)
+    (when (getopt :central-housing :derived :include-main)
       (chousing-floor-polygon getopt))
-    (when (getopt :case :central-housing :derived :include-adapter)
+    (when (getopt :central-housing :derived :include-adapter)
       (chousing-adapter-polygon getopt))
     ;; With a rear housing that connects to a regular key cluster wall, there
     ;; is a distinct possibility that two polygons (one for the housing, one
@@ -333,7 +333,7 @@
     ;; extrusion and any other 3D shape, while OpenSCAD will still render it,
     ;; it will not slice correctly: The mesh will be broken at the
     ;; intersection.
-    (when (getopt :case :rear-housing :include)
+    (when (getopt :main-body :rear-housing :include)
       ;; To work around the problem, the rear housing floor polygon is moved a
       ;; tiny bit toward the origin, preventing the vertex overlap.
       (model/translate [0 (- wafer)] (rhousing-floor-polygon getopt)))
@@ -366,7 +366,7 @@
   "The parts of the wrist-rest plinth that receive bottom-plate fasteners."
   [getopt]
   (let [with-plate (getopt :wrist-rest :bottom-plate :include)
-        thickness (if with-plate (getopt :case :bottom-plate :thickness) 0)]
+        thickness (if with-plate (getopt :main-body :bottom-plate :thickness) 0)]
     (maybe/translate [0 0 thickness]
       (anchors-in-wrist-rest getopt))))
 

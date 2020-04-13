@@ -345,162 +345,7 @@ by-key:
                 wall:
                   east:
                     perpendicular: -15
-case:
-  central-housing:
-    include: true
-    shape:
-      width: 190
-      interface:
-      # The near side, ascending:
-      - above-ground: true
-        base:
-          offset: [42, -55, -10]
-          right-hand-alias: ci-near-base
-        adapter:
-          alias: ca-near-base
-      - base:
-          offset: [42, -55, 20]
-        adapter:
-          alias: ca-near-lower-1
-      - base:
-          offset: [42, -55, 40]
-        adapter:
-          alias: ca-near-lower-2
-      - base:
-          offset: [42, -55, 62]
-        adapter:
-          alias: ca-near-upper-1
-      - base:
-          offset: [60, -55, 65]
-        adapter:
-          alias: ca-near-upper-2
-      - base:
-          offset: [60, -55, 78]
-        adapter:
-          alias: ca-near-upper-3
-      - base:
-          offset: [0, -55, 95]
-        adapter:
-          alias: ca-near-upper-4
-      - base:
-          offset: [0, -55, 110]
-        adapter:
-          alias: ca-near-upper-5
-      # The top, all the same height, with a couple of extra points just for
-      # the bottom plate mixed in to bring the plate out of the way of the
-      # bowled main key cluster.
-      - base:
-          offset: [0, -40, 125]
-          right-hand-alias: ci-near-roof
-        adapter:
-          alias: ca-near-roof
-      - base:
-          offset: [0, -33, 125]
-          right-hand-alias: ci-thumb-1
-        adapter:
-          alias: ca-thumb-1
-      - base:
-          offset: [0, -30, 125]
-        adapter:
-          offset: [15, 0, 0]
-          alias: ca-mid-1
-      - base:
-          offset: [35, -20, -10]  # Bottom plate only.
-        adapter:
-          alias: ca-bottom-1
-      - base:
-          offset: [0, -10, 125]
-        adapter:
-          offset: [25, 0, 0]
-          alias: ca-mid-2
-      - base:
-          offset: [35, -5, -10]  # Bottom plate only.
-        adapter:
-          alias: ca-bottom-2
-      - base:
-          offset: [0, 10, 125]
-        adapter:
-          offset: [27, -2, 0]
-          alias: ca-mid-3
-      - base:
-          offset: [30, 20, 125]
-        adapter:
-          offset: [10, 0, 0]
-          alias: ca-mid-4
-      - base:
-          offset: [30, 25, 125]
-        adapter:
-          offset: [10, 0, 0]
-          alias: ca-far-roof
-      # The far side, descending:
-      - base:
-          offset: [30, 35, 115]
-          right-hand-alias: ci-far-wall
-        adapter:
-          offset: [10, 0, 0]
-      - base:
-          offset: [40, 40, 110]
-        adapter:
-          alias: ca-far-wall
-      - above-ground: true
-        base:
-          offset: [50, 40, -10]
-          right-hand-alias: ci-far-base
-        adapter:
-          alias: ca-far-base
-      # Finally, there’s an “ethereal” point that does not appear in the body or
-      # the plate but is useful for anchoring key clusters.
-      - at-ground: false
-        above-ground: false
-        base:
-          offset: [0, 0, 60]
-        adapter:
-          alias: ca-ether
-    adapter:
-      include: true
-      width: 3
-      lip:
-        include: true
-        thickness: 2
-        width:
-          outer: 2
-          taper: 4
-      fasteners:
-        bolt-properties:
-          m-diameter: 3
-          total-length: 8
-          include-threading: false
-        positions:
-        - starting-point: ci-thumb-1
-          lateral-offset: 8
-          radial-offset: 7
-        - starting-point: ci-far-wall
-          lateral-offset: 8
-          radial-offset: -5
-      receivers:
-        thickness:
-          rim: 1.5
-          bridge: 3
-        width:
-          inner: 4
-          taper: 5
-    bottom-plate:
-      projections:
-        include: true
-        scale: [2.5, 1]
-      fastener-positions:
-      - anchor: origin
-        offset: [15, 36]
-        direction: north
-      - anchor: origin
-        offset: [15, -51]
-        direction: south
-      - anchor: ci-near-base
-        offset: [-15, 4]
-        direction: south
-      - anchor: ci-far-base
-        offset: [-42, -4]
-        direction: north
+main-body:
   bottom-plate:
     include: true
     thickness: 2
@@ -732,6 +577,161 @@ case:
       - [ca-far-base]
       - [ci-far-base]
       - [ca-bottom-2]
+central-housing:
+  include: true
+  shape:
+    width: 190
+    interface:
+    # The near side, ascending:
+    - above-ground: true
+      base:
+        offset: [42, -55, -10]
+        right-hand-alias: ci-near-base
+      adapter:
+        alias: ca-near-base
+    - base:
+        offset: [42, -55, 20]
+      adapter:
+        alias: ca-near-lower-1
+    - base:
+        offset: [42, -55, 40]
+      adapter:
+        alias: ca-near-lower-2
+    - base:
+        offset: [42, -55, 62]
+      adapter:
+        alias: ca-near-upper-1
+    - base:
+        offset: [60, -55, 65]
+      adapter:
+        alias: ca-near-upper-2
+    - base:
+        offset: [60, -55, 78]
+      adapter:
+        alias: ca-near-upper-3
+    - base:
+        offset: [0, -55, 95]
+      adapter:
+        alias: ca-near-upper-4
+    - base:
+        offset: [0, -55, 110]
+      adapter:
+        alias: ca-near-upper-5
+    # The top, all the same height, with a couple of extra points just for
+    # the bottom plate mixed in to bring the plate out of the way of the
+    # bowled main key cluster.
+    - base:
+        offset: [0, -40, 125]
+        right-hand-alias: ci-near-roof
+      adapter:
+        alias: ca-near-roof
+    - base:
+        offset: [0, -33, 125]
+        right-hand-alias: ci-thumb-1
+      adapter:
+        alias: ca-thumb-1
+    - base:
+        offset: [0, -30, 125]
+      adapter:
+        offset: [15, 0, 0]
+        alias: ca-mid-1
+    - base:
+        offset: [35, -20, -10]  # Bottom plate only.
+      adapter:
+        alias: ca-bottom-1
+    - base:
+        offset: [0, -10, 125]
+      adapter:
+        offset: [25, 0, 0]
+        alias: ca-mid-2
+    - base:
+        offset: [35, -5, -10]  # Bottom plate only.
+      adapter:
+        alias: ca-bottom-2
+    - base:
+        offset: [0, 10, 125]
+      adapter:
+        offset: [27, -2, 0]
+        alias: ca-mid-3
+    - base:
+        offset: [30, 20, 125]
+      adapter:
+        offset: [10, 0, 0]
+        alias: ca-mid-4
+    - base:
+        offset: [30, 25, 125]
+      adapter:
+        offset: [10, 0, 0]
+        alias: ca-far-roof
+    # The far side, descending:
+    - base:
+        offset: [30, 35, 115]
+        right-hand-alias: ci-far-wall
+      adapter:
+        offset: [10, 0, 0]
+    - base:
+        offset: [40, 40, 110]
+      adapter:
+        alias: ca-far-wall
+    - above-ground: true
+      base:
+        offset: [50, 40, -10]
+        right-hand-alias: ci-far-base
+      adapter:
+        alias: ca-far-base
+    # Finally, there’s an “ethereal” point that does not appear in the body or
+    # the plate but is useful for anchoring key clusters.
+    - at-ground: false
+      above-ground: false
+      base:
+        offset: [0, 0, 60]
+      adapter:
+        alias: ca-ether
+  adapter:
+    include: true
+    width: 3
+    lip:
+      include: true
+      thickness: 2
+      width:
+        outer: 2
+        taper: 4
+    fasteners:
+      bolt-properties:
+        m-diameter: 3
+        total-length: 8
+        include-threading: false
+      positions:
+      - starting-point: ci-thumb-1
+        lateral-offset: 8
+        radial-offset: 7
+      - starting-point: ci-far-wall
+        lateral-offset: 8
+        radial-offset: -5
+    receivers:
+      thickness:
+        rim: 1.5
+        bridge: 3
+      width:
+        inner: 4
+        taper: 5
+  bottom-plate:
+    projections:
+      include: true
+      scale: [2.5, 1]
+    fastener-positions:
+    - anchor: origin
+      offset: [15, 36]
+      direction: north
+    - anchor: origin
+      offset: [15, -51]
+      direction: south
+    - anchor: ci-near-base
+      offset: [-15, 4]
+      direction: south
+    - anchor: ci-far-base
+      offset: [-42, -4]
+      direction: north
 mcu:
   include: true
   intrinsic-rotation: [-1.5708, 0.785398, 3.14159]  # π/2, π/4, π.

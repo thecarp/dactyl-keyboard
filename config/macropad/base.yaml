@@ -34,7 +34,7 @@ by-key:
       west:
         parallel: 10
         perpendicular: -23
-case:
+main-body:
   key-mount-thickness: 3
   web-thickness: 3
   rear-housing:

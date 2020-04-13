@@ -3,7 +3,7 @@
 # For the back plate to be meaningful, it would be necessary to replace the
 # rear housing with ordinary walls and find another site for the MCU etc.
 
-case:
+main-body:
   rear-housing:
     include: false
   back-plate:

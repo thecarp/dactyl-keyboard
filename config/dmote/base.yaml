@@ -442,7 +442,7 @@ secondaries:
       side: NW
       segment: 2
     translation: [0, 0, -10]
-case:
+main-body:
   rear-housing:
     include: true
     position:

@@ -47,6 +47,7 @@
   (println)
   (print-markdown-section
     (case section
+      :central dactyl-keyboard.param.tree.central/raws
       :clusters dactyl-keyboard.param.tree.cluster/raws
       :main dactyl-keyboard.param.tree.main/raws
       :nested dactyl-keyboard.param.tree.nested/raws
@@ -76,7 +77,7 @@
 (defn- masked-inner-positive
   "Parts of the keyboard that are subject to a mask and all negatives."
   [getopt]
-  (body/mask getopt (getopt :case :bottom-plate :include)
+  (body/mask getopt (getopt :main-body :bottom-plate :include)
     (key/metacluster key/cluster-plates getopt)
     (key/metacluster body/cluster-web getopt)
     (key/metacluster body/cluster-wall getopt)
@@ -87,15 +88,15 @@
                (= (getopt :wrist-rest :style) :threaded))
       (wrist/all-case-blocks getopt))
     (auxf/ports-positive getopt)
-    (when (getopt :case :back-plate :include)
+    (when (getopt :main-body :back-plate :include)
       (auxf/backplate-block getopt))
-    (when (getopt :case :rear-housing :include)
+    (when (getopt :main-body :rear-housing :include)
       (body/rear-housing getopt))
     (tweak/all-main-body getopt)
-    (when (getopt :case :bottom-plate :include)
+    (when (getopt :main-body :bottom-plate :include)
       (bottom/anchors-in-main-body getopt))
     (auxf/foot-plates getopt)
-    (when (getopt :case :central-housing :derived :include-adapter)
+    (when (getopt :central-housing :derived :include-adapter)
       (central/adapter-shell getopt))))
 
 (defn- midlevel-positive
@@ -113,11 +114,11 @@
                (= (getopt :wrist-rest :style) :solid))
       (body/mask getopt (getopt :wrist-rest :include)
         (build-plinth-right getopt)))
-    (when (and (getopt :case :bottom-plate :include)
-               (getopt :case :bottom-plate :preview))
+    (when (and (getopt :main-body :bottom-plate :include)
+               (getopt :main-body :bottom-plate :preview))
       (if (and (getopt :wrist-rest :include)
                (getopt :wrist-rest :bottom-plate :include)
-               (getopt :case :bottom-plate :combine))
+               (getopt :main-body :bottom-plate :combine))
         (bottom/combined-positive getopt)
         (maybe/union
           (bottom/case-positive getopt)
@@ -140,24 +141,24 @@
              (maybe/union subject-right (maybe/mirror [-1 0 0] subject-left))))]
     (maybe/union
       (maybe/difference
-        (body/mask getopt (getopt :case :bottom-plate :include)
+        (body/mask getopt (getopt :main-body :bottom-plate :include)
           (maybe/difference
             (maybe/union
               (central/main-shell getopt)
-              (when (getopt :case :bottom-plate :include)
+              (when (getopt :main-body :bottom-plate :include)
                 (bilateral (bottom/anchors-in-central-housing getopt)))
-              (when (getopt :case :central-housing :derived :include-lip)
+              (when (getopt :central-housing :derived :include-lip)
                 (bilateral (central/lip-body-right getopt)))
-              (when (getopt :case :central-housing :derived :include-adapter)
+              (when (getopt :central-housing :derived :include-adapter)
                 (bilateral (central/adapter-fastener-receivers getopt)))
               (tweak/all-central-housing getopt))
-            (when (getopt :case :central-housing :derived :include-adapter)
+            (when (getopt :central-housing :derived :include-adapter)
               (bilateral
                 (central/adapter-right-fasteners getopt)
                 (central/adapter-left-fasteners getopt)))
             (when (getopt :mcu :derived :include-centrally)
               (mcu/negative-composite getopt))
-            (when (getopt :case :bottom-plate :include)
+            (when (getopt :main-body :bottom-plate :include)
               (bilateral
                 (bottom/holes-in-main-plate getopt)
                 (bottom/holes-in-left-housing getopt))))
@@ -169,8 +170,8 @@
             (mcu/lock-fixture-composite getopt))
           (sandbox/positive getopt))
         (sandbox/negative getopt))
-      (when (and (getopt :case :bottom-plate :include)
-                 (getopt :case :bottom-plate :preview))
+      (when (and (getopt :main-body :bottom-plate :include)
+                 (getopt :main-body :bottom-plate :preview))
         (if (and (getopt :wrist-rest :include)
                  (getopt :wrist-rest :preview)
                  (getopt :wrist-rest :bottom-plate :include))
@@ -191,16 +192,16 @@
           ;; First-level negatives:
           (key/metacluster key/cluster-cutouts getopt)
           (key/metacluster key/cluster-channels getopt)
-          (when (getopt :case :central-housing :derived :include-lip)
+          (when (getopt :central-housing :derived :include-lip)
             ;; Space for an adapter lip, in case the adapter itself is too
             ;; thin.
             (central/lip-body-right getopt))
           (auxf/ports-negative getopt)
           (when (getopt :mcu :derived :include-laterally)
             (mcu/negative-composite getopt))
-          (when (getopt :case :leds :include)
+          (when (getopt :main-body :leds :include)
             (auxf/led-holes getopt))
-          (when (getopt :case :back-plate :include)
+          (when (getopt :main-body :back-plate :include)
             (auxf/backplate-fastener-holes getopt))
           (when (and (getopt :wrist-rest :include)
                      (= (getopt :wrist-rest :style) :threaded))
@@ -211,9 +212,9 @@
                    (getopt :mcu :support :lock :include))
           (mcu/lock-fixture-composite getopt)))
       ;; Outer negatives:
-      (when (getopt :case :central-housing :derived :include-adapter)
+      (when (getopt :central-housing :derived :include-adapter)
         (central/negatives getopt))
-      (when (getopt :case :bottom-plate :include)
+      (when (getopt :main-body :bottom-plate :include)
         (bottom/holes-in-main-plate getopt))
       (when (and (getopt :wrist-rest :include)
                  (getopt :wrist-rest :preview)
@@ -225,8 +226,8 @@
     (when (and (getopt :mcu :derived :include-laterally)
                (getopt :mcu :preview))
       (mcu/preview-composite getopt))
-    (when (and (getopt :case :central-housing :derived :include-main)
-               (getopt :case :central-housing :preview))
+    (when (and (getopt :central-housing :derived :include-main)
+               (getopt :central-housing :preview))
       (build-central-housing getopt))))
 
 (defn build-rubber-casting-mould-right
@@ -262,9 +263,9 @@
   [[[:dfm] (fn [getopt] {:compensator (error-fn (getopt :dfm :error-general))})]
    [[:keys] key/derive-style-properties]
    [[:key-clusters] key/derive-cluster-properties]
-   [[:case :central-housing] central/derive-properties]
+   [[:central-housing] central/derive-properties]
    [[] (fn [getopt] {:anchors (anch/collect getopt)})]
-   [[:case :rear-housing] body/rhousing-properties]
+   [[:main-body :rear-housing] body/rhousing-properties]
    [[:mcu] mcu/derive-properties]
    [[:wrist-rest] wrist/derive-properties]])
 
@@ -389,7 +390,7 @@
 
 (defn- conditional-bottom-plate-modules
   [getopt]
-  (if (getopt :case :bottom-plate :include)
+  (if (getopt :main-body :bottom-plate :include)
     ["bottom_plate_anchor_positive_nonprojecting",
      "bottom_plate_anchor_positive_central",
      "bottom_plate_anchor_negative"]
@@ -399,7 +400,7 @@
   "A collection of OpenSCAD modules for the central housing."
   [getopt]
   (concat
-    [(when (getopt :case :central-housing :derived :include-adapter)
+    [(when (getopt :central-housing :derived :include-adapter)
        "housing_adapter_fastener")]
     (conditional-bottom-plate-modules getopt)))
 
@@ -415,7 +416,7 @@
     :model-precursor (partial key/metacluster key/cluster-keycaps)}
    {:name "case-main"
     :modules (concat
-               [(when (getopt :case :central-housing :derived :include-adapter)
+               [(when (getopt :central-housing :derived :include-adapter)
                   "housing_adapter_fastener")
                 (when (getopt :wrist-rest :sprues :include)
                   "sprue_negative")]
@@ -423,9 +424,9 @@
                (get-key-modules getopt :module-keycap :module-switch))
     :model-precursor build-main-body-right
     :chiral (getopt :reflect)}
-   (when (getopt :case :central-housing :derived :include-main)
+   (when (getopt :central-housing :derived :include-main)
      {:name (str "case-central"  ; With conditional suffix.
-              (when (getopt :case :central-housing :derived :include-sections)
+              (when (getopt :central-housing :derived :include-sections)
                 "-full"))
       :modules (central-housing-modules getopt)
       :model-precursor build-central-housing})
@@ -455,8 +456,8 @@
       :model-precursor build-plinth-right
       :chiral (getopt :reflect)})
    ;; Bottom plate(s):
-   (when (and (getopt :case :bottom-plate :include)
-              (not (and (getopt :case :bottom-plate :combine)
+   (when (and (getopt :main-body :bottom-plate :include)
+              (not (and (getopt :main-body :bottom-plate :combine)
                         (getopt :wrist-rest :bottom-plate :include))))
      {:name "bottom-plate-case"
       :modules (conditional-bottom-plate-modules getopt)
@@ -465,15 +466,15 @@
       :chiral (getopt :reflect)})
    (when (and (getopt :wrist-rest :include)
               (getopt :wrist-rest :bottom-plate :include)
-              (not (and (getopt :case :bottom-plate :include)
-                        (getopt :case :bottom-plate :combine))))
+              (not (and (getopt :main-body :bottom-plate :include)
+                        (getopt :main-body :bottom-plate :combine))))
      {:name "bottom-plate-wrist-rest"
       :modules (conditional-bottom-plate-modules getopt)
       :model-precursor bottom/wrist-complete
       :rotation [0 π 0]
       :chiral (getopt :reflect)})
-   (when (and (getopt :case :bottom-plate :include)
-              (getopt :case :bottom-plate :combine)
+   (when (and (getopt :main-body :bottom-plate :include)
+              (getopt :main-body :bottom-plate :combine)
               (getopt :wrist-rest :include)
               (getopt :wrist-rest :bottom-plate :include))
      {:name "bottom-plate-combined"
@@ -496,7 +497,7 @@
   "Collate model precursors for subassemblies.
   This currently consists of central housing sections only."
   [getopt]
-  (when (getopt :case :central-housing :derived :include-sections)
+  (when (getopt :central-housing :derived :include-sections)
     (map-indexed
       (fn [idx [left right]]
         {:name (str "case-central-section-" (inc idx))

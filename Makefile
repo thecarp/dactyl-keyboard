@@ -61,6 +61,9 @@ target/dmote.jar: $(SOURCECODE)
 doc/options-main.md: target/dmote.jar
 	java -jar target/dmote.jar --describe-parameters main > doc/options-main.md
 
+doc/options-central.md: target/dmote.jar
+	java -jar target/dmote.jar --describe-parameters central > doc/options-central.md
+
 doc/options-clusters.md: target/dmote.jar
 	java -jar target/dmote.jar --describe-parameters clusters > doc/options-clusters.md
 
@@ -73,7 +76,7 @@ doc/options-ports.md: target/dmote.jar
 doc/options-wrist-rest-mounts.md: target/dmote.jar
 	java -jar target/dmote.jar --describe-parameters wrist-rest-mounts > doc/options-wrist-rest-mounts.md
 
-docs: doc/options-main.md doc/options-clusters.md doc/options-nested.md doc/options-ports.md doc/options-wrist-rest-mounts.md
+docs: doc/options-central.md doc/options-clusters.md doc/options-main.md doc/options-nested.md doc/options-ports.md doc/options-wrist-rest-mounts.md
 
 test:
 	lein test

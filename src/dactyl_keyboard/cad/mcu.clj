@@ -43,7 +43,7 @@
                             (getopt :mcu :position :central))
     :include-laterally (and (getopt :mcu :include)
                             (not (and (getopt :reflect)
-                                      (getopt :case :central-housing :include)
+                                      (getopt :central-housing :include)
                                       (getopt :mcu :position :central))))
     ;; Add [x y z] coordinates of the four corners of the PCB. No DFM.
     :pcb (merge pcb-base pcb-corners)
@@ -202,8 +202,8 @@
         head-type (getopt :mcu :support :lock :fastener-properties :head-type)
         l0 (head-length d head-type)
         l1 (if (= (getopt :mcu :position :anchor) :rear-housing)
-             (getopt :case :rear-housing :wall-thickness)
-             (getopt :case :web-thickness))
+             (getopt :main-body :rear-housing :wall-thickness)
+             (getopt :main-body :web-thickness))
         [_ pcb-y pcb-z] (map-to-3d-vec (getopt :mcu :derived :pcb))
         l2 (getopt :mcu :support :lock :plate :clearance)
         y1 (getopt :mcu :support :lock :bolt :mount-length)]

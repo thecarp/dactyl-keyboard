@@ -88,7 +88,7 @@
 
     ;; The central housing:
     ;; A map of aliases to corresponding indices in the interface array.
-    (->> (getopt :case :central-housing :derived :interface)
+    (->> (getopt :central-housing :derived :interface)
       (map-indexed central-point-pair)
       (apply concat)
       (into {}))

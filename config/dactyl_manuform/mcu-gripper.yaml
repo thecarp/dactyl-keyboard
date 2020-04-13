@@ -2,7 +2,7 @@
 # replacing the MCU shelf with a slim gripper that exposes the
 # connector on the MCU directly through the case wall.
 
-case:
+main-body:
   tweaks:
     mcu-grip:
       - chunk-size: 2

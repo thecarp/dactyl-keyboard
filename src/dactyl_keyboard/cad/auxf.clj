@@ -25,14 +25,14 @@
   (->>
     shape
     (model/translate
-      (place/offset-from-anchor getopt (getopt :case :back-plate :position) 3))
-    (model/translate [0 0 (/ (getopt :case :back-plate :beam-height) -2)])))
+      (place/offset-from-anchor getopt (getopt :main-body :back-plate :position) 3))
+    (model/translate [0 0 (/ (getopt :main-body :back-plate :beam-height) -2)])))
 
 (defn backplate-shape
   "A mounting plate for a connecting bar/rod/beam."
   [getopt]
-  (let [height (getopt :case :back-plate :beam-height)
-        width (+ (getopt :case :back-plate :fasteners :distance) height)
+  (let [height (getopt :main-body :back-plate :beam-height)
+        width (+ (getopt :main-body :back-plate :fasteners :distance) height)
         depth 3
         interior-protrusion 8
         exterior-bevel 1
@@ -47,13 +47,13 @@
 (defn backplate-fastener-holes
   "Two holes for screws through the back plate."
   [getopt]
-  (let [d (getopt :case :back-plate :fasteners :bolt-properties :m-diameter)
-        D (getopt :case :back-plate :fasteners :distance)
+  (let [d (getopt :main-body :back-plate :fasteners :bolt-properties :m-diameter)
+        D (getopt :main-body :back-plate :fasteners :distance)
         hole (fn [x-offset]
                (->>
                  (model/union
                    (model/cylinder (/ d 2) 25)
-                   (if (getopt :case :back-plate :fasteners :bosses)
+                   (if (getopt :main-body :back-plate :fasteners :bosses)
                      (model/translate [0 0 10]
                        (nut {:m-diameter d :height 10 :negative true}))))
                  (model/rotate [(/ π 2) 0 0])
@@ -72,7 +72,7 @@
 ;;;;;;;;;;;;;;;
 
 (defn- west-wall-west-points [getopt]
-  (let [cluster (getopt :case :leds :position :cluster)
+  (let [cluster (getopt :main-body :leds :position :cluster)
         column 0
         rows (getopt :key-clusters :derived :by-cluster cluster
                :row-indices-by-column column)]
@@ -91,28 +91,28 @@
       (model/polygon (concat west-points (reverse east-points))))))
 
 (defn- led-hole-position [getopt ordinal]
-  (let [cluster (getopt :case :leds :position :cluster)
+  (let [cluster (getopt :main-body :leds :position :cluster)
         column 0
         rows (getopt :key-clusters :derived :by-cluster cluster
                  :row-indices-by-column column)
         row (first rows)
         [x0 y0 _] (place/wall-corner-place
                     getopt cluster [column row] {:side :WNW})
-        h (+ 5 (/ (getopt :case :leds :housing-size) 2))]
-   [x0 (+ y0 (* (getopt :case :leds :interval) ordinal)) h]))
+        h (+ 5 (/ (getopt :main-body :leds :housing-size) 2))]
+   [x0 (+ y0 (* (getopt :main-body :leds :interval) ordinal)) h]))
 
 (defn- led-emitter-channel [getopt ordinal]
-  (->> (model/cylinder (/ (getopt :case :leds :emitter-diameter) 2) 20)
+  (->> (model/cylinder (/ (getopt :main-body :leds :emitter-diameter) 2) 20)
        (model/rotate [0 (/ π 2) 0])
        (model/translate (led-hole-position getopt ordinal))))
 
 (defn- lhousing-channel [getopt ordinal]
-  (let [h (getopt :case :leds :housing-size)]
+  (let [h (getopt :main-body :leds :housing-size)]
    (->> (model/cube 50 h h)
         (model/translate (led-hole-position getopt ordinal)))))
 
 (defn led-holes [getopt]
-  (let [holes (range (getopt :case :leds :amount))
+  (let [holes (range (getopt :main-body :leds :amount))
         group (fn [function]
                 (apply model/union (map (partial function getopt) holes)))]
     (model/union
@@ -187,7 +187,7 @@
 (defn- foot-plate
   [getopt polygon-spec]
   (model/extrude-linear
-    {:height (getopt :case :foot-plates :height), :center false}
+    {:height (getopt :main-body :foot-plates :height), :center false}
     (model/polygon (map (partial foot-point getopt) (:points polygon-spec)))))
 
 (defn foot-plates
@@ -197,4 +197,4 @@
   be followed by a two-dimensional offset for tweaking."
   [getopt]
   (apply maybe/union
-    (map (partial foot-plate getopt) (getopt :case :foot-plates :polygons))))
+    (map (partial foot-plate getopt) (getopt :main-body :foot-plates :polygons))))

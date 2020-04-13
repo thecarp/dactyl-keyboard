@@ -3,11 +3,11 @@
 
 keys:
   preview: true
-case:
-  central-housing:
-    preview: true
+main-body:
   bottom-plate:
     preview: true
+central-housing:
+  preview: true
 mcu:
   preview: true
   support:

@@ -24,16 +24,9 @@ by-key:
         perpendicular: -8
       west:
         perpendicular: -8
-case:
+main-body:
   key-mount-thickness: 2.5
   web-thickness: 2.5
-  central-housing:
-    adapter:
-      fasteners:
-        bolt-properties:
-          m-diameter: 4
-          head-type: countersunk
-          total-length: 8.5
   rear-housing:
     wall-thickness: 2.5
   back-plate:
@@ -50,6 +43,13 @@ case:
           head-type: countersunk
           point-type: cone
           total-length: 8.5
+central-housing:
+  adapter:
+    fasteners:
+      bolt-properties:
+        m-diameter: 4
+        head-type: countersunk
+        total-length: 8.5
 mcu:
   type: promicro
   support:
