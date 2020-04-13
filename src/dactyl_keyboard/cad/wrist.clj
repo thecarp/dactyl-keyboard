@@ -332,31 +332,31 @@
              (prop :fasteners :height :first))
         to-3d #(misc/pad-to-3d % threaded-center-height)
         ofa #(place/offset-from-anchor getopt (prop :blocks % :position) 2)
-        case-side (to-3d (ofa :case-side))
+        main-side (to-3d (ofa :main-side))
         plinth-side
           ;; Find the position of the plinth-side block.
           (to-3d
             (case anchoring
               :mutual (ofa :plinth-side)
-              :case-side
+              :main-side
                 (let [θ (prop :angle)
-                      d0 (/ (prop :blocks :case-side :depth) 2)
+                      d0 (/ (prop :blocks :main-side :depth) 2)
                       d1 (prop :blocks :distance)
                       d2 (/ (prop :blocks :plinth-side :depth) 2)
                       d (+ d0 d1 d2)]
-                  (mapv + case-side [(* d (cos θ)), (* d (sin θ))]))))
+                  (mapv + main-side [(* d (cos θ)), (* d (sin θ))]))))
         angle
           (case anchoring
-            :case-side (prop :angle)  ; The fixed angle supplied by the user.
+            :main-side (prop :angle)  ; The fixed angle supplied by the user.
             :mutual  ; Compute the angle from the position of the blocks.
               (Math/atan (apply / (reverse (map - (take 2 plinth-side)
-                                                  (take 2 case-side))))))]
+                                                  (take 2 main-side))))))]
     {:angle angle
      :threaded-center-height threaded-center-height
-     :case-side case-side
+     :main-side main-side
      :plinth-side plinth-side
      ;;  X, Y and Z coordinates of the middle of the first threaded rod:
-     :midpoint (mapv #(/ % 2) (map + case-side plinth-side))}))
+     :midpoint (mapv #(/ % 2) (map + main-side plinth-side))}))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -387,7 +387,7 @@
      (mapv #(* rod-index %) [0 0 z]))))
 
 (defn- boss-nut
-  "One model of a nut for a case-side nut boss."
+  "One model of a nut for a main-side nut boss."
   [getopt mount-index]
   (let [prop (partial getopt :wrist-rest :mounts mount-index)]
     (->>
@@ -396,7 +396,7 @@
       (model/rotate [(/ π 2) 0 0])
       (model/translate [0 3 0])
       (model/rotate [0 0 (prop :derived :angle)])
-      (model/translate (prop :derived :case-side)))))
+      (model/translate (prop :derived :main-side)))))
 
 (defn- mount-fasteners
   "One mount’s set of connecting threaded rods with nuts."
@@ -407,7 +407,7 @@
         (model/translate (rod-offset getopt mount-index i)
           (maybe/union
             (threaded-rod getopt mount-index)
-            (if (prop :blocks :case-side :nuts :bosses :include)
+            (if (prop :blocks :main-side :nuts :bosses :include)
               (boss-nut getopt mount-index))))))))
 
 (defn- all-mounts
@@ -460,7 +460,7 @@
 (defn case-block
   "A plate on the case side for a threaded rod to the keyboard case."
   [getopt mount-index]
-  (block-in-place getopt mount-index :case-side))
+  (block-in-place getopt mount-index :main-side))
 
 (defn plinth-block
   "A plate on the plinth side for a threaded rod to the keyboard case."

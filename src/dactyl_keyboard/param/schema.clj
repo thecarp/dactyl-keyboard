@@ -309,8 +309,8 @@
                                            #(<= % (* 3/8 tarmi/π)))))
 
 (spec/def ::wrist-rest-style #{:threaded :solid})
-(spec/def ::wrist-position-style #{:case-side :mutual})
-(spec/def ::wrist-block #{:case-side :plinth-side})
+(spec/def ::wrist-position-style #{:main-side :mutual})
+(spec/def ::wrist-block #{:main-side :plinth-side})
 (spec/def ::column-disposition
   (spec/keys ::opt-un [::rows-below-home ::rows-above-home]))
 (spec/def ::flexcoord (spec/or :absolute int? :extreme #{:first :last}))

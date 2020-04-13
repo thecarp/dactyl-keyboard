@@ -37,11 +37,11 @@
     "The vertical distance in mm from the center of each fastener to the "
     "center of the next."]
    [:parameter [:anchoring]
-    {:default :case-side
+    {:default :main-side
      :parse-fn keyword
      :validate [::schema/wrist-position-style]}
     "One of:\n\n"
-    "- `case-side`: The `angle` parameter in this section determines the angle "
+    "- `main-side`: The `angle` parameter in this section determines the angle "
     "of the blocks and threaded fasteners in the mount. In effect, the "
     "plinth-side block is placed by `angle` and `distance`, while its own "
     "explicit `position` section of parameters is ignored.\n"
@@ -52,51 +52,51 @@
    [:parameter [:angle]
     {:default 0 :parse-fn num}
     "The angle in radians of the mount, on the xy plane, counter-clockwise "
-    "from the y axis. This parameter is only used with `case-side` anchoring."]
+    "from the y axis. This parameter is only used with `main-side` anchoring."]
    [:section [:blocks]
     "Blocks for anchoring threaded fasteners."]
    [:parameter [:blocks :distance]
     {:default 0 :parse-fn num}
     "The distance in mm between the two posts in a mount. "
-    "This parameter is only used with `case-side` anchoring."]
+    "This parameter is only used with `main-side` anchoring."]
    [:parameter [:blocks :width]
     {:default 1 :parse-fn num}
     "The width in mm of the face or front bezel on each "
     "block that will anchor a fastener."]
-   [:section [:blocks :case-side]
+   [:section [:blocks :main-side]
     "A block on the side of the keyboard case is mandatory."]
-   [:section [:blocks :case-side :position]
+   [:section [:blocks :main-side :position]
     "Where to place the block."]
-   [:parameter [:blocks :case-side :position :anchor]
+   [:parameter [:blocks :main-side :position :anchor]
     {:default :origin :parse-fn keyword :validate [::schema/anchor]}
     "An alias referring to a feature that anchors the block."]
-   [:parameter [:blocks :case-side :position :side]
+   [:parameter [:blocks :main-side :position :side]
     stock/anchor-side-metadata
     stock/anchor-side-documentation]
-   [:parameter [:blocks :case-side :position :offset]
+   [:parameter [:blocks :main-side :position :offset]
     stock/anchor-2d-vector-metadata
     stock/anchor-2d-offset-documentation]
-   [:parameter [:blocks :case-side :depth]
+   [:parameter [:blocks :main-side :depth]
     {:default 1 :parse-fn num}
     "The thickness of the block in mm along the axis of the fastener(s)."]
-   [:section [:blocks :case-side :nuts]
+   [:section [:blocks :main-side :nuts]
     "Extra features for threaded nuts on the case side."]
-   [:section [:blocks :case-side :nuts :bosses]
+   [:section [:blocks :main-side :nuts :bosses]
     "Nut bosses on the rear (interior) of the mount. You may want this if the "
     "distance between case and plinth is big enough for a nut. If that "
     "distance is too small, bosses can be counterproductive."]
-   [:parameter [:blocks :case-side :nuts :bosses :include]
+   [:parameter [:blocks :main-side :nuts :bosses :include]
     {:default false :parse-fn boolean}
     "If `true`, include bosses."]
    [:section [:blocks :plinth-side]
     "A block on the side of the wrist rest."]
    [:section [:blocks :plinth-side :position]
     "Where to place the block. This entire section is ignored in the "
-    "`case-side` style of anchoring."]
+    "`main-side` style of anchoring."]
    [:parameter [:blocks :plinth-side :position :anchor]
     {:default :origin :parse-fn keyword :validate [::schema/anchor]}
     "An alias referring to a feature that anchors the block. Whereas the "
-    "case-side mount is typically anchored to a key, the plinth-side mount "
+    "main-side mount is typically anchored to a key, the plinth-side mount "
     "is typically anchored to a named point on the plinth."]
    [:parameter [:blocks :plinth-side :position :offset]
     {:default [0 0] :parse-fn vec}
@@ -104,7 +104,7 @@
    [:parameter [:blocks :plinth-side :depth]
     {:default 1 :parse-fn num}
     "The thickness of the mount in mm along the axis of the fastener(s). "
-    "This is typically larger than the case-side depth to allow adjustment."]
+    "This is typically larger than the main-side depth to allow adjustment."]
    [:parameter [:blocks :plinth-side :pocket-height]
     {:default 0 :parse-fn num}
     "The height of the nut pocket inside the mounting plate, in mm.\n\n"
@@ -119,5 +119,5 @@
     {:default {}
      :parse-fn (schema/map-of keyword keyword)
      :validate [(spec/map-of keyword? ::schema/wrist-block)]}
-    "A map of short names to specific blocks, i.e. `case-side` or "
+    "A map of short names to specific blocks, i.e. `main-side` or "
     "`plinth-side`. Such aliases are for use elsewhere in the configuration."]])

@@ -15,7 +15,7 @@ wrist-rest:
     anchoring: mutual
     blocks:
       width: 15
-      case-side:
+      main-side:
         position:
           anchor: t4
           side: NNE
@@ -28,5 +28,5 @@ wrist-rest:
         depth: 9.8
         pocket-height: -100
       aliases:
-        wr0c: case-side
+        wr0c: main-side
         wr0p: plinth-side
