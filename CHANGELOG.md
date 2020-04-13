@@ -96,9 +96,14 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - Extensions to bottom plates for projections of the anchors used to fasten
   such plates to the case. This restores a feature of the upstream
   Dactyl-ManuForm.
-- The ability to target the plate of an MCU lock, and ports, for case `tweaks`.
-- An extension of the concept of segments to the rear housing and the plate of
-  an MCU lock for case `tweaks`.
+- Enhancements to `tweaks`.
+    - Negative tweaks for subtracting material. So far, these are only used for
+      3D tweaks to the main body and central housing but they could easily be
+      extended to to wrist rests and bottom plating.
+    - The ability to target ports, including port holders, and the plate of an
+      MCU lock.
+    - An extension of the concept of segments to the rear housing and the plate
+      of an MCU lock.
 - The ability to override specific coordinates for secondary named positions.
 - A GNU Make target for the Dactyl-ManuForm.
 

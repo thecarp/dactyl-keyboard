@@ -24,7 +24,7 @@
 (def anchor-metadata
   {:default :origin :parse-fn keyword :validate [::schema/anchor]})
 (def anchor-documentation
-  (str "A code identifying an anchor point. This can the default value "
+  (str "A code identifying an anchor point. This can be the default value "
        "(`origin`) or a name (built-in or alias) identifying a feature."))
 
 (def anchor-side-metadata

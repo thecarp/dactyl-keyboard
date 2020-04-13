@@ -479,6 +479,9 @@
     "\n"
     "Top level non-leaf nodes may contain the following extra keys:\n"
     "\n"
+    "- `positive` (optional): If `true`, child nodes add material to the "
+    "case. If `false`, child nodes subtract material. The default value "
+    "is `true`.\n"
     "- `at-ground` (optional): If `true`, child nodes will be extended "
     "vertically down to the ground plane, as with a `full` wall. "
     "The default value is `false`. See also: `bottom-plate`.\n"
@@ -546,18 +549,13 @@
     "Where to place the MCU PCBA after intrinsic rotation. "
     stock/anchoring-documentation]
    [:parameter [:mcu :anchoring :anchor]
-    {:default :origin :parse-fn keyword :validate [::schema/anchor]}
-    stock/anchor-metadata
-    stock/anchor-documentation]
+    stock/anchor-metadata stock/anchor-documentation]
    [:parameter [:mcu :anchoring :side]
-    stock/anchor-side-metadata
-    stock/anchor-side-documentation]
+    stock/anchor-side-metadata stock/anchor-side-documentation]
    [:parameter [:mcu :anchoring :segment]
-    stock/anchor-segment-metadata
-    stock/anchor-segment-documentation]
+    stock/anchor-segment-metadata stock/anchor-segment-documentation]
    [:parameter [:mcu :anchoring :offset]
-    stock/anchor-3d-vector-metadata
-    stock/anchor-3d-offset-documentation]
+    stock/anchor-3d-vector-metadata stock/anchor-3d-offset-documentation]
    [:section [:mcu :support]
     "This section offers a couple of different, mutually compatible ways to "
     "hold an MCU PCBA in place. Without such support, the MCU will be "

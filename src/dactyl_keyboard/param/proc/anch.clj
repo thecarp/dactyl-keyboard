@@ -139,7 +139,7 @@
 (defn- auto-body
   "Determine the default body of an anchor."
   [getopt anchor]
-  (let [recurse (fn [fragment]  ; Look up a parent/primary anchor.
+  (let [recurse (fn [& fragment]  ; Look up a parent/primary anchor.
                   (auto-body getopt
                     (apply getopt (concat fragment [:anchoring :anchor]))))]
     (case (getopt :derived :anchors anchor ::type)
@@ -151,7 +151,7 @@
       ::central-adapter :main-body   ; Sic.
       :mcu-lock-plate (recurse :mcu)
       :port-hole (recurse :ports anchor)
-      :port-anchor (recurse :ports anchor)
+      :port-holder (recurse :ports (getopt :derived :anchors anchor ::primary))
       :secondary (recurse :secondaries anchor)
       ;; Default:
       :main-body)))

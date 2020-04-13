@@ -46,7 +46,7 @@ The position of the key cluster relative to something else. The concept of ancho
 
 ### Parameter <a id="anchoring-anchor">`anchor`</a>
 
-A code identifying an anchor point. This can the default value (`origin`) or a name (built-in or alias) identifying a feature.
+A code identifying an anchor point. This can be the default value (`origin`) or a name (built-in or alias) identifying a feature.
 
 ### Parameter <a id="anchoring-offset">`offset`</a>
 

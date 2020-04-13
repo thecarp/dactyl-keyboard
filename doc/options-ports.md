@@ -84,7 +84,7 @@ The concept of anchoring is explained [here](configuration.md).
 
 ### Parameter <a id="anchoring-anchor">`anchor`</a>
 
-A code identifying an anchor point. This can the default value (`origin`) or a name (built-in or alias) identifying a feature.
+A code identifying an anchor point. This can be the default value (`origin`) or a name (built-in or alias) identifying a feature.
 
 ### Parameter <a id="anchoring-side">`side`</a>
 

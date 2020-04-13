@@ -108,14 +108,16 @@
          (place/port-place getopt anchor
            (if (or side segment offset)
              (maybe/translate (place/port-hole-offset getopt anchoring)
-               (misc/nodule))
+               ;; Use a nodule by default for tenting the ceiling slightly,
+               ;; as would be useful for DFM.
+               misc/nodule)
              (auxf/port-hole getopt anchor)))]
       :port-holder
         [true
          (place/port-place getopt primary
            (if (or side segment offset)
              (maybe/translate (place/port-holder-offset getopt
-                                (assoc anchoring ::anch/primary primary))
+                                (assoc anchoring :anchor primary))
                (auxf/port-tweak-post getopt primary))
              (auxf/port-holder getopt primary)))]
       [false (key/web-post getopt)])))
@@ -156,12 +158,13 @@
 
 (defn plating
   "User-requested additional shapes for some body, in 3D."
-  [getopt body]
+  [getopt positive body]
   (apply maybe/union
     (map (partial model-node-3d getopt)
          (->> (forest getopt)
-           (filter #(= (get-body getopt %) body))
-           (filter #(get % :above-ground true))))))
+           (filter #(= (get % :positive true) positive))
+           (filter #(get % :above-ground true))
+           (filter #(= (get-body getopt %) body))))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

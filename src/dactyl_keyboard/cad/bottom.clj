@@ -239,7 +239,7 @@
     (mask-3d getopt)
     (maybe/union
       (key/metacluster body/cluster-wall getopt)
-      (tweak/plating getopt :main-body))))
+      (tweak/plating getopt true :main-body))))
 
 (defn- floor-finder
   "Make a function that takes a key mount and returns a 2D vertex

@@ -145,7 +145,11 @@
        :offset vec
        :alias keyword})))
 
-(let [leaf
+(let [leaf-map (map-like {:anchoring (map-like anchored-3d-position-map)
+                          :sweep identity  ; Permit nil in the final result.
+                          :above-ground boolean
+                          :highlight boolean})
+      leaf
         (fn parse-leaf
           ([anchor]
            (parse-leaf anchor nil))
@@ -157,17 +161,18 @@
            (parse-leaf anchor side first-segment last-segment {}))
           ([anchor side first-segment last-segment options]
            {:pre [(map? options)]}
-           (reduce
-             (fn [coll [item path parser]]
-               (cond
-                 (map? item) (soft-merge item coll)
-                 (some? item) (assoc-in coll path (parser item))
-                 :else coll))
-             (merge {:anchoring {:anchor :origin}, :sweep nil} options)
-             [[anchor [:anchoring :anchor] keyword]
-              [side [:anchoring :side] keyword]
-              [first-segment [:anchoring :segment] int]
-              [last-segment [:sweep] int]])))
+           (leaf-map
+             (reduce
+               (fn [coll [item path parser]]
+                 (cond
+                   (map? item) (soft-merge item coll)
+                   (some? item) (assoc-in coll path (parser item))
+                   :else coll))
+               (merge {:anchoring {:anchor :origin}, :sweep nil} options)
+               [[anchor [:anchoring :anchor] keyword]
+                [side [:anchoring :side] keyword]
+                [first-segment [:anchoring :segment] int]
+                [last-segment [:sweep] int]]))))
       branch-skeleton {:chunk-size int
                        :above-ground boolean
                        :highlight boolean}
@@ -211,9 +216,10 @@
     (map-of keyword
             (dispatch-fn
               (map-like (merge branch-skeleton
-                               {:hull-around (dispatch-fn tail)
+                               {:positive boolean
                                 :at-ground boolean
-                                :body keyword}))))))
+                                :body keyword
+                                :hull-around (dispatch-fn tail)}))))))
 
 (def keycap-map
   "A parser for the options exposed by the dmote-keycap library.
@@ -240,6 +246,7 @@
 
 ;; Used with spec/keys, making the names sensitive:
 (spec/def ::include boolean?)
+(spec/def ::positive boolean?)
 (spec/def ::body #{:auto :main-body :central-housing})
 (spec/def ::anchor keyword?)
 (spec/def ::alias (spec/and keyword?
@@ -321,7 +328,7 @@
   (spec/keys :req-un [:tweak/hull-around]
              :opt-un [::highlight :tweak/chunk-size ::above-ground
                       ;; Additional keys expected in trees only:
-                      ::at-ground ::body]))
+                      ::positive ::at-ground ::body]))
 
 (spec/def ::nameable-spline (spec/coll-of ::spline-point))
 

@@ -397,7 +397,7 @@ The concept of anchoring is explained [here](configuration.md).
 
 ##### Parameter <a id="main-body-back-plate-anchoring-anchor">`anchor`</a>
 
-A code identifying an anchor point. This can the default value (`origin`) or a name (built-in or alias) identifying a feature.
+A code identifying an anchor point. This can be the default value (`origin`) or a name (built-in or alias) identifying a feature.
 
 ##### Parameter <a id="main-body-back-plate-anchoring-offset">`offset`</a>
 
@@ -581,6 +581,7 @@ By default, a non-leaf node will create a convex hull around its child nodes. Ho
 
 Top level non-leaf nodes may contain the following extra keys:
 
+- `positive` (optional): If `true`, child nodes add material to the case. If `false`, child nodes subtract material. The default value is `true`.
 - `at-ground` (optional): If `true`, child nodes will be extended vertically down to the ground plane, as with a `full` wall. The default value is `false`. See also: `bottom-plate`.
 - `body` (optional): Refer to general documentation [here](configuration.md).
 
@@ -644,7 +645,7 @@ Where to place the MCU PCBA after intrinsic rotation. The concept of anchoring i
 
 #### Parameter <a id="mcu-anchoring-anchor">`anchor`</a>
 
-{:default :origin, :parse-fn #object[clojure.core$keyword 0x6413eeb7 "clojure.core$keyword@6413eeb7"], :validate [:dactyl-keyboard.param.schema/anchor]}A code identifying an anchor point. This can the default value (`origin`) or a name (built-in or alias) identifying a feature.
+A code identifying an anchor point. This can be the default value (`origin`) or a name (built-in or alias) identifying a feature.
 
 #### Parameter <a id="mcu-anchoring-side">`side`</a>
 
@@ -850,7 +851,7 @@ The concept of anchoring is explained [here](configuration.md). For wrist rests,
 
 #### Parameter <a id="wrist-rest-anchoring-anchor">`anchor`</a>
 
-A code identifying an anchor point. This can the default value (`origin`) or a name (built-in or alias) identifying a feature.
+A code identifying an anchor point. This can be the default value (`origin`) or a name (built-in or alias) identifying a feature.
 
 #### Parameter <a id="wrist-rest-anchoring-side">`side`</a>
 

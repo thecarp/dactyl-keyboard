@@ -92,7 +92,7 @@
       (auxf/backplate-block getopt))
     (when (getopt :main-body :rear-housing :include)
       (body/rear-housing getopt))
-    (tweak/plating getopt :main-body)
+    (tweak/plating getopt true :main-body)
     (when (getopt :main-body :bottom-plate :include)
       (bottom/anchors-in-main-body getopt))
     (auxf/foot-plates getopt)
@@ -152,7 +152,7 @@
               (when (getopt :central-housing :derived :include-adapter)
                 (bilateral (central/adapter-fastener-receivers getopt)))
               (auxf/ports-positive getopt :central-housing)
-              (tweak/plating getopt :central-housing))
+              (tweak/plating getopt true :central-housing))
             (when (getopt :central-housing :derived :include-adapter)
               (bilateral
                 (central/adapter-right-fasteners getopt)
@@ -171,6 +171,7 @@
                      (getopt :mcu :support :lock :include))
             (mcu/lock-fixture-composite getopt))
           (sandbox/positive getopt))
+        (tweak/plating getopt false :central-housing)
         (sandbox/negative getopt))
       (when (and (getopt :main-body :bottom-plate :include)
                  (getopt :main-body :bottom-plate :preview))
@@ -208,6 +209,7 @@
           (when (and (getopt :wrist-rest :include)
                      (= (getopt :wrist-rest :style) :threaded))
             (wrist/all-fasteners getopt))
+          (tweak/plating getopt false :main-body)
           (sandbox/negative getopt))
         ;; Outer positives, subject only to outer negatives:
         (when (and (getopt :mcu :derived :include-mainly)
@@ -244,7 +246,7 @@
       (wrist/unified-preview getopt)
       (bottom/wrist-anchors-positive getopt)
       (when (= (getopt :wrist-rest :style) :solid)
-        (tweak/plating getopt :main-body)))))
+        (tweak/plating getopt true :main-body)))))
 
 (defn build-rubber-pad-right
   "Right-hand-side wrist-rest pad model. Useful in visualization and
@@ -257,7 +259,7 @@
         (wrist/rubber-insert-positive getopt))
       (bottom/wrist-anchors-positive getopt)
       (when (= (getopt :wrist-rest :style) :solid)
-        (tweak/plating getopt :main-body)))))
+        (tweak/plating getopt true :main-body)))))
 
 (def derivers-static
   "A vector of configuration locations and functions for expanding them."
