@@ -229,7 +229,8 @@ An example:
       segment: 2
       offset: [1, 0, 0]
     override [null, null, 2]
-    translation: [0, 3, 0]```
+    translation: [0, 3, 0]
+```
 
 This example gives the name `s0` to a point near some feature named `f0`, which must be defined elsewhere. All parameters in the `anchoring` map work like their equivalent for primary features like `mcu`, so that `offset` is applied in the vector space of the anchor.
 
@@ -554,48 +555,57 @@ A major body separate from the main body, located in between and connecting the 
 
 ## Parameter <a id="tweaks">`tweaks`</a>
 
-Additional shapes. This is usually needed to bridge gaps between the walls of key clusters. The expected value here is an arbitrarily nested structure starting with a map of names to lists.
+Additional shapes. This parameter is usually needed to bridge gaps between the walls of key clusters. The expected value here is an arbitrarily nested structure starting with a map of names to lists.
 
 The names at the top level are arbitrary but should be distinct and descriptive. They cannot serve as anchors. Their only technical significance lies in the fact that when you combine multiple configuration files, a later tweak will override a previous tweak if and only if they share the same name.
 
-Below the names, each item in each list can follow one of the following patterns:
+In the list below each name, each item can follow one of the following patterns:
 
-- A leaf node. This is a list 1 to 5 elements specified below.
-- A non-leaf node, representing an instruction to combine nested items   in a specific way.
-- A list of any combination of the other two types. This type exists at the second level from the top and as the immediate child of each map node.
+- A leaf node, representing a simple shape in a specific place.
+- A non-leaf node, representing some combination of the items in a new list like the first one.
 
-Each leaf node identifies a particular named feature of the keyboard and places a cuboid there. This is ordinary [anchoring](configuration.md) of very simple shapes. The elements of a leaf are, in order:
+Each **leaf node** places something near a named part of the keyboard. This is ordinary [anchoring](configuration.md) of very simple shapes. In the final form of a leaf, it is a map with the following keys:
 
-1. Mandatory: An anchor.
-2. Optional: A compass point code. There is no default value.
-3. Optional: A starting vertical segment ID. Again there is no default value.
-4. Optional: A stopping wall segment ID. If this is provided, it must be at least as great as the starting segment ID, in which case the leaf will represent the convex hull of the two indicated segments plus all segments between them, off the same anchor.
-5. Optional: A map of additional leaf settings.
+- `anchoring` (required): A nested map. See the general documentation [here](configuration.md).
+- `sweep` (optional): An integer. If you supply a sweep, you must also supply a vertical `segment` ID in `anchoring`. `sweep` identifies another segment. The starting segment cannot be less than `sweep`. With both, the leaf will represent the convex hull of the two segments plus all segments between them, off the same anchor. This is most commonly used to finish the outer walls of a case.
+- `size` (optional): An `[x, y, z]` vector describing a cuboid, in mm. If you supply this, for certain types of anchors, it overrides the default model. However, some types of anchors will ignore a custom size. The default size depends both on the type of anchor and on which anchoring parameters you use.
 
-By default, a non-leaf node will create a convex hull around its child nodes. However, this behaviour can be modified. The following keys are recognized:
+All those keys in a leaf map take a up a lot of space. If you wish, you can instead define each leaf in the form of a list of 1 to 5 elements:
+
+1. The `anchor`.
+2. The `side`.
+3. The starting vertical segment ID.
+4. The sweep, which is the stopping vertical segment ID.
+
+As a fifth element, and/or in place of any of these four elements, the list may contain a map of additional leaf settings that is merged into the final representation specified above. Notice that you cannot use the list format alone to specify a size or offset.
+
+By default, a **non-leaf node** will create a convex hull around its child nodes. However, this behaviour can be modified. The following keys are recognized in any non-leaf node:
 
 - `hull-around` (required): The list of child nodes.
 - `above-ground` (optional): If `true`, child nodes will be visible as part of the case. The default value is `true`.
 - `chunk-size` (optional): Any integer greater than 1. If this is set, child nodes will not share a single convex hull. Instead, there will be a sequence of smaller hulls, each encompassing this many items.
 - `highlight` (optional): If `true`, render the node in OpenSCAD’s highlighting style. This is convenient while you work.
 
-Top level non-leaf nodes may contain the following extra keys:
+There are two types of non-leaf nodes: Trees and branches. The top layer of non-leaf nodes are trees. Tree nodes may contain the following extra keys:
 
 - `positive` (optional): If `true`, child nodes add material to the case. If `false`, child nodes subtract material. The default value is `true`.
 - `at-ground` (optional): If `true`, child nodes will be extended vertically down to the ground plane, as with a `full` wall. The default value is `false`. See also: `bottom-plate`.
 - `body` (optional): Refer to general documentation [here](configuration.md).
 
-In the following example, `A` and `B` are key aliases that would be defined elsewhere. The example is interpreted to mean that a plate should be created stretching from the south-by-southeast corner of `A` to the north-by-northeast corner of `B`. Due to `chunk-size` 2, that first plate will be joined, not hulled, with a second plate from `B` back to a different corner of `A`, with a longer stretch of (all) wall segments down the corner of `A`.
+Branch nodes (non-tree non-leaf nodes) may not contain extra keys.
 
-```main-body:
-  tweaks:
-    bridge-between-A-and-B:
-      - chunk-size: 2
-        hull-around:
-        - [A, SSE, 0]
-        - [B, NNE, 0]
-        - [A, SSW, 0, 4]
+In the following example, `A` and `B` are key aliases that would be defined elsewhere.
+
+```tweaks:
+  bridge-between-A-and-B:
+    - chunk-size: 2
+      hull-around:
+      - [A, SSE, 0]
+      - [B, NNE, 0]
+      - [A, SSW, 0, 4]
 ```
+
+The example is interpreted to mean that a plate should be created stretching from the south-by-southeast corner of `A` to the north-by-northeast corner of `B`. Due to `chunk-size` 2, that first plate will be joined to, but not fully hulled with, a second plate from `B` back to a different corner of `A`, with a longer stretch of (all) wall segments running down the corner of `A`.
 
 ## Section <a id="mcu">`mcu`</a>
 

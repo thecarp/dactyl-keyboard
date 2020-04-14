@@ -10,7 +10,9 @@
             [scad-clj.model :as model]
             [scad-tarmi.core :as tarmi]
             [scad-tarmi.maybe :as maybe]
-            [scad-klupe.iso :refer [bolt]]))
+            [scad-klupe.iso :refer [bolt]]
+            [dactyl-keyboard.compass :as compass]))
+
 
 (def wafer 0.001)  ; Generic insignificant feature size.
 (def nodule (apply model/cube (repeat 3 wafer)))
@@ -76,3 +78,50 @@
   "Wrap scad-klupe.iso/bolt for multiple sources of parameters."
   [& option-maps]
   (bolt (apply merge option-maps)))
+
+(defn- grid-factors
+  "Find a pair of [x y] unit particles for movement on a grid."
+  [direction]
+  (if (nil? direction) [0 0] (compass/to-grid direction)))
+
+(defn- *xy
+  "Produce a vector for moving something laterally on a grid."
+  ([direction offset]
+   (*xy 1 direction offset))
+  ([coefficient direction offset]
+   {:pre [(spec/valid? ::tarmi/point-2-3d offset)]}
+   (let [[dx dy] (grid-factors direction)]
+     (-> offset
+       (update 0 (partial * coefficient dx))
+       (update 1 (partial * coefficient dy))))))
+
+(defn- *z
+  "Produce a vector for moving something vertically on a grid.
+  This is based on a convention for cuboid models where segment
+  0 is “up”, 1 is the middle or current location, 2 is “down”."
+  ([segment offset]
+   (*z 1 segment offset))
+  ([coefficient segment offset]
+   {:pre [(spec/valid? ::tarmi/point-2-3d offset)]}
+   (-> offset
+     (update 2 (partial * coefficient (case segment 0 1, 1 0, 2 -1))))))
+
+(defn cube-corner-xy
+  [direction size wall-thickness]
+  (let [rev (when direction (compass/reverse direction))]
+    (mapv +
+      (*xy 0.5 direction size)
+      (*xy 0.5 rev [wall-thickness wall-thickness 0]))))
+
+(defn cube-corner-z
+  [segment size wall-thickness]
+  (mapv +
+    (*z 0.5 segment size)
+    (*z 0.5 (tarmi/abs (- 2 segment)) [0 0 wall-thickness])))
+
+(defn cube-corner-xyz
+  [direction segment size wall-thickness]
+  (assoc
+    (cube-corner-xy direction size wall-thickness)
+    2
+    (last (cube-corner-z segment size wall-thickness))))

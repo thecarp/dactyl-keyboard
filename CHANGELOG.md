@@ -14,7 +14,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
         - The `case-side` style of mounting wrist rests was similarly renamed
           to `main-side`.
         - The `tweaks` parameter has moved out of `main-body` to the top level,
-          because it can also be used for other bodies.
+          because it can also be used for the central housing.
     - Multiple sections for anchoring have been **renamed** from `position` to
       `anchoring` to reduce ambiguity with respect to bodies.
         - Parameters named `corner` have been **renamed** to `side`. They now
@@ -99,11 +99,10 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - Enhancements to `tweaks`.
     - Negative tweaks for subtracting material. So far, these are only used for
       3D tweaks to the main body and central housing but they could easily be
-      extended to to wrist rests and bottom plating.
+      extended to wrist rests and bottom plating.
     - The ability to target ports, including port holders, and the plate of an
-      MCU lock.
-    - An extension of the concept of segments to the rear housing and the plate
-      of an MCU lock.
+      MCU lock, including a set of vertical segments. The rear housing has also
+      gotten vertical segments.
 - The ability to override specific coordinates for secondary named positions.
 - A GNU Make target for the Dactyl-ManuForm.
 

@@ -125,16 +125,22 @@
 ;; Ports ;;
 ;;;;;;;;;;;
 
-(defn port-hole
-  "Negative space for one port, in place.
-  The upper middle edge of the face of the port is placed at the origin
-  of the local coordinate system.
-  This comes with a flared front plate for entry in case of imperfect alignment."
+(defn port-hole-base
+  "Negative space for one port, in place."
   [getopt id]
   (let [[[_ x] [_ y] z] (place/port-hole-size getopt id)]
     (maybe/translate (place/port-hole-offset getopt {:anchor id})
-      (model/union
-        (model/cube x y z)
+      (model/cube x y z))))
+
+(defn- port-hole-flared
+  "This comes with a flared front plate. This version is suitable for use as
+  a port model, for easier entry in case of imperfect alignment, but it is
+  not suitable for use in a tweak because convex hull would widen the hole."
+  [getopt id]
+  (let [[[_ x] [_ y] z] (place/port-hole-size getopt id)]
+    (model/union
+      (port-hole-base getopt id)
+      (maybe/translate (place/port-hole-offset getopt {:anchor id})
         (model/translate [0 (/ y 2) 0]
           (model/hull
             (model/cube x misc/wafer z)
@@ -171,7 +177,7 @@
                       (or (not positive)
                           (getopt :ports id :holder :include)))
              (place/port-place getopt id
-               ((if positive port-holder port-hole) getopt id))))
+               ((if positive port-holder port-hole-flared) getopt id))))
          (keys (getopt :ports)))))
 
 ;; Unions of the positive and negative spaces for holding all ports, in place.

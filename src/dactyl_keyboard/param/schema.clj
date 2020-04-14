@@ -147,8 +147,7 @@
 
 (let [leaf-map (map-like {:anchoring (map-like anchored-3d-position-map)
                           :sweep identity  ; Permit nil in the final result.
-                          :above-ground boolean
-                          :highlight boolean})
+                          :size vec})
       leaf
         (fn parse-leaf
           ([anchor]
@@ -259,6 +258,7 @@
 (spec/def ::at-ground boolean?)
 (spec/def ::above-ground boolean?)
 (spec/def :tweak/chunk-size (spec/and int? #(> % 1)))
+(spec/def :tweak/size ::tarmi/point-3d)
 (spec/def ::spline-point
   (spec/keys :req-un [::position]  ; 2D.
              :opt-un [::alias]))
@@ -352,7 +352,8 @@
 (spec/def ::wall-extent (spec/or :partial ::wall-segment :full #{:full}))
 (spec/def ::tweak-leaf
   (spec/and
-    (spec/keys :req-un [::anchoring ::sweep])
+    (spec/keys :req-un [::anchoring ::sweep]
+               :opt-un [:tweak/size])
     ;; Require a start to a sweep
     (fn [{:keys [anchoring sweep]}] (if (some? sweep)
                                         (some? (:segment anchoring))

@@ -707,7 +707,7 @@ tweaks:
   # Tweaks for fitting an external USB port and printing the central housing
   # standing on end.
   external-usb:
-  - hull-around:
+  - hull-around:  # Wide sides on the port holder for printing ease and strength.
     - [ext-usb-holder]
     - [ext-usb-holder,
        {anchoring: {side: NW, segment: 1, offset: [-10, 0, 0]}}]
@@ -718,6 +718,11 @@ tweaks:
     - [ext-usb-hole]
     - [ext-usb-hole,
        {anchoring: {side: E, segment: 1, offset: [1, 0, 0]}}]
+  - positive: false  # A hole for USB pins and a locking flange.
+    hull-around:
+    - [ext-usb-holder,
+       {anchoring: {side: S, segment: 1, offset: [3, 0, 0]},
+        size: [16, 2.01, 16]}]
   bottom:
   # A thin strip along the east side of the main cluster.
   # This comes in two parts because hulling the entire strip would extend the

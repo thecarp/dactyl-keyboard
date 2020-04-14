@@ -79,10 +79,11 @@
   type of anchor and secondary parameters about the target detail upon it.
   By default, use the most specific dimensions available for the post,
   defaulting to a post for key-cluster webbing."
-  [getopt {:keys [anchoring] :as node}]
+  [getopt {:keys [anchoring size] :as node}]
   {:pre [(spec/valid? ::schema/tweak-leaf node)]}
   (let [{:keys [anchor side segment offset]} anchoring
-        {::anch/keys [type primary]} (resolve-anchor getopt anchor)]
+        {::anch/keys [type primary]} (resolve-anchor getopt anchor)
+        default (fn [shape] (if size (apply model/cube size) shape))]
     (case type
       ::anch/central-gabel
         [true
@@ -95,14 +96,14 @@
          (body/rhousing-post getopt)]
       :mcu-grip
         [false
-         (apply model/cube (getopt :mcu :support :grip :size))]
+         (default (apply model/cube (getopt :mcu :support :grip :size)))]
       ;; If a side of the MCU plate is specifed, put a nodule there,
       ;; else use the entire base of the plate.
       :mcu-lock-plate
         [false
          (if side
-           misc/nodule
-           (mcu/lock-plate-base getopt false))]
+           (default misc/nodule)
+           (default (mcu/lock-plate-base getopt false)))]
       :port-hole
         [true
          (place/port-place getopt anchor
@@ -110,17 +111,17 @@
              (maybe/translate (place/port-hole-offset getopt anchoring)
                ;; Use a nodule by default for tenting the ceiling slightly,
                ;; as would be useful for DFM.
-               misc/nodule)
-             (auxf/port-hole getopt anchor)))]
+               (default misc/nodule))
+             (default (auxf/port-hole-base getopt anchor))))]
       :port-holder
         [true
          (place/port-place getopt primary
            (if (or side segment offset)
              (maybe/translate (place/port-holder-offset getopt
                                 (assoc anchoring :anchor primary))
-               (auxf/port-tweak-post getopt primary))
-             (auxf/port-holder getopt primary)))]
-      [false (key/web-post getopt)])))
+               (default (auxf/port-tweak-post getopt primary)))
+             (default (auxf/port-holder getopt primary))))]
+      [false (default (key/web-post getopt))])))
 
 (defn- leaf-blade-3d
   "One model at one vertical segment of one feature."

@@ -34,52 +34,6 @@
 
 ;; Primitives.
 
-(defn- grid-factors
-  "Find a pair of [x y] unit particles for movement on a grid."
-  [direction]
-  (if (nil? direction) [0 0] (compass/to-grid direction)))
-
-(defn- *xy
-  "Produce a vector for moving something laterally on a grid."
-  ([direction offset]
-   (*xy 1 direction offset))
-  ([coefficient direction offset]
-   {:pre [(spec/valid? ::tarmi-core/point-2-3d offset)]}
-   (let [[dx dy] (grid-factors direction)]
-     (-> offset
-       (update 0 (partial * coefficient dx))
-       (update 1 (partial * coefficient dy))))))
-
-(defn- *z
-  "Produce a vector for moving something vertically on a grid.
-  This is based on a convention for cuboid models where segment
-  0 is “up”, 1 is the middle or current location, 2 is “down”."
-  ([segment offset]
-   (*z 1 segment offset))
-  ([coefficient segment offset]
-   {:pre [(spec/valid? ::tarmi-core/point-2-3d offset)]}
-   (-> offset
-     (update 2 (partial * coefficient (case segment 0 1, 1 0, 2 -1))))))
-
-(defn- cube-corner-xy
-  [direction size wall-thickness]
-  (mapv +
-    (*xy 0.5 direction size)
-    (*xy 0.5 (compass/reverse direction) [wall-thickness wall-thickness 0])))
-
-(defn- cube-corner-z
-  [segment size wall-thickness]
-  (mapv +
-    (*z 0.5 segment size)
-    (*z 0.5 (abs (- 2 segment)) [0 0 wall-thickness])))
-
-(defn- cube-corner-xyz
-  [direction segment size wall-thickness]
-  (assoc
-    (cube-corner-xy direction size wall-thickness)
-    2
-    (last (cube-corner-z segment size wall-thickness))))
-
 (declare reckon-from-anchor)
 (declare reckon-with-anchor)
 
@@ -429,7 +383,7 @@
               {:configured-segment segment
                :available-segments #{0 1 2}})))
   (let [[[_ x] [_ y] z] (port-hole-size getopt anchor)]
-    (mapv + (cube-corner-xyz side segment [x y z] 0)
+    (mapv + (misc/cube-corner-xyz side segment [x y z] 0)
             offset)))
 
 (defn- port-alignment-offset
@@ -456,7 +410,7 @@
                :available-segments #{0 1 2}})))
   (let [t (getopt :ports anchor :holder :thickness)
         [x y z] (port-holder-size getopt anchor)]
-    (mapv + (cube-corner-xyz side segment [x y z] t)
+    (mapv + (misc/cube-corner-xyz side segment [x y z] t)
             [0 (/ t -2) 0]
             offset)))
 
