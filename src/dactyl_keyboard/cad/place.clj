@@ -61,14 +61,15 @@
         angle-factor (most [:layout rotate-type :progressive])
         neutral (most [:layout :matrix :neutral subject])
         separation (most [:layout :matrix :separation subject])
+        space (+ capdata/mount-1u separation)
         delta-f (delta-fn index neutral)
         delta-r (delta-fn neutral index)
         angle-product (* angle-factor delta-f)
-        flat-distance (* capdata/mount-1u (- index neutral))
+        flat-distance (* space (- index neutral))
         key-prop (key-properties getopt cluster coord)
         {:keys [switch-type skirt-length]} key-prop
         radius (+ (measure/resting-clearance switch-type skirt-length)
-                  (/ (/ (+ capdata/mount-1u separation) 2)
+                  (/ (/ space 2)
                      (Math/sin (/ angle-factor 2))))
         ortho-x (- (* delta-r (+ -1 (- (* radius (Math/sin angle-factor))))))
         ortho-z (* radius (- 1 (Math/cos angle-product)))]

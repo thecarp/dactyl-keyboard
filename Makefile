@@ -38,6 +38,9 @@ endef
 dmote_62key: target/dmote.jar dmote/base.yaml
 	$(TO_SCAD)
 
+concertina_64key: target/dmote.jar concertina/base.yaml
+	$(TO_SCAD)
+
 # A corresponding target approximating Tom Short’s Dactyl-ManuForm.
 dactylmanuform_46key: target/dmote.jar dactyl_manuform/base.yaml
 	$(TO_SCAD)
