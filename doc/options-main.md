@@ -418,7 +418,6 @@ This methodology is mentioned here because its results are not perfect. Pending 
 
 For this reason, while the polygons fill the interior, the perimeter of the bottom plate is extended by key walls and case `tweaks` as they would appear at the height of the bottom plate. Even this brutality may be inadequate. If you require a more exact match, do a projection of the case without a bottom plate, save it as DXF/SVG etc. and post-process that file to fill the interior gap.
 
-
 #### Parameter <a id="main-body-bottom-plate-include">`include`</a>
 
 If `true`, include a bottom plate for the case.
@@ -567,7 +566,7 @@ In the list below each name, each item can follow one of the following patterns:
 Each **leaf node** places something near a named part of the keyboard. This is ordinary [anchoring](configuration.md) of very simple shapes. In the final form of a leaf, it is a map with the following keys:
 
 - `anchoring` (required): A nested map. See the general documentation [here](configuration.md).
-- `sweep` (optional): An integer. If you supply a sweep, you must also supply a vertical `segment` ID in `anchoring`. `sweep` identifies another segment. The starting segment cannot be less than `sweep`. With both, the leaf will represent the convex hull of the two segments plus all segments between them, off the same anchor. This is most commonly used to finish the outer walls of a case.
+- `sweep` (optional): An integer. If you supply a sweep, you must also supply a `segment` in `anchoring`. `sweep` identifies another segment and must be the larger of the two numbers. With both, the leaf will represent the convex hull of the two segments plus all segments between them, off the same anchor. This is most commonly used to finish the outer walls of a case.
 - `size` (optional): An `[x, y, z]` vector describing a cuboid, in mm. If you supply this, for certain types of anchors, it overrides the default model. However, some types of anchors will ignore a custom size. The default size depends both on the type of anchor and on which anchoring parameters you use.
 
 All those keys in a leaf map take a up a lot of space. If you wish, you can instead define each leaf in the form of a list of 1 to 5 elements:
@@ -577,7 +576,13 @@ All those keys in a leaf map take a up a lot of space. If you wish, you can inst
 3. The starting vertical segment ID.
 4. The sweep, which is the stopping vertical segment ID.
 
-As a fifth element, and/or in place of any of these four elements, the list may contain a map of additional leaf settings that is merged into the final representation specified above. Notice that you cannot use the list format alone to specify a size or offset.
+As a fifth element, and/or in place of any of the last three, the list may contain a map of additional leaf settings that is merged into the final representation specified above.
+
+Here’s the fine print on the two different ways to specify a leaf:
+
+- You cannot use the list format alone to specify a size or offset.
+- When you use the list format, the first element must be the name of an anchor. You cannot have a map as the first element.
+- In the list format, you can specify `null` in place of elements you don’t want to specify, but this is only meaningful for `side`.
 
 By default, a **non-leaf node** will create a convex hull around its child nodes. However, this behaviour can be modified. The following keys are recognized in any non-leaf node:
 

@@ -152,7 +152,7 @@
   Take the ID of the port, not the holder."
   [getopt id]
   {:pre [(keyword? id)
-         (= (getopt :derived :anchors id ::anch/type) :port-hole)]}
+         (= (getopt :derived :anchors id ::anch/type) ::anch/port-hole)]}
   (let [[x y z] (place/port-holder-size getopt id)]
     (maybe/translate
       (place/port-holder-offset getopt {:anchor id})

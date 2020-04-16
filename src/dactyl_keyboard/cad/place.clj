@@ -169,8 +169,7 @@
   By default, this goes to one corner of the hem of the mount’s skirt of
   walling and therefore finds the base of full walls."
   [getopt cluster coordinates
-   {:keys [side segment vertex]
-    :or {segment 3, vertex false} :as keyopts}]
+   {:keys [side segment vertex] :or {segment 3, vertex false} :as keyopts}]
   {:pre [(or (nil? side) (compass/intermediates side))]}
   (mapv +
     (if side
@@ -357,7 +356,7 @@
 (defn port-hole-size
   "Compute the size of a port hole."
   [getopt id]
-  {:pre [(= (getopt :derived :anchors id ::anch/type) :port-hole)]}
+  {:pre [(= (getopt :derived :anchors id ::anch/type) ::anch/port-hole)]}
   (let [type (getopt :ports id :type)
         [xₛ yₛ zₛ] (if (= type :custom)
                      (getopt :ports id :size)
@@ -369,7 +368,7 @@
   "Compute the size of a port holder.
   Take the ID of the port, not the holder."
   [getopt id]
-  {:pre [(= (getopt :derived :anchors id ::anch/type) :port-hole)]}
+  {:pre [(= (getopt :derived :anchors id ::anch/type) ::anch/port-hole)]}
   (let [[[x _] [y _] z] (port-hole-size getopt id)
         t (getopt :ports id :holder :thickness)]
     [(+ x t t) (+ y t) (+ z t t)]))
@@ -404,7 +403,7 @@
   [getopt {:keys [anchor side segment offset]
            :or {segment 1, offset [0 0 0]}}]
   {:pre [(keyword? anchor)
-         (= (getopt :derived :anchors anchor ::anch/type) :port-hole)]}
+         (= (getopt :derived :anchors anchor ::anch/type) ::anch/port-hole)]}
   (when-not (#{0 1 2} segment)
     (throw (ex-info "Invalid segment ID specified for port holder."
               {:configured-segment segment
@@ -419,7 +418,7 @@
   "Place passed object as the indicated port."
   [getopt id obj]
   {:pre [(keyword? id)
-         (= (getopt :derived :anchors id ::anch/type) :port-hole)]}
+         (= (getopt :derived :anchors id ::anch/type) ::anch/port-hole)]}
   (->> obj
     (flex/translate (port-alignment-offset getopt id))
     (flex/rotate (getopt :ports id :intrinsic-rotation))
@@ -506,13 +505,14 @@
 
 
 ;; Polymorphic treatment of the properties of aliases.
-;; The by-type multimethod dispatches placement of features in relation to
-;; other features, on the basis of properties associated with each alias,
-;; starting with its ::anch/type.
 
-(defmulti by-type (fn [_ properties] (::anch/type properties)))
+(defmulti by-type
+  "The by-type multimethod dispatches placement of features in relation to
+  other features, on the basis of properties associated with each anchor,
+  starting with its type."
+  (fn [_ properties] (::anch/type properties)))
 
-(defmethod by-type :origin
+(defmethod by-type ::anch/origin
   [_ {:keys [initial]}]
   initial)
 
@@ -524,25 +524,25 @@
   [getopt {:keys [index initial side depth] :or {depth :outer}}]
   (chousing-place getopt index :adapter side depth initial))
 
-(defmethod by-type :rear-housing
+(defmethod by-type ::anch/rear-housing
   [getopt {:keys [side segment initial] :or {segment 3}}]
   {:pre [(some? side)]}
   (rhousing-place getopt side segment initial))
 
-(defmethod by-type :wr-perimeter
+(defmethod by-type ::anch/wr-perimeter
   [getopt {:keys [coordinates outline-key segment initial] :or {segment 3}}]
   (flex/translate
     (wrist-segment-naive getopt coordinates outline-key segment)
     initial))
 
-(defmethod by-type :wr-block
+(defmethod by-type ::anch/wr-block
   [getopt {:keys [mount-index side-key side segment initial]
            :or {segment 3}}]
   {:pre [(or (nil? side) (compass/noncardinals side))]}
   (wrist-block-place getopt mount-index side-key
     (compass/convert-to-intercardinal side) segment initial))
 
-(defmethod by-type :key
+(defmethod by-type ::anch/key-mount
   [getopt {:keys [cluster coordinates side segment initial]
            :or {segment 3} :as opts}]
   {:pre [(or (nil? side) (compass/all-short side))]}
@@ -561,7 +561,7 @@
       ;; The target feature is the middle of the key mounting plate.
       initial)))
 
-(defmethod by-type :mcu-lock-plate
+(defmethod by-type ::anch/mcu-lock-plate
   [getopt {:keys [side segment initial] :or {segment 0}}]
   {:pre [(or (nil? side) (compass/noncardinals side))]}
   (mcu-place getopt
@@ -588,7 +588,7 @@
       ;; Typically, “initial” is the entire lock plate for a tweak.
       initial)))
 
-(defmethod by-type :mcu-grip
+(defmethod by-type ::anch/mcu-grip
   [getopt {:keys [side initial]}]
   {:pre [(compass/noncardinals side)]}
   (mcu-place getopt
@@ -596,20 +596,20 @@
       (getopt :mcu :derived :pcb (compass/convert-to-intercardinal side))
       initial)))
 
-(defmethod by-type :port-hole
+(defmethod by-type ::anch/port-hole
   [getopt {:keys [anchor initial] :as opts}]
   (->> initial
     (flex/translate (port-hole-offset getopt opts))
     (port-place getopt anchor)))
 
 
-(defmethod by-type :port-holder
+(defmethod by-type ::anch/port-holder
   [getopt {:keys [initial] ::anch/keys [primary] :as opts}]
   (->> initial
     (flex/translate (port-holder-offset getopt (assoc opts :anchor primary)))
     (port-place getopt primary)))
 
-(defmethod by-type :secondary
+(defmethod by-type ::anch/secondary
   [getopt {:keys [initial] ::anch/keys [primary]}]
   (let [base (reckon-with-anchor getopt (:anchoring primary))
         ;; Apply the override by walking across the primary anchor’s position,

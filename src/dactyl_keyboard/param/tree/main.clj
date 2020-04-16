@@ -300,7 +300,7 @@
     "would appear at the height of the bottom plate. Even this brutality may "
     "be inadequate. If you require a more exact match, do a projection of the "
     "case without a bottom plate, save it as DXF/SVG etc. and post-process "
-    "that file to fill the interior gap.\n"]
+    "that file to fill the interior gap."]
    [:parameter [:main-body :bottom-plate :include]
     {:default false :parse-fn boolean}
     "If `true`, include a bottom plate for the case."]
@@ -452,8 +452,8 @@
     "- `anchoring` (required): A nested map. See the general documentation "
     "[here](configuration.md).\n"
     "- `sweep` (optional): An integer. If you supply a sweep, you must also "
-    "supply a vertical `segment` ID in `anchoring`. `sweep` identifies "
-    "another segment. The starting segment cannot be less than `sweep`. "
+    "supply a `segment` in `anchoring`. `sweep` identifies another segment "
+    "and must be the larger of the two numbers. "
     "With both, the leaf will represent the convex hull of the two segments "
     "plus all segments between them, off the same anchor. "
     "This is most commonly used to finish the outer walls of a case.\n"
@@ -472,10 +472,17 @@
     "3. The starting vertical segment ID.\n"
     "4. The sweep, which is the stopping vertical segment ID.\n"
     "\n"
-    "As a fifth element, and/or in place of any of these four elements, "
+    "As a fifth element, and/or in place of any of the last three, "
     "the list may contain a map of additional leaf settings that is merged "
-    "into the final representation specified above. Notice that you "
-    "cannot use the list format alone to specify a size or offset.\n"
+    "into the final representation specified above.\n"
+    "\n"
+    "Here’s the fine print on the two different ways to specify a leaf:\n"
+    "\n"
+    "- You cannot use the list format alone to specify a size or offset.\n"
+    "- When you use the list format, the first element must be the name of "
+    "an anchor. You cannot have a map as the first element.\n"
+    "- In the list format, you can specify `null` in place of elements "
+    "you don’t want to specify, but this is only meaningful for `side`.\n"
     "\n"
     "By default, a **non-leaf node** will create a convex hull around its "
     "child nodes. However, this behaviour can be modified. "

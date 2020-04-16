@@ -10,6 +10,14 @@
   (:require [dactyl-keyboard.misc :refer [output-directory soft-merge]]))
 
 
+(defn- mapmap
+  [function coll]
+  (into {} (mapcat function coll)))
+
+(defn- mapmap-indexed
+  [function coll]
+  (into {} (apply concat (map-indexed function coll))))
+
 (defn- resolve-key-coord-flex
   "Resolve supported keywords in a coordinate pair to names.
   This allows for integers as well as the keywords :first and :last, meaning
@@ -29,7 +37,7 @@
     (into {}
       (map
         (fn [[alias flex]]
-          [alias {::type :key
+          [alias {::type ::key-mount
                   :cluster cluster
                   :coordinates (resolve-key-coord-flex getopt cluster flex)}]))
       (getopt :key-clusters cluster :aliases))))
@@ -46,61 +54,46 @@
      (pluck [:base :left-hand-alias] ::central-gabel {:side :left})
      (pluck [:adapter :alias] ::central-adapter {})]))
 
-(defn- wrist-rest-block-alias
-  [getopt mount-index]
-  (reduce
-    (fn [coll [alias side-key]]
-      (merge coll
-        {alias {::type :wr-block
-                :mount-index mount-index
-                :side-key side-key}}))
-    {}
-    (getopt :wrist-rest :mounts mount-index :blocks :aliases)))
-
 (defn collect
   "Gather names and properties for the placement of keyboard features relative
   to one another."
   [getopt]
   (merge
     ;; One-of-a-kind types:
-    {:origin {::type :origin}
-     :rear-housing {::type :rear-housing}
-     (getopt :mcu :support :lock :plate :alias) {::type :mcu-lock-plate}}
+    {:origin {::type ::origin}
+     :rear-housing {::type ::rear-housing}
+     (getopt :mcu :support :lock :plate :alias) {::type ::mcu-lock-plate}}
 
     ;; Keys:
     ;; Unify cluster-specific key aliases into a single global map that
     ;; preserves their cluster of origin and resolves symbolic coordinates
     ;; to absolute values.
-    (into {} (mapcat (partial key-cluster getopt) (keys (getopt :key-clusters))))
+    (mapmap (partial key-cluster getopt) (keys (getopt :key-clusters)))
 
     ;; Ports:
     ;; The ID of each port automatically doubles as an alias for the negative
     ;; space of that port. The holder around it gets its own alias, with an
     ;; annotation (same as for a secondary) for tracing it to its parent port.
-    (apply merge
-      (map
-        (fn [k]
-          {k                                {::type :port-hole}
-           (getopt :ports k :holder :alias) {::type :port-holder,
-                                             ::primary k}})
-        (keys (getopt :ports))))
+    (mapmap
+      (fn [k]
+        {k                                {::type ::port-hole}
+         (getopt :ports k :holder :alias) {::type ::port-holder,
+                                           ::primary k}})
+      (keys (getopt :ports)))
 
     ;; The central housing:
     ;; A map of aliases to corresponding indices in the interface array.
-    (->> (getopt :central-housing :derived :interface)
-      (map-indexed central-point-pair)
-      (apply concat)
-      (into {}))
+    (mapmap-indexed
+      central-point-pair
+      (getopt :central-housing :derived :interface))
 
     ;; MCU grips:
     ;; Collect the names of MCU grip anchors. Expand 2D offsets to 3D.
-    (reduce
-      (fn [coll {:keys [side offset alias] :or {offset [0 0]}}]
-        (assoc coll alias
-          {::type :mcu-grip,
-           :side side,
-           :offset (subvec (vec (conj offset 0)) 0 3)}))
-      {}
+    (mapmap
+      (fn [{:keys [side offset alias] :or {offset [0 0]}}]
+        {alias {::type ::mcu-grip,
+                :side side,
+                :offset (subvec (vec (conj offset 0)) 0 3)}})
       (getopt :mcu :support :grip :anchors))
 
     ;; Wrist rests:
@@ -109,32 +102,34 @@
     ;; is an awkward consequence of aliases being collected before wrist-rest
     ;; properties are derived, and of indices changing with the actual spline
     ;; operation.
-    (reduce
-      (fn [coll point-properties]
-        (if-let [alias (:alias point-properties)]
-          (merge coll
-            {alias {::type :wr-perimeter
-                    :coordinates (:position point-properties)}})
-          coll))
-      {}
+    (mapmap
+      (fn [{:keys [alias position]}]
+        (when alias
+          {alias {::type ::wr-perimeter
+                  :coordinates position}}))
       (getopt :wrist-rest :shape :spline :main-points))
     ;; Wrist rest blocks.
-    (reduce
-      (fn [coll mount-index]
-        (merge coll (wrist-rest-block-alias getopt mount-index)))
-      {}
-      (range (count (getopt :wrist-rest :mounts))))
+    (mapmap-indexed
+      (fn [mount-index _]
+       (mapmap
+         (fn [[alias side-key]]
+           {alias {::type ::wr-block
+                   :mount-index mount-index
+                   :side-key side-key}})
+         (getopt :wrist-rest :mounts mount-index :blocks :aliases)))
+      (getopt :wrist-rest :mounts))
 
     ;; Named secondary positions:
-    (into {}
-      (for [[k v] (getopt :secondaries)]
-        [k {::type :secondary
-            ;; Provide defaults absent in initial parser.
-            ;; TODO: Add to parser without requiring a side or segment.
-            ::primary (soft-merge {:anchoring {:anchor :origin}
-                                   :override [nil nil nil]
-                                   :translation [0 0 0]}
-                                  v)}]))))
+    (mapmap
+      (fn [[name properties]]
+        {name {::type ::secondary
+               ;; Provide defaults absent in initial parser.
+               ;; TODO: Add to parser without requiring a side or segment.
+               ::primary (soft-merge {:anchoring {:anchor :origin}
+                                      :override [nil nil nil]
+                                      :translation [0 0 0]}
+                                     properties)}})
+      (getopt :secondaries))))
 
 (defn- auto-body
   "Determine the default body of an anchor."
@@ -143,27 +138,27 @@
                   (auto-body getopt
                     (apply getopt (concat fragment [:anchoring :anchor]))))]
     (case (getopt :derived :anchors anchor ::type)
-      :origin (if (and (getopt :main-body :reflect)
-                       (getopt :central-housing :include))
-                :central-housing
-                :main-body)
+      ::origin (if (and (getopt :main-body :reflect)
+                        (getopt :central-housing :include))
+                 :central-housing
+                 :main-body)
       ::central-gabel :central-housing
       ::central-adapter :main-body   ; Sic.
-      :mcu-lock-plate (recurse :mcu)
-      :port-hole (recurse :ports anchor)
-      :port-holder (recurse :ports (getopt :derived :anchors anchor ::primary))
-      :secondary (recurse :secondaries anchor)
+      ::mcu-lock-plate (recurse :mcu)
+      ::port-hole (recurse :ports anchor)
+      ::port-holder (recurse :ports (getopt :derived :anchors anchor ::primary))
+      ::secondary (recurse :secondaries anchor)
       ;; Default:
       :main-body)))
 
 (defn resolve-body
   "Take a body setting for a feature. Return a non-auto body ID."
   [getopt setting anchor]
-  {:post [#{:main-body :central-housing}]}
+  {:post [(#{:main-body :central-housing} %)]}
   (case setting
     :auto (let [resolved (auto-body getopt anchor)]
             (if (= resolved :auto)
               :main-body  ; Fall back to the main body if autos are chained up.
               resolved))
-  ;; Default:
+    ;; Default:
     setting))

@@ -148,39 +148,39 @@
 (let [leaf-map (map-like {:anchoring (map-like anchored-3d-position-map)
                           :sweep identity  ; Permit nil in the final result.
                           :size vec})
-      leaf
+      destructure-leaf
         (fn parse-leaf
           ([anchor]
            (parse-leaf anchor nil))
           ([anchor side]
            (parse-leaf anchor side nil nil))
           ([anchor side segment]
-           (parse-leaf anchor side segment segment))
-          ([anchor side first-segment last-segment]
-           (parse-leaf anchor side first-segment last-segment {}))
-          ([anchor side first-segment last-segment options]
+           (parse-leaf anchor side segment nil))
+          ([anchor side segment sweep]
+           (parse-leaf anchor side segment sweep {}))
+          ([anchor side segment sweep options]
            {:pre [(map? options)]}
            (leaf-map
              (reduce
                (fn [coll [item path parser]]
                  (cond
-                   (map? item) (soft-merge item coll)
+                   (map? item) (soft-merge coll item)
                    (some? item) (assoc-in coll path (parser item))
                    :else coll))
-               (merge {:anchoring {:anchor :origin}, :sweep nil} options)
+               (merge {:anchoring {:anchor :origin}} options)
                [[anchor [:anchoring :anchor] keyword]
                 [side [:anchoring :side] keyword]
-                [first-segment [:anchoring :segment] int]
-                [last-segment [:sweep] int]]))))
+                [segment [:anchoring :segment] int]
+                [sweep [:sweep] int]]))))
       branch-skeleton {:chunk-size int
                        :above-ground boolean
                        :highlight boolean}
       dispatch-fn (fn [brancher]
                      (fn dispatch [cnd]
                        (cond
-                         (and (map? cnd) (:hull-around cnd)) (brancher cnd)
-                         (string? (first cnd)) (apply leaf cnd)
-                         (and (map? cnd) (:anchoring cnd)) (leaf cnd)
+                         (and (map? cnd) (contains? cnd :hull-around)) (brancher cnd)
+                         (map? cnd) (destructure-leaf cnd)
+                         (string? (first cnd)) (apply destructure-leaf cnd)
                          :else (map dispatch cnd))))
       tail (fn parse [candidate]
              ((map-like (merge branch-skeleton
@@ -195,23 +195,21 @@
     cannot have these extra properties.
 
     The grove is parsed using a pair of dispatchers, each with its own branch
-    parser. The top-level dispatcher replaces itself with the lower-level
-    dispatcher each time it passes a non-leaf node, and the lower-level
-    dispatcher sustains itself by the trick of its parser being a function that
-    refers to itself and thereby passes itself along by recreating the
-    lower-lever dispatcher on each pass.
+    parser. The initial dispatcher replaces itself with a secondary dispatcher
+    each time it passes a non-leaf node, and the secondary dispatcher sustains
+    itself by the trick of its parser being a function that refers to itself
+    and thereby passes itself along by recreating the lower-lever dispatcher on
+    each pass.
 
     A candidate to the dispatcher can be a lazy sequence describing a single
     point (a leaf), a lazy sequence of such sequences, or a map. If it is a
     map, it may contain a similar nested structure, or a predigested leaf.
 
     The leaf parser is permissive, having multiple arities where any positional
-    argument can be replaced by a map.  The base case is one anchor, typically
-    a key alias, with ordinary specifiers for a side and vertical segment off
-    that anchor. However, the parser also accepts a second segment ID to form a
-    sweep across a range of segments, and in place of any or all positional
-    arguments after the first (typically coming in last), the parser takes a
-    map of extras that may overlap the meaning of the positional arguments."
+    argument can be replaced by a map. However, if a short-form (sequence) leaf
+    starts with a map, the dispatcher will not identify it as a leaf, because
+    of ambiguity with respect to a node list. A more stateful parser could
+    handle that case."
     (map-of keyword
             (dispatch-fn
               (map-like (merge branch-skeleton
@@ -252,7 +250,7 @@
                             #(not (= :origin %))
                             #(not (= :rear-housing %))))
 (spec/def ::segment (spec/int-in 0 5))
-(spec/def ::sweep (spec/nilable ::segment))
+(spec/def :tweak/sweep ::segment)
 (spec/def ::thickness (spec/and number? (complement neg?)))
 (spec/def ::highlight boolean?)
 (spec/def ::at-ground boolean?)
@@ -321,10 +319,11 @@
   (spec/coll-of
     (spec/keys :req-un [::alias :intercardinal/side]
                :opt-un [:flexible/offset])))
-(spec/def :tweak/hull-around (spec/coll-of (spec/or :leaf ::tweak-leaf
-                                                    :map ::tweak-branch)))
-(spec/def ::tweak-name-map (spec/map-of keyword? :tweak/hull-around))
-(spec/def ::tweak-branch
+(spec/def ::tweak-node (spec/or :leaf ::tweak-leaf, :non-leaf ::tweak-non-leaf))
+(spec/def ::tweak-list (spec/coll-of ::tweak-node :min-count 1))
+(spec/def :tweak/hull-around ::tweak-list)
+(spec/def ::tweak-name-map (spec/map-of keyword? ::tweak-list))
+(spec/def ::tweak-non-leaf
   (spec/keys :req-un [:tweak/hull-around]
              :opt-un [::highlight :tweak/chunk-size ::above-ground
                       ;; Additional keys expected in trees only:
@@ -352,15 +351,14 @@
 (spec/def ::wall-extent (spec/or :partial ::wall-segment :full #{:full}))
 (spec/def ::tweak-leaf
   (spec/and
-    (spec/keys :req-un [::anchoring ::sweep]
-               :opt-un [:tweak/size])
+    (spec/keys :req-un [::anchoring] :opt-un [:tweak/sweep :tweak/size])
     ;; Require a start to a sweep
     (fn [{:keys [anchoring sweep]}] (if (some? sweep)
                                         (some? (:segment anchoring))
                                         true))
-    ;; Make sure the sweep does not end before it starts.
-    (fn [{:keys [anchoring sweep]}] (<= (get anchoring :segment 0)
-                                        (or sweep 5)))))
+    ;; Make sure the sweep ends after it starts.
+    (fn [{:keys [anchoring sweep]}] (< (get anchoring :segment 0)
+                                       (or sweep 5)))))
 (spec/def ::foot-plate-polygons (spec/coll-of ::foot-plate))
 
 (spec/def ::descriptor  ; Parameter metadata descriptor.
