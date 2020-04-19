@@ -1,7 +1,7 @@
 # Configuration fragment for a solid bridge between case and wrist rest.
 
 secondaries:
-  wrb-main-body:
+  wrb-case:
     anchoring:
       anchor: m03
       side: SSE

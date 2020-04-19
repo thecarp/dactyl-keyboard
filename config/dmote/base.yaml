@@ -434,13 +434,6 @@ secondaries:
       side: ESE
       segment: 1
     translation: [0, 0, -20]
-  # Other:
-  port-corner:
-    anchoring:
-      anchor: reflection-port-holder
-      side: NW
-      segment: 2
-    translation: [0, 0, -10]
 main-body:
   reflect: true
   rear-housing:
@@ -750,9 +743,17 @@ tweaks:
       - [back0, WNW, 3]
       - [back0, WSW, 3]
   connector-housing:
+    # A slightly pyramidal ceiling to the port, as DFM.
+    - positive: false
+      hull-around:
+      - [reflection-port]
+      - [reflection-port,
+         {anchoring: {segment: 0, offset: [0, 0, 1]}}]
+    # A gentle transition from the rear housing’s corner to the port holder.
     - hull-around:
       - [reflection-port-holder]
-      - [port-corner]
+      - [reflection-port-holder,
+         {anchoring: {side: NW, segment: 2, offset: [0, 0, -10]}}]
 mcu:
   include: true
   # Stand on the long edge, folded into the rear housing.

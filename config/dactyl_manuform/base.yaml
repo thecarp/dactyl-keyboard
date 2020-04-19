@@ -3,8 +3,9 @@
 # The long-term goal with this file is to have it produce Short’s design
 # through the DMOTE application for upstream compatibility.
 # As of DMOTE v0.6.0, the application is still missing the wire hook
-# feature on the original Dactyl-ManuForm, and vertex-perfect imitation
-# would be laborious.
+# feature on the original Dactyl-ManuForm, though it could be imitated
+# with the tweaks feature. A vertex-perfect imitation would be laborious
+# in any case.
 
 keys:
   styles:
@@ -352,6 +353,14 @@ tweaks:
       - [thumb-mr, SSE, 0, 4]
       - [thumb-tr, SSE, 0, 4]
       - [m03, SSW, 0, 4]
+  port-apertures:
+    - positive: false
+      hull-around:
+      - [big-port,
+         {anchoring: {side: S, offset: [0, 0, 5]}, size: [10.78, 13, 5]}]
+    - positive: false
+      hull-around:
+      - [small-port, {size: [6.5, 20, 13.6]}]
 mcu:
   include: true
   type: promicro
@@ -380,7 +389,7 @@ ports:
       segment: 2
     anchoring:
       anchor: back-plane
-      offset: [-8, 5, 0]
+      offset: [-3, 5, 0]
     holder:
       include: true
       thickness: 2
@@ -394,7 +403,7 @@ ports:
       segment: 2
     anchoring:
       anchor: back-plane
-      offset: [10, 5, 0]
+      offset: [6, 5, 0]
     holder:
       include: true
       thickness: 2
