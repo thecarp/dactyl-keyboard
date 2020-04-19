@@ -556,14 +556,16 @@ A major body separate from the main body, located in between and connecting the 
 
 Additional shapes. This parameter is usually needed to bridge gaps between the walls of key clusters. The expected value here is an arbitrarily nested structure starting with a map of names to lists.
 
-The names at the top level are arbitrary but should be distinct and descriptive. They cannot serve as anchors. Their only technical significance lies in the fact that when you combine multiple configuration files, a later tweak will override a previous tweak if and only if they share the same name.
+The names at the entry level are arbitrary but should be distinct and descriptive. They cannot serve as anchors. Their only technical significance lies in the fact that when you combine multiple configuration files, a later tweak will override a previous tweak if and only if they share the same name.
 
 In the list below each name, each item can follow one of the following patterns:
 
 - A leaf node, representing a simple shape in a specific place.
-- A non-leaf node, representing some combination of the items in a new list like the first one.
+- A branch node, containing a list like the one below each name and representing some combination of the nodes in it.
 
-Each **leaf node** places something near a named part of the keyboard. This is ordinary [anchoring](configuration.md) of very simple shapes. In the final form of a leaf, it is a map with the following keys:
+These terms are metaphorical. In the metaphor, the list itself is not one tree but the soil of a grove of trees.
+
+Each **leaf node** places something near a named part of the keyboard. This is ordinary [anchoring](configuration.md) of simple shapes. In the final form of a leaf, it is a map with the following keys:
 
 - `anchoring` (required): A nested map. See the general documentation [here](configuration.md).
 - `sweep` (optional): An integer. If you supply a sweep, you must also supply a `segment` in `anchoring`. `sweep` identifies another segment and must be the larger of the two numbers. With both, the leaf will represent the convex hull of the two segments plus all segments between them, off the same anchor. This is most commonly used to finish the outer walls of a case.
@@ -584,20 +586,20 @@ Here’s the fine print on the two different ways to specify a leaf:
 - When you use the list format, the first element must be the name of an anchor. You cannot have a map as the first element.
 - In the list format, you can specify `null` in place of elements you don’t want to specify, but this is only meaningful for `side`.
 
-By default, a **non-leaf node** will create a convex hull around its child nodes. However, this behaviour can be modified. The following keys are recognized in any non-leaf node:
+By default, a **branch node** will create a convex hull around the nodes it contains. However, this behaviour can be modified. The following keys are recognized in any branch node:
 
 - `hull-around` (required): The list of child nodes.
-- `above-ground` (optional): If `true`, child nodes will be visible as part of the case. The default value is `true`.
 - `chunk-size` (optional): Any integer greater than 1. If this is set, child nodes will not share a single convex hull. Instead, there will be a sequence of smaller hulls, each encompassing this many items.
 - `highlight` (optional): If `true`, render the node in OpenSCAD’s highlighting style. This is convenient while you work.
 
-There are two types of non-leaf nodes: Trees and branches. The top layer of non-leaf nodes are trees. Tree nodes may contain the following extra keys:
+Leaf and branch nodes at the entry level, in the list following the name of a tweak, are special. They grow in the soil and represent individual plants with their own roots. When nodes are selected for a particular purpose, that selection happens at the entry level. Nodes at the entry level may therefore contain the following extra keys, which determine how each node affects the keyboard:
 
-- `positive` (optional): If `true`, child nodes add material to the case. If `false`, child nodes subtract material. The default value is `true`.
-- `at-ground` (optional): If `true`, child nodes will be extended vertically down to the ground plane, as with a `full` wall. The default value is `false`. See also: `bottom-plate`.
-- `body` (optional): Refer to general documentation [here](configuration.md).
+- `positive` (optional): If `true`, add material to the case. If `false`, subtract material. The default value is `true`.
+- `at-ground` (optional): This setting has two effects. If `true`, extend vertically down to the ground plane, as with a `full` wall, *and* influence the shape of a `bottom-plate`. The default value is `false`.
+- `above-ground` (optional): If `true`, appear as part of the case. The default value is `true`. When this is `false` and `at-ground` is `true`, the node affects the bottom plate only, which is the only use for this option.
+- `body` (optional): Refer to general documentation [here](configuration.md). As usual, the default value is `auto`. When the node is a branch, `auto` uses the first leaf subordinate to the branch for the usual heuristics.
 
-Branch nodes (non-tree non-leaf nodes) may not contain extra keys.
+Nodes subordinate to branches may not contain these extra keys.
 
 In the following example, `A` and `B` are key aliases that would be defined elsewhere.
 

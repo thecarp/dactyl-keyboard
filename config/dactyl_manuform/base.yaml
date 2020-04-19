@@ -353,14 +353,14 @@ tweaks:
       - [thumb-mr, SSE, 0, 4]
       - [thumb-tr, SSE, 0, 4]
       - [m03, SSW, 0, 4]
-  port-apertures:
-    - positive: false
-      hull-around:
-      - [big-port,
-         {anchoring: {side: S, offset: [0, 0, 5]}, size: [10.78, 13, 5]}]
-    - positive: false
-      hull-around:
-      - [small-port, {size: [6.5, 20, 13.6]}]
+  ports:
+    # Holes from port holders into the case.
+    - {positive: false,
+       anchoring: {anchor: big-port, side: S, offset: [0, 0, 5]},
+       size: [10.78, 13, 5]}
+    - {positive: false,
+       anchoring: {anchor: small-port},
+       size: [6.5, 20, 13.6]}
 mcu:
   include: true
   type: promicro
@@ -392,6 +392,7 @@ ports:
       offset: [-3, 5, 0]
     holder:
       include: true
+      alias: big-holder
       thickness: 2
   small-port:
     # This models an unknown variety of USB socket.
@@ -406,4 +407,5 @@ ports:
       offset: [6, 5, 0]
     holder:
       include: true
+      alias: small-holder
       thickness: 2

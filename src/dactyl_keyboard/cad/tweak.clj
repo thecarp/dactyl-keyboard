@@ -29,7 +29,7 @@
 
 (defn- node-type [node]
   (cond
-    (spec/valid? ::schema/tweak-non-leaf node) ::branch
+    (spec/valid? ::schema/tweak-branch node) ::branch
     (spec/valid? ::schema/tweak-leaf node) ::leaf
     :else (throw (ex-info "Unclassifiable tweak node."
                    {:node node}))))
@@ -162,7 +162,7 @@
 
 (defn- model-branch-3d
   [getopt {:keys [at-ground hull-around chunk-size highlight] :as node}]
-  {:pre [(spec/valid? ::schema/tweak-non-leaf node)]}
+  {:pre [(spec/valid? ::schema/tweak-branch node)]}
   (let [prefix (if highlight model/-# identity)
         shapes (map (partial model-node-3d getopt) hull-around)
         hull (if at-ground misc/bottom-hull maybe/hull)]

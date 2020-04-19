@@ -145,9 +145,16 @@
        :offset vec
        :alias keyword})))
 
-(let [leaf-map (map-like {:anchoring (map-like anchored-3d-position-map)
-                          :sweep identity  ; Permit nil in the final result.
-                          :size vec})
+(let [leaf-skeleton {:anchoring (map-like anchored-3d-position-map)
+                     :sweep int
+                     :size vec}
+      branch-skeleton {:chunk-size int
+                       :highlight boolean}
+      top-extras {:positive boolean
+                  :at-ground boolean
+                  :above-ground boolean
+                  :body keyword}
+      tail-leafer (map-like leaf-skeleton)
       destructure-leaf
         (fn parse-leaf
           ([anchor]
@@ -160,63 +167,59 @@
            (parse-leaf anchor side segment sweep {}))
           ([anchor side segment sweep options]
            {:pre [(map? options)]}
-           (leaf-map
-             (reduce
-               (fn [coll [item path parser]]
-                 (cond
-                   (map? item) (soft-merge coll item)
-                   (some? item) (assoc-in coll path (parser item))
-                   :else coll))
-               (merge {:anchoring {:anchor :origin}} options)
-               [[anchor [:anchoring :anchor] keyword]
-                [side [:anchoring :side] keyword]
-                [segment [:anchoring :segment] int]
-                [sweep [:sweep] int]]))))
-      branch-skeleton {:chunk-size int
-                       :above-ground boolean
-                       :highlight boolean}
-      dispatch-fn (fn [brancher]
-                     (fn dispatch [cnd]
-                       (cond
-                         (and (map? cnd) (contains? cnd :hull-around)) (brancher cnd)
-                         (map? cnd) (destructure-leaf cnd)
-                         (string? (first cnd)) (apply destructure-leaf cnd)
-                         :else (map dispatch cnd))))
-      tail (fn parse [candidate]
-             ((map-like (merge branch-skeleton
-                               {:hull-around (dispatch-fn parse)}))
-              candidate))]
+           (reduce
+             (fn [coll [item path parser]]
+               (cond
+                 (map? item) (soft-merge coll item)
+                 (some? item) (assoc-in coll path (parser item))
+                 :else coll))
+             (merge {:anchoring {:anchor :origin}} options)
+             [[anchor [:anchoring :anchor] keyword]
+              [side [:anchoring :side] keyword]
+              [segment [:anchoring :segment] int]
+              [sweep [:sweep] int]])))
+      dispatch-fn
+        (fn [brancher leafer]
+           (fn dispatch [cnd]
+             (cond
+               (and (map? cnd) (contains? cnd :hull-around)) (brancher cnd)
+               (map? cnd) (leafer (destructure-leaf cnd))
+               (string? (first cnd)) (leafer (apply destructure-leaf cnd))
+               :else (map dispatch cnd))))
+      tail-brancher (fn parse [candidate]
+                      ((map-like (merge branch-skeleton
+                                        {:hull-around
+                                         (dispatch-fn parse tail-leafer)}))
+                       candidate))]
   (def tweak-grove
     "Parse the tweak configuration.
 
     In local nomenclature, the “tweaks” parameter is a grove of trees. Each
-    non-leaf node beneath the name level of the grove is a tree that can have
-    some extra properties. Lower-level non-leaf nodes are just branches and
-    cannot have these extra properties.
+    node beneath the name level of the grove is a tree that can have
+    some extra properties. Subordinate nodes cannot have these extra properties.
 
     The grove is parsed using a pair of dispatchers, each with its own branch
-    parser. The initial dispatcher replaces itself with a secondary dispatcher
-    each time it passes a non-leaf node, and the secondary dispatcher sustains
-    itself by the trick of its parser being a function that refers to itself
-    and thereby passes itself along by recreating the lower-lever dispatcher on
-    each pass.
+    and leaf parsers. The initial dispatcher replaces itself with a secondary
+    dispatcher each time it passes a branch node, and the secondary
+    dispatcher sustains itself by the trick of its parser being a function that
+    refers to itself and thereby passes itself along by recreating the
+    lower-lever dispatcher on each pass.
 
     A candidate to the dispatcher can be a lazy sequence describing a single
     point (a leaf), a lazy sequence of such sequences, or a map. If it is a
     map, it may contain a similar nested structure, or a predigested leaf.
 
-    The leaf parser is permissive, having multiple arities where any positional
-    argument can be replaced by a map. However, if a short-form (sequence) leaf
-    starts with a map, the dispatcher will not identify it as a leaf, because
-    of ambiguity with respect to a node list. A more stateful parser could
-    handle that case."
+    The basic leaf parser is permissive, having multiple arities where any
+    positional argument can be replaced by a map. However, if a short-form
+    (sequence) leaf starts with a map, the dispatcher will not identify it as a
+    leaf, because of ambiguity with respect to a node list. A more stateful
+    parser could handle that case."
     (map-of keyword
             (dispatch-fn
-              (map-like (merge branch-skeleton
-                               {:positive boolean
-                                :at-ground boolean
-                                :body keyword
-                                :hull-around (dispatch-fn tail)}))))))
+              (map-like (merge branch-skeleton top-extras
+                               {:hull-around
+                                (dispatch-fn tail-brancher tail-leafer)}))
+              (map-like (merge leaf-skeleton top-extras))))))
 
 (def keycap-map
   "A parser for the options exposed by the dmote-keycap library.
@@ -319,11 +322,11 @@
   (spec/coll-of
     (spec/keys :req-un [::alias :intercardinal/side]
                :opt-un [:flexible/offset])))
-(spec/def ::tweak-node (spec/or :leaf ::tweak-leaf, :non-leaf ::tweak-non-leaf))
+(spec/def ::tweak-node (spec/or :leaf ::tweak-leaf, :branch ::tweak-branch))
 (spec/def ::tweak-list (spec/coll-of ::tweak-node :min-count 1))
 (spec/def :tweak/hull-around ::tweak-list)
 (spec/def ::tweak-name-map (spec/map-of keyword? ::tweak-list))
-(spec/def ::tweak-non-leaf
+(spec/def ::tweak-branch
   (spec/keys :req-un [:tweak/hull-around]
              :opt-un [::highlight :tweak/chunk-size ::above-ground
                       ;; Additional keys expected in trees only:

@@ -15,7 +15,8 @@
 (def leaf-a
   "A leaf anchored to the origin which, in the absence of a central housing,
   is part of the main body."
-  {:anchoring {:anchor :origin}})
+  {:above-ground false
+   :anchoring {:anchor :origin}})
 
 (def leaf-b
   "A leaf anchored a little more directly to the central housing."
@@ -29,7 +30,6 @@
 (def branch-b
   {:positive false
    :at-ground false  ; Normally implicit.
-   :above-ground false
    :hull-around [leaf-a]})
 
 (def branch-c
@@ -60,10 +60,10 @@
            [leaf-a branch-a branch-b])))
   (testing "above ground"
     (is (= (filter (screener getopt {:above-ground true}) forest)
-           [leaf-a branch-a branch-c])))
+           [branch-a branch-b branch-c])))
   (testing "not above ground"
     (is (= (filter (screener getopt {:above-ground false}) forest)
-           [branch-b])))
+           [leaf-a])))
   (testing "main body"
     (is (= (filter (screener getopt {:bodies #{:main-body}}) forest)
            [leaf-a branch-b])))
@@ -73,4 +73,4 @@
   (testing "intersection"
     (is (= (filter (screener getopt {:above-ground true
                                      :bodies #{:main-body}}) forest)
-           [leaf-a]))))
+           [branch-b]))))

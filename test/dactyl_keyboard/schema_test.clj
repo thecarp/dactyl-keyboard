@@ -115,16 +115,37 @@
       (is (= (node ["a3", "SSW", 0, 2])
              [true {:anchoring {:anchor :a3, :side :SSW, :segment 0}
                     :sweep 2}])))
-    (testing "short-format leaf, maximal"
+    (testing "short-format low leaf, maximal"
       (is (= (node ["a4", "SW", 2, 3, {:anchoring {:offset [0 1 0]}
                                        :size [1 2 4]}])
              [true {:anchoring {:anchor :a4, :side :SW,
                                 :segment 2, :offset [0 1 0]}
                     :sweep 3
                     :size [1 2 4]}])))
-    (testing "short-format leaf, map in first position"
+    (testing "short-format low leaf, map in first position"
       (is (= (node [{:anchoring {:offset [0 0 1]}}])
              [false '({:anchoring {:anchor :origin, :offset [0 0 1]}})])))
-    (testing "long-format leaf, default anchor"
+    (testing "long-format low leaf, default anchor"
       (is (= (node {:anchoring {:offset [0 0 1]}})
-             [true {:anchoring {:anchor :origin, :offset [0 0 1]}}])))))
+             [true {:anchoring {:anchor :origin, :offset [0 0 1]}}])))
+    (testing "long-format high leaf, maximal"
+      (is (= (node {:positive false
+                    :body "central-housing"
+                    :at-ground true
+                    :above-ground false
+                    :anchoring {:anchor "x"
+                                :side "S"
+                                :segment 0
+                                :offset [-3 -2 -1]}
+                    :sweep 1
+                    :size [1 10 2]})
+             [true {:positive false
+                    :body :central-housing
+                    :at-ground true
+                    :above-ground false
+                    :anchoring {:anchor :x
+                                :side :S
+                                :segment 0
+                                :offset [-3 -2 -1]}
+                    :sweep 1
+                    :size [1 10 2]}])))))
