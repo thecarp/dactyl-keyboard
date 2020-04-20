@@ -87,7 +87,7 @@
     (when (and (getopt :wrist-rest :include)
                (= (getopt :wrist-rest :style) :threaded))
       (wrist/all-case-blocks getopt))
-    (auxf/ports-positive getopt :main-body)
+    (auxf/ports-positive getopt #{:main-body})
     (when (getopt :main-body :back-plate :include)
       (auxf/backplate-block getopt))
     (when (getopt :main-body :rear-housing :include)
@@ -151,7 +151,7 @@
                 (bilateral (central/lip-body-right getopt)))
               (when (getopt :central-housing :derived :include-adapter)
                 (bilateral (central/adapter-fastener-receivers getopt)))
-              (auxf/ports-positive getopt :central-housing)
+              (auxf/ports-positive getopt #{:central-housing})
               (tweak/plating getopt true :central-housing))
             (when (getopt :central-housing :derived :include-adapter)
               (bilateral
@@ -159,7 +159,7 @@
                 (central/adapter-left-fasteners getopt)))
             (when (getopt :mcu :derived :include-centrally)
               (mcu/negative-composite getopt))
-            (auxf/ports-negative getopt :central-housing)
+            (auxf/ports-negative getopt #{:central-housing})
             (when (getopt :main-body :bottom-plate :include)
               (bilateral
                 (bottom/holes-in-main-plate getopt)
@@ -199,7 +199,7 @@
             ;; Space for an adapter lip, in case the adapter itself is too
             ;; thin.
             (central/lip-body-right getopt))
-          (auxf/ports-negative getopt :main-body)
+          (auxf/ports-negative getopt #{:main-body})
           (when (getopt :mcu :derived :include-mainly)
             (mcu/negative-composite getopt))
           (when (getopt :main-body :leds :include)

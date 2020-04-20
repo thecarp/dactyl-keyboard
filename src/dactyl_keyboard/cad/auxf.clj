@@ -126,7 +126,7 @@
 ;;;;;;;;;;;
 
 (defn port-hole-base
-  "Negative space for one port, in place."
+  "Negative space for one port."
   [getopt id]
   (let [[[_ x] [_ y] z] (place/port-hole-size getopt id)]
     (maybe/translate (place/port-hole-offset getopt {:anchor id})
@@ -148,8 +148,7 @@
               (model/cube (inc x) misc/wafer (inc z)))))))))
 
 (defn port-holder
-  "Positive space for one port, in place.
-  Take the ID of the port, not the holder."
+  "Positive space for one port. Take the ID of the port, not the holder."
   [getopt id]
   {:pre [(keyword? id)
          (= (getopt :derived :anchors id ::anch/type) ::anch/port-hole)]}
@@ -166,14 +165,14 @@
 
 (defn- port-set
   "The positive or negative space for all ports."
-  [getopt body positive]
+  [getopt bodies positive]
   (apply maybe/union
     (map (fn [id]
            (when (and (getopt :ports id :include)
-                      (= (anch/resolve-body getopt
-                           (getopt :ports id :body)
-                           (getopt :ports id :anchoring :anchor))
-                         body)
+                      ((anch/resolve-body getopt
+                         (getopt :ports id :body)
+                         (getopt :ports id :anchoring :anchor))
+                       bodies)
                       (or (not positive)
                           (getopt :ports id :holder :include)))
              (place/port-place getopt id
@@ -181,8 +180,8 @@
          (keys (getopt :ports)))))
 
 ;; Unions of the positive and negative spaces for holding all ports, in place.
-(defn ports-positive [getopt body] (port-set getopt body true))
-(defn ports-negative [getopt body] (port-set getopt body false))
+(defn ports-positive [getopt bodies] (port-set getopt bodies true))
+(defn ports-negative [getopt bodies] (port-set getopt bodies false))
 
 
 ;;;;;;;;;;;;;;;;;;;;

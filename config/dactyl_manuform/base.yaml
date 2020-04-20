@@ -389,7 +389,7 @@ ports:
       segment: 2
     anchoring:
       anchor: back-plane
-      offset: [-3, 5, 0]
+      offset: [-3, 5, -1]
     holder:
       include: true
       alias: big-holder
@@ -404,7 +404,7 @@ ports:
       segment: 2
     anchoring:
       anchor: back-plane
-      offset: [6, 5, 0]
+      offset: [6, 5, -1]
     holder:
       include: true
       alias: small-holder

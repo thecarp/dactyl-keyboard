@@ -18,6 +18,7 @@
             [dactyl-keyboard.cad.body :as body]
             [dactyl-keyboard.cad.tweak :as tweak]
             [dactyl-keyboard.cad.wrist :as wrist]
+            [dactyl-keyboard.cad.auxf :as auxf]
             [dactyl-keyboard.param.access
              :refer [most-specific]]))
 
@@ -302,11 +303,8 @@
   hull the straight and other parts of the housing separately, because the
   connection between them may be concave. The 2D approach is safer."
   [getopt]
-  (model/polygon
-    (reduce
-      (fn [coll pillar-fn] (conj coll (take 2 (pillar-fn true false))))
-      []
-      (body/rhousing-pillar-functions getopt))))
+  (model/polygon (map (fn [pillar-fn] (take 2 (pillar-fn true false)))
+                      (body/rhousing-pillar-functions getopt))))
 
 (defn- case-positive-2d
   "A union of polygons representing the interior of the case, including the
@@ -338,7 +336,8 @@
       (model/translate [0 (- wafer)] (rhousing-floor-polygon getopt)))
     (when (and (getopt :wrist-rest :include)
                (= (getopt :wrist-rest :style) :threaded))
-      (model/cut (wrist/all-case-blocks getopt)))))
+      (model/cut (wrist/all-case-blocks getopt)))
+    (maybe/cut (auxf/ports-positive getopt #{:main-body :central-housing}))))
 
 (defn case-positive
   "A model of a bottom plate for the entire case but not the wrist rests.
