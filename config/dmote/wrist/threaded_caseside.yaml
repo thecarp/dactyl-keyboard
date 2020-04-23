@@ -15,13 +15,13 @@ wrist-rest:
         first: 3
     angle: -1.2
     blocks:
-      distance: 37
+      distance: 35
       width: 10
       main-side:
         anchoring:
           anchor: t4
           side: NNE
-          offset: [5, 8.5]
+          offset: [7, -9]
         depth: 10
       plinth-side:
         depth: 7

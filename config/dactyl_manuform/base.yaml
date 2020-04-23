@@ -253,7 +253,7 @@ main-body:
         length: 3.8
       fasteners:
         bolt-properties:
-          m-diameter: 3  # Speculation; Dactyl-ManuForm may have used non-metric.
+          m-diameter: 3  # Speculation; Short may have used non-metric.
           head-type: countersunk
           total-length: 6
           include-threading: false  # Threading not used with inserts.

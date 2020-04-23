@@ -841,3 +841,4 @@ wrist-rest:
       offset: [3, 3]
     - anchor: plinth-right
       offset: [-2, -3]
+  mould-thickness: 2

@@ -66,13 +66,28 @@
   (maybe/difference
     (maybe/union
       (body/mask getopt (getopt :wrist-rest :bottom-plate :include)
-        (wrist/plinth-plastic getopt))
-      (bottom/wrist-anchors-positive getopt)
+        (maybe/union
+          (wrist/plinth-plastic getopt)
+          (when (getopt :wrist-rest :bottom-plate :include)
+            (bottom/posts-in-wrist-rest getopt))))
       (when (and (getopt :wrist-rest :preview)
                  (getopt :wrist-rest :bottom-plate :include))
         (bottom/wrist-positive getopt)))
     (when (getopt :wrist-rest :bottom-plate :include)
-      (bottom/holes-in-wrist-plate getopt))))
+      (maybe/union
+        (if (getopt :wrist-rest :preview)
+          (bottom/holes-in-wrist-plate getopt)
+          (bottom/holes-in-wrist-body getopt))
+        (when (getopt :main-body :bottom-plate :installation :inserts)
+          (bottom/inserts getopt))))))
+
+(defn wrist-rest-preview
+  "Right-hand-side preview wrist-rest model."
+  [getopt]
+  (maybe/union
+    (build-plinth-right getopt)
+    (body/mask getopt (getopt :wrist-rest :bottom-plate :include)
+      (wrist/rubber-insert-positive getopt))))
 
 (defn- masked-inner-positive
   "Parts of the keyboard that are subject to a mask and all negatives."
@@ -94,7 +109,7 @@
       (body/rear-housing getopt))
     (tweak/plating getopt true :main-body)
     (when (getopt :main-body :bottom-plate :include)
-      (bottom/anchors-in-main-body getopt))
+      (bottom/posts-in-main-body getopt))
     (auxf/foot-plates getopt)
     (when (getopt :central-housing :derived :include-adapter)
       (central/adapter-shell getopt))))
@@ -107,13 +122,12 @@
     (masked-inner-positive getopt)
     (when (and (getopt :wrist-rest :include)
                (getopt :wrist-rest :preview))
-      (body/mask getopt (getopt :wrist-rest :include)
-        (wrist/unified-preview getopt)))
+      (body/mask getopt (getopt :wrist-rest :bottom-plate :include)
+        (wrist-rest-preview getopt)))
     (when (and (getopt :wrist-rest :include)
                (not (getopt :wrist-rest :preview))
                (= (getopt :wrist-rest :style) :solid))
-      (body/mask getopt (getopt :wrist-rest :include)
-        (build-plinth-right getopt)))
+      (build-plinth-right getopt))
     (when (and (getopt :main-body :bottom-plate :include)
                (getopt :main-body :bottom-plate :preview))
       (if (and (getopt :wrist-rest :include)
@@ -146,7 +160,7 @@
             (maybe/union
               (central/main-shell getopt)
               (when (getopt :main-body :bottom-plate :include)
-                (bilateral (bottom/anchors-in-central-housing getopt)))
+                (bilateral (bottom/posts-in-central-housing getopt)))
               (when (getopt :central-housing :derived :include-lip)
                 (bilateral (central/lip-body-right getopt)))
               (when (getopt :central-housing :derived :include-adapter)
@@ -162,8 +176,11 @@
             (auxf/ports-negative getopt #{:central-housing})
             (when (getopt :main-body :bottom-plate :include)
               (bilateral
-                (bottom/holes-in-main-plate getopt)
-                (bottom/holes-in-left-housing getopt))))
+                (bottom/holes-in-main-body getopt)
+                (bottom/holes-in-left-housing-body getopt)))
+            (when (and (getopt :wrist-rest :bottom-plate :include)
+                       (getopt :main-body :bottom-plate :installation :inserts :include))
+              (bilateral (bottom/inserts getopt))))
           (when (and (getopt :mcu :derived :include-centrally)
                      (getopt :mcu :support :shelf :include))
             (mcu/shelf-model getopt))
@@ -219,7 +236,12 @@
       (when (getopt :central-housing :derived :include-adapter)
         (central/negatives getopt))
       (when (getopt :main-body :bottom-plate :include)
-        (bottom/holes-in-main-plate getopt))
+        (if (getopt :main-body :bottom-plate :preview)
+          (bottom/holes-in-main-plate getopt)
+          (bottom/holes-in-main-body getopt)))
+      (when (and (getopt :main-body :bottom-plate :include)
+                 (getopt :main-body :bottom-plate :installation :inserts))
+        (bottom/inserts getopt))
       (when (and (getopt :wrist-rest :include)
                  (getopt :wrist-rest :preview)
                  (getopt :wrist-rest :bottom-plate :include))
@@ -243,8 +265,9 @@
   (place/wrist-undo getopt
     (model/difference
       (wrist/mould-polyhedron getopt)
-      (wrist/unified-preview getopt)
-      (bottom/wrist-anchors-positive getopt)
+      (wrist/projection-maquette getopt)
+      (when (getopt :wrist-rest :bottom-plate :include)
+        (bottom/posts-in-wrist-rest getopt))
       (when (= (getopt :wrist-rest :style) :solid)
         (tweak/plating getopt true :main-body)))))
 
@@ -257,7 +280,7 @@
     (maybe/difference
       (body/mask getopt (getopt :wrist-rest :bottom-plate :include)
         (wrist/rubber-insert-positive getopt))
-      (bottom/wrist-anchors-positive getopt)
+      (bottom/posts-in-wrist-rest getopt)
       (when (= (getopt :wrist-rest :style) :solid)
         (tweak/plating getopt true :main-body)))))
 
@@ -353,9 +376,11 @@
     :model-precursor bottom/anchor-positive-nonprojecting}
    {:name "bottom_plate_anchor_positive_central"
     :model-precursor bottom/anchor-positive-central}
-   {:name "bottom_plate_anchor_negative"
-    :model-precursor bottom/anchor-negative,
-    :chiral true}])
+   {:name "bottom_plate_screw_negative"
+    :model-precursor bottom/screw-negative
+    :chiral true}
+   {:name "bottom_plate_insert_negative"
+    :model-precursor bottom/insert-negative}])
 
 (defn module-asset-map
   "Convert module-asset-list to a hash map with fully resolved models.
@@ -397,7 +422,8 @@
   (if (getopt :main-body :bottom-plate :include)
     ["bottom_plate_anchor_positive_nonprojecting",
      "bottom_plate_anchor_positive_central",
-     "bottom_plate_anchor_negative"]
+     "bottom_plate_screw_negative"
+     "bottom_plate_insert_negative"]
     []))
 
 (defn- central-housing-modules

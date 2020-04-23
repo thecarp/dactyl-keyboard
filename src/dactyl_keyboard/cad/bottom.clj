@@ -113,27 +113,40 @@
           ;; Move to the edge of the thickest part of the original.
           (model/translate [0 (max-anchor-thickness getopt) 0]))))))
 
-(defn anchor-negative
-  "The shape of a screw and optionally a heat-set insert for that screw.
+(defn screw-negative
+  "The shape of a screw. Threading is disabled for inserts.
   Written for use as an OpenSCAD module."
   [getopt]
   (let [prop (partial getopt :main-body :bottom-plate :installation)
-        bolt-prop (prop :fasteners :bolt-properties)
-        head-type (prop :fasteners :bolt-properties :head-type)]
+        bolt-prop (prop :fasteners :bolt-properties)]
+    (model/rotate [π 0 0]
+      (merge-bolt
+       {:compensator (getopt :dfm :derived :compensator), :negative true}
+       bolt-prop
+       (when (prop :inserts :include) {:include-threading false})))))
+
+(defn insert-negative
+  "The shape of a heat-set insert for a screw."
+  [getopt]
+  (let [base (partial getopt :main-body :bottom-plate :installation)
+        prop (partial base :inserts)
+        {:keys [m-diameter head-type]} (base :fasteners :bolt-properties)
+        head (threaded/head-length m-diameter head-type)
+        thickness (getopt :main-body :bottom-plate :thickness)
+        gap (max 0 (- thickness head))]
     (maybe/union
-      (model/rotate [π 0 0]
-        (merge-bolt
-          {:compensator (getopt :dfm :derived :compensator), :negative true}
-          bolt-prop))
-      (when (prop :inserts :include)
-        (let [d0 (prop :inserts :diameter :bottom)
-              d1 (prop :inserts :diameter :top)
-              z0 (threaded/head-length (:m-diameter bolt-prop) head-type)
-              z1 (+ z0 (prop :inserts :length))]
-          (misc/bottom-hull (model/translate [0 0 z1]
-                              (model/cylinder (/ d1 2) wafer))
-                            (model/translate [0 0 z0]
-                              (model/cylinder (/ d0 2) wafer))))))))
+      (model/translate [0 0 (+ thickness gap (/ (prop :length) 2))]
+        (model/cylinder [(/ (prop :diameter :bottom) 2)
+                         (/ (prop :diameter :top) 2)]
+                        (prop :length)))
+      (when-not (zero? gap)
+        ;; The head of the screw is longer than the plate is thick.
+        ;; Leave empty space between the plate and the insert.
+        (model/translate [0 0 (+ thickness (/ gap 2))]
+          ;; A bottom-hull on the previous shape would widen the hole in the
+          ;; bottom plate (in a preview) and prevent the use of a bottom
+          ;; diameter smaller than the top (admittedly strange).
+          (model/cylinder (/ (prop :diameter :bottom) 2) gap))))))
 
 (defn- to-3d
   "Build a 3D bottom plate from a 2D block."
@@ -176,17 +189,26 @@
 
 (let [module-names {1 "bottom_plate_anchor_positive_nonprojecting"
                     2 "bottom_plate_anchor_positive_central"
-                    3 "bottom_plate_anchor_negative"}]
-  (defn- fasteners
+                    3 "bottom_plate_screw_negative"
+                    4 "bottom_plate_insert_negative"}]
+  (defn- fastener-fn
     "Place instances of a predefined module according to user configuration.
     The passed predicate function is used to select positions, while the
     OpenSCAD module is identified by an integer key, for brevity."
-    ([getopt pred type-id]
-     (fasteners getopt pred type-id false))
-    ([getopt pred type-id mirror]
-     (apply maybe/union
-       (map (place/module-z0-2d-placer getopt (get module-names type-id) mirror)
-            (filter pred (all-fastener-positions getopt)))))))
+    ([type-id]
+     (fastener-fn type-id some?))
+    ([type-id pred]
+     (fastener-fn type-id pred false))
+    ([type-id pred offset-z]
+     (fastener-fn type-id pred offset-z false))
+    ([type-id pred offset-z mirror]
+     (fn [getopt]
+       (let [z-offset (getopt :dfm :bottom-plate :fastener-plate-offset)
+             module (get module-names type-id)]
+         (maybe/translate [0 0 (if offset-z z-offset 0)]
+           (apply maybe/union
+             (map (place/module-z0-2d-placer getopt module mirror)
+                  (filter pred (all-fastener-positions getopt))))))))))
 
 (defn- any-type
   "Return a predicate function for filtering fasteners.
@@ -195,14 +217,17 @@
   [& types]
   (fn [position] (some (set types) #{(::type position)})))
 
-(def anchors-in-main-body #(fasteners % (any-type ::main) 1))
-(def anchors-in-central-housing #(fasteners % (any-type ::centre) 2))
-(def anchors-for-main-plate #(fasteners % (any-type ::main ::centre) 1))
-(def anchors-in-wrist-rest #(fasteners % (any-type ::wrist) 1))
-(def holes-in-main-plate #(fasteners % (any-type ::main ::centre) 3))
-(def holes-in-left-housing #(fasteners % (any-type ::centre) 3 true))
-(def holes-in-wrist-plate #(fasteners % (any-type ::wrist) 3))
-(def holes-in-combo #(fasteners % (any-type ::main ::wrist) 3))
+(def posts-in-main-body (fastener-fn 1 (any-type ::main)))
+(def posts-for-main-plate (fastener-fn 1 (any-type ::main ::centre)))
+(def posts-in-wrist-rest (fastener-fn 1 (any-type ::wrist)))
+(def posts-in-central-housing (fastener-fn 2 (any-type ::centre)))
+(def holes-in-main-body (fastener-fn 3 (any-type ::main ::centre)))
+(def holes-in-main-plate (fastener-fn 3 (any-type ::main ::centre) true))
+(def holes-in-left-housing-body (fastener-fn 3 (any-type ::centre) false true))
+(def holes-in-left-housing-plate (fastener-fn 3 (any-type ::centre) true true))
+(def holes-in-wrist-body (fastener-fn 3 (any-type ::wrist)))
+(def holes-in-wrist-plate (fastener-fn 3 (any-type ::wrist) true))
+(def inserts (fastener-fn 4))
 
 
 ;;;;;;;;;;
@@ -313,7 +338,7 @@
   [getopt]
   (maybe/union
     (key/metacluster cluster-floor-polygon getopt)
-    (masked-cut getopt (anchors-for-main-plate getopt))
+    (masked-cut getopt (posts-for-main-plate getopt))
     (tweak/floor-polygons getopt)
     (when (getopt :central-housing :derived :include-main)
       (chousing-floor-polygon getopt))
@@ -353,25 +378,18 @@
   (model/color (:bottom-plate colours)
     (maybe/difference
       (case-positive getopt)
-      (maybe/translate [0 0 (getopt :dfm :bottom-plate :fastener-plate-offset)]
-        (holes-in-main-plate getopt)))))
+      (holes-in-main-plate getopt)
+      (holes-in-left-housing-plate getopt))))
+
 
 ;;;;;;;;;;;;;;;;;
 ;; Wrist Rests ;;
 ;;;;;;;;;;;;;;;;;
 
-(defn wrist-anchors-positive
-  "The parts of the wrist-rest plinth that receive bottom-plate fasteners."
-  [getopt]
-  (let [with-plate (getopt :wrist-rest :bottom-plate :include)
-        thickness (if with-plate (getopt :main-body :bottom-plate :thickness) 0)]
-    (maybe/translate [0 0 thickness]
-      (anchors-in-wrist-rest getopt))))
-
 (defn- wrist-positive-2d [getopt]
   (maybe/union
-    (model/cut (wrist/unified-preview getopt))
-    (model/cut (anchors-in-wrist-rest getopt))))
+    (model/cut (wrist/projection-maquette getopt))
+    (model/cut (posts-in-wrist-rest getopt))))
 
 (defn wrist-positive
   "3D wrist-rest bottom plate without screw holes."
@@ -384,8 +402,7 @@
   (model/color (:bottom-plate colours)
     (maybe/difference
       (wrist-positive getopt)
-      (maybe/translate [0 0 (getopt :dfm :bottom-plate :fastener-plate-offset)]
-        (holes-in-wrist-plate getopt)))))
+      (holes-in-wrist-plate getopt))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -417,4 +434,5 @@
   (model/color (:bottom-plate colours)
     (maybe/difference
       (combined-positive getopt)
-      (holes-in-combo getopt))))
+      (holes-in-main-plate getopt)
+      (holes-in-wrist-plate getopt))))

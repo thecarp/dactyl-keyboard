@@ -524,10 +524,11 @@
         (rubber-body getopt)))
     (all-mounts getopt plinth-block)))
 
-(defn unified-preview
+(defn projection-maquette
   "A merged view of a wrist rest. This might be printed in hard plastic for a
   prototype but is not suitable for long-term use: It would typically be too
-  hard for ergonomy and does not have all the details."
+  hard for ergonomy and does not have all the details. It is intended purely
+  for shaping a bottom plate."
   [getopt]
   (model/union
     (rubber-insert-positive getopt)
