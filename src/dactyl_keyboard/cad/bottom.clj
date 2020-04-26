@@ -19,8 +19,7 @@
             [dactyl-keyboard.cad.tweak :as tweak]
             [dactyl-keyboard.cad.wrist :as wrist]
             [dactyl-keyboard.cad.auxf :as auxf]
-            [dactyl-keyboard.param.access
-             :refer [most-specific]]))
+            [dactyl-keyboard.param.access :refer [most-specific compensator]]))
 
 
 ;;;;;;;;;;;
@@ -121,7 +120,7 @@
         bolt-prop (prop :fasteners :bolt-properties)]
     (model/rotate [π 0 0]
       (merge-bolt
-       {:compensator (getopt :dfm :derived :compensator), :negative true}
+       {:compensator (compensator getopt), :negative true}
        bolt-prop
        (when (prop :inserts :include) {:include-threading false})))))
 

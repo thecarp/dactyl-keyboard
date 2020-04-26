@@ -14,7 +14,7 @@
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.key :as key]
             [dactyl-keyboard.compass :as compass :refer [sharp-left sharp-right]]
-            [dactyl-keyboard.param.access :as access :refer [most-specific]]))
+            [dactyl-keyboard.param.access :as access :refer [most-specific compensator]]))
 
 
 ;;;;;;;;;;;;;
@@ -347,14 +347,13 @@
 
 (defn- rhousing-mount-negative [getopt side]
   {:pre [(compass/cardinals side)]}
-  (let [d (getopt :main-body :rear-housing :fasteners :bolt-properties :m-diameter)
-        compensator (getopt :dfm :derived :compensator)]
+  (let [d (getopt :main-body :rear-housing :fasteners :bolt-properties :m-diameter)]
    (model/union
      (rhousing-mount-place getopt side
        (model/cylinder (/ d 2) 20))
      (if (getopt :main-body :rear-housing :fasteners :bosses)
        (rhousing-mount-place getopt side
-         (threaded/nut {:m-diameter d :compensator compensator :negative true}))))))
+         (threaded/nut {:m-diameter d :compensator (compensator getopt) :negative true}))))))
 
 (defn rear-housing
   "A squarish box at the far end of a key cluster."

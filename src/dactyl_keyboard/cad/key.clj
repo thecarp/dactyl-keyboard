@@ -17,8 +17,8 @@
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.misc :refer [wafer]]
             [dactyl-keyboard.cad.place :as place]
-            [dactyl-keyboard.param.access :refer [most-specific
-                                                  key-properties]]))
+            [dactyl-keyboard.param.access :refer [most-specific key-properties
+                                                  compensator]]))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -134,7 +134,7 @@
 (defn cap-channel-negative
   "The shape of a channel for a keycap to move in."
   [getopt cluster coord {h3 :height wd3 :top-width m :margin}]
-  (let [cmp (getopt :dfm :derived :compensator)
+  (let [cmp (compensator getopt)
         t 1
         step (fn [x y h]
                (model/translate [0 0 h] (model/cube (cmp x) (cmp y) t)))

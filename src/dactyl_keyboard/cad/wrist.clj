@@ -13,7 +13,8 @@
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.poly :as poly]
-            [dactyl-keyboard.misc :refer [colours]]))
+            [dactyl-keyboard.misc :refer [colours]]
+            [dactyl-keyboard.param.access :refer [compensator]]))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -423,10 +424,9 @@
         bolt-properties (prop :fasteners :bolt-properties)
         d (:m-diameter bolt-properties)
         height (prop :blocks :plinth-side :pocket-height)
-        compensator (getopt :dfm :derived :compensator)
         nut (->> (nut (merge {:negative true} bolt-properties))
                  (model/rotate [(/ π 2) 0 (/ π 2)])
-                 (compensator d {}))]
+                 ((compensator getopt) d {}))]
     (->>
       (apply model/union
         (for [i (range (prop :fasteners :amount))]

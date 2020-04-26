@@ -11,10 +11,11 @@
             [scad-tarmi.maybe :as maybe]
             [scad-tarmi.util :refer [loft]]
             [scad-klupe.iso :as iso]
-            [dactyl-keyboard.misc :refer [soft-merge]]
             [dactyl-keyboard.cad.misc :refer [merge-bolt wafer]]
             [dactyl-keyboard.cad.poly :as poly]
-            [dactyl-keyboard.cad.place :as place]))
+            [dactyl-keyboard.cad.place :as place]
+            [dactyl-keyboard.misc :refer [soft-merge]]
+            [dactyl-keyboard.param.access :refer [compensator]]))
 
 
 ;;;;;;;;;;;;;;;
@@ -303,7 +304,7 @@
   by default. Hence it is written for use as an OpenSCAD module."
   [getopt]
   (merge-bolt
-    {:compensator (getopt :dfm :derived :compensator), :negative true}
+    {:compensator (compensator getopt), :negative true}
     (getopt :central-housing :adapter :fasteners :bolt-properties)))
 
 (defn adapter-right-fasteners

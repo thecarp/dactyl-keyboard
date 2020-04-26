@@ -9,6 +9,7 @@
 
 (ns dactyl-keyboard.param.access
   (:require [clojure.string :as string]
+            [scad-tarmi.dfm :refer [error-fn]]
             [dactyl-keyboard.param.base :as base]
             [dactyl-keyboard.param.tree.main :as main]))
 
@@ -141,3 +142,8 @@
   "The properties of a specific key, including derived data."
   [getopt cluster coord]
   (getopt :keys :derived (most-specific getopt [:key-style] cluster coord)))
+
+(defn compensator
+  "Make a scad-tarmi error function to compensate for printing errors."
+  [getopt]
+  (error-fn (getopt :dfm :error-general)))

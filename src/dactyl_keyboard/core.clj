@@ -13,7 +13,6 @@
                                    refine-asset refine-all build-all]]
             [scad-tarmi.core :refer [π]]
             [scad-tarmi.maybe :as maybe]
-            [scad-tarmi.dfm :refer [error-fn]]
             [dactyl-keyboard.misc :refer [output-directory soft-merge]]
             [dactyl-keyboard.sandbox :as sandbox]
             [dactyl-keyboard.param.access :as access]
@@ -287,8 +286,7 @@
 (def derivers-static
   "A vector of configuration locations and functions for expanding them."
   ;; Mind the order. One of these may depend upon earlier steps.
-  [[[:dfm] (fn [getopt] {:compensator (error-fn (getopt :dfm :error-general))})]
-   [[:keys] key/derive-style-properties]
+  [[[:keys] key/derive-style-properties]
    [[:key-clusters] key/derive-cluster-properties]
    [[:central-housing] central/derive-properties]
    [[] (fn [getopt] {:anchors (anch/collect getopt)})]

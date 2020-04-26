@@ -24,7 +24,7 @@
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.param.access
-             :refer [most-specific resolve-anchor key-properties]]
+             :refer [most-specific resolve-anchor key-properties compensator]]
             [dactyl-keyboard.param.proc.anch :as anch]))
 
 
@@ -361,7 +361,7 @@
         [xₛ yₛ zₛ] (if (= type :custom)
                      (getopt :ports id :size)
                      (misc/map-to-3d-vec (type cots/port-facts)))
-        [xᵢ yᵢ] (map (getopt :dfm :derived :compensator) [xₛ yₛ])]
+        [xᵢ yᵢ] (map (compensator getopt) [xₛ yₛ])]
     [[xₛ xᵢ] [yₛ yᵢ] zₛ]))
 
 (defn port-holder-size
