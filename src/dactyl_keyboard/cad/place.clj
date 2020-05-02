@@ -12,6 +12,7 @@
   (:require [clojure.spec.alpha :as spec]
             [thi.ng.geom.vector :refer [vec3]]
             [thi.ng.geom.core :as geom]
+            [thi.ng.geom.polygon :refer [polygon2]]
             [thi.ng.math.core :as math]
             [scad-clj.model :as model]
             [scad-tarmi.core :refer [abs π] :as tarmi-core]
@@ -477,14 +478,20 @@
     ; By default, recurse and override the z coordinate of segment 1.
     (assoc (wrist-segment-coord getopt xy 1) 2 (if (= segment 2) 0.0 -100.0))))
 
+(defn- relative-to-wrist-base
+  "Offset passed position relative to the base of the wrist rest."
+  [getopt point]
+  {:pre [(spec/valid? ::tarmi-core/point-2d point)]}
+  (let [{:keys [p size]} (getopt :wrist-rest :derived :spline :bounds)]
+    (mapv - point p (mapv #(/ % 2) size))))
+
 (defn wrist-segment-naive
   "Use wrist-segment-coord with a layer of translation from the naïve/relative
   coordinates initially supplied by the user to the derived base.
   Also support outline keys as an alternative to segment IDs, for bottom-plate
   fasteners."
   [getopt naive-xy outline-key segment]
-  (let [translator (getopt :wrist-rest :derived :relative-to-base-fn)
-        aware-xy (translator naive-xy)]
+  (let [aware-xy (relative-to-wrist-base getopt naive-xy)]
     (if (some? outline-key)
       (wrist-lip-coord getopt aware-xy outline-key)
       (wrist-segment-coord getopt aware-xy segment))))

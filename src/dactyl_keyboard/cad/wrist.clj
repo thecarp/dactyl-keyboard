@@ -5,10 +5,10 @@
 
 (ns dactyl-keyboard.cad.wrist
   (:require [scad-clj.model :as model]
-            [scad-tarmi.core :refer [abs sin cos π]]
+            [scad-tarmi.core :as tarmi :refer [abs sin cos π]]
             [scad-tarmi.maybe :as maybe]
             [scad-klupe.iso :refer [bolt-length nut]]
-            [thi.ng.geom.core :refer [tessellate vertices bounds]]
+            [thi.ng.geom.core :as geom :refer [tessellate vertices]]
             [thi.ng.geom.polygon :refer [polygon2 inset-polygon]]
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.cad.place :as place]
@@ -34,14 +34,6 @@
   (if (getopt :resolution :include)
     (apply (partial getopt :wrist-rest :shape) keys)
     1))
-
-(defn- edge-angles
-  "Find all angles needed to compute pad surface edge characteristics.
-  Note that, due to rounding errors and floating-point shenanigans, the last of
-  these angles will be approximately but not exactly π/2."
-  [getopt]
-  (let [res (get-resolution getopt :pad :surface :edge :resolution)]
-    (mapv #(* (/ % res) (/ π 2)) (range (inc res)))))
 
 (defn- edge-inset
   "Compute a pad surface edge inset in mm."
@@ -86,10 +78,12 @@
 (defn- pad-walls
   "Points in a stepped polyhedron and faces that constitute its walls."
   [getopt]
-  (let [outline (getopt :wrist-rest :derived :outline :base)]
+  (let [outline (getopt :wrist-rest :derived :outline :base)
+        angles (poly/subdivide-right-angle
+                 (getopt :wrist-rest :derived :resolution :pad))]
     (reduce
       (fn [[points faces] index]
-        (let [θ (nth (edge-angles getopt) index)
+        (let [θ (nth angles index)
               elevation (edge-elevation getopt θ)]
           [(concat points (map #(conj % elevation) (polygon-step getopt θ)))
            (concat faces (polygon-faces (count points) (count outline) index))]))
@@ -114,7 +108,7 @@
         last-elevation (getopt :wrist-rest :derived :pad-surface-height)
         floor-triangles (transition-triangles getopt)
         ceiling-triangles
-          (tessellate (polygon2 (polygon-step getopt (last (edge-angles getopt)))))
+          (tessellate (polygon2 (polygon-step getopt (/ π 2))))
         [points wall-faces] (pad-walls getopt)]
     (if (nil? ceiling-triangles)
       (throw (ex-info
@@ -139,7 +133,7 @@
   "A heightmap horizontally centered on the world origin."
   [getopt]
   (model/resize (conj
-                  (getopt :wrist-rest :derived :bound-size)
+                  (getopt :wrist-rest :derived :spline :bounds :size)
                   (getopt :wrist-rest :derived :pad-surface-height))
     (model/surface
       (getopt :wrist-rest :shape :pad :surface :heightmap :filepath)
@@ -243,11 +237,6 @@
       {}
       tmp-points)))
 
-(defn- splined
-  "The 2D coordinates along a closed spline through passed points."
-  [getopt points]
-  (poly/spline points (get-resolution getopt :spline :resolution)))
-
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Miscellaneous ;;
@@ -274,21 +263,27 @@
 ;; Configuration Interface ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+
 (defn derive-properties
   "Derive certain properties from the base configuration.
   z-level properties herein do not take rotation of the rest into account."
   [getopt]
-  ;; In order to compute a bounding rectangle adequate for a height map,
-  ;; find a temporary spline using the original coordinates and the
+  ;; In order to compute a bounding rectangle adequate for a height map, find a
+  ;; temporary spline using the original user-supplied coordinates and the
   ;; final resolution.
-  (let [raw (mapv :position (getopt :wrist-rest :shape :spline :main-points))
-        {bound-sw :p bound-size :size} (bounds (polygon2 (splined getopt raw)))
+  (let [spline-base (mapv :position
+                          (getopt :wrist-rest :shape :spline :main-points))
+        spline-res (get-resolution getopt :spline :resolution)
+        spline-poly (polygon2 (poly/spline spline-base spline-res))
+        ;; Find a bounding box where p is the southwest corner.
+        bounds (geom/bounds spline-poly)
+        {bound-sw :p bound-size :size} bounds
         bound-center (mapv #(/ % 2) bound-size)
-        around-origin (fn [p] (mapv - p bound-sw bound-center))
-        ;; Draw the outline anew, now centered on the origin.
+        to-around-origin (fn [point] (mapv - point bound-sw bound-center))
+        ;; Draw the outline anew, still in 2D, now centered on the origin.
         ;; This obviates moving the pad before rotating it.
-        raw-outline (splined getopt (mapv around-origin raw))
-        inset (fn [n] (poly/from-outline (vec raw-outline) n))
+        around-origin (poly/spline (mapv to-around-origin spline-base) spline-res)
+        inset (fn [n] (poly/from-outline (vec around-origin) n))
         lip-inset (getopt :wrist-rest :shape :lip :inset)
         z2 (getopt :wrist-rest :plinth-height)
         z1 (- z2 (getopt :wrist-rest :shape :lip :height))
@@ -299,22 +294,24 @@
         ;; but that number adjusted by an imprecise multiplication with sin π/2.
         ;; This is because the functions that builds polyhedron faces must be
         ;; able to precisely identify elevation figures like this one.
-        pad-above (edge-elevation getopt (last (edge-angles getopt)))
+        pad-above (edge-elevation getopt (/ π 2))
         z4 (+ z3 pad-above)
         z5 (+ z4 (getopt :wrist-rest :mould-thickness))
         absolute-ne
-          (place/offset-from-anchor getopt (getopt :wrist-rest :anchoring) 2)
-        absolute-center (mapv - absolute-ne bound-center)]
-   {:base-polygon (polygon2 raw-outline)
-    :relative-to-base-fn around-origin
+          (place/offset-from-anchor getopt (getopt :wrist-rest :anchoring) 2)]
+   {:resolution {:spline spline-res
+                 :pad (get-resolution getopt :pad :surface :edge :resolution)}
+    :spline {:base spline-base
+             :poly spline-poly
+             :bounds bounds}
+    :base-polygon (polygon2 around-origin)
     :outline
       {:base (inset 0)
        :lip (inset lip-inset)
        :mould (inset (+ lip-inset (- (getopt :wrist-rest :mould-thickness))))
        :sprue (inset (getopt :wrist-rest :sprues :inset))
        :bottom (inset (getopt :wrist-rest :bottom-plate :inset))}
-    :bound-size bound-size
-    :center-2d absolute-center
+    :center-2d (mapv - absolute-ne bound-center)
     :pad-surface-height pad-above
     :z5 z5     ; Base of the mould (as positioned for printing, not use).
     :z4 z4     ; Peak of the entire rest. Top of silicone pad.

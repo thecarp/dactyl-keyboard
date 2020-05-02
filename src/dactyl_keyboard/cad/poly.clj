@@ -13,7 +13,7 @@
             [thi.ng.geom.core :refer [tessellate vertices bounds]]
             [thi.ng.geom.polygon :refer [polygon2 inset-polygon]]
             [thi.ng.geom.vector :refer [vec2]]
-            [scad-tarmi.core :as tarmi]))
+            [scad-tarmi.core :as tarmi :refer [π]]))
 
 
 ;;;;;;;;;;;;;;;
@@ -55,6 +55,16 @@
 ;; Interface Functions ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn subdivide-arc
+  "Produce intermediate angles inside an arc:
+  Divite it equally among a given amount (n) of sectors.
+  Return a vector of n + 1 angles from 0 to the full arc."
+  [arc n]
+  {:pre [(number? arc) (nat-int? n)]}
+  (mapv #(* (/ % n) arc) (range (inc n))))
+
+(def subdivide-right-angle (partial subdivide-arc (/ π 2)))
+
 (defn from-outline
   "Draw a thi.ng polygon with some inset.
   Where this is not possible, throw an exception that shows the data, so
@@ -81,8 +91,7 @@
   don’t need that."
   [points resolution]
   {:pre [(spec/valid? ::tarmi/point-coll-2d points)
-         (integer? resolution)
-         (> resolution 0)]
+         (nat-int? resolution)]
    :post [(spec/valid? ::tarmi/point-coll-2d %)]}
   (butlast (vertices (auto-spline2 (mapv vec2 points) true) resolution)))
 
