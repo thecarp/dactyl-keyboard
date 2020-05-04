@@ -12,7 +12,6 @@
   (:require [clojure.spec.alpha :as spec]
             [thi.ng.geom.vector :refer [vec3]]
             [thi.ng.geom.core :as geom]
-            [thi.ng.geom.polygon :refer [polygon2]]
             [thi.ng.math.core :as math]
             [scad-clj.model :as model]
             [scad-tarmi.core :refer [abs π] :as tarmi-core]

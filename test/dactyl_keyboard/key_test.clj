@@ -1,5 +1,5 @@
 (ns dactyl-keyboard.key-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest testing is]]
             [dactyl-keyboard.cad.key :as key]))
 
 (deftest test-derivation

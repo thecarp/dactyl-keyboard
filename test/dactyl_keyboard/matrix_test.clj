@@ -1,5 +1,5 @@
 (ns dactyl-keyboard.matrix-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest testing is]]
             [dactyl-keyboard.cad.matrix :as matrix]))
 
 (deftest test-walk
