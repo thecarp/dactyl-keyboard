@@ -99,9 +99,7 @@
         (assoc coll style-key
           (merge
             capdata/option-defaults
-            {:importable-filepath-fn
-               #(str (io/file misc/output-directory "scad" %))
-             :module-keycap (str "keycap_" (misc/key-to-scadstr style-key))
+            {:module-keycap (str "keycap_" (misc/key-to-scadstr style-key))
              :module-switch (str "switch_" (misc/key-to-scadstr switch-type))
              :skirt-length (measure/default-skirt-length switch-type)
              :vertical-offset (measure/plate-to-stem-end switch-type)
@@ -160,10 +158,15 @@
   defining an OpenSCAD module that needs no further input.
   The ‘supported’ argument acts as a fallback in case the user has not
   specified the dmote-keycap parameter by that name. Supports are generally
-  appropriate for printable STLs but not for cluster previews."
+  appropriate for printable STLs but not for cluster previews.
+  The ‘importable-filepath-fn’ defined here is not context-sensitive like
+  ‘supported’ but does not belong in configuration data, derived or otherwise,
+  because it is opaque for the purpose of logging a configuration for
+  troubleshooting, and does not affect other uses of a configuration."
   [getopt key-style supported]
-  (->>
-    (merge {:supported supported} (getopt :keys :derived key-style))
+  (->> (getopt :keys :derived key-style)
+    (merge {:supported supported
+            :importable-filepath-fn #(str (io/file misc/output-directory "scad" %))})
     keycap
     (model/translate
       [0 0 (+ (getopt :main-body :key-mount-thickness)
