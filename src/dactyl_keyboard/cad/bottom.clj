@@ -292,8 +292,7 @@
               (map (floor-finder getopt cluster)
                    (body/connecting-wall position))))
           []
-          (matrix/trace-between
-            (getopt :key-clusters :derived :by-cluster cluster :key-requested?)))))))
+          (key/walk-cluster getopt cluster))))))
 
 (defn- check-chousing-polygon
   [points]

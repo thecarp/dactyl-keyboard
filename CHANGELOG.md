@@ -135,6 +135,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
     compass code moved out. This makes two `misc` modules.
   - `poly`, collecting helper functions for making polyhedra.
   - `tweak`, breaking tweak plating out of `body` and `bottom`.
+- Removed functions from the derived user configuration.
 - A folder of configuration files under `test/config` for manual regression
   testing.
 

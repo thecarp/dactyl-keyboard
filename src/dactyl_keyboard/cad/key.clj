@@ -41,37 +41,44 @@
   [getopt & keys]
   (apply (partial getopt :key-clusters :derived :by-cluster) keys))
 
+(defn key-requested?
+  "Return true if specified key is requested."
+  [getopt cluster [col-i row-i]]
+  (let [matrix-cols (getopt :key-clusters cluster :matrix-columns)]
+    (if-let [data (nth matrix-cols col-i nil)]
+      (cond
+        (< row-i 0) (>= (get data :rows-below-home 0) (abs row-i))
+        (> row-i 0) (>= (get data :rows-above-home 0) row-i)
+        :else true)  ; Home row.
+      false)))  ; Column not in matrix.
+
+(defn walk-cluster
+  "Walk a key matrix with a cluster-specific predicate function."
+  [getopt cluster]
+  (matrix/trace-between (partial key-requested? getopt cluster)))
+
 (defn chart-cluster
   "Derive some properties about a key cluster from raw configuration info."
   [cluster getopt]
   (let [raws (getopt :key-clusters cluster)
-        matrix (getopt :key-clusters cluster :matrix-columns)
-        gather (fn [key default] (map #(get % key default) matrix))
-        column-range (range 0 (count matrix))
+        matrix-cols (getopt :key-clusters cluster :matrix-columns)
+        gather (fn [key default] (map #(get % key default) matrix-cols))
+        column-range (range 0 (count matrix-cols))
         last-column (last column-range)
         max-rows-above-home (apply max (gather :rows-above-home 0))
         max-rows-below-home (apply max (gather :rows-below-home 0))
         row-range (range (- max-rows-below-home) (+ max-rows-above-home 1))
-        key-requested?
-          (fn [[column row]]
-            "True if specified key is requested."
-            (if-let [data (nth matrix column nil)]
-              (cond
-                (< row 0) (>= (get data :rows-below-home 0) (abs row))
-                (> row 0) (>= (get data :rows-above-home 0) row)
-                :else true)  ; Home row.
-              false))  ; Column not in matrix.
-        key-coordinates (matrix/coordinate-pairs
-                          column-range row-range key-requested?)
+        req? (partial key-requested? getopt cluster)
+        key-coordinates (matrix/coordinate-pairs column-range row-range req?)
         M (fn [f coll] (into {} (map f coll)))
         row-indices-by-column
-          (M (fn [c] [c (filter #(key-requested? [c %]) row-range)])
+          (M (fn [c] [c (filter #(req? [c %]) row-range)])
              column-range)
         coordinates-by-column
           (M (fn [[c rows]] [c (for [r rows] [c r])]) row-indices-by-column)
         column-indices-by-row
           (M
-            (fn [r] [r (filter #(key-requested? [% r]) column-range)])
+            (fn [r] [r (filter #(req? [% r]) column-range)])
             row-range)
         coordinates-by-row
           (M (fn [[r cols]] [r (for [c cols] [c r])]) column-indices-by-row)]
@@ -79,7 +86,6 @@
     :last-column last-column
     :column-range column-range
     :row-range row-range
-    :key-requested? key-requested?
     :key-coordinates key-coordinates
     :row-indices-by-column row-indices-by-column
     :coordinates-by-column coordinates-by-column
@@ -118,10 +124,10 @@
 
 (defn print-matrix
   "Print a schematic picture of a key cluster. For your REPL."
-  [cluster getopt]
+  [getopt cluster]
   (let [prop (partial derived getopt cluster)]
     (doseq [row (reverse (prop :row-range)) column (prop :column-range)]
-      (if ((prop :key-requested?) [column row]) (print "□") (print "·"))
+      (print (if (key-requested? getopt cluster [column row]) "□" "·"))
       (if (= column (prop :last-column)) (println)))))
 
 

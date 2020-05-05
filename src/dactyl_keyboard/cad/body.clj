@@ -86,7 +86,7 @@
     (walk-and-web
       (getopt :key-clusters :derived :by-cluster cluster :column-range)
       (getopt :key-clusters :derived :by-cluster cluster :row-range)
-      (getopt :key-clusters :derived :by-cluster cluster :key-requested?)
+      (partial key/key-requested? getopt cluster)
       (partial place/cluster-place getopt cluster)
       (fn [side]  ; A corner finder.
         {:pre [(compass/intermediates side)]}
@@ -166,14 +166,10 @@
   "Walk the edge of a key cluster, walling it in."
   [getopt cluster]
   (apply model/union
-    (reduce
-      (fn [coll position]
-        (conj coll
-          (wall-slab getopt cluster (wall-straight-body position))
-          (wall-slab getopt cluster (connecting-wall position))))
-      []
-      (matrix/trace-between
-        (getopt :key-clusters :derived :by-cluster cluster :key-requested?)))))
+    (mapcat
+      (fn [position] [(wall-slab getopt cluster (wall-straight-body position))
+                      (wall-slab getopt cluster (connecting-wall position))])
+      (key/walk-cluster getopt cluster))))
 
 
 ;;;;;;;;;;;;;;;;;;
