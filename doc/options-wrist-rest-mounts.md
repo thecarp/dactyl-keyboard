@@ -22,6 +22,7 @@ This specific document describes options for each “mount”, a pair of cuboid 
         - Section <a href="#user-content-blocks-main-side-anchoring">`anchoring`</a>
             - Parameter <a href="#user-content-blocks-main-side-anchoring-anchor">`anchor`</a>
             - Parameter <a href="#user-content-blocks-main-side-anchoring-side">`side`</a>
+            - Parameter <a href="#user-content-blocks-main-side-anchoring-segment">`segment`</a>
             - Parameter <a href="#user-content-blocks-main-side-anchoring-offset">`offset`</a>
         - Parameter <a href="#user-content-blocks-main-side-depth">`depth`</a>
         - Section <a href="#user-content-blocks-main-side-nuts">`nuts`</a>
@@ -105,6 +106,10 @@ An alias referring to a feature that anchors the block.
 ##### Parameter <a id="blocks-main-side-anchoring-side">`side`</a>
 
 A compass-point code for one side of the feature named in `anchor`. The default is `N`, signifying the north side.
+
+##### Parameter <a id="blocks-main-side-anchoring-segment">`segment`</a>
+
+An integer identifying one vertical segment of the feature named in `anchor`. The default is `0`, signifying the topmost part of the anchor.
 
 ##### Parameter <a id="blocks-main-side-anchoring-offset">`offset`</a>
 

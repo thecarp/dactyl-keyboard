@@ -76,6 +76,8 @@ version 0.2.0, thus covering only a fraction of the project’s history.
   default. These are still available but are governed by a new parameter.
   Domes were made optional to make it easier to tap threads rather than print
   them, and use longer screws than was originally intended.
+- When anchoring a feature to a key mount, there is no longer a default
+  value for the vertical segment of the key mount. The previous default was 3.
 
 ### Added
 - Documentation:
@@ -104,6 +106,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       MCU lock, including a set of vertical segments. The rear housing has also
       gotten vertical segments.
 - The ability to override specific coordinates for secondary named positions.
+- A `segment` parameter for anchoring wrist-rest mounts.
 - A GNU Make target for the Dactyl-ManuForm.
 
 ### Fixed

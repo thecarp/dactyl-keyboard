@@ -73,6 +73,9 @@
    [:parameter [:blocks :main-side :anchoring :side]
     stock/anchor-side-metadata
     stock/anchor-side-documentation]
+   [:parameter [:blocks :main-side :anchoring :segment]
+    stock/anchor-segment-metadata
+    stock/anchor-segment-documentation]
    [:parameter [:blocks :main-side :anchoring :offset]
     stock/anchor-2d-vector-metadata
     stock/anchor-2d-offset-documentation]

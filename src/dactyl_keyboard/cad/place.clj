@@ -150,12 +150,12 @@
             bevel-factor
             (* bevel-factor
                (/ perpendicular (abs perpendicular))))]
-   (case segment
+   (case (or segment 0)
      0 [0 0 0]
      1 [(* dx t) (* dy t) bevel]
      2 [(* dx parallel) (* dy parallel) perpendicular]
      3 [(* dx (+ parallel t)) (* dy (+ parallel t)) perpendicular]
-     4 [(* dx parallel) (* dy parallel) (+ perpendicular bevel)])))
+     [(* dx parallel) (* dy parallel) (+ perpendicular bevel)])))
 
 (defn- wall-vertex-offset
   "Compute a 3D offset from the center of a web post to a vertex on it."
@@ -169,7 +169,7 @@
   By default, this goes to one corner of the hem of the mount’s skirt of
   walling and therefore finds the base of full walls."
   [getopt cluster coordinates
-   {:keys [side segment vertex] :or {segment 3, vertex false} :as keyopts}]
+   {:keys [side segment vertex] :or {vertex false} :as keyopts}]
   {:pre [(or (nil? side) (compass/intermediates side))]}
   (mapv +
     (if side
@@ -307,7 +307,7 @@
         wall (fn [key] (wall-segment-offset
                          getopt cluster
                          (getopt :main-body :rear-housing :derived :end-coord key)
-                         side (min segment 1)))]
+                         side segment))]
     (assoc  ; Replace the z coordinate.
        (case side
          :N [0 (if (zero? segment) 0 1) 0]
@@ -549,8 +549,7 @@
     (compass/convert-to-intercardinal side) segment initial))
 
 (defmethod by-type ::anch/key-mount
-  [getopt {:keys [cluster coordinates side segment initial]
-           :or {segment 3} :as opts}]
+  [getopt {:keys [cluster coordinates side segment initial] :as opts}]
   {:pre [(or (nil? side) (compass/all-short side))]}
   (when (and (some? side) (not (compass/intermediates side)))
     (throw (ex-info "Inapplicable side of key mount."
@@ -561,7 +560,7 @@
       ;; Corner named. By default, the target feature is the outermost wall.
       (flex/translate
         (wall-corner-offset getopt cluster coordinates
-          (merge opts {:side side :segment segment}))
+          (merge opts {:side side} (when segment (:segment segment))))
         initial)
       ;; Else no corner named.
       ;; The target feature is the middle of the key mounting plate.
@@ -607,7 +606,6 @@
   (->> initial
     (flex/translate (port-hole-offset getopt opts))
     (port-place getopt anchor)))
-
 
 (defmethod by-type ::anch/port-holder
   [getopt {:keys [initial] ::anch/keys [primary] :as opts}]

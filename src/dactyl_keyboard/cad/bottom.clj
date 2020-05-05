@@ -12,7 +12,6 @@
             [dactyl-keyboard.misc :refer [colours]]
             [dactyl-keyboard.cad.central :as central]
             [dactyl-keyboard.cad.misc :as misc :refer [merge-bolt wafer]]
-            [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.key :as key]
             [dactyl-keyboard.cad.body :as body]
@@ -278,7 +277,7 @@
                    [direction (turning-fn direction)])]
       (when (= extent :full)  ; Ignore partial walls.
         (take 2 (place/wall-corner-place getopt cluster coord
-                  {:side side, :vertex true}))))))
+                  {:side side, :segment 3, :vertex true}))))))
 
 (defn- cluster-floor-polygon
   "A polygon approximating a floor-level projection of a key clusters’s wall."

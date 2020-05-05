@@ -19,6 +19,7 @@ wrist-rest:
         anchoring:
           anchor: t4
           side: NNE
+          segment: 3
           offset: [7, -9]
         depth: 9
       plinth-side:
