@@ -57,10 +57,10 @@
   [subject dimension-n rotate-type delta-fn orthographic
    rot-ax-fn getopt cluster coord obj]
   (let [index (nth coord dimension-n)
-        most #(most-specific getopt % cluster coord)
-        angle-factor (most [:layout rotate-type :progressive])
-        neutral (most [:layout :matrix :neutral subject])
-        separation (most [:layout :matrix :separation subject])
+        most #(most-specific getopt %& cluster coord)
+        angle-factor (most :layout rotate-type :progressive)
+        neutral (most :layout :matrix :neutral subject)
+        separation (most :layout :matrix :separation subject)
         space (+ capdata/mount-1u separation)
         delta-f (delta-fn index neutral)
         delta-r (delta-fn neutral index)
@@ -112,22 +112,22 @@
   single point in 3-dimensional space, typically an offset in mm from the
   middle of the indicated key, or a scad-clj object."
   [getopt cluster coord subject]
-  (let [most #(most-specific getopt (concat [:layout] %) cluster coord)
-        center (most [:matrix :neutral :row])
+  (let [most #(most-specific getopt (concat [:layout] %&) cluster coord)
+        center (most :matrix :neutral :row)
         bridge (cluster-origin-finder getopt cluster)]
     (->> subject
-         (flex/translate (most [:translation :early]))
-         (flex/rotate [(most [:pitch :intrinsic])
-                       (most [:roll :intrinsic])
-                       (most [:yaw :intrinsic])])
+         (flex/translate (most :translation :early))
+         (flex/rotate [(most :pitch :intrinsic)
+                       (most :roll :intrinsic)
+                       (most :yaw :intrinsic)])
          (put-in-column #(flex/rotate [%1 0 0] %2) getopt cluster coord)
          (put-in-row #(flex/rotate [0 %1 0] %2) getopt cluster coord)
-         (flex/translate (most [:translation :mid]))
-         (flex/rotate [(most [:pitch :base])
-                       (most [:roll :base])
-                       (most [:yaw :base])])
+         (flex/translate (most :translation :mid))
+         (flex/rotate [(most :pitch :base)
+                       (most :roll :base)
+                       (most :yaw :base)])
          (flex/translate [0 (* capdata/mount-1u center) 0])
-         (flex/translate (most [:translation :late]))
+         (flex/translate (most :translation :late))
          (bridge))))
 
 
@@ -138,12 +138,12 @@
   [getopt cluster coord side segment]
   {:pre [(compass/cardinals side)]
    :post [(spec/valid? ::tarmi-core/point-3d %)]}
-  (let [most #(most-specific getopt (concat [:wall] %) cluster coord)
-        t (most [:thickness])
-        bevel-factor (most [:bevel])
+  (let [most #(most-specific getopt (concat [:wall] %&) cluster coord)
+        t (most :thickness)
+        bevel-factor (most :bevel)
         long-dir (compass/short-to-long side)
-        parallel (most [long-dir :parallel])
-        perpendicular (most [long-dir :perpendicular])
+        parallel (most long-dir :parallel)
+        perpendicular (most long-dir :perpendicular)
         [dx dy] (side compass/to-grid)
         bevel
           (if (zero? perpendicular)
