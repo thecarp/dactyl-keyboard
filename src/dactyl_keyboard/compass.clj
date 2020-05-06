@@ -23,7 +23,6 @@
    :east  :E
    :south :S
    :west  :W})
-(def short-to-long (map-invert long-to-short))
 
 (let [short (into {} (map-indexed
                        (fn [i d] [d (/ (* i τ) n-divisions)])
@@ -43,6 +42,15 @@
 (def all-short (union cardinals intercardinals intermediates))  ; 16 directions.
 (def nonintermediates (union cardinals intercardinals))  ; 8 directions.
 (def noncardinals (union intercardinals intermediates))  ; 12 directions.
+
+(defn classify
+  "Classify a specific direction. Return a namespaced keyword."
+  [direction]
+  {:pre [(direction all-short)]}
+  (cond
+    (direction cardinals) ::cardinal
+    (direction intercardinals) ::intercardinal
+    :else ::intermediate))
 
 ;; The twelve directions intermediate between the cardinals and intercardinals
 ;; can be represented as 2-tuples of cardinals. In this representation, the
@@ -76,6 +84,11 @@
 
 (def noncardinal-to-tuple
   (merge intercardinal-to-tuple intermediate-to-tuple))
+
+(let [base (map-invert long-to-short)]
+  (def short-to-long
+    (merge base (into {} (map (fn [[k [v0 _]]] [k (v0 base)])
+                              noncardinal-to-tuple)))))
 
 (defn convert-to-cardinal
   "Take a compass-point keyword. Return the nearest cardinal direction."

@@ -5,8 +5,15 @@
             [scad-tarmi.core :refer [π]]
             [dactyl-keyboard.compass :as compass]))
 
+(deftest maps
+  (testing "short-to-long samples"
+    (is (= (:N compass/short-to-long) :north))
+    (is (= (:NNE compass/short-to-long) :north))
+    (is (= (:NE compass/short-to-long) :north))
+    (is (= (:ENE compass/short-to-long) :east))))
+
 (deftest keyword-to-radians
-  (testing "samples"
+  (testing "radian samples"
     (is (zero? (compass/radians :N)))
     (is (zero? (compass/radians :north)))
     (is (zero? (:N compass/radians)))
