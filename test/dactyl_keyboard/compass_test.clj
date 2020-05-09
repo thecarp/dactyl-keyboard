@@ -44,3 +44,17 @@
   (testing "intermediate"
     (is (= (compass/to-grid :NNE) [1 1]))
     (is (= (compass/to-grid :ENE) [1 1]))))
+
+(deftest variary-delta
+  (testing "nullary delta"
+    (is (= (compass/delta-x) 0))
+    (is (= (compass/delta-y) 0)))
+  (testing "unary delta"
+    (is (= (compass/delta-x :N) 0))
+    (is (= (compass/delta-y :N) 1)))
+  (testing "binary delta"
+    (is (= (compass/delta-x :N :E) 1))
+    (is (= (compass/delta-y :N :E) 1)))
+  (testing "trinary delta"  ; Not a use case at time of design.
+    (is (= (compass/delta-x :N :E :E) 1))
+    (is (= (compass/delta-y :N :E :E) 1))))

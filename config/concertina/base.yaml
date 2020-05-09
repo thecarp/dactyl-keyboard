@@ -369,11 +369,13 @@ main-body:
         - anchor: ca-far-base
           offset: [-6, -21]
         - anchor: m5L
-          side: ESE
-          offset: [2.5, -4]
+          side: SE
+          segment: 1
+          offset: [-3.5, 0]
         - anchor: m5M
-          side: ESE
-          offset: [4, -2.5]
+          side: SE
+          segment: 1
+          offset: [-3, -2.5]
 central-housing:
   include: true
   shape:

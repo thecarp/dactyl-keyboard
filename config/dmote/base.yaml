@@ -481,17 +481,17 @@ main-body:
           side: NNE
           offset: [-2.5, -11]
         - anchor: a1
-          side: ENE
-          offset: [-4.5, -3.5]
+          side: NE
+          offset: [-3.5, -3.5]
         - anchor: near-right
-          side: ESE
-          offset: [-5, 3]
+          side: SE
+          offset: [-4, 0]
         - anchor: t4
-          side: SSW
-          offset: [-1, 4]
+          side: S
+          offset: [-1, 2]
         - anchor: t1
-          side: NNW
-          offset: [3.5, -3]
+          side: N
+          offset: [2, -1]
   leds:
     include: true
     amount: 3

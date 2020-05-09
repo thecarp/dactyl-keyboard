@@ -145,12 +145,14 @@
 
 (defn- axis-delta
   "Find a coordinate axis delta for movement in any of the stated directions."
-  [axis direction & directions]
-  {:pre [(cardinals direction)]}
-  (let [value (get-in to-grid [direction axis])]
-    (if (or (not (zero? value)) (empty? directions))
-      value
-      (apply axis-delta axis directions))))
+  ([axis]
+   0)
+  ([axis direction & directions]
+   {:pre [(cardinals direction)]}
+   (let [value (get-in to-grid [direction axis])]
+     (if (or (not (zero? value)) (empty? directions))
+       value
+       (apply axis-delta axis directions)))))
 
 (defn delta-x [& directions] (apply axis-delta 0 directions))
 (defn delta-y [& directions] (apply axis-delta 1 directions))

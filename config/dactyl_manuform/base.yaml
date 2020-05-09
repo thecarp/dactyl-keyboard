@@ -2,6 +2,13 @@
 
 # The long-term goal with this file is to have it produce Short’s design
 # through the DMOTE application for upstream compatibility.
+# Similarity is checked by placing Short’s “right-4x5.stl” file
+# in the things/scad/ folder and then injecting it into a DMOTE output:
+#
+# $ echo '%import("right-4x5.stl");' >> things/scad/right-hand-case-main.scad
+#
+# In that Linux-style shell command, $ represents your prompt.
+#
 # As of DMOTE v0.6.0, the application is still missing the wire hook
 # feature on the original Dactyl-ManuForm, though it could be imitated
 # with the tweaks feature. A vertex-perfect imitation would be laborious
@@ -49,6 +56,7 @@ key-clusters:
       back0: [0, last]
       back1: [1, last]
       back2: [2, last]
+      back3: [3, last]
       right0: [last, 0]
   thumb0:
     anchoring:
@@ -258,21 +266,26 @@ main-body:
           total-length: 6
           include-threading: false  # Threading not used with inserts.
         positions:
-        - anchor: m00
-          side: WSW
-          offset: [-3, -7]
+        - anchor: thumb-ml
+          side: N
+          segment: 3
+          offset: [2, 0]
         - anchor: back0
-          side: WSW
-          offset: [0, 6]
-        - anchor: back2
-          side: NNE
-          offset: [13.5, -3]
-        - anchor: m02
-          side: SSE
-          offset: [-6, -4]
+          side: W
+          segment: 3
+          offset: [1, 0]
+        - anchor: back3
+          side: N
+          segment: 3
+          offset: [0, -2]
         - anchor: right0
-          side: ESE
-          offset: [-1, 10]
+          side: E
+          segment: 3
+          offset: [-2, 0]
+        - anchor: m02
+          side: S
+          segment: 3
+          offset: [-4, -6]
 tweaks:
   webbing:
     - chunk-size: 3

@@ -40,14 +40,15 @@
 ;; Key mounts.
 
 (defn mount-corner-offset
-  "Produce a mm coordinate offset for a corner of a switch mount."
+  "Produce a mm coordinate offset for a corner of a switch mount.
+  This is not to be confused with offsets for walls, which are additive."
   [getopt key-style side]
-  {:pre [(compass/intermediates side)]}
+  {:pre [(or (nil? side) (side compass/all-short))]}
   (let [style-data (getopt :keys :derived key-style)
         [subject-x subject-y] (map measure/key-length
-                                (get style-data :unit-size [1 1]))
+                                   (get style-data :unit-size [1 1]))
         m (getopt :main-body :key-mount-corner-margin)
-        directions (side compass/intermediate-to-tuple)]
+        directions (get compass/keyword-to-tuple side (if side [side] []))]
     [(* (apply compass/delta-x directions) (- (/ subject-x 2) (/ m 2)))
      (* (apply compass/delta-y directions) (- (/ subject-y 2) (/ m 2)))
      (/ (getopt :main-body :web-thickness) -2)]))
@@ -133,23 +134,51 @@
 
 ;; Case walls extending from key mounts.
 
+(defn- wall-dimension
+  "Find the most specific wall dimension of a given type, off a given side of
+  a given key mount."
+  [getopt cluster coord side type]
+  (if side
+    (case (compass/classify side)
+      ::compass/cardinal
+        (most-specific
+          getopt [:wall (side compass/short-to-long) type] cluster coord)
+      ::compass/intercardinal
+        ;; Get the mean value of two sides.
+        (/ (apply + (map #(wall-dimension getopt cluster coord % type)
+                         (side compass/keyword-to-tuple)))
+           2)
+      ;; Else intermediate. Recurse to treat as cardinal.
+      (wall-dimension getopt cluster coord (compass/convert-to-cardinal side) type))
+    0))
+
+(defn- key-mount-side-for-wall
+  "For unit deltas, intermediate compass points are treated as cardinals, meaning
+  that only one axis will be shifted. This is a Dactyl convention, older than
+  the compass metaphor introduced by the DMOTE application."
+  [side]
+  {:pre [(side compass/all-short)] :post [(% compass/nonintermediates)]}
+  (if (side compass/intermediates) (compass/convert-to-cardinal side) side))
+
+(defn- horizontal-wall-offsets
+  "Compute horizontal offsets for one side of a specific key.
+  Return a vector of a vector of two unit deltas and one parallel wall dimension."
+  [getopt cluster coord side]
+  [(if side ((key-mount-side-for-wall side) compass/to-grid) [0 0])
+   (wall-dimension getopt cluster coord side :parallel)])
+
 (defn- wall-segment-offset
   "Compute a 3D offset from one corner of a switch mount to a part of its wall."
   [getopt cluster coord side segment]
-  {:pre [(compass/cardinals side)]
-   :post [(spec/valid? ::tarmi-core/point-3d %)]}
+  {:post [(spec/valid? ::tarmi-core/point-3d %)]}
   (let [most #(most-specific getopt (concat [:wall] %&) cluster coord)
         t (most :thickness)
         bevel-factor (most :bevel)
-        long-dir (compass/short-to-long side)
-        parallel (most long-dir :parallel)
-        perpendicular (most long-dir :perpendicular)
-        [dx dy] (side compass/to-grid)
-        bevel
-          (if (zero? perpendicular)
-            bevel-factor
-            (* bevel-factor
-               (/ perpendicular (abs perpendicular))))]
+        [[dx dy] parallel] (horizontal-wall-offsets getopt cluster coord side)
+        perpendicular (wall-dimension getopt cluster coord side :perpendicular)
+        bevel (if (zero? perpendicular)
+                bevel-factor
+                (* bevel-factor (/ perpendicular (abs perpendicular))))]
    (case (or segment 0)
      0 [0 0 0]
      1 [(* dx t) (* dy t) bevel]
@@ -166,24 +195,16 @@
 
 (defn wall-corner-offset
   "Combined [x y z] offset from the center of a switch mount.
-  By default, this goes to one corner of the hem of the mount’s skirt of
+  This can go to one corner of the hem of the mount’s skirt of
   walling and therefore finds the base of full walls."
   [getopt cluster coordinates
    {:keys [side segment vertex] :or {vertex false} :as keyopts}]
-  {:pre [(or (nil? side) (compass/intermediates side))]}
-  (mapv +
-    (if side
-      (mount-corner-offset getopt
-        (most-specific getopt [:key-style] cluster coordinates)
-        side)
-      [0 0 0])
-    (if side
-      (wall-segment-offset getopt cluster coordinates
-        (first (compass/intermediate-to-tuple side)) segment)
-      [0 0 0])
-    (if (and side vertex)
-      (wall-vertex-offset getopt side keyopts)
-      [0 0 0])))
+  {:pre [(or (nil? side) (compass/all-short side))]}
+  (let [key-style (most-specific getopt [:key-style] cluster coordinates)]
+    (mapv +
+      (mount-corner-offset getopt key-style side)
+      (wall-segment-offset getopt cluster coordinates side segment)
+      (if (and side vertex) (wall-vertex-offset getopt side keyopts) [0 0 0]))))
 
 (defn wall-corner-place
   "Absolute position of the lower wall around a key mount."
@@ -216,7 +237,7 @@
   not reach the floor) _and_ the subject is not a coordinate."
   [getopt cluster upper [coord direction turning-fn] subject]
   {:pre [(compass/cardinals direction)]}
-  (let [keyseq [:wall (compass/short-to-long direction) :extent]
+  (let [keyseq [:wall (direction compass/short-to-long) :extent]
         extent (most-specific getopt keyseq cluster coord)
         last-upper-segment (case extent :full 4, extent)
         place-segment
@@ -551,10 +572,6 @@
 (defmethod by-type ::anch/key-mount
   [getopt {:keys [cluster coordinates side segment initial] :as opts}]
   {:pre [(or (nil? side) (compass/all-short side))]}
-  (when (and (some? side) (not (compass/intermediates side)))
-    (throw (ex-info "Inapplicable side of key mount."
-              {:configured-side side
-               :available-sides compass/intermediates})))
   (cluster-place getopt cluster coordinates
     (if (some? side)
       ;; Corner named. By default, the target feature is the outermost wall.
