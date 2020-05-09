@@ -5,7 +5,8 @@
 
 (ns dactyl-keyboard.param.tree.cluster
   (:require [clojure.spec.alpha :as spec]
-            [dactyl-keyboard.param.schema :as schema]
+            [dactyl-keyboard.param.schema.valid :as valid]
+            [dactyl-keyboard.param.schema.parse :as parse]
             [dactyl-keyboard.param.stock :as stock]))
 
 (def raws
@@ -21,7 +22,7 @@
    [:parameter [:matrix-columns]
     {:default [{}]
      :parse-fn vec
-     :validate [(spec/coll-of ::schema/column-disposition)]}
+     :validate [(spec/coll-of ::valid/column-disposition)]}
     "A list of key columns. Columns are aligned with the user’s fingers. "
     "Each column will be known by its index in this list, starting at zero "
     "for the first item. Each item may contain:\n"
@@ -56,7 +57,7 @@
     "main-body key clusters are mirrored so that `[0, 0]` will be G instead "
     "of H in QWERTY, `[1, 0]` will be F instead of J, and so on."]
    [:parameter [:style]
-    {:default :standard :parse-fn keyword :validate [::schema/cluster-style]}
+    {:default :standard :parse-fn keyword :validate [::valid/cluster-style]}
     "Cluster layout style. One of:\n\n"
     "- `standard`: Both columns and rows have the same type of curvature "
     "applied in a logically consistent manner.\n"
@@ -65,9 +66,9 @@
     "together if you have a broad matrix."]
    [:parameter [:aliases]
     {:default {}
-     :parse-fn (schema/map-of keyword
-                              (schema/tuple-of schema/keyword-or-integer))
-     :validate [(spec/map-of keyword? ::schema/flexcoord-2d)]}
+     :parse-fn (parse/map-of keyword
+                              (parse/tuple-of parse/keyword-or-integer))
+     :validate [(spec/map-of keyword? ::valid/flexcoord-2d)]}
     "A map of short names to specific keys by coordinate pair. "
     "These names can be used as anchors for other features."]
    [:section [:anchoring]

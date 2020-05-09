@@ -18,7 +18,7 @@
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.key :as key]
-            [dactyl-keyboard.param.schema :as schema]
+            [dactyl-keyboard.param.schema.valid :as valid]
             [dactyl-keyboard.param.access :refer [resolve-anchor]]
             [dactyl-keyboard.param.proc.anch :as anch]))
 
@@ -29,8 +29,8 @@
 
 (defn- node-type [node]
   (cond
-    (spec/valid? ::schema/tweak-branch node) ::branch
-    (spec/valid? ::schema/tweak-leaf node) ::leaf
+    (spec/valid? ::valid/tweak-branch node) ::branch
+    (spec/valid? ::valid/tweak-leaf node) ::leaf
     :else (throw (ex-info "Unclassifiable tweak node."
                    {:node node}))))
 
@@ -60,8 +60,8 @@
 (defn- splay
   "Represent one leaf node as a list of one or more non-sweeping leaves."
   [{:keys [sweep] :as node}]
-  {:pre [(spec/valid? ::schema/tweak-leaf node)]
-   :post [(spec/valid? (spec/coll-of ::schema/tweak-leaf) %)]}
+  {:pre [(spec/valid? ::valid/tweak-leaf node)]
+   :post [(spec/valid? (spec/coll-of ::valid/tweak-leaf) %)]}
   (if sweep
     (mapv (partial single-step-node node) (segment-range node))
     [node]))
@@ -100,7 +100,7 @@
   By default, use the most specific dimensions available for the post,
   defaulting to a post for key-cluster webbing."
   [getopt {:keys [anchoring size] :as node}]
-  {:pre [(spec/valid? ::schema/tweak-leaf node)]}
+  {:pre [(spec/valid? ::valid/tweak-leaf node)]}
   (let [{:keys [anchor side segment offset]} anchoring
         {::anch/keys [type primary]} (resolve-anchor getopt anchor)
         default (fn [shape] (if size (apply model/cube size) shape))]
@@ -146,7 +146,7 @@
 (defn- leaf-blade-3d
   "One model at one vertical segment of one feature."
   [getopt {:keys [anchoring] :as node}]
-  {:pre [(spec/valid? ::schema/tweak-leaf node)]}
+  {:pre [(spec/valid? ::valid/tweak-leaf node)]}
   (let [[placed item] (pick-3d-shape getopt node)]
     (if placed
       item
@@ -155,14 +155,14 @@
 (defn- model-leaf-3d
   "(The hull of) one or more models of one type on one side, in place, in 3D."
   [getopt node]
-  {:pre [(spec/valid? ::schema/tweak-leaf node)]}
+  {:pre [(spec/valid? ::valid/tweak-leaf node)]}
   (apply maybe/hull (map (partial leaf-blade-3d getopt) (splay node))))
 
 (declare model-node-3d)
 
 (defn- model-branch-3d
   [getopt {:keys [at-ground hull-around chunk-size highlight] :as node}]
-  {:pre [(spec/valid? ::schema/tweak-branch node)]}
+  {:pre [(spec/valid? ::valid/tweak-branch node)]}
   (let [prefix (if highlight model/-# identity)
         shapes (map (partial model-node-3d getopt) hull-around)
         hull (if at-ground misc/bottom-hull maybe/hull)]
@@ -175,7 +175,7 @@
 (defn- model-node-3d
   "Screen a tweak node. If it’s relevant, represent it as a model."
   [getopt node]
-  {:pre [(spec/valid? ::schema/tweak-node node)]}
+  {:pre [(spec/valid? ::valid/tweak-node node)]}
   (case (node-type node)
     ::branch (model-branch-3d getopt node)
     ::leaf (model-leaf-3d getopt node)))
@@ -201,7 +201,7 @@
   Pick just one leaf in a branch node, and just one post in a leaf, on the
   assumption that they’re not all ringing the case."
   [getopt [leaf-picker segment-picker bottom] node]
-  {:pre [(spec/valid? ::schema/tweak-node node)]
+  {:pre [(spec/valid? ::valid/tweak-node node)]
    :post [(spec/valid? ::tarmi-core/point-2d %)]}
   (as-> node point
     (leaf-picker point)
@@ -217,7 +217,7 @@
   Tweaks so small that they amount to fewer than three vertices are ignored
   because they wouldn’t have any area."
   [getopt pickers nodes]
-  {:pre [(spec/valid? ::schema/tweak-list nodes)]}
+  {:pre [(spec/valid? ::valid/tweak-list nodes)]}
   (let [points (mapv (partial floor-pair getopt pickers) nodes)]
     (when (> (count points) 2)
       (model/polygon points))))
@@ -225,7 +225,7 @@
 (defn- maybe-floor-shadow
   "A sequence of polygons representing a tweak node."
   [getopt node]
-  {:pre [(spec/valid? ::schema/tweak-node node)]}
+  {:pre [(spec/valid? ::valid/tweak-node node)]}
   (for [leaf-picker [first last],
         segment-picker [first last],
         bottom [false true]]
@@ -240,7 +240,7 @@
   This is a semi-brute-force-approach to the problem that we cannot easily
   identify which vertices shape the outside of the case at z = 0."
   [getopt node]
-  {:pre [(spec/valid? ::schema/tweak-node node)]}
+  {:pre [(spec/valid? ::valid/tweak-node node)]}
   (apply maybe/union (distinct (maybe-floor-shadow getopt node))))
 
 (defn floor-polygons

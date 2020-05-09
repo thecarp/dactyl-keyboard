@@ -5,7 +5,8 @@
 
 (ns dactyl-keyboard.param.tree.central
   (:require [scad-tarmi.core :as tarmi-core]
-            [dactyl-keyboard.param.schema :as schema]
+            [dactyl-keyboard.param.schema.parse :as parse]
+            [dactyl-keyboard.param.schema.valid :as valid]
             [dactyl-keyboard.param.stock :as stock]))
 
 (def raws
@@ -46,8 +47,8 @@
     {:default 1 :parse-fn num}
     "The approximate extent of the housing itself, on the x axis, in mm."]
    [:parameter [:shape :interface]
-    {:default [] :parse-fn schema/central-housing-interface
-     :validate [::schema/central-housing-interface]}
+    {:default [] :parse-fn parse/central-housing-interface
+     :validate [::valid/central-housing-interface]}
     "The `interface` setting is essentially a list of points in space. "
     "Each of these points can influence the shape of the central housing "
     "itself, its adapter, and/or the shape of its bottom plate.\n"
@@ -229,8 +230,8 @@
     stock/threaded-bolt-documentation]
    [:parameter [:adapter :fasteners :positions]
     {:default []
-     :parse-fn schema/central-housing-normal-positions
-     :validate [::schema/central-housing-normal-positions]}
+     :parse-fn parse/central-housing-normal-positions
+     :validate [::valid/central-housing-normal-positions]}
     "A list of places where threaded fasteners will go through the wall.\n\n"
     "Each item in this list is a map with three mandatory keys:\n"
     "\n"
@@ -325,8 +326,8 @@
     "at the distance between the center of the anchor and the outermost "
     "part of its shell."]
    [:parameter [:bottom-plate :fastener-positions]
-    {:default [] :parse-fn schema/projecting-2d-positions
-     :validate [::schema/projecting-2d-list]}
+    {:default [] :parse-fn parse/projecting-2d-positions
+     :validate [::valid/projecting-2d-list]}
     "The positions of threaded fasteners used to attach the bottom plate to "
     "the body of the central housing. In addition to the properties permitted "
     "in similar lists of such anchors, the central housing permits a "

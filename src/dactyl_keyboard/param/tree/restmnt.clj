@@ -5,7 +5,8 @@
 
 (ns dactyl-keyboard.param.tree.restmnt
   (:require [clojure.spec.alpha :as spec]
-            [dactyl-keyboard.param.schema :as schema]
+            [dactyl-keyboard.param.schema.parse :as parse]
+            [dactyl-keyboard.param.schema.valid :as valid]
             [dactyl-keyboard.param.stock :as stock]))
 
 
@@ -39,7 +40,7 @@
    [:parameter [:anchoring]
     {:default :main-side
      :parse-fn keyword
-     :validate [::schema/wrist-position-style]}
+     :validate [::valid/wrist-position-style]}
     "One of:\n\n"
     "- `main-side`: The `angle` parameter in this section determines the angle "
     "of the blocks and threaded fasteners in the mount. In effect, the "
@@ -68,7 +69,7 @@
    [:section [:blocks :main-side :anchoring]
     "Where to place the block."]
    [:parameter [:blocks :main-side :anchoring :anchor]
-    {:default :origin :parse-fn keyword :validate [::schema/anchor]}
+    {:default :origin :parse-fn keyword :validate [::valid/anchor]}
     "An alias referring to a feature that anchors the block."]
    [:parameter [:blocks :main-side :anchoring :side]
     stock/anchor-side-metadata
@@ -97,7 +98,7 @@
     "Where to place the block. This entire section is ignored in the "
     "`main-side` style of anchoring."]
    [:parameter [:blocks :plinth-side :anchoring :anchor]
-    {:default :origin :parse-fn keyword :validate [::schema/anchor]}
+    {:default :origin :parse-fn keyword :validate [::valid/anchor]}
     "An alias referring to a feature that anchors the block. Whereas the "
     "main-side mount is typically anchored to a key, the plinth-side mount "
     "is typically anchored to a named point on the plinth."]
@@ -120,7 +121,7 @@
     "therefore recommended for advanced users only."]
    [:parameter [:blocks :aliases]
     {:default {}
-     :parse-fn (schema/map-of keyword keyword)
-     :validate [(spec/map-of keyword? ::schema/wrist-block)]}
+     :parse-fn (parse/map-of keyword keyword)
+     :validate [(spec/map-of keyword? ::valid/wrist-block)]}
     "A map of short names to specific blocks, i.e. `main-side` or "
     "`plinth-side`. Such aliases are for use elsewhere in the configuration."]])

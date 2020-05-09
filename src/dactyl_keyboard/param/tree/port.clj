@@ -6,7 +6,7 @@
 (ns dactyl-keyboard.param.tree.port
   (:require [scad-tarmi.core :as tarmi-core]
             [dactyl-keyboard.cots :as cots]
-            [dactyl-keyboard.param.schema :as schema]
+            [dactyl-keyboard.param.schema.valid :as valid]
             [dactyl-keyboard.param.stock :as stock]))
 
 (def raws
@@ -40,13 +40,13 @@
     "Notice ports attached directly to microcontroller "
     "boards are treated in the `mcu` section, not here."]
    [:parameter [:include]
-    {:default false :parse-fn boolean :validate [::schema/include]}
+    {:default false :parse-fn boolean :validate [::valid/include]}
     "If `true`, include the port. The main use of this option is for "
     "disabling ports defined in other configuration files. "
     "The default value is `false` for consistency with other inclusion "
     "parameters."]
    [:parameter [:body]
-    {:default :auto :parse-fn keyword :validate [::schema/body]}
+    {:default :auto :parse-fn keyword :validate [::valid/body]}
     "A code identifying the [body](configuration.md) in which the port is cut."]
    [:parameter [:type]
     {:default :custom :parse-fn keyword
@@ -93,12 +93,12 @@
     "A map describing a positive addition to the case on five "
     "sides of the port: Every side but the front."]
    [:parameter [:holder :include]
-    {:default false :parse-fn boolean :validate [::schema/include]}
+    {:default false :parse-fn boolean :validate [::valid/include]}
     "If `true`, build a wall around the port."]
    [:parameter [:holder :alias]
-    {:default ::placeholder :parse-fn keyword :validate [::schema/alias]}
+    {:default ::placeholder :parse-fn keyword :validate [::valid/alias]}
     "A name for the holder, to allow anchoring other features to it."]
    [:parameter [:holder :thickness]
-    {:default 1 :parse-fn num :validate [::schema/thickness]}
+    {:default 1 :parse-fn num :validate [::valid/thickness]}
     "A number specifying the thickness of the holder’s wall on each side, "
     "in mm."]])

@@ -11,7 +11,8 @@
             [dmote-keycap.data :as capdata]
             [dmote-keycap.schema :as capschema]
             [dactyl-keyboard.param.base :as base]
-            [dactyl-keyboard.param.schema :as schema]
+            [dactyl-keyboard.param.schema.valid :as valid]
+            [dactyl-keyboard.param.schema.parse :as parse]
             [dactyl-keyboard.param.stock :as stock]
             [dactyl-keyboard.param.tree.central :as central]
             [dactyl-keyboard.param.tree.cluster :as cluster]
@@ -27,9 +28,9 @@
 
 (spec/def ::parameters (base/delegated-validation nested/raws))
 (spec/def ::individual-row (spec/keys :opt-un [::parameters]))
-(spec/def ::rows (spec/map-of ::schema/flexcoord ::individual-row))
+(spec/def ::rows (spec/map-of ::valid/flexcoord ::individual-row))
 (spec/def ::individual-column (spec/keys :opt-un [::rows ::parameters]))
-(spec/def ::columns (spec/map-of ::schema/flexcoord ::individual-column))
+(spec/def ::columns (spec/map-of ::valid/flexcoord ::individual-column))
 (spec/def ::overrides (spec/keys :opt-un [::columns ::parameters]))
 
 (def raws
@@ -47,7 +48,7 @@
     "If `true`, include models of the keycaps in place on the keyboard. This "
     "is intended for illustration as you work on a design, not for printing."]
    [:parameter [:keys :styles]
-    {:default {:default {}} :parse-fn schema/keycap-map
+    {:default {:default {}} :parse-fn parse/keycap-map
      :validate [(spec/map-of keyword? ::capschema/keycap-parameters)]}
     "Here you name all the styles of keys on the keyboard and describe each "
     "style using parameters to the `keycap` function of the "
@@ -68,10 +69,10 @@
     {:heading-template "Special section %s"
      :default {:main {:matrix-columns [{:rows-below-home 0}]
                       :aliases {}}}
-     :parse-fn (schema/map-of keyword
+     :parse-fn (parse/map-of keyword
                  (base/parser-with-defaults cluster/raws))
      :validate [(spec/map-of
-                  ::schema/key-cluster
+                  ::valid/key-cluster
                   (base/delegated-validation cluster/raws))]}
     "This section describes the general size, shape and position of "
     "the clusters of keys on the keyboard, each in its own subsection. "
@@ -91,26 +92,26 @@
     (let [rep (base/parser-wo-defaults nested/raws)]
       {:heading-template "Special section %s ← overrides go in here"
        :default {}
-       :parse-fn (schema/map-of
+       :parse-fn (parse/map-of
                    keyword
-                   (schema/map-like
+                   (parse/map-like
                      {:parameters rep
                       :columns
-                       (schema/map-of
-                         schema/keyword-or-integer
-                         (schema/map-like
+                       (parse/map-of
+                         parse/keyword-or-integer
+                         (parse/map-like
                            {:parameters rep
                             :rows
-                              (schema/map-of
-                                schema/keyword-or-integer
-                                (schema/map-like {:parameters rep}))}))}))
-       :validate [(spec/map-of ::schema/key-cluster ::overrides)]})
+                              (parse/map-of
+                                parse/keyword-or-integer
+                                (parse/map-like {:parameters rep}))}))}))
+       :validate [(spec/map-of ::valid/key-cluster ::overrides)]})
     "Starting here, you gradually descend from the global level "
     "toward the key level."]
    [:parameter [:secondaries]
     {:default {}
-     :parse-fn schema/named-secondary-positions
-     :validate [::schema/named-secondary-positions]}
+     :parse-fn parse/named-secondary-positions
+     :validate [::valid/named-secondary-positions]}
     "A map where each item provides a name for a position in space. "
     "Such positions exist in relation to other named features of the keyboard "
     "and can themselves be used as named features: Typically as supplementary "
@@ -189,7 +190,7 @@
     "is placed in relation to a key cluster. By default, it sits all along "
     "the far (north) side of the `main` cluster but has no depth."]
    [:parameter [:main-body :rear-housing :position :cluster]
-    {:default :main :parse-fn keyword :validate [::schema/key-cluster]}
+    {:default :main :parse-fn keyword :validate [::valid/key-cluster]}
     "The key cluster at which to anchor the housing."]
    [:section [:main-body :rear-housing :position :offsets]
     "Modifiers for where to put the four sides of the roof. All are in mm."]
@@ -325,7 +326,7 @@
     "How your bottom plate is attached to the rest of your case."]
    [:parameter [:main-body :bottom-plate :installation :style]
     {:default :threads :parse-fn keyword
-     :validate [::schema/plate-installation-style]}
+     :validate [::valid/plate-installation-style]}
     "The general means of installation. This parameter has been reduced to a "
     "placeholder: The only available style is `threads`, signifying the use "
     "of threaded fasteners connecting the bottom plate to anchors in "
@@ -369,8 +370,8 @@
     stock/threaded-bolt-documentation]
    [:parameter [:main-body :bottom-plate :installation :fasteners :positions]
     {:default []
-     :parse-fn schema/anchored-2d-positions
-     :validate [::schema/anchored-2d-list]}
+     :parse-fn parse/anchored-2d-positions
+     :validate [::valid/anchored-2d-list]}
     "A list of places where threaded fasteners will connect the bottom plate "
     "to the rest of the case."]
    [:section [:main-body :leds]
@@ -382,7 +383,7 @@
    [:section [:main-body :leds :position]
     "Where to attach the LED strip."]
    [:parameter [:main-body :leds :position :cluster]
-    {:default :main :parse-fn keyword :validate [::schema/key-cluster]}
+    {:default :main :parse-fn keyword :validate [::valid/key-cluster]}
     "The key cluster at which to anchor the strip."]
    [:parameter [:main-body :leds :amount]
     {:default 1 :parse-fn int} "The number of LEDs."]
@@ -413,8 +414,8 @@
     {:default 4 :parse-fn num} "The height in mm of each mounting plate."]
    [:parameter [:main-body :foot-plates :polygons]
     {:default []
-     :parse-fn schema/anchored-polygons
-     :validate [::schema/foot-plate-polygons]}
+     :parse-fn parse/anchored-polygons
+     :validate [::valid/foot-plate-polygons]}
     "A list describing the horizontal shape, size and "
     "position of each mounting plate as a polygon."]
    [:parameter [:central-housing]
@@ -426,8 +427,8 @@
     "connecting the two halves of a reflected main body. "
     "The central housing is documented in detail [here](options-central.md)."]
    [:parameter [:tweaks]
-    {:default {} :parse-fn schema/tweak-grove
-     :validate [::schema/tweak-name-map]}
+    {:default {} :parse-fn parse/tweak-grove
+     :validate [::valid/tweak-name-map]}
     "Additional shapes. This parameter is usually needed to bridge gaps "
     "between the walls of key clusters. The expected value here is an "
     "arbitrarily nested structure starting with a map of names to lists.\n"
@@ -562,7 +563,7 @@
     "If `true`, render a visualization of the MCU PCBA. "
     "For use in development."]
    [:parameter [:mcu :body]
-    {:default :auto :parse-fn keyword :validate [::schema/body]}
+    {:default :auto :parse-fn keyword :validate [::valid/body]}
     "A code identifying the [body](configuration.md) that houses the MCU."]
    [:parameter [:mcu :type]
     {:default :promicro :parse-fn keyword
@@ -632,8 +633,8 @@
     {:default 1 :parse-fn num :validate [pos?]}
     "The thickness of material in the shelf, below or behind the PCBA, in mm."]
    [:parameter [:mcu :support :shelf :bevel]
-    {:default {} :parse-fn schema/compass-angle-map
-     :validate [::schema/compass-angle-map]}
+    {:default {} :parse-fn parse/compass-angle-map
+     :validate [::valid/compass-angle-map]}
     "A map of angles, in radians, indexed by cardinal compass points, whereby "
     "any and all sides of the shelf are turned away from the MCU PCBA. "
     "This feature is intended mainly for manufacturability, to reduce the "
@@ -703,7 +704,7 @@
     "determined by `width-factor`. Its total height is the sum of this "
     "section’s `base-thickness` and `clearance`."]
    [:parameter [:mcu :support :lock :plate :alias]
-    {:default ::placeholder :parse-fn keyword :validate [::schema/alias]}
+    {:default ::placeholder :parse-fn keyword :validate [::valid/alias]}
     "A name you can use to target the base of the plate for `tweaks`. "
     "This is useful mainly when there isn’t a flat wall behind the lock."]
    [:parameter [:mcu :support :lock :plate :base-thickness]
@@ -763,8 +764,8 @@
     "corresponds to `key-mount-corner-margin` and `web-thickness` but "
     "provides more control and is specific to MCU grips."]
    [:parameter [:mcu :support :grip :anchors]
-    {:default [] :parse-fn schema/mcu-grip-anchors
-     :validate [::schema/mcu-grip-anchors]}
+    {:default [] :parse-fn parse/mcu-grip-anchors
+     :validate [::valid/mcu-grip-anchors]}
     "A list of points in space positioned relative to the PCB’s corners.\n\n"
     "Each point must have an `alias`, which is a name you can use "
     "elsewhere to refer to that point, and a `side`, identifying one "
@@ -788,10 +789,10 @@
    [:parameter [:ports]
     {:heading-template "Special section %s"
      :default {}
-     :parse-fn (schema/map-of keyword
+     :parse-fn (parse/map-of keyword
                  (base/parser-with-defaults port/raws))
      :validate [(spec/map-of
-                  ::schema/alias
+                  ::valid/alias
                   (base/delegated-validation port/raws))]}
     "This section describes ports, including sockets in the case walls to "
     "contain electronic receptacles for signalling connections and other "
@@ -803,7 +804,7 @@
     {:default false :parse-fn boolean}
     "If `true`, include a wrist rest with the keyboard."]
    [:parameter [:wrist-rest :style]
-    {:default :threaded :parse-fn keyword :validate [::schema/wrist-rest-style]}
+    {:default :threaded :parse-fn keyword :validate [::valid/wrist-rest-style]}
     "The style of the wrist rest. Available styles are:\n\n"
     "- `threaded`: threaded fasteners connect the case and wrist rest.\n"
     "- `solid`: the case and wrist rest are joined together by `tweaks` "
@@ -834,8 +835,8 @@
     "The horizontal outline of the wrist rest is a closed spline."]
    [:parameter [:wrist-rest :shape :spline :main-points]
     {:default [{:position [0 0]} {:position [1 0]} {:position [1 1]}]
-     :parse-fn schema/nameable-spline
-     :validate [::schema/nameable-spline]}
+     :parse-fn parse/nameable-spline
+     :validate [::valid/nameable-spline]}
     "A list of nameable points, in clockwise order. The spline will pass "
     "through all of these and then return to the first one. Each point can "
     "have two properties:\n\n"
@@ -923,7 +924,7 @@
    [:parameter [:wrist-rest :mounts]
     {:heading-template "Special section %s"
      :default []
-     :parse-fn (schema/tuple-of (base/parser-with-defaults restmnt/raws))
+     :parse-fn (parse/tuple-of (base/parser-with-defaults restmnt/raws))
      :validate [(spec/coll-of (base/delegated-validation restmnt/raws))]}
     "A list of mounts for threaded fasteners. Each such mount will include at "
     "least one cuboid block for at least one screw that connects the wrist "
@@ -946,8 +947,8 @@
     {:default 1 :parse-fn num}
     "The diameter of each sprue."]
    [:parameter [:wrist-rest :sprues :positions]
-    {:default [] :parse-fn schema/anchored-2d-positions
-     :validate [::schema/anchored-2d-list]}
+    {:default [] :parse-fn parse/anchored-2d-positions
+     :validate [::valid/anchored-2d-list]}
     "The positions of all sprues. This is a list where each item needs an "
     "`anchor` naming a main point in the spline. You can add an optional "
     "two-dimensional `offset`."]
@@ -969,8 +970,8 @@
     "default position of each threaded fastener connecting it to its "
     "bottom plate."]
    [:parameter [:wrist-rest :bottom-plate :fastener-positions]
-    {:default [] :parse-fn schema/anchored-2d-positions
-     :validate [::schema/anchored-2d-list]}
+    {:default [] :parse-fn parse/anchored-2d-positions
+     :validate [::valid/anchored-2d-list]}
     "The positions of threaded fasteners used to attach the bottom plate to "
     "its wrist rest. The syntax of this parameter is precisely the same as "
     "for the case’s bottom-plate fasteners. Corners are ignored and the "

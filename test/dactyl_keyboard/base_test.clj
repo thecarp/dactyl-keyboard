@@ -3,7 +3,7 @@
             [clojure.spec.alpha :as spec]
             [flatland.ordered.map :refer [ordered-map]]
             [dactyl-keyboard.param.base :as base]
-            [dactyl-keyboard.param.schema :as schema]))
+            [dactyl-keyboard.param.schema.parse :as parse]))
 
 (deftest test-parse-leaf
   (testing "simple"
@@ -140,8 +140,8 @@
             {:default [:v]
              :validate [(spec/coll-of keyword?)]}
             "Parameter."]]
-        sub-parser (schema/tuple-of (base/parser-with-defaults sub-raws))
-        alt-parser (schema/tuple-of (base/parser-wo-defaults sub-raws))
+        sub-parser (parse/tuple-of (base/parser-with-defaults sub-raws))
+        alt-parser (parse/tuple-of (base/parser-wo-defaults sub-raws))
         sub-validator (spec/coll-of (base/delegated-validation sub-raws))
         sup-raws
           [["Superordinate configuration."]

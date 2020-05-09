@@ -10,7 +10,8 @@
   (:require [scad-klupe.schema.iso :as iso]
             [scad-tarmi.core :as tarmi]
             [dactyl-keyboard.compass :as compass]
-            [dactyl-keyboard.param.schema :as schema]))
+            [dactyl-keyboard.param.schema.parse :as parse]
+            [dactyl-keyboard.param.schema.valid :as valid]))
 
 
 ;;;;;;;;;;;;;;
@@ -22,13 +23,13 @@
   (str "The concept of anchoring is explained [here](configuration.md)."))
 
 (def anchor-metadata
-  {:default :origin :parse-fn keyword :validate [::schema/anchor]})
+  {:default :origin :parse-fn keyword :validate [::valid/anchor]})
 (def anchor-documentation
   (str "A code identifying an anchor point. This can be the default value "
        "(`origin`) or a name (built-in or alias) identifying a feature."))
 
 (def anchor-side-metadata
-  {:default :N, :parse-fn schema/any-compass-point
+  {:default :N, :parse-fn parse/any-compass-point
    :validate [compass/all-short]})
 (def anchor-side-documentation
   (str "A compass-point code for one side of the feature named in `anchor`. "
@@ -56,12 +57,12 @@
 (let [defaults {:m-diameter 6, :head-type :countersunk}]
   (def explicit-threaded-bolt-metadata
     {:default defaults
-     :parse-fn schema/explicit-bolt-properties
+     :parse-fn parse/explicit-bolt-properties
      :validate [::iso/bolt-parameter-keys]})
   (def implicit-threaded-bolt-metadata
     {:default defaults
-     :parse-fn schema/implicit-bolt-properties
-     :validate [::schema/comprehensive-bolt-properties]}))
+     :parse-fn parse/implicit-bolt-properties
+     :validate [::valid/comprehensive-bolt-properties]}))
 
 (def threaded-bolt-documentation
   (str "This parameter describes the properties of a screw or bolt. "

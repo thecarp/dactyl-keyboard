@@ -9,7 +9,7 @@
   (:require [clojure.string :as string]
             [clojure.spec.alpha :as spec]
             [dactyl-keyboard.param.base :as base]
-            [dactyl-keyboard.param.schema :as schema]))
+            [dactyl-keyboard.param.schema.valid :as valid]))
 
 
 ;;;;;;;;;;;;;;
@@ -47,7 +47,7 @@
   "Print an indented list as a table of contents. Descend recursively."
   [node level]
   (doseq [[key {:keys [path metadata] :as value}] node]
-    (let [is-param (spec/valid? ::schema/parameter-spec value)]
+    (let [is-param (spec/valid? ::valid/parameter-spec value)]
       (when (not (= key :metadata))
         (println
           (str (string/join "" (repeat level "    ")) "-")
@@ -65,7 +65,7 @@
               (str (string/join "" (repeat level "#")) " " text)
               (str "###### " text " at level " level)))]
     (doseq [[key {:keys [path help metadata] :as value}] node]
-      (let [is-param (spec/valid? ::schema/parameter-spec value)]
+      (let [is-param (spec/valid? ::valid/parameter-spec value)]
         (when (not (= key :metadata))
           (println)
           (println

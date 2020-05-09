@@ -7,7 +7,7 @@
   (:require [clojure.spec.alpha :as spec]
             [flatland.ordered.map :refer [ordered-map]]
             [dactyl-keyboard.misc :refer [soft-merge]]
-            [dactyl-keyboard.param.schema :as schema]))
+            [dactyl-keyboard.param.schema.valid :as valid]))
 
 
 ;;;;;;;;;;;;;;
@@ -41,7 +41,7 @@
   [nominal candidate]
   (keys candidate))
 
-(defn- leaf? [node] (spec/valid? ::schema/parameter-spec node))
+(defn- leaf? [node] (spec/valid? ::valid/parameter-spec node))
 
 (defn- hard-defaults
   "Pick a user-supplied value over a default value.
@@ -122,7 +122,7 @@
 (defn parse-node
   "Parse a branch or leaf. Raise an exception on superfluous entries."
   [key-picker nominal candidate key]
-  {:pre [(not (spec/valid? ::schema/descriptor key))]}
+  {:pre [(not (spec/valid? ::valid/descriptor key))]}
   (if (contains? nominal key)
     (expand-any-exception key
       (assoc candidate key
@@ -142,7 +142,7 @@
 (defn validate-node
   "Validate a fragment of a configuration received through the UI."
   [nominal candidate key]
-  {:pre [(not (spec/valid? ::schema/descriptor key))]}
+  {:pre [(not (spec/valid? ::valid/descriptor key))]}
   (expand-any-exception key
     (if (leaf? (key nominal))
       (validate-leaf (key nominal) (key candidate))
