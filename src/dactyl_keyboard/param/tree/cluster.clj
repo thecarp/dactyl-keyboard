@@ -68,7 +68,8 @@
     {:default {}
      :parse-fn (parse/map-of keyword
                               (parse/tuple-of parse/keyword-or-integer))
-     :validate [(spec/map-of keyword? ::valid/flexcoord-2d)]}
+     :validate [(spec/map-of keyword?
+                             (spec/coll-of ::valid/flexcoord :count 2))]}
     "A map of short names to specific keys by coordinate pair. "
     "These names can be used as anchors for other features."]
    [:section [:anchoring]

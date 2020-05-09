@@ -46,26 +46,6 @@
              [{:anchor "a", :side "SSW", :offset [0 -1]}])
            [{:anchor :a, :side :SSW, :offset [0 -1]}]))))
 
-(deftest test-coordinate-validator
-  (testing "empty"
-    (is (= (spec/valid? ::valid/key-coordinates [])
-           false)))
-  (testing "short"
-    (is (= (spec/valid? ::valid/key-coordinates [1])
-           false)))
-  (testing "literal key coordinates"
-    (is (= (spec/valid? ::valid/key-coordinates [1 1])
-           true)))
-  (testing "a mapping"
-    (is (= (spec/valid? ::valid/key-coordinates {1 1})
-           false)))
-  (testing "a valid keyword"
-    (is (= (spec/valid? ::valid/key-coordinates [1 :last])
-           true)))
-  (testing "an invalid keyword"
-    (is (= (spec/valid? ::valid/key-coordinates [1 :soup])
-           false))))
-
 (deftest test-tweaks
   (let [forest (fn [raw]  ; Parse and validate tweak setting.
                  (let [parsed (parse/tweak-grove raw)]

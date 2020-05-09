@@ -98,19 +98,20 @@
                       :central/radial-offset]
              :opt-un [:central/direction-point]))
 
-(spec/def ::foot-plate (spec/keys :req-un [::points]))
-(spec/def ::anchored-2d-position
+(spec/def ::foot-plate (spec/keys :req-un [:two/points]))
+(spec/def :two/anchoring
   (spec/keys :opt-un [::anchor :flexible/side ::segment :two/offset]))
-(spec/def ::anchored-3d-position
+(spec/def :three/anchoring
   (spec/keys :opt-un [::anchor :flexible/side ::segment :three/offset]))
 (spec/def ::named-secondary-positions
   (spec/map-of ::alias
-               (spec/keys :opt-un [::anchoring :three/override
+               (spec/keys :opt-un [:three/anchoring :three/override
                                    :three/translation])))
-(spec/def ::anchored-2d-list (spec/coll-of ::anchored-2d-position))
+(spec/def ::anchored-2d-list (spec/coll-of :two/anchoring))
+(spec/def :two/points ::anchored-2d-list)  ; Synonym for composition.
 (spec/def ::projecting-2d-list (spec/coll-of
                                  (spec/and
-                                   ::anchored-2d-position
+                                   :two/anchoring
                                    (spec/keys :opt-un [:numeric/direction]))))
 (spec/def ::central-housing-interface (spec/coll-of :central/interface-node))
 (spec/def ::central-housing-normal-positions (spec/coll-of :central/fastener-node))
@@ -139,11 +140,10 @@
 (spec/def ::column-disposition
   (spec/keys ::opt-un [::rows-below-home ::rows-above-home]))
 (spec/def ::flexcoord (spec/or :absolute int? :extreme #{:first :last}))
-(spec/def ::flexcoord-2d (spec/coll-of ::flexcoord :count 2))
-(spec/def ::wall-extent (spec/or :partial ::wall-segment :full #{:full}))
+(spec/def ::wall-extent (spec/or :partial ::segment :full #{:full}))
 (spec/def ::tweak-leaf
   (spec/and
-    (spec/keys :req-un [::anchoring] :opt-un [:tweak/sweep :tweak/size])
+    (spec/keys :req-un [:three/anchoring] :opt-un [:tweak/sweep :tweak/size])
     ;; Require a start to a sweep
     (fn [{:keys [anchoring sweep]}] (if (some? sweep)
                                         (some? (:segment anchoring))
@@ -156,11 +156,3 @@
 (spec/def ::descriptor  ; Parameter metadata descriptor.
   #{:path :heading-template :help :default :parse-fn :validate :resolve-fn})
 (spec/def ::parameter-spec (spec/map-of ::descriptor some?))
-
-;; Synonyms for composition:
-
-(spec/def ::points ::anchored-2d-list)
-(spec/def ::anchoring ::anchored-3d-position)
-(spec/def ::key-coordinates ::flexcoord-2d)  ; Exposed for unit testing.
-(spec/def ::wall-segment ::segment)
-
