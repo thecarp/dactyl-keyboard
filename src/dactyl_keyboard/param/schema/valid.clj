@@ -152,7 +152,3 @@
     (fn [{:keys [anchoring sweep]}] (< (get anchoring :segment 0)
                                        (or sweep 5)))))
 (spec/def ::foot-plate-polygons (spec/coll-of ::foot-plate))
-
-(spec/def ::descriptor  ; Parameter metadata descriptor.
-  #{:path :heading-template :help :default :parse-fn :validate :resolve-fn})
-(spec/def ::parameter-spec (spec/map-of ::descriptor some?))

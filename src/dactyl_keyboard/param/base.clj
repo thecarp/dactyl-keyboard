@@ -6,13 +6,18 @@
 (ns dactyl-keyboard.param.base
   (:require [clojure.spec.alpha :as spec]
             [flatland.ordered.map :refer [ordered-map]]
-            [dactyl-keyboard.misc :refer [soft-merge]]
-            [dactyl-keyboard.param.schema.valid :as valid]))
+            [dactyl-keyboard.misc :refer [soft-merge]]))
 
 
 ;;;;;;;;;;;;;;
 ;; Internal ;;
 ;;;;;;;;;;;;;;
+
+
+;; TODO: Expand spec with meaningful field-specific checks.
+(spec/def ::descriptor  ; Parameter metadata descriptor.
+  #{:path :heading-template :help :default :parse-fn :validate :resolve-fn})
+(spec/def ::parameter-spec (spec/map-of ::descriptor any?))
 
 (defn- coalesce
   "Assemble one branch in a tree structure from flat specifications.
@@ -41,7 +46,7 @@
   [nominal candidate]
   (keys candidate))
 
-(defn- leaf? [node] (spec/valid? ::valid/parameter-spec node))
+(defn- leaf? [node] (spec/valid? ::parameter-spec node))
 
 (defn- hard-defaults
   "Pick a user-supplied value over a default value.
@@ -122,7 +127,7 @@
 (defn parse-node
   "Parse a branch or leaf. Raise an exception on superfluous entries."
   [key-picker nominal candidate key]
-  {:pre [(not (spec/valid? ::valid/descriptor key))]}
+  {:pre [(not (spec/valid? ::descriptor key))]}
   (if (contains? nominal key)
     (expand-any-exception key
       (assoc candidate key
@@ -142,7 +147,7 @@
 (defn validate-node
   "Validate a fragment of a configuration received through the UI."
   [nominal candidate key]
-  {:pre [(not (spec/valid? ::valid/descriptor key))]}
+  {:pre [(not (spec/valid? ::descriptor key))]}
   (expand-any-exception key
     (if (leaf? (key nominal))
       (validate-leaf (key nominal) (key candidate))
@@ -156,18 +161,16 @@
 
 (defn validate-leaf
   "Validate a specific parameter received through the UI.
-  The return value should not be used."
+  Side effects (exception) only. The return value should not be used."
   ;; Exposed for unit testing.
   [nominal candidate]
   {:pre [(leaf? nominal)]}
-  (mapv
-    (fn [validator]
-      (if-not (spec/valid? validator candidate)
-        (throw (ex-info "Value out of range"
-                        {:type :validation-error
-                         :parsed-value candidate
-                         :spec-explanation (spec/explain-str validator candidate)}))))
-    (get nominal :validate [some?])))
+  (doseq [validator (get nominal :validate [])]
+    (if-not (spec/valid? validator candidate)
+      (throw (ex-info "Value out of range"
+                      {:type :validation-error
+                       :parsed-value candidate
+                       :spec-explanation (spec/explain-str validator candidate)})))))
 
 (defn delegated-validation
   "Make a function to delegate the validation of a branch."

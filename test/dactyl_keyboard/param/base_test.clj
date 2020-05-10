@@ -1,9 +1,19 @@
-(ns dactyl-keyboard.base-test
+(ns dactyl-keyboard.param.base-test
   (:require [clojure.test :refer [deftest testing is]]
             [clojure.spec.alpha :as spec]
             [flatland.ordered.map :refer [ordered-map]]
             [dactyl-keyboard.param.base :as base]
             [dactyl-keyboard.param.schema.parse :as parse]))
+
+(deftest test-parameter-spec
+  (testing "empty"
+    (is (= (spec/valid? ::base/parameter-spec {}) true)))
+  (testing "default only"
+    (is (= (spec/valid? ::base/parameter-spec {:default 1}) true)))
+  (testing "non-reserved keyword"
+    (is (= (spec/valid? ::base/parameter-spec {:a 1}) false)))
+  (testing "nested"
+    (is (= (spec/valid? ::base/parameter-spec {:k {:default 1}}) false))))
 
 (deftest test-parse-leaf
   (testing "simple"
@@ -14,8 +24,12 @@
     (is (= (base/parse-leaf {:parse-fn keyword} "s") :s))))
 
 (deftest test-validate-leaf
+  (testing "validation, no validator available"
+    (is (= (base/validate-leaf {:validate []} 1) nil))
+    (is (= (base/validate-leaf {} 1) nil))
+    (is (= (base/validate-leaf {} nil) nil)))
   (testing "validation, negative for error"
-    (is (= (base/validate-leaf {:validate [(partial = 1)]} 1) [nil])))
+    (is (= (base/validate-leaf {:validate [(partial = 1)]} 1) nil)))
   (testing "validation, positive for error"
     (is (thrown-with-msg? clojure.lang.ExceptionInfo #"Value out of range"
           (base/validate-leaf {:validate [(partial = 1)]} 2)))))

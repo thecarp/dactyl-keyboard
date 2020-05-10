@@ -104,23 +104,19 @@
   [build-options]
   (letfn [(value-at [path] (get-in build-options path ::none))
           (path-exists? [path] (not (= ::none (value-at path))))
-          (valid? [path] (and (path-exists? path)
-                              (not (nil? (value-at path)))))  ; “false” is OK.
           (step [path key]
             (let [next-path (conj path key)]
-             (if (path-exists? next-path) next-path path)))
-          (backtrack [path] (reduce step [] path))]
+              (if (path-exists? next-path) next-path path)))
+          (backtrack [path] (reduce step [] path))
+          (keys-if-map [value] (if (map? value) (keys value) value))]
     (fn [& path]
-      (let [exc {:path path
-                 :last-good (backtrack path)
-                 :at-last-good (value-at (backtrack path))}]
-        (if-not (path-exists? path)
-          (throw (ex-info "Configuration lacks key"
-                          (assoc exc :type :missing-parameter)))
-          (if-not (valid? path)
-            (throw (ex-info "Configuration lacks value for key"
-                            (assoc exc :type :unset-parameter)))
-            (value-at path)))))))
+      (when-not (path-exists? path)
+        (throw (ex-info "Configuration lacks key"
+                 {:path path
+                  :last-good (backtrack path)
+                  :at-last-good (keys-if-map (value-at (backtrack path)))
+                  :type :missing-parameter})))
+      (value-at path))))
 
 (defn most-specific [getopt end-path cluster coord]
   ((specific-getter getopt end-path) cluster coord))

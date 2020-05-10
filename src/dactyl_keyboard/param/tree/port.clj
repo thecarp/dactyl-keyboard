@@ -6,8 +6,10 @@
 (ns dactyl-keyboard.param.tree.port
   (:require [scad-tarmi.core :as tarmi-core]
             [dactyl-keyboard.cots :as cots]
+            [dactyl-keyboard.param.schema.parse :as parse]
             [dactyl-keyboard.param.schema.valid :as valid]
-            [dactyl-keyboard.param.stock :as stock]))
+            [dactyl-keyboard.param.stock :as stock]
+            [dactyl-keyboard.compass :as compass]))
 
 (def raws
   "A flat version of a special part of a user configuration.
@@ -67,11 +69,12 @@
    [:section [:alignment]
     "How the port lines itself up at its position."]
    [:parameter [:alignment :segment]
-    stock/anchor-segment-metadata
+    {:default 0, :validate [#{0 1 2}]}
     "Which vertical segment of the port itself to place at its anchor. "
     "The default value here is 0, meaning the ceiling of the port."]
    [:parameter [:alignment :side]
-    stock/anchor-side-metadata
+    {:default :N, :parse-fn parse/any-compass-point,
+     :validate [compass/all-short]}
     "Which wall or corner of the port itself to place at its anchor. "
     "The default value here is `N` (nominal north), which is the open face "
     "of the port."]

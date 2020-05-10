@@ -1,4 +1,4 @@
-(ns dactyl-keyboard.param-proc-anch-test
+(ns dactyl-keyboard.param.proc-anch-test
   (:require [clojure.test :refer [deftest testing is]]
             [dactyl-keyboard.fixture :refer [unit-testing-accessor]]
             [dactyl-keyboard.param.proc.anch :as anch]))

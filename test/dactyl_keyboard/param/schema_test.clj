@@ -1,4 +1,4 @@
-(ns dactyl-keyboard.schema-test
+(ns dactyl-keyboard.param.schema-test
   (:require [clojure.test :refer [deftest testing is]]
             [clojure.spec.alpha :as spec]
             [scad-tarmi.core :refer [π]]
@@ -15,16 +15,6 @@
     (is (thrown? java.lang.ClassCastException (parse/keyword-or-integer {}))))
   (testing "string pair"
     (is (= ((parse/tuple-of parse/keyword-or-integer) '("a" "b")) [:a :b]))))
-
-(deftest test-parameter-spec
-  (testing "empty"
-    (is (= (spec/valid? ::valid/parameter-spec {}) true)))
-  (testing "default only"
-    (is (= (spec/valid? ::valid/parameter-spec {:default 1}) true)))
-  (testing "non-reserved keyword"
-    (is (= (spec/valid? ::valid/parameter-spec {:a 1}) false)))
-  (testing "nested"
-    (is (= (spec/valid? ::valid/parameter-spec {:k {:default 1}}) false))))
 
 (deftest compass-compatible-angle-parser
   (testing "string"

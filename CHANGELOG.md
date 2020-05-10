@@ -17,9 +17,9 @@ version 0.2.0, thus covering only a fraction of the project’s history.
           because it can also be used for the central housing.
     - Multiple sections for anchoring have been **renamed** from `position` to
       `anchoring` to reduce ambiguity with respect to bodies.
-        - Parameters named `corner` have been **renamed** to `side`. They now
-          take codes for cardinal compass points as well as actual corners. The
-          default side for anchoring has changed to the north.
+        - Parameters named `corner` have been **renamed** to `side`. This is
+          because they now take codes for cardinal compass points as well as
+          actual corners.
     - All parameters governing individual properties of threaded bolts have
       been removed in favour of more powerful new parameters based on options
       exposed by a new library (`scad-klupe`) that draws bolts for the
@@ -67,6 +67,12 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       `mcu` → `support` → `lock` → `width-factor`.
     - `mcu` → `support` → `lateral-spacing` was moved to
       `mcu` → `support` → `lock` → `plate` → `clearance`.
+- Some default values have disappeared altogether.
+    - When anchoring a feature to a key mount, there is no longer a default
+      value for the vertical segment of the key mount. The previous default was
+      3.
+    - The default `side` (previously `corner`) of a target anchor is now `nil`
+      (YAML: `null` or omission), meaning the centre (no side).
 - Anchoring one feature to another no longer imposes a rotation. Thus the
   MCU's `rotation` parameter has moved out of its `position` map, to a new
   name (`intrinsic-rotation`) and will be needed more often.
@@ -76,8 +82,6 @@ version 0.2.0, thus covering only a fraction of the project’s history.
   default. These are still available but are governed by a new parameter.
   Domes were made optional to make it easier to tap threads rather than print
   them, and use longer screws than was originally intended.
-- When anchoring a feature to a key mount, there is no longer a default
-  value for the vertical segment of the key mount. The previous default was 3.
 
 ### Added
 - Documentation:
@@ -143,6 +147,8 @@ version 0.2.0, thus covering only a fraction of the project’s history.
   - `poly`, collecting helper functions for making polyhedra.
   - `tweak`, breaking tweak plating out of `body` and `bottom`.
   - Split the `schema` module into separate modules for parsers and specs.
+- The parameter interpreter now bans `nil` only as a function of explicit
+  validators, no longer categorically.
 - Removed functions from the derived user configuration.
 - A folder of configuration files under `test/config` for manual regression
   testing.

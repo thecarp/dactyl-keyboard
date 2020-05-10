@@ -666,7 +666,7 @@ A code identifying an anchor point. This can be the default value (`origin`) or 
 
 #### Parameter <a id="mcu-anchoring-side">`side`</a>
 
-A compass-point code for one side of the feature named in `anchor`. The default is `N`, signifying the north side.
+A compass-point code for one side of the feature named in `anchor`. The default is `null`, signifying the centre.
 
 #### Parameter <a id="mcu-anchoring-segment">`segment`</a>
 
@@ -872,7 +872,7 @@ A code identifying an anchor point. This can be the default value (`origin`) or 
 
 #### Parameter <a id="wrist-rest-anchoring-side">`side`</a>
 
-A compass-point code for one side of the feature named in `anchor`. The default is `N`, signifying the north side.
+A compass-point code for one side of the feature named in `anchor`. The default is `null`, signifying the centre.
 
 #### Parameter <a id="wrist-rest-anchoring-segment">`segment`</a>
 

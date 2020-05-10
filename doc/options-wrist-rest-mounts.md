@@ -105,7 +105,7 @@ An alias referring to a feature that anchors the block.
 
 ##### Parameter <a id="blocks-main-side-anchoring-side">`side`</a>
 
-A compass-point code for one side of the feature named in `anchor`. The default is `N`, signifying the north side.
+A compass-point code for one side of the feature named in `anchor`. The default is `null`, signifying the centre.
 
 ##### Parameter <a id="blocks-main-side-anchoring-segment">`segment`</a>
 

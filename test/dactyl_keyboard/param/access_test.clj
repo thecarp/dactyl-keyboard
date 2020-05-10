@@ -1,4 +1,4 @@
-(ns dactyl-keyboard.base-test
+(ns dactyl-keyboard.param.base-test
   (:require [clojure.test :refer [deftest testing]]
             [dactyl-keyboard.param.access :as access]))
 

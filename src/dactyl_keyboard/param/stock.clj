@@ -7,7 +7,8 @@
 ;;; validators and documentation) that are useful in more than one place.
 
 (ns dactyl-keyboard.param.stock
-  (:require [scad-klupe.schema.iso :as iso]
+  (:require [clojure.spec.alpha :as spec]
+            [scad-klupe.schema.iso :as iso]
             [scad-tarmi.core :as tarmi]
             [dactyl-keyboard.compass :as compass]
             [dactyl-keyboard.param.schema.parse :as parse]
@@ -29,11 +30,11 @@
        "(`origin`) or a name (built-in or alias) identifying a feature."))
 
 (def anchor-side-metadata
-  {:default :N, :parse-fn parse/any-compass-point
-   :validate [compass/all-short]})
+  {:default nil, :parse-fn parse/any-compass-point
+   :validate [(spec/nilable compass/all-short)]})
 (def anchor-side-documentation
   (str "A compass-point code for one side of the feature named in `anchor`. "
-       "The default is `N`, signifying the north side."))
+       "The default is `null`, signifying the centre."))
 
 (def anchor-segment-metadata
   {:default 0, :parse-fn num, :validate [integer? (complement neg?)]})

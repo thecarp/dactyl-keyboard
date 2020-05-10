@@ -52,9 +52,10 @@
           (keyword candidate))))))           ; Input like “:first” or “"first"”.
 
 (defn any-compass-point
-  "Convert to a short keyword for a compass point, even from a long string."
+  "Convert to a short keyword for a compass point, even from a long string.
+  Also accept nil."
   [candidate]
-  (compass/convert-to-any-short (keyword candidate)))
+  (when (some? candidate) (compass/convert-to-any-short (keyword candidate))))
 
 (def compass-angle-map (map-of any-compass-point num))
 
