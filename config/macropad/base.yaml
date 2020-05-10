@@ -49,7 +49,7 @@ main-body:
 mcu:
   include: true
   # Stand on the long edge folded into the rear housing.
-  intrinsic-rotation: [0, 1.5708, -1.5708]
+  intrinsic-rotation: [0, π/2, π/-2]
   anchoring:
     anchor: rear-housing
     side: ENE

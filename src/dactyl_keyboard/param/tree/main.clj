@@ -574,14 +574,11 @@
     "and others:\n\n"
     (cots/support-list cots/mcu-facts)]
    [:parameter [:mcu :intrinsic-rotation]
-    stock/anchor-3d-vector-metadata
+    stock/compass-incompatible-3d-angle-metadata
     "A vector of 3 angles in radians. This parameter governs the rotation of "
-    "the PCBA around its anchor point in the front.\n"
+    "the PCBA around its anchor point in the front. "
     "By default, the PCBA appears lying flat, with the MCU side up and the "
-    "connector end facing nominal north, away from the user.\n\n"
-    "As an example, to have the PCBA standing on its long edge instead of "
-    "lying flat, you would set this parameter like `[0, 1.5708, 0]`, the "
-    "middle number being roughly π/2."]
+    "connector end facing nominal north, away from the user."]
    [:section [:mcu :anchoring]
     "Where to place the MCU PCBA after intrinsic rotation. "
     stock/anchoring-documentation]
@@ -916,10 +913,10 @@
    [:section [:wrist-rest :rotation]
     "The wrist rest can be rotated to align its pad with the user’s palm."]
    [:parameter [:wrist-rest :rotation :pitch]
-    {:default 0 :parse-fn num}
+    {:default 0 :parse-fn parse/compass-incompatible-angle}
     "Tait-Bryan pitch."]
    [:parameter [:wrist-rest :rotation :roll]
-    {:default 0 :parse-fn num}
+    {:default 0 :parse-fn parse/compass-incompatible-angle}
     "Tait-Bryan roll."]
    [:parameter [:wrist-rest :mounts]
     {:heading-template "Special section %s"

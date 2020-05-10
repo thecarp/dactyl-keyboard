@@ -377,7 +377,7 @@ tweaks:
 mcu:
   include: true
   type: promicro
-  intrinsic-rotation: [0, 1.5708, 0]
+  intrinsic-rotation: [0, π/2, 0]
   anchoring:
     anchor: back-plane
     offset: [-17, -20, 11]

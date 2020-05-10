@@ -820,7 +820,7 @@ tweaks:
     - [ca-bottom-2]
 mcu:
   include: true
-  intrinsic-rotation: [-1.5708, 0.785398, 3.14159]  # π/2, π/4, π.
+  intrinsic-rotation: [π/-2, π/4, π]
   anchoring:
     anchor: ci-far-base
     offset: [-22, -5, 70]
@@ -852,7 +852,7 @@ ports:
     size: [162, 92, 20]
     anchoring:
       offset: [0, -55, 108]
-    intrinsic-rotation: [0, 0, 3.14159]  # π.
+    intrinsic-rotation: [0, 0, π]
     holder:
       include: true
       thickness: 2
@@ -861,7 +861,7 @@ ports:
     size: [162, 92, 20]
     anchoring:
       offset: [0, -55, 86]
-    intrinsic-rotation: [0, 0, 3.14159]  # π.
+    intrinsic-rotation: [0, 0, π]
     holder:
       include: true
       thickness: 2
@@ -870,7 +870,7 @@ ports:
     size: [162, 92, 20]
     anchoring:
       offset: [0, -55, 64]
-    intrinsic-rotation: [0, 0, 3.14159]  # π.
+    intrinsic-rotation: [0, 0, π]
     holder:
       include: true
       thickness: 2
@@ -879,7 +879,7 @@ ports:
     size: [162, 92, 30]
     anchoring:
       offset: [0, -55, 42]
-    intrinsic-rotation: [0, 0, 3.14159]  # π.
+    intrinsic-rotation: [0, 0, π]
     holder:
       include: true
       thickness: 2

@@ -757,7 +757,7 @@ tweaks:
 mcu:
   include: true
   # Stand on the long edge, folded into the rear housing.
-  intrinsic-rotation: [0, 1.5708, -1.5708]
+  intrinsic-rotation: [0, π/2, π/-2]
   anchoring:
     anchor: rear-housing
     side: NE
@@ -773,7 +773,7 @@ ports:
   reflection-port:
     include: true
     type: modular-4p4c-616e
-    intrinsic-rotation: [0, 0, -1.5708]
+    intrinsic-rotation: [0, 0, π/-2]
     anchoring:
       anchor: rear-housing
       side: E

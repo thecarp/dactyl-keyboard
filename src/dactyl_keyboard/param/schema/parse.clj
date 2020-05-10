@@ -7,6 +7,7 @@
 
 (ns dactyl-keyboard.param.schema.parse
   (:require [clojure.spec.alpha :as spec]
+            [scad-tarmi.core :refer [π]]
             [scad-klupe.schema.iso]
             [dmote-keycap.schema :as capschema]
             [dactyl-keyboard.compass :as compass]
@@ -51,24 +52,44 @@
         (catch java.lang.NumberFormatException _
           (keyword candidate))))))           ; Input like “:first” or “"first"”.
 
+(let [re #"(?i)^(π|pi)(\s?(\*|/)\s?(-?\d+\.?\d*))?$"]
+  (defn compass-incompatible-angle
+    "A parser for angles in radians.
+    This function supports a limited notation for dividing and multiplying by
+    π."
+    [candidate]
+    {:post [(number? %)]}
+    (try
+      (num candidate)  ; Input like “1”.
+      (catch ClassCastException e
+        ;; Not a number. Assume a string starting with “π”.
+        ;; Parse out the operator and the factor or divisor.
+        (if-let [[_ _ _ op n] (re-matches re candidate)]
+          ((case op "/" / *) π (if n (Float/parseFloat n) 1))
+          (throw e))))))
+
 (defn any-compass-point
   "Convert to a short keyword for a compass point, even from a long string.
   Also accept nil."
   [candidate]
   (when (some? candidate) (compass/convert-to-any-short (keyword candidate))))
 
-(def compass-angle-map (map-of any-compass-point num))
+(def compass-angle-map (map-of any-compass-point compass-incompatible-angle))
 
 (defn compass-compatible-angle
-  "A parser that takes an identifier of an angle. A string is converted
-  to a keyword and recursed upon, a keyword is looked up as a compass
-  point (returning a number on a hit and nil on a miss). Any other value is
-  returned unchanged, on the assumption that it’s an angle in radians."
+  "A parser that takes an identifier of an angle, including via the compass.
+  When given a string, this function first tries to parse it in the narrow
+  range of compass-incompatible angles and, failing that, converts it to a keyword
+  and recurses upon it. A keyword is looked up as a compass point, returning a
+  number on a hit and nil on a miss."
   [candidate]
-  (cond
-    (string? candidate) (compass-compatible-angle (keyword candidate))
-    (keyword? candidate) (get compass/radians candidate)
-    :else candidate))
+  {:post [(or (nil? %) (number? %))]}
+  (if (keyword? candidate)
+    (candidate compass/radians)
+    (try
+      (compass-incompatible-angle candidate)
+      (catch ClassCastException _
+        (compass-compatible-angle (keyword candidate))))))
 
 (def anchored-2d-position-map
   {:anchor keyword

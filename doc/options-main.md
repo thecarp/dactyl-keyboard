@@ -651,10 +651,7 @@ A code name for a form factor. The following values are supported, representing 
 
 ### Parameter <a id="mcu-intrinsic-rotation">`intrinsic-rotation`</a>
 
-A vector of 3 angles in radians. This parameter governs the rotation of the PCBA around its anchor point in the front.
-By default, the PCBA appears lying flat, with the MCU side up and the connector end facing nominal north, away from the user.
-
-As an example, to have the PCBA standing on its long edge instead of lying flat, you would set this parameter like `[0, 1.5708, 0]`, the middle number being roughly π/2.
+A vector of 3 angles in radians. This parameter governs the rotation of the PCBA around its anchor point in the front. By default, the PCBA appears lying flat, with the MCU side up and the connector end facing nominal north, away from the user.
 
 ### Section <a id="mcu-anchoring">`anchoring`</a>
 

@@ -47,6 +47,9 @@
   {:default [0 0], :parse-fn vec, :validate [::tarmi/point-2d]})
 (def anchor-3d-vector-metadata
   {:default [0 0 0], :parse-fn vec, :validate [::tarmi/point-3d]})
+(def compass-incompatible-3d-angle-metadata
+  (assoc anchor-3d-vector-metadata :parse-fn
+         (parse/tuple-of parse/compass-incompatible-angle)))
 (def anchor-2d-offset-documentation
   "A two-dimensional offset in mm from the feature named in `anchor`.")
 (def anchor-3d-offset-documentation

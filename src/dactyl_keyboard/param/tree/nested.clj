@@ -97,11 +97,11 @@
    [:section [:layout :pitch]
     "Tait-Bryan pitch, meaning the rotation of keys around the x axis."]
    [:parameter [:layout :pitch :base]
-    {:default 0 :parse-fn num}
+    {:default 0 :parse-fn parse/compass-incompatible-angle}
     "An angle in radians. Set at a high level, this controls the general "
     "front-to-back incline of a key cluster."]
    [:parameter [:layout :pitch :intrinsic]
-    {:default 0 :parse-fn num}
+    {:default 0 :parse-fn parse/compass-incompatible-angle}
     "An angle in radians. Intrinsic pitching occurs early in key placement. "
     "It is typically intended to produce a tactile break between two rows of "
     "keys, as in the typewriter-like terracing common on flat keyboards with "
@@ -111,35 +111,35 @@
     "in the sense that each step is performed on a coordinate system "
     "resulting from previous operations."]
    [:parameter [:layout :pitch :progressive]
-    {:default 0 :parse-fn num}
+    {:default 0 :parse-fn parse/compass-incompatible-angle}
     "An angle in radians. This progressive pitch factor bends columns "
     "lengthwise. If set to zero, columns are flat."]
    [:section [:layout :roll]
     "Tait-Bryan roll, meaning the rotation of keys around the y axis."]
    [:parameter [:layout :roll :base]
-    {:default 0 :parse-fn num}
+    {:default 0 :parse-fn parse/compass-incompatible-angle}
     "An angle in radians. This is the “tenting” angle. Applied to your main "
     "cluster, it controls the overall left-to-right tilt of each half of the "
     "keyboard."]
    [:parameter [:layout :roll :intrinsic]
-    {:default 0 :parse-fn num}
+    {:default 0 :parse-fn parse/compass-incompatible-angle}
     "An angle in radians, analogous to intrinsic pitching. Where more than "
     "one column of keys is devoted to a single finger at the edge of the "
     "keyboard, this can help make the edge column easier to reach, reducing "
     "the need to bend the finger (or thumb) sideways."]
    [:parameter [:layout :roll :progressive]
-    {:default 0 :parse-fn num}
+    {:default 0 :parse-fn parse/compass-incompatible-angle}
     "An angle in radians. This progressive roll factor bends rows "
     "lengthwise, which also gives the columns a lateral curvature."]
    [:section [:layout :yaw]
     "Tait-Bryan yaw, meaning the rotation of keys around the z axis."]
    [:parameter [:layout :yaw :base]
-    {:default 0 :parse-fn num}
+    {:default 0 :parse-fn parse/compass-incompatible-angle}
     "An angle in radians. Applied to your main key cluster, this serves the "
     "purpose of allowing the user to keep their wrists straight even if the "
     "two halves of the keyboard are closer together than the user’s shoulders."]
    [:parameter [:layout :yaw :intrinsic]
-    {:default 0 :parse-fn num}
+    {:default 0 :parse-fn parse/compass-incompatible-angle}
     "An angle in radians, analogous to intrinsic pitching."]
    [:section [:layout :translation]
     "Translation in the geometric sense, displacing keys in relation to each "

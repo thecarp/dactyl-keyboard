@@ -81,6 +81,39 @@ directly to a rotated anchor is not itself rotated, but the `offset` against
 the anchor should be understood with the same caveat as the compass metaphor.
 Any anchoring offset occurs in the local vector space of the anchor.
 
+## Specifying angles
+
+Like `scad-clj`, this application describes angles in
+[radians](https://en.wikipedia.org/wiki/Radian). For parameters that take one
+or more angles, including parameters with names like `rotation`,
+`intrinsic-rotation`, `pitch`, `roll`, `yaw` etc., you can specify each angle
+in at least two ways:
+
+* As a real number, such as `1`, for 1 radian.
+* As a mathematical formula using [π](https://en.wikipedia.org/wiki/Pi), such
+  as `π * 2`, for one full turn.
+* As text. For those parameters that are limited to rotation in the xy plane,
+  you can name a point of the compass, such as `NNE`, for one sixteenth turn,
+  i.e π/8 radians.
+
+A formula must obey the following rules:
+
+* It must begin with the letter `π` or, equivalently, `pi`, `PI` etc.
+* The letter can optionally be followed by both a mathematical operator
+  and a real number.
+* An operator must be `*` (the asterisk) for multiplication or `/` (the forward
+  slash or stroke) for division.
+* Single spaces are permitted, not required, between the letter, the operator
+  and the number. They are not permitted anywhere else in the formula.
+
+A practical example: By default, as described in the
+[options-main.md](parameter manual), a keyboard microcontroller PCB will lie
+flat. This can be changed with a setting called `intrinsic-rotation`. To flip
+it over, getting the component side facing down and the connector edge facing
+your right, you would set this parameter like `[0, π, π/2]`. That’s no rotation
+around the x axis, a half turn (flip) around the y axis, and a quarter turn
+around the z axis.
+
 ## Bodies
 
 The anchor metaphor is related to the concept of bodies. Whereas an `anchor`

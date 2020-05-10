@@ -79,7 +79,7 @@
     "The default value here is `N` (nominal north), which is the open face "
     "of the port."]
    [:parameter [:intrinsic-rotation]
-    stock/anchor-3d-vector-metadata
+    stock/compass-incompatible-3d-angle-metadata
     "An `[x, y, z]` vector of radians, rotating the port around its point "
     "of `alignment` before moving it to `anchor`."]
    [:section [:anchoring]
