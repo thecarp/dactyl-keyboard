@@ -79,10 +79,12 @@
   [& option-maps]
   (bolt (apply merge option-maps)))
 
-(defn- grid-factors
+(defn grid-factors
   "Find a pair of [x y] unit particles for movement on a grid."
-  [direction]
-  (if (nil? direction) [0 0] (compass/to-grid direction)))
+  ([direction]
+   (grid-factors direction false))
+  ([direction box]
+   (if (nil? direction) [0 0] (compass/to-grid direction box))))
 
 (defn- *xy
   "Produce a vector for moving something laterally on a grid."

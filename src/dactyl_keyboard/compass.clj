@@ -93,7 +93,7 @@
 (defn convert-to-cardinal
   "Take a compass-point keyword. Return the nearest cardinal direction."
   [direction]
-  {:pre [(all-short direction)] :post [cardinals]}
+  {:pre [(all-short direction)] :post [(% cardinals)]}
   (if-let [tuple (get noncardinal-to-tuple direction)]
     (first tuple)
     direction))
@@ -101,13 +101,13 @@
 (defn convert-to-intercardinal
   "Take a compass-point keyword. Return the nearest intercardinal direction."
   [direction]
-  {:pre [(noncardinals direction)] :post [intercardinals]}
+  {:pre [(noncardinals direction)] :post [(% intercardinals)]}
   (get intermediate-to-intercardinal direction direction))
 
 (defn convert-to-nonintermediate
   "Take any short compass keyword. Return the nearest nonintermediate direction."
   [direction]
-  {:pre [(all-short direction)] :post [nonintermediates]}
+  {:pre [(all-short direction)] :post [(% nonintermediates)]}
   (if (intermediates direction)
     (convert-to-intercardinal direction)
     direction))
@@ -115,7 +115,7 @@
 (defn convert-to-any-short
   "Accept a long or short keyword for any compass point. Return a short form."
   [direction]
-  {:post [all-short]}
+  {:post [(% all-short)]}
   (get long-to-short direction direction))
 
 (def keyword-to-tuple (merge intercardinal-to-tuple intermediate-to-tuple))
@@ -132,16 +132,29 @@
 (def sharp-left (partial turn (/ n-divisions -4)))
 (def reverse (partial turn (/ n-divisions 2)))
 
-(def to-grid
-  "Unit-scale translation particles.
-  The cardinal directions have hardcoded [x y] vectors and the rest combine
-  two of these by addition."
-  (let [base {:N [0 1], :E [1 0], :S [0 -1], :W [-1 0]}]
-    (reduce-kv
-      (fn [coll direction constituents]
-        (assoc coll direction (apply mapv + (map base constituents))))
-      base
-      noncardinal-to-tuple)))
+(let [base {:N [0 1], :E [1 0], :S [0 -1], :W [-1 0]}
+      store (reduce-kv
+              (fn [coll direction constituents]
+                (assoc coll direction (apply mapv + (map base constituents))))
+              base
+              noncardinal-to-tuple)]
+  (defn to-grid
+    "Find unit-scale translation particles for a compass point.
+    The cardinal directions have hardcoded [x y] vectors and the rest combine
+    two of these by addition.
+    The function supports drawing boxes with bevelled edges, where the intermediate
+    directions produce the same grid offsets as their nearest cardinals. Applied
+    to key mounts, this is a Dactyl convention, older than the compass metaphor
+    introduced by the DMOTE application."
+    ([direction]
+     (to-grid direction false))
+    ([direction box]
+     {:pre [(direction all-short)] :post [(vector? %) (= (count %) 2)]}
+     (if (and box (direction intermediates))
+       (to-grid (convert-to-cardinal direction) false)
+       (direction store)))
+    ([direction box axis]
+     (get (to-grid direction box) axis))))
 
 (defn- axis-delta
   "Find a coordinate axis delta for movement in any of the stated directions."
@@ -149,7 +162,7 @@
    0)
   ([axis direction & directions]
    {:pre [(cardinals direction)]}
-   (let [value (get-in to-grid [direction axis])]
+   (let [value (to-grid direction false axis)]
      (if (or (not (zero? value)) (empty? directions))
        value
        (apply axis-delta axis directions)))))

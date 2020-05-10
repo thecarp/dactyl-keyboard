@@ -38,12 +38,19 @@
 
 (deftest to-grid
   (testing "cardinal"
-    (is (= (compass/to-grid :N) [0 1])))
+    (is (= (compass/to-grid :N) [0 1]))
+    (is (= (compass/to-grid :N true) [0 1]))
+    (is (= (compass/to-grid :N true 0) 0)))
   (testing "intercardinal"
-    (is (= (compass/to-grid :SW) [-1 -1])))
+    (is (= (compass/to-grid :SW) [-1 -1]))
+    (is (= (compass/to-grid :SW true) [-1 -1]))
+    (is (= (compass/to-grid :SW true 1) -1)))
   (testing "intermediate"
     (is (= (compass/to-grid :NNE) [1 1]))
-    (is (= (compass/to-grid :ENE) [1 1]))))
+    (is (= (compass/to-grid :ENE) [1 1]))
+    (is (= (compass/to-grid :NNE true) [0 1]))
+    (is (= (compass/to-grid :ENE true) [1 0]))
+    (is (= (compass/to-grid :ENE true 1) 0))))
 
 (deftest variary-delta
   (testing "nullary delta"

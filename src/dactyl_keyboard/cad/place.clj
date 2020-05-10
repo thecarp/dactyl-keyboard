@@ -152,19 +152,11 @@
       (wall-dimension getopt cluster coord (compass/convert-to-cardinal side) type))
     0))
 
-(defn- key-mount-side-for-wall
-  "For unit deltas, intermediate compass points are treated as cardinals, meaning
-  that only one axis will be shifted. This is a Dactyl convention, older than
-  the compass metaphor introduced by the DMOTE application."
-  [side]
-  {:pre [(side compass/all-short)] :post [(% compass/nonintermediates)]}
-  (if (side compass/intermediates) (compass/convert-to-cardinal side) side))
-
 (defn- horizontal-wall-offsets
   "Compute horizontal offsets for one side of a specific key.
   Return a vector of a vector of two unit deltas and one parallel wall dimension."
   [getopt cluster coord side]
-  [(if side ((key-mount-side-for-wall side) compass/to-grid) [0 0])
+  [(misc/grid-factors side true)
    (wall-dimension getopt cluster coord side :parallel)])
 
 (defn- wall-segment-offset
@@ -322,25 +314,13 @@
   Here, segment 0 is the top surface, segment 1 is below the chamfer,
   segment 2 is halfway down the wall and 3 or more is all the way down."
   [getopt side segment]
-  {:pre [(some? side)
-         (compass/cardinals side)]}
-  (let [cluster (getopt :main-body :rear-housing :position :cluster)
-        wall (fn [key] (wall-segment-offset
-                         getopt cluster
-                         (getopt :main-body :rear-housing :derived :end-coord key)
-                         side segment))]
-    (assoc  ; Replace the z coordinate.
-       (case side
-         :N [0 (if (zero? segment) 0 1) 0]
-         :E (wall side)
-         :S [0 (if (zero? segment) 0 -1) 0]
-         :W (wall side))
-       2
-       (case segment
-         0 0
-         1 -1
-         2 (/ (getopt :main-body :rear-housing :height) -2)
-         (- (getopt :main-body :rear-housing :height))))))
+  (conj
+    (if (and side (not (zero? segment))) (compass/to-grid side true) [0 0])
+    (case segment
+      0 0
+      1 -1
+      2 (/ (getopt :main-body :rear-housing :height) -2)
+      (- (getopt :main-body :rear-housing :height)))))
 
 (defn rhousing-vertex-offset
   [getopt side]
@@ -356,8 +336,7 @@
     (mapv +
       (getopt :main-body :rear-housing :derived :side
         (compass/convert-to-nonintermediate side))
-      (rhousing-segment-offset
-        getopt (compass/convert-to-cardinal side) segment))
+      (rhousing-segment-offset getopt side segment))
     subject))
 
 
