@@ -91,7 +91,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
     - Stock descriptions of recurring parameters.
 - Support for a number of different types of MCUs beyond the Pro Micro:
   Common Teensies as well as the Elite-C and Proton C.
-- Central housing, a new feature.
+- Central housing, a new feature adding a body separate from the main body.
 - An MCU shelf. This type of MCU support corresponds directly to the
   Dactyl-ManuForm’s `teensy-holder` object and is therefore not new, but
   it has some parameters to extend its functionality.
@@ -115,6 +115,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
   and intercardinals could be used.
 - The ability to override specific coordinates for secondary named positions.
 - A `segment` parameter for anchoring wrist-rest mounts.
+- A `side` parameter for anchoring key clusters.
 - A GNU Make target for the Dactyl-ManuForm.
 
 ### Fixed

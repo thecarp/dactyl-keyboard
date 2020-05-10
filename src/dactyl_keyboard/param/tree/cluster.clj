@@ -78,6 +78,9 @@
    [:parameter [:anchoring :anchor]
      stock/anchor-metadata
      stock/anchor-documentation]
+   [:parameter [:anchoring :side]
+     stock/anchor-side-metadata
+     stock/anchor-side-documentation]
    [:parameter [:anchoring :offset]
      stock/anchor-3d-vector-metadata
      stock/anchor-3d-offset-documentation]])

@@ -12,6 +12,7 @@ This specific document describes options for the general outline and position of
 - Parameter <a href="#user-content-aliases">`aliases`</a>
 - Section <a href="#user-content-anchoring">`anchoring`</a>
     - Parameter <a href="#user-content-anchoring-anchor">`anchor`</a>
+    - Parameter <a href="#user-content-anchoring-side">`side`</a>
     - Parameter <a href="#user-content-anchoring-offset">`offset`</a>
 
 ## Parameter <a id="matrix-columns">`matrix-columns`</a>
@@ -47,6 +48,10 @@ The position of the key cluster relative to something else. The concept of ancho
 ### Parameter <a id="anchoring-anchor">`anchor`</a>
 
 A code identifying an anchor point. This can be the default value (`origin`) or a name (built-in or alias) identifying a feature.
+
+### Parameter <a id="anchoring-side">`side`</a>
+
+A compass-point code for one side of the feature named in `anchor`. The default is `null`, signifying the centre.
 
 ### Parameter <a id="anchoring-offset">`offset`</a>
 
