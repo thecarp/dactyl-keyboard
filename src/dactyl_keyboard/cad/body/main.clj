@@ -25,21 +25,6 @@
             [dactyl-keyboard.param.access :as access :refer [most-specific compensator]]))
 
 
-;;;;;;;;;;;;;
-;; Masking ;;
-;;;;;;;;;;;;;
-
-(defn mask
-  "Implement overall limits on passed shapes."
-  [getopt with-plate & shapes]
-  (let [plate (if with-plate (getopt :main-body :bottom-plate :thickness) 0)]
-    (model/intersection
-      (maybe/translate [0 0 plate]
-        (model/translate (getopt :mask :center)
-          (apply model/cube (getopt :mask :size))))
-      (apply model/union shapes))))
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;
 ;; Key Mount Webbing ;;
 ;;;;;;;;;;;;;;;;;;;;;;;

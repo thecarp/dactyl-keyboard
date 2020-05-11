@@ -19,10 +19,11 @@
             [dactyl-keyboard.param.proc.doc :refer [print-markdown-section]]
             [dactyl-keyboard.param.proc.anch :as anch]
             [dactyl-keyboard.cad.auxf :as auxf]
-            [dactyl-keyboard.cad.body.main :as body]
-            [dactyl-keyboard.cad.bottom :as bottom]
+            [dactyl-keyboard.cad.body.main :as main-body]
             [dactyl-keyboard.cad.body.central :as central]
+            [dactyl-keyboard.cad.bottom :as bottom]
             [dactyl-keyboard.cad.key :as key]
+            [dactyl-keyboard.cad.mask :as mask]
             [dactyl-keyboard.cad.mcu :as mcu]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.tweak :as tweak]
@@ -64,7 +65,7 @@
   [getopt]
   (maybe/difference
     (maybe/union
-      (body/mask getopt (getopt :wrist-rest :bottom-plate :include)
+      (mask/above-ground getopt (getopt :wrist-rest :bottom-plate :include)
         (maybe/union
           (wrist/plinth-plastic getopt)
           (when (getopt :wrist-rest :bottom-plate :include)
@@ -85,16 +86,16 @@
   [getopt]
   (maybe/union
     (build-plinth-right getopt)
-    (body/mask getopt (getopt :wrist-rest :bottom-plate :include)
+    (mask/above-ground getopt (getopt :wrist-rest :bottom-plate :include)
       (wrist/rubber-insert-positive getopt))))
 
 (defn- masked-inner-positive
   "Parts of the keyboard that are subject to a mask and all negatives."
   [getopt]
-  (body/mask getopt (getopt :main-body :bottom-plate :include)
+  (mask/above-ground getopt (getopt :main-body :bottom-plate :include)
     (key/metacluster key/cluster-plates getopt)
-    (key/metacluster body/cluster-web getopt)
-    (key/metacluster body/cluster-wall getopt)
+    (key/metacluster main-body/cluster-web getopt)
+    (key/metacluster main-body/cluster-wall getopt)
     (when (and (getopt :mcu :derived :include-mainly)
                (getopt :mcu :support :shelf :include))
       (mcu/shelf-model getopt))
@@ -105,7 +106,7 @@
     (when (getopt :main-body :back-plate :include)
       (auxf/backplate-block getopt))
     (when (getopt :main-body :rear-housing :include)
-      (body/rear-housing getopt))
+      (main-body/rear-housing getopt))
     (tweak/plating getopt true :main-body)
     (when (getopt :main-body :bottom-plate :include)
       (bottom/posts-in-main-body getopt))
@@ -121,7 +122,7 @@
     (masked-inner-positive getopt)
     (when (and (getopt :wrist-rest :include)
                (getopt :wrist-rest :preview))
-      (body/mask getopt (getopt :wrist-rest :bottom-plate :include)
+      (mask/above-ground getopt (getopt :wrist-rest :bottom-plate :include)
         (wrist-rest-preview getopt)))
     (when (and (getopt :wrist-rest :include)
                (not (getopt :wrist-rest :preview))
@@ -154,7 +155,7 @@
              (maybe/union subject-right (maybe/mirror [-1 0 0] subject-left))))]
     (maybe/union
       (maybe/difference
-        (body/mask getopt (getopt :main-body :bottom-plate :include)
+        (mask/above-ground getopt (getopt :main-body :bottom-plate :include)
           (maybe/difference
             (maybe/union
               (central/main-shell getopt)
@@ -277,7 +278,7 @@
   [getopt]
   (place/wrist-undo getopt
     (maybe/difference
-      (body/mask getopt (getopt :wrist-rest :bottom-plate :include)
+      (mask/above-ground getopt (getopt :wrist-rest :bottom-plate :include)
         (wrist/rubber-insert-positive getopt))
       (bottom/posts-in-wrist-rest getopt)
       (when (= (getopt :wrist-rest :style) :solid)
@@ -290,7 +291,7 @@
    [[:key-clusters] key/derive-cluster-properties]
    [[:central-housing] central/derive-properties]
    [[] (fn [getopt] {:anchors (anch/collect getopt)})]
-   [[:main-body :rear-housing] body/rhousing-properties]
+   [[:main-body :rear-housing] main-body/rhousing-properties]
    [[:mcu] mcu/derive-properties]
    [[:wrist-rest] wrist/derive-properties]])
 

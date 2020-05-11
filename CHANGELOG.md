@@ -134,8 +134,9 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 
 ### Developer
 - Improved REPL support.
-- New modules:
+- New namespaces:
   - `anch`, collecting collectors of anchor points.
+  - `body`, collecting logic specific to the new concept of bodies.
   - `compass`, gathering code from `generics` and `matrix` with refactoring
     to improve the compass metaphor for feature placement. For example, the new
     MCU grip anchors are created with a corner such as `SW`, and this maps to a
@@ -143,6 +144,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
     :west]`). Corner keywords are translated to tuples at need. Note that
     the new direction keywords are not yet namespaced to the compass module.
   - `cots`, gathering information on commercial off-the-shelf goods.
+  - `mask`, taking the above-ground mask function out of the main body module.
   - `mcu`, breaking MCU features out of `auxf`.
   - `misc`, which collects everything that remained of `generics` after
     compass code moved out. This makes two `misc` modules.
@@ -152,8 +154,8 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - The parameter interpreter now bans `nil` only as a function of explicit
   validators, no longer categorically.
 - Removed functions from the derived user configuration.
-- A folder of configuration files under `test/config` for manual regression
-  testing.
+- Added a folder of configuration files under `test/config` for manual
+  regression testing.
 
 ### Migration guide
 
