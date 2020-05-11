@@ -1,9 +1,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; The Dactyl-ManuForm Keyboard — Opposable Thumb Edition              ;;
-;; Central Housing                                                     ;;
+;; Keyboard Case Model – Central Housing                               ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns dactyl-keyboard.cad.central
+;;; The central housing is one of the predefined bodies of the application.
+;;; It is distinguished by its shape, uniquely defined in terms of a hollow
+;;; polyhedral block extending between two reflected main bodies.
+
+(ns dactyl-keyboard.cad.body.central
   (:require [clojure.spec.alpha :as spec]
             [thi.ng.math.core :as math]
             [scad-clj.model :as model]

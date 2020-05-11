@@ -8,7 +8,7 @@ Please read the [introduction](intro.md) first.
 Automation using [GNU Make](https://www.gnu.org/software/make/) has both pros
 and cons:
 
-* Pro: Convenient for a small set of designs.
+* Pro: Convenient for a small set of bundled designs.
 * Pro: Fast iterations when you change a configuration.
 * Con: You need Make.
 * Con: Advanced configuration selection is awkward.
@@ -47,15 +47,17 @@ is not very portable.
 
 [Leiningen](https://leiningen.org/) is an automation tool used to manage the
 DMOTE project. You can use it to run the application as a one-off CLI program.
-Pros and cons:
 
 * Pro: Portable. Pure Clojure, no extra tools.
-* Pro: Good configuration control.
-* Pro: Rendering to STL is automated. It’s just an extra flag.
-* Con: Slow iterations no matter what you change.
+* Pro: Easy configuration selection.
+* Pro: Easy rendering to STL. It’s just an extra flag.
+* Pro: Faster than Make when you’re changing source code.
+* Con: Slower than Make when you’re only changing configuration files.
 
 Note: The default configuration with Leiningen is built into the application
-itself and is not the same as you get with a plain `make`.
+itself and is not the same as you get with a plain `make`. This means that
+although free configuration selection is easier, it is marginally harder to
+just look at the bundled designs.
 
 ### Examples
 
@@ -75,24 +77,25 @@ config/base.yaml -c config/dmote/base.yaml -c config/dmote/mx.yaml`.
 ## Method 3: REPL
 
 The [REPL](https://clojure.org/guides/repl/introduction) is a command line
-within the application itself. Pros and cons:
+within the application itself.
 
 * Pro: Portable. You can get a REPL with Leiningen.
 * Pro: Fast iterations even if you’re changing source code.
-* Con: You need to know what you’re doing.
+* Pro: Possible integration with your text editor.
+* Con: Hard.
 
 ### Examples
 
 Run `lein repl` and work interactively from there.
 
-Let’s suppose you’re editing the body module
-(`src/dactyl_keyboard/cad/body.clj`) in another window. To reload the body
-module into the running application and then use it to build the bundled DMOTE
+Let’s suppose you’re editing the sandbox module
+(`src/dactyl_keyboard/sandbox.clj`) in another window. To reload the module
+into the running application and then use it to build the bundled DMOTE
 configuration without having to restart anything, enter these two lines at the
 REPL prompt:
 
 ```clojure
-(use 'dactyl-keyboard.cad.body :reload)
+(use 'dactyl-keyboard.sandbox :reload)
 (run {:configuration-file ["config/base.yaml" "config/dmote/base.yaml"]})
 ```
 

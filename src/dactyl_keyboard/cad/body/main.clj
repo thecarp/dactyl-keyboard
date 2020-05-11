@@ -3,7 +3,15 @@
 ;; Keyboard Case Model — Main Body                                     ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns dactyl-keyboard.cad.body
+;;; The main body is one of the predefined bodies of the application.
+;;; It was once the only body, and only output.
+;;; It is currently distinguished by its ability to include a rear housing, and
+;;; other features not yet made general.
+
+;;; The long-term plan is for it to have no distinguishing characteristics, at
+;;; which point it will exist only as a parameter default, or disappear.
+
+(ns dactyl-keyboard.cad.body.main
   (:require [scad-clj.model :as model]
             [scad-tarmi.core :refer [mean]]
             [scad-tarmi.maybe :as maybe]

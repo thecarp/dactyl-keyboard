@@ -107,7 +107,7 @@ A formula must obey the following rules:
   and the number. They are not permitted anywhere else in the formula.
 
 A practical example: By default, as described in the
-[options-main.md](parameter manual), a keyboard microcontroller PCB will lie
+[parameter manual](options-main.md), a keyboard microcontroller PCB will lie
 flat. This can be changed with a setting called `intrinsic-rotation`. To flip
 it over, getting the component side facing down and the connector edge facing
 your right, you would set this parameter like `[0, π, π/2]`. That’s no rotation
