@@ -66,10 +66,9 @@
   (maybe/difference
     (maybe/union
       (mask/above-wrist-bottom-plate getopt
-        (maybe/union
-          (wrist/plinth-plastic getopt)
-          (when (getopt :wrist-rest :bottom-plate :include)
-            (bottom/posts-in-wrist-rest getopt))))
+        (wrist/plinth-plastic getopt)
+        (when (getopt :wrist-rest :bottom-plate :include)
+          (bottom/posts-in-wrist-rest getopt)))
       (when (and (getopt :wrist-rest :preview)
                  (getopt :wrist-rest :bottom-plate :include))
         (bottom/wrist-positive getopt)))

@@ -11,6 +11,7 @@
             [dactyl-keyboard.compass :as compass]
             [dactyl-keyboard.misc :refer [colours]]
             [dactyl-keyboard.cad.body.central :as central]
+            [dactyl-keyboard.cad.mask :as mask]
             [dactyl-keyboard.cad.misc :as misc :refer [merge-bolt wafer]]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.key :as key]
@@ -232,38 +233,12 @@
 ;; Case ;;
 ;;;;;;;;;;
 
-(defn- mask-3d
-  "A shape akin to the body mask but restricted to bottom-plate height."
-  [getopt]
-  (let [[x y _] (getopt :mask :size)
-        z (getopt :main-body :bottom-plate :thickness)]
-    (maybe/translate [0 0 (/ z 2)]
-      (model/cube x y z))))
-
-(defn- mask-2d
-  "A 2D mask. This takes the central housing into account, for restricting that
-  feature to the centre line."
-  [getopt]
-  (let [[x y _] (getopt :mask :size)]
-    (if (and (getopt :central-housing :derived :include-main))
-      (maybe/translate [(/ x 4) 0]
-        (model/square (/ x 2) y))
-      (model/square x y))))
-
-(defn- masked-cut
-  "A slice of a 3D object at z=0, restricted by the mask, not hulled."
-  [getopt shape]
-  (when-not (empty? shape)
-    (->> shape model/cut (model/intersection (mask-2d getopt)))))
-
 (defn- wall-base-3d
   "A sliver cut from the case wall."
   [getopt]
-  (model/intersection
-    (mask-3d getopt)
-    (maybe/union
-      (key/metacluster body/cluster-wall getopt)
-      (tweak/plating getopt true :main-body))))
+  (mask/main-bottom-plate getopt 3
+    (key/metacluster body/cluster-wall getopt)
+    (tweak/plating getopt true :main-body)))
 
 (defn- floor-finder
   "Make a function that takes a key mount and returns a 2D vertex
@@ -335,7 +310,7 @@
   [getopt]
   (maybe/union
     (key/metacluster cluster-floor-polygon getopt)
-    (masked-cut getopt (posts-for-main-plate getopt))
+    (mask/at-ground getopt (posts-for-main-plate getopt))
     (tweak/floor-polygons getopt)
     (when (getopt :central-housing :derived :include-main)
       (chousing-floor-polygon getopt))
