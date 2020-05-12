@@ -24,4 +24,13 @@
           (apply model/cube (getopt :mask :size))))
       (apply model/union shapes))))
 
+(defn above-main-bottom-plate
+  "Choose whether to include plate height based on the main-body setting."
+  [getopt with-plate & shapes]
+  (apply above-ground getopt (getopt :main-body :bottom-plate :include) shapes))
+
+(defn above-wrist-bottom-plate
+  "Choose whether to include plate height based on the wrist-rest setting."
+  [getopt with-plate & shapes]
+  (apply above-ground getopt (getopt :wrist-rest :bottom-plate :include) shapes))
 

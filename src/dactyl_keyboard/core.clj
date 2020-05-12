@@ -65,7 +65,7 @@
   [getopt]
   (maybe/difference
     (maybe/union
-      (mask/above-ground getopt (getopt :wrist-rest :bottom-plate :include)
+      (mask/above-wrist-bottom-plate getopt
         (maybe/union
           (wrist/plinth-plastic getopt)
           (when (getopt :wrist-rest :bottom-plate :include)
@@ -86,13 +86,13 @@
   [getopt]
   (maybe/union
     (build-plinth-right getopt)
-    (mask/above-ground getopt (getopt :wrist-rest :bottom-plate :include)
+    (mask/above-wrist-bottom-plate getopt
       (wrist/rubber-insert-positive getopt))))
 
 (defn- masked-inner-positive
   "Parts of the keyboard that are subject to a mask and all negatives."
   [getopt]
-  (mask/above-ground getopt (getopt :main-body :bottom-plate :include)
+  (mask/above-main-bottom-plate getopt
     (key/metacluster key/cluster-plates getopt)
     (key/metacluster main-body/cluster-web getopt)
     (key/metacluster main-body/cluster-wall getopt)
@@ -122,7 +122,7 @@
     (masked-inner-positive getopt)
     (when (and (getopt :wrist-rest :include)
                (getopt :wrist-rest :preview))
-      (mask/above-ground getopt (getopt :wrist-rest :bottom-plate :include)
+      (mask/above-wrist-bottom-plate getopt
         (wrist-rest-preview getopt)))
     (when (and (getopt :wrist-rest :include)
                (not (getopt :wrist-rest :preview))
@@ -155,7 +155,7 @@
              (maybe/union subject-right (maybe/mirror [-1 0 0] subject-left))))]
     (maybe/union
       (maybe/difference
-        (mask/above-ground getopt (getopt :main-body :bottom-plate :include)
+        (mask/above-main-bottom-plate getopt
           (maybe/difference
             (maybe/union
               (central/main-shell getopt)
@@ -278,7 +278,7 @@
   [getopt]
   (place/wrist-undo getopt
     (maybe/difference
-      (mask/above-ground getopt (getopt :wrist-rest :bottom-plate :include)
+      (mask/above-wrist-bottom-plate getopt
         (wrist/rubber-insert-positive getopt))
       (bottom/posts-in-wrist-rest getopt)
       (when (= (getopt :wrist-rest :style) :solid)
