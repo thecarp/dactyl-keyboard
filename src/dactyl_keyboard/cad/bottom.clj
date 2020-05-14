@@ -11,11 +11,12 @@
             [dactyl-keyboard.compass :as compass]
             [dactyl-keyboard.misc :refer [colours]]
             [dactyl-keyboard.cad.body.central :as central]
+            [dactyl-keyboard.cad.body.main :as main-body]
             [dactyl-keyboard.cad.mask :as mask]
             [dactyl-keyboard.cad.misc :as misc :refer [merge-bolt wafer]]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.key :as key]
-            [dactyl-keyboard.cad.body.main :as body]
+            [dactyl-keyboard.cad.key.wall :as wall]
             [dactyl-keyboard.cad.tweak :as tweak]
             [dactyl-keyboard.cad.wrist :as wrist]
             [dactyl-keyboard.cad.auxf :as auxf]
@@ -237,7 +238,7 @@
   "A sliver cut from the case wall."
   [getopt]
   (mask/main-bottom-plate getopt 3
-    (key/metacluster body/cluster-wall getopt)
+    (key/metacluster wall/cluster getopt)
     (tweak/plating getopt true :main-body)))
 
 (defn- floor-finder
@@ -264,7 +265,7 @@
           (fn [coll position]
             (conj coll
               (map (floor-finder getopt cluster)
-                   (body/connecting-wall position))))
+                   (wall/connecting-wall position))))
           []
           (key/walk-cluster getopt cluster))))))
 
@@ -301,7 +302,7 @@
   connection between them may be concave. The 2D approach is safer."
   [getopt]
   (model/polygon (map (fn [pillar-fn] (take 2 (pillar-fn true false)))
-                      (body/rhousing-pillar-functions getopt))))
+                      (main-body/rhousing-pillar-functions getopt))))
 
 (defn- case-positive-2d
   "A union of polygons representing the interior of the case, including the
