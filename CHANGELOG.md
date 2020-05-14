@@ -138,7 +138,8 @@ version 0.2.0, thus covering only a fraction of the project’s history.
   - `anch`, collecting collectors of anchor points.
   - `body`, collecting logic specific to the new concept of bodies.
     Code previously in the single-file `body` module, but not specific to the
-    main body, moved into the `key` and `mask` namespaces.
+    main body, moved into the `key` and `mask` namespaces. The `key` namespace
+    branched into a package of several modules as a result.
   - `compass`, gathering code from `generics` and `matrix` with refactoring
     to improve the compass metaphor for feature placement. For example, the new
     MCU grip anchors are created with a corner such as `SW`, and this maps to a

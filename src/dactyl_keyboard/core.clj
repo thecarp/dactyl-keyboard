@@ -23,6 +23,7 @@
             [dactyl-keyboard.cad.body.central :as central]
             [dactyl-keyboard.cad.bottom :as bottom]
             [dactyl-keyboard.cad.key :as key]
+            [dactyl-keyboard.cad.key.switch :refer [single-cap single-switch]]
             [dactyl-keyboard.cad.key.wall :as wall]
             [dactyl-keyboard.cad.key.web :as web]
             [dactyl-keyboard.cad.mask :as mask]
@@ -400,10 +401,10 @@
           (assoc coll
             module-keycap
             {:name module-keycap
-             :model-main (key/single-cap getopt key-style false)}
+             :model-main (single-cap getopt key-style false)}
             module-switch  ; Uniqueness of input not guaranteed.
             {:name module-switch
-             :model-main (key/single-switch getopt switch-type)})))
+             :model-main (single-switch getopt switch-type)})))
       {}
       (keys (getopt :keys :styles)))))
 
@@ -520,7 +521,7 @@
     (fn [key-style]
       (if-not (= (getopt :keys :derived key-style :style) :maquette)
         [{:name (str "keycap-" (name key-style))
-          :model-precursor #(key/single-cap % key-style true)}]))
+          :model-precursor #(single-cap % key-style true)}]))
     (keys (getopt :keys :styles))))
 
 (defn get-dfm-subassemblies

@@ -80,6 +80,17 @@
               :port-overshoot 0.75
               :description "Proton C"}})
 
+(def switch-facts
+  "Form factors of switches for the purpose of cutting holes into key mounting
+  plates. The dmote-keycap libraries models switches as such in more detail
+  for the contrasting purpose of modeling caps."
+  {:alps {:hole {:x 15.5,  :y 12.6}
+          :foot {:x 17.25, :y 14.25}
+          :description "ALPS-style, including Matias"}
+   :mx   {:hole {:x 14,    :y 14}
+          :foot {:x 15.5,  :y 15.5}
+          :description "Cherry MX style"}})
+
 (defn support-list
   [coll]
   "Return a Markdown string describing passed collection,
