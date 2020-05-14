@@ -25,69 +25,6 @@
             [dactyl-keyboard.param.access :as access :refer [most-specific compensator]]))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;
-;; Key Mount Webbing ;;
-;;;;;;;;;;;;;;;;;;;;;;;
-
-;; This connects switch mount plates to one another.
-
-(defn web-shapes
-  "A vector of shapes covering the interstices between points in a matrix."
-  [coordinate-sequence spotter placer corner-finder]
-  (loop [remaining-coordinates coordinate-sequence
-         shapes []]
-    (if (empty? remaining-coordinates)
-      shapes
-      (let [coord-here (first remaining-coordinates)
-            coord-north (matrix/walk coord-here :N)
-            coord-east (matrix/walk coord-here :E)
-            coord-northeast (matrix/walk coord-here :N :E)
-            fill-here (spotter coord-here)
-            fill-north (spotter coord-north)
-            fill-east (spotter coord-east)
-            fill-northeast (spotter coord-northeast)]
-       (recur
-         (rest remaining-coordinates)
-         (conj
-           shapes
-           ;; Connecting columns.
-           (when (and fill-here fill-east)
-             (loft 3
-               [(placer coord-here (corner-finder :ENE))
-                (placer coord-east (corner-finder :WNW))
-                (placer coord-here (corner-finder :ESE))
-                (placer coord-east (corner-finder :WSW))]))
-           ;; Connecting rows.
-           (when (and fill-here fill-north)
-             (loft 3
-               [(placer coord-here (corner-finder :WNW))
-                (placer coord-north (corner-finder :WSW))
-                (placer coord-here (corner-finder :ENE))
-                (placer coord-north (corner-finder :ESE))]))
-           ;; Selectively filling the area between all four possible mounts.
-           (loft 3
-             [(when fill-here (placer coord-here (corner-finder :ENE)))
-              (when fill-north (placer coord-north (corner-finder :ESE)))
-              (when fill-east (placer coord-east (corner-finder :WNW)))
-              (when fill-northeast (placer coord-northeast (corner-finder :WSW)))])))))))
-
-(defn walk-and-web [columns rows spotter placer corner-finder]
-  (web-shapes (matrix/coordinate-pairs columns rows) spotter placer corner-finder))
-
-(defn cluster-web [getopt cluster]
-  (apply model/union
-    (walk-and-web
-      (getopt :key-clusters :derived :by-cluster cluster :column-range)
-      (getopt :key-clusters :derived :by-cluster cluster :row-range)
-      (partial key/key-requested? getopt cluster)
-      (partial place/cluster-place getopt cluster)
-      (fn [side]  ; A corner finder.
-        {:pre [(compass/intermediates side)]}
-        (let [directions (compass/intermediate-to-tuple side)
-              key-style (most-specific getopt [:key-style] cluster directions)]
-           (key/mount-corner-post getopt key-style side))))))
-
-
 ;;;;;;;;;;;;;;;;;;;
 ;; Wall-Building ;;
 ;;;;;;;;;;;;;;;;;;;

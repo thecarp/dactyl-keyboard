@@ -23,6 +23,7 @@
             [dactyl-keyboard.cad.body.central :as central]
             [dactyl-keyboard.cad.bottom :as bottom]
             [dactyl-keyboard.cad.key :as key]
+            [dactyl-keyboard.cad.key.web :as web]
             [dactyl-keyboard.cad.mask :as mask]
             [dactyl-keyboard.cad.mcu :as mcu]
             [dactyl-keyboard.cad.place :as place]
@@ -93,7 +94,7 @@
   [getopt]
   (mask/above-main-bottom-plate getopt
     (key/metacluster key/cluster-plates getopt)
-    (key/metacluster main-body/cluster-web getopt)
+    (key/metacluster web/cluster getopt)
     (key/metacluster main-body/cluster-wall getopt)
     (when (and (getopt :mcu :derived :include-mainly)
                (getopt :mcu :support :shelf :include))
