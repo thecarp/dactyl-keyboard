@@ -12,22 +12,22 @@ wrist-rest:
       height:
         first: 4
         increment: 16
-    anchoring: mutual
+    authority: mutual
     blocks:
       width: 15
-      main-side:
+      partner-side:
         anchoring:
           anchor: t4
           side: NNE
           segment: 3
           offset: [7, -9]
         depth: 9
-      plinth-side:
+      wrist-side:
         anchoring:
           anchor: plinth-left
           offset: [10, 4]
         depth: 9.8
         pocket-height: -100
       aliases:
-        wr0c: main-side
-        wr0p: plinth-side
+        wr0c: partner-side
+        wr0p: wrist-side

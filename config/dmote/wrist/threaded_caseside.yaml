@@ -17,19 +17,19 @@ wrist-rest:
     blocks:
       distance: 35
       width: 10
-      main-side:
+      partner-side:
         anchoring:
           anchor: t4
           side: NNE
           segment: 3
           offset: [7, -9]
         depth: 10
-      plinth-side:
+      wrist-side:
         depth: 7
         pocket-height: -100
       aliases:
-        wr0c: main-side
-        wr0p: plinth-side
+        wr0c: partner-side
+        wr0p: wrist-side
   - fasteners:
       bolt-properties:
         m-diameter: 4
@@ -41,16 +41,16 @@ wrist-rest:
     blocks:
       distance: 30
       width: 10
-      main-side:
+      partner-side:
         anchoring:
           anchor: near-right
           side: SSW
           segment: 3
           offset: [-5, 0]
         depth: 7
-      plinth-side:
+      wrist-side:
         depth: 7
         pocket-height: -100
       aliases:
-        wr1c: main-side
-        wr1p: plinth-side
+        wr1c: partner-side
+        wr1p: wrist-side

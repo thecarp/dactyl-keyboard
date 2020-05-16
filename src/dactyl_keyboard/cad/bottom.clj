@@ -10,15 +10,15 @@
             [scad-tarmi.maybe :as maybe]
             [dactyl-keyboard.compass :as compass]
             [dactyl-keyboard.misc :refer [colours]]
-            [dactyl-keyboard.cad.body.central :as central]
             [dactyl-keyboard.cad.body.main :as main-body]
+            [dactyl-keyboard.cad.body.central :as central]
+            [dactyl-keyboard.cad.body.wrist :as wrist]
             [dactyl-keyboard.cad.mask :as mask]
             [dactyl-keyboard.cad.misc :as misc :refer [merge-bolt wafer]]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.key :as key]
             [dactyl-keyboard.cad.key.wall :as wall]
             [dactyl-keyboard.cad.tweak :as tweak]
-            [dactyl-keyboard.cad.wrist :as wrist]
             [dactyl-keyboard.cad.auxf :as auxf]
             [dactyl-keyboard.param.access :refer [most-specific compensator]]))
 

@@ -37,7 +37,7 @@
 
 (spec/def ::include boolean?)
 (spec/def ::positive boolean?)
-(spec/def ::body #{:auto :main-body :central-housing})
+(spec/def ::body #{:auto :main-body :central-housing :wrist-rest})
 (spec/def ::anchor keyword?)
 (spec/def ::alias (spec/and keyword?
                             #(not (= :origin %))
@@ -135,8 +135,8 @@
                                            #(<= % (* 3/8 tarmi/π)))))
 
 (spec/def ::wrist-rest-style #{:threaded :solid})
-(spec/def ::wrist-position-style #{:main-side :mutual})
-(spec/def ::wrist-block #{:main-side :plinth-side})
+(spec/def ::wrist-position-style #{:partner-side :mutual})
+(spec/def ::wrist-block #{:partner-side :wrist-side})
 (spec/def ::column-disposition
   (spec/keys ::opt-un [::rows-below-home ::rows-above-home]))
 (spec/def ::flexcoord (spec/or :absolute int? :extreme #{:first :last}))

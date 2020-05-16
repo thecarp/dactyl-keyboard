@@ -21,6 +21,7 @@
             [dactyl-keyboard.cad.auxf :as auxf]
             [dactyl-keyboard.cad.body.main :as main-body]
             [dactyl-keyboard.cad.body.central :as central]
+            [dactyl-keyboard.cad.body.wrist :as wrist]
             [dactyl-keyboard.cad.bottom :as bottom]
             [dactyl-keyboard.cad.key :as key]
             [dactyl-keyboard.cad.key.switch :refer [single-cap single-switch]]
@@ -29,8 +30,7 @@
             [dactyl-keyboard.cad.mask :as mask]
             [dactyl-keyboard.cad.mcu :as mcu]
             [dactyl-keyboard.cad.place :as place]
-            [dactyl-keyboard.cad.tweak :as tweak]
-            [dactyl-keyboard.cad.wrist :as wrist])
+            [dactyl-keyboard.cad.tweak :as tweak])
   (:gen-class :main true))
 
 (defn pprint-settings
@@ -70,11 +70,13 @@
     (maybe/union
       (mask/above-wrist-bottom-plate getopt
         (wrist/plinth-plastic getopt)
+        (tweak/plating getopt true :wrist-rest)
         (when (getopt :wrist-rest :bottom-plate :include)
           (bottom/posts-in-wrist-rest getopt)))
       (when (and (getopt :wrist-rest :preview)
                  (getopt :wrist-rest :bottom-plate :include))
         (bottom/wrist-positive getopt)))
+    (tweak/plating getopt false :wrist-rest)
     (when (getopt :wrist-rest :bottom-plate :include)
       (maybe/union
         (if (getopt :wrist-rest :preview)

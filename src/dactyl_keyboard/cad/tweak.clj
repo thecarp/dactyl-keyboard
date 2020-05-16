@@ -14,6 +14,7 @@
             [dactyl-keyboard.cad.auxf :as auxf]
             [dactyl-keyboard.cad.body.main :as body]
             [dactyl-keyboard.cad.body.central :as central]
+            [dactyl-keyboard.cad.body.wrist :as wrist]
             [dactyl-keyboard.cad.mcu :as mcu]
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.cad.place :as place]
@@ -124,6 +125,14 @@
          (if side
            (default misc/nodule)
            (default (mcu/lock-plate-base getopt false)))]
+      ::anch/wr-block
+        [true
+         (let [{:keys [mount-index block-key]} (resolve-anchor getopt anchor)]
+           (place/wrist-block-place getopt mount-index block-key
+                                    side segment offset
+             (if (or side segment offset)
+               (default misc/nodule)
+               (default (wrist/block-model getopt mount-index block-key)))))]
       ::anch/port-hole
         [true
          (place/port-place getopt anchor

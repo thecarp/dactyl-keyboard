@@ -112,10 +112,10 @@
     (mapmap-indexed
       (fn [mount-index _]
        (mapmap
-         (fn [[alias side-key]]
+         (fn [[alias block]]
            {alias {::type ::wr-block
                    :mount-index mount-index
-                   :side-key side-key}})
+                   :block-key block}})
          (getopt :wrist-rest :mounts mount-index :blocks :aliases)))
       (getopt :wrist-rest :mounts))
 
@@ -142,6 +142,10 @@
                         (getopt :central-housing :include))
                  :central-housing
                  :main-body)
+      ::wr-block (case (getopt :derived :anchors anchor :block-key)
+                    :partner-side :main-body
+                    :wrist-side :wrist-rest)
+      ::wr-perimeter :wrist-rest
       ::central-gabel :central-housing
       ::central-adapter :main-body   ; Sic.
       ::mcu-lock-plate (recurse :mcu)
@@ -152,13 +156,13 @@
       :main-body)))
 
 (defn resolve-body
-  "Take a body setting for a feature. Return a non-auto body ID."
-  [getopt setting anchor]
-  {:post [(#{:main-body :central-housing} %)]}
-  (case setting
+  "Take a body setting for an anchor. Return a non-auto body ID."
+  [getopt body anchor]
+  {:post [(keyword? %) (not= :auto %)]}
+  (case body
     :auto (let [resolved (auto-body getopt anchor)]
             (if (= resolved :auto)
               :main-body  ; Fall back to the main body if autos are chained up.
               resolved))
     ;; Default:
-    setting))
+    body))

@@ -3,7 +3,14 @@
 ;; Wrist Rest                                                          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns dactyl-keyboard.cad.wrist
+;;; A body for supporting the user’s wrists.
+
+;;; This body is not generally expected to have any keys or tweaks, but can be
+;;; joined to the main body by tweaks, more commonly by adjustable screws. It
+;;; is distinguished by the option of multiple materials: A hard base and a
+;;; soft pad, typically cast in silicone.
+
+(ns dactyl-keyboard.cad.body.wrist
   (:require [scad-clj.model :as model]
             [scad-tarmi.core :as tarmi :refer [abs sin cos π]]
             [scad-tarmi.maybe :as maybe]
@@ -320,41 +327,41 @@
     :z1 z1}))  ; Bottom of lip. All plastic.
 
 (defn derive-mount-properties
-  "Derive properties for one connection between the case and wrist rest."
+  "Derive properties for one connection to the wrist rest."
   [getopt mount-index]
   (let [prop (partial getopt :wrist-rest :mounts mount-index)
-        anchoring (prop :anchoring)
+        authority (prop :authority)
         threaded-center-height
           ;; The mid-point height of the first threaded fastener.
           (+ (/ (prop :fasteners :bolt-properties :m-diameter) 2)
              (prop :fasteners :height :first))
         to-3d #(misc/pad-to-3d % threaded-center-height)
         ofa #(place/offset-from-anchor getopt (prop :blocks % :anchoring) 2)
-        main-side (to-3d (ofa :main-side))
-        plinth-side
-          ;; Find the position of the plinth-side block.
+        partner-side (to-3d (ofa :partner-side))
+        wrist-side
+          ;; Find the position of the wrist-side block.
           (to-3d
-            (case anchoring
-              :mutual (ofa :plinth-side)
-              :main-side
+            (case authority
+              :mutual (ofa :wrist-side)
+              :partner-side
                 (let [θ (prop :angle)
-                      d0 (/ (prop :blocks :main-side :depth) 2)
+                      d0 (/ (prop :blocks :partner-side :depth) 2)
                       d1 (prop :blocks :distance)
-                      d2 (/ (prop :blocks :plinth-side :depth) 2)
+                      d2 (/ (prop :blocks :wrist-side :depth) 2)
                       d (+ d0 d1 d2)]
-                  (mapv + main-side [(* d (cos θ)), (* d (sin θ))]))))
+                  (mapv + partner-side [(* d (cos θ)), (* d (sin θ))]))))
         angle
-          (case anchoring
-            :main-side (prop :angle)  ; The fixed angle supplied by the user.
+          (case authority
+            :partner-side (prop :angle)  ; The fixed angle supplied by the user.
             :mutual  ; Compute the angle from the position of the blocks.
-              (Math/atan (apply / (reverse (map - (take 2 plinth-side)
-                                                  (take 2 main-side))))))]
+              (Math/atan (apply / (reverse (map - (take 2 wrist-side)
+                                                  (take 2 partner-side))))))]
     {:angle angle
      :threaded-center-height threaded-center-height
-     :main-side main-side
-     :plinth-side plinth-side
-     ;;  X, Y and Z coordinates of the middle of the first threaded rod:
-     :midpoint (mapv #(/ % 2) (map + main-side plinth-side))}))
+     :block->position {:partner-side partner-side
+                       :wrist-side wrist-side}
+     ;; [x y z] coordinates of the middle of the first threaded rod:
+     :midpoint (mapv #(/ % 2) (map + partner-side wrist-side))}))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -385,7 +392,7 @@
      (mapv #(* rod-index %) [0 0 z]))))
 
 (defn- boss-nut
-  "One model of a nut for a main-side nut boss."
+  "One model of a nut for a partner-side nut boss."
   [getopt mount-index]
   (let [prop (partial getopt :wrist-rest :mounts mount-index)]
     (->>
@@ -394,7 +401,7 @@
       (model/rotate [(/ π 2) 0 0])
       (model/translate [0 3 0])
       (model/rotate [0 0 (prop :derived :angle)])
-      (model/translate (prop :derived :main-side)))))
+      (model/translate (prop :derived :block->position :partner-side)))))
 
 (defn- mount-fasteners
   "One mount’s set of connecting threaded rods with nuts."
@@ -405,7 +412,7 @@
         (model/translate (rod-offset getopt mount-index i)
           (maybe/union
             (threaded-rod getopt mount-index)
-            (if (prop :blocks :main-side :nuts :bosses :include)
+            (if (prop :blocks :partner-side :nuts :bosses :include)
               (boss-nut getopt mount-index))))))))
 
 (defn- all-mounts
@@ -420,7 +427,7 @@
   (let [prop (partial getopt :wrist-rest :mounts mount-index)
         bolt-properties (prop :fasteners :bolt-properties)
         d (:m-diameter bolt-properties)
-        height (prop :blocks :plinth-side :pocket-height)
+        height (prop :blocks :wrist-side :pocket-height)
         nut (->> (nut (merge {:negative true} bolt-properties))
                  (model/rotate [(/ π 2) 0 (/ π 2)])
                  ((compensator getopt) d {}))]
@@ -430,39 +437,34 @@
           (model/translate (rod-offset getopt mount-index i)
             (model/hull nut (model/translate [0 0 height] nut)))))
       (model/rotate [0 0 (prop :derived :angle)])
-      (model/translate (prop :derived :plinth-side)))))
+      (model/translate (prop :derived :block->position :wrist-side)))))
 
-(defn- block-model
-  [getopt mount-index side-key]
+(defn block-model
+  [getopt mount-index block-key]
   (let [prop (partial getopt :wrist-rest :mounts mount-index)
         g0 (prop :blocks :width)
         g1 (dec g0)
-        d0 (prop :blocks side-key :depth)
+        d0 (prop :blocks block-key :depth)
         d1 (dec d0)]
     (model/union
       (model/cube d1 g0 g0)
-      (model/cube d0 g1 g1)
-      (model/cube 1 1 (+ g1 3)))))
+      (model/cube d0 g1 g1))))
 
-(defn- block-in-place
-  [getopt mount-index side-key]
-  (let [prop (partial getopt :wrist-rest :mounts mount-index)]
-    (->>
-      (block-model getopt mount-index side-key)
-      (model/rotate [0 0 (prop :derived :angle)])
-      (model/translate
-        (mapv + (prop :derived side-key) (rod-offset getopt mount-index)))
-      (misc/bottom-hull))))
+(defn block-in-place
+  "Use the placement module without side, segment or offset."
+  [getopt mount-index block-key]
+  (place/wrist-block-place getopt mount-index block-key nil nil nil
+    (block-model getopt mount-index block-key)))
 
 (defn case-block
   "A plate on the case side for a threaded rod to the keyboard case."
   [getopt mount-index]
-  (block-in-place getopt mount-index :main-side))
+  (block-in-place getopt mount-index :partner-side))
 
 (defn plinth-block
   "A plate on the plinth side for a threaded rod to the keyboard case."
   [getopt mount-index]
-  (block-in-place getopt mount-index :plinth-side))
+  (block-in-place getopt mount-index :wrist-side))
 
 
 ;;;;;;;;;;;;;

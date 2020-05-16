@@ -127,6 +127,7 @@ The following bodies are recognized:
   other settings, defaulting to the main body in case of ambiguity.
 * `main-body`: The main body of the keyboard.
 * `central-housing`: The central housing.
+* `wrist-rest`: The wrist rest.
 
 The `auto` setting should cover most needs. When you deviate from it, take care
 to harmonize with other settings. For example, if you specify

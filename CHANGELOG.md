@@ -7,19 +7,22 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 ### Changed
 - Moved and replaced some parameters:
     - The `case` section of parameters was **renamed** to `main-body` to
-      avoid ambiguity with respect to the new central housing.
+      avoid ambiguity with respect to other bodies, a new concept.
         - The top-level parameter `split` was both moved into the `main-body`
           section and renamed to `reflect` to avoid misleading the user about
           how it interacts with the new `central-housing` feature.
         - The `case-side` style of mounting wrist rests was similarly renamed
-          to `main-side`.
+          to `partner-side`, and `plinth-side` to `wrist-side`.
         - The `tweaks` parameter has moved out of `main-body` to the top level,
-          because it can also be used for the central housing.
+          because it can now be used for other bodies.
     - Multiple sections for anchoring have been **renamed** from `position` to
       `anchoring` to reduce ambiguity with respect to bodies.
         - Parameters named `corner` have been **renamed** to `side`. This is
           because they now take codes for cardinal compass points as well as
           actual corners.
+        - The parameter governing how to source the angle of fasteners for a
+          wrist rest mount has been renamed from `anchoring` to `authority` to
+          remove ambiguity.
     - All parameters governing individual properties of threaded bolts have
       been removed in favour of more powerful new parameters based on options
       exposed by a new library (`scad-klupe`) that draws bolts for the
@@ -73,9 +76,10 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       3.
     - The default `side` (previously `corner`) of a target anchor is now `nil`
       (YAML: `null` or omission), meaning the centre (no side).
-- Anchoring one feature to another no longer imposes a rotation. Thus the
-  MCU's `rotation` parameter has moved out of its `position` map, to a new
-  name (`intrinsic-rotation`) and will be needed more often.
+- Anchoring one feature to another no longer imposes a rotation. Thus the MCU's
+  `rotation` parameter has moved out of its `anchoring` map (previously
+  `position`), to a new name (`intrinsic-rotation`) and will be needed more
+  often.
 - The alcove generated for the front end of an MCU PCBA now uses the general
   DFM setting (`error-general`). The `mcu` → `margin` setting was removed.
 - Anchors for bottom-plate mounting screws no longer have domed caps by
@@ -91,7 +95,9 @@ version 0.2.0, thus covering only a fraction of the project’s history.
     - Stock descriptions of recurring parameters.
 - Support for a number of different types of MCUs beyond the Pro Micro:
   Common Teensies as well as the Elite-C and Proton C.
-- Central housing, a new feature adding a body separate from the main body.
+- The concept of bodies, making it possible to choose which OpenSCAD output
+  file to target for a given tweak etc.
+    - Central housing, a new feature adding a body separate from the main body.
 - An MCU shelf. This type of MCU support corresponds directly to the
   Dactyl-ManuForm’s `teensy-holder` object and is therefore not new, but
   it has some parameters to extend its functionality.
@@ -115,7 +121,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
   compass points, whereas before, only points intermediate between cardinals
   and intercardinals could be used.
 - The ability to override specific coordinates for secondary named positions.
-- A `segment` parameter for anchoring wrist-rest mounts.
+- Full anchoring parameters for wrist-rest mounts.
 - A `side` parameter for anchoring key clusters.
 - A GNU Make target for the Dactyl-ManuForm.
 

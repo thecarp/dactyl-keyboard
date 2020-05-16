@@ -497,17 +497,14 @@
 
 (defn wrist-block-place
   "Place a block for a wrist-rest mount."
-  ;; TODO: Rework the block model to provide meaningful support for side and
-  ;; segment parameters. They are currently checked but otherwise ignored.
-  [getopt mount-index side-key side segment obj]
+  [getopt mount-index block-key side segment offset obj]
   {:pre [(integer? mount-index)
-         (keyword? side-key)
-         (or (nil? side) (compass/intercardinals side))]}
+         (keyword? block-key)]}
   (let [prop (partial getopt :wrist-rest :mounts mount-index :derived)]
-    (->>
-      obj
+    (->> obj
       (flex/rotate [0 0 (prop :angle)])
-      (flex/translate (prop side-key)))))
+      (flex/translate (prop :block->position block-key))
+      (flex/translate (or offset [0 0 0])))))
 
 
 ;; Polymorphic treatment of the properties of aliases.
@@ -542,11 +539,8 @@
     initial))
 
 (defmethod by-type ::anch/wr-block
-  [getopt {:keys [mount-index side-key side segment initial]
-           :or {segment 3}}]
-  {:pre [(or (nil? side) (compass/noncardinals side))]}
-  (wrist-block-place getopt mount-index side-key
-    (compass/convert-to-intercardinal side) segment initial))
+  [getopt {:keys [mount-index block-key side segment offset initial]}]
+  (wrist-block-place getopt mount-index block-key side segment offset initial))
 
 (defmethod by-type ::anch/key-mount
   [getopt {:keys [cluster coordinates side segment initial] :as opts}]
