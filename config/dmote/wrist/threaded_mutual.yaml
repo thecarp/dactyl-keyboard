@@ -9,25 +9,31 @@ wrist-rest:
         m-diameter: 6
         head-type: socket
         total-length: 55
-      height:
-        first: 4
-        increment: 16
+      heights: [7]
     authority: mutual
     blocks:
-      width: 15
+      width: 13
       partner-side:
         anchoring:
           anchor: t4
           side: NNE
           segment: 3
           offset: [7, -9]
-        depth: 9
+        depth: 8
       wrist-side:
         anchoring:
           anchor: plinth-left
           offset: [10, 4]
-        depth: 9.8
-        pocket-height: -100
-      aliases:
-        wr0c: partner-side
-        wr0p: wrist-side
+        depth: 8
+    aliases:
+      blocks:
+        wr0p: partner-side
+        wr0w: wrist-side
+      nuts:
+        wr0p0: [partner-side, 0]
+        wr0w0: [wrist-side, 0]
+tweaks:
+  wrist-rest-nut-pockets:
+  - at-ground: true
+    positive: false
+    hull-around: [[wr0w0]]

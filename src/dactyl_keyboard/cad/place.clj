@@ -502,10 +502,21 @@
          (keyword? block-key)]}
   (let [prop (partial getopt :wrist-rest :mounts mount-index :derived)]
     (->> obj
+      (flex/translate (or offset [0 0 0]))
       (flex/rotate [0 0 (prop :angle)])
-      (flex/translate (prop :block->position block-key))
-      (flex/translate (or offset [0 0 0])))))
+      (flex/translate (prop :block->position block-key)))))
 
+(defn wrist-nut-place
+  "Place a nut for a wrist-rest mounting block."
+  [getopt mount-index block-key fastener-index offset obj]
+  {:pre [(integer? mount-index)
+         (keyword? block-key)
+         (integer? fastener-index)]}
+  (let [prop (partial getopt :wrist-rest :mounts mount-index :derived)]
+    (->> obj
+      (flex/translate (or offset [0 0 0]))
+      (flex/rotate [0 0 (prop :angle)])
+      (flex/translate (prop :block->nut->position block-key fastener-index)))))
 
 ;; Polymorphic treatment of the properties of aliases.
 
@@ -539,6 +550,10 @@
     initial))
 
 (defmethod by-type ::anch/wr-block
+  [getopt {:keys [mount-index block-key side segment offset initial]}]
+  (wrist-block-place getopt mount-index block-key side segment offset initial))
+
+(defmethod by-type ::anch/wr-nut
   [getopt {:keys [mount-index block-key side segment offset initial]}]
   (wrist-block-place getopt mount-index block-key side segment offset initial))
 

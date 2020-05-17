@@ -334,7 +334,7 @@
       (model/translate [0 (- wafer)] (rhousing-floor-polygon getopt)))
     (when (and (getopt :wrist-rest :include)
                (= (getopt :wrist-rest :style) :threaded))
-      (model/cut (wrist/all-case-blocks getopt)))
+      (model/cut (wrist/all-partner-side-blocks getopt)))
     (maybe/cut (auxf/ports-positive getopt #{:main-body :central-housing}))))
 
 (defn case-positive
@@ -394,12 +394,7 @@
     (to-3d getopt
       (model/union
         (case-positive-2d getopt)
-        (apply maybe/union
-          (reduce
-            (fn [coll pair]
-              (conj coll (apply model/hull (map model/cut pair))))
-            []
-            (wrist/block-pairs getopt)))
+        (wrist/hulled-block-pairs getopt)
         (wrist-positive-2d getopt)))))
 
 (defn combined-complete

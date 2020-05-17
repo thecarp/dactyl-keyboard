@@ -11,11 +11,10 @@ wrist-rest:
         m-diameter: 4
         head-type: socket
         total-length: 60
-      height:
-        first: 3
-    angle: -1.2
+      heights: [6]
+    angle: π/8
     blocks:
-      distance: 35
+      distance: 36
       width: 10
       partner-side:
         anchoring:
@@ -23,23 +22,25 @@ wrist-rest:
           side: NNE
           segment: 3
           offset: [7, -9]
-        depth: 10
+        depth: 9
       wrist-side:
-        depth: 7
-        pocket-height: -100
-      aliases:
-        wr0c: partner-side
-        wr0p: wrist-side
+        depth: 5
+    aliases:
+      blocks:
+        wr0p: partner-side
+        wr0w: wrist-side
+      nuts:
+        wr0p0: [partner-side, 0]
+        wr0w0: [wrist-side, 0]
   - fasteners:
       bolt-properties:
         m-diameter: 4
         head-type: socket
         total-length: 45
-      height:
-        first: 3
-    angle: -1.2
+      heights: [6]
+    angle: π/8
     blocks:
-      distance: 30
+      distance: 31
       width: 10
       partner-side:
         anchoring:
@@ -47,10 +48,34 @@ wrist-rest:
           side: SSW
           segment: 3
           offset: [-5, 0]
-        depth: 7
+        depth: 6
       wrist-side:
-        depth: 7
-        pocket-height: -100
-      aliases:
-        wr1c: partner-side
-        wr1p: wrist-side
+        depth: 5
+    aliases:
+      blocks:
+        wr1p: partner-side
+        wr1w: wrist-side
+      nuts:
+        wr1p0: [partner-side, 0]
+        wr1w0: [wrist-side, 0]
+tweaks:
+  wrist-rest-nut-pockets:
+  - at-ground: true
+    positive: false
+    hull-around: [[wr0w0]]
+  - at-ground: true
+    positive: false
+    hull-around: [[wr0p0, {anchoring: {offset: [0, -2, 0]}}]]
+  - at-ground: true
+    positive: false
+    hull-around: [[wr1w0]]
+  - at-ground: true
+    positive: false
+    hull-around: [[wr1p0, {anchoring: {offset: [0, -0.5, 0]}}]]
+  wrist-rest-nut-bosses:
+  # These are superficial, intended for use together with the
+  # pockets in the same mounts.
+  - positive: false
+    hull-around: [[wr0p0, {anchoring: {offset: [0, 5.5, 0]}}]]
+  - positive: false
+    hull-around: [[wr1p0, {anchoring: {offset: [0, 4, 0]}}]]

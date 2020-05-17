@@ -116,7 +116,18 @@
            {alias {::type ::wr-block
                    :mount-index mount-index
                    :block-key block}})
-         (getopt :wrist-rest :mounts mount-index :blocks :aliases)))
+         (getopt :wrist-rest :mounts mount-index :aliases :blocks)))
+      (getopt :wrist-rest :mounts))
+    ;; Nuts in or on wrist rest blocks.
+    (mapmap-indexed
+      (fn [mount-index _]
+       (mapmap
+         (fn [[alias [block fastener]]]
+           {alias {::type ::wr-nut
+                   :mount-index mount-index
+                   :block-key block
+                   :fastener-index fastener}})
+         (getopt :wrist-rest :mounts mount-index :aliases :nuts)))
       (getopt :wrist-rest :mounts))
 
     ;; Named secondary positions:
@@ -136,15 +147,17 @@
   [getopt anchor]
   (let [recurse (fn [& fragment]  ; Look up a parent/primary anchor.
                   (auto-body getopt
-                    (apply getopt (concat fragment [:anchoring :anchor]))))]
+                    (apply getopt (concat fragment [:anchoring :anchor]))))
+        wr-ambilateral #(case (getopt :derived :anchors anchor :block-key)
+                           :partner-side :main-body
+                           :wrist-side :wrist-rest)]
     (case (getopt :derived :anchors anchor ::type)
       ::origin (if (and (getopt :main-body :reflect)
                         (getopt :central-housing :include))
                  :central-housing
                  :main-body)
-      ::wr-block (case (getopt :derived :anchors anchor :block-key)
-                    :partner-side :main-body
-                    :wrist-side :wrist-rest)
+      ::wr-block (wr-ambilateral)
+      ::wr-nut (wr-ambilateral)
       ::wr-perimeter :wrist-rest
       ::central-gabel :central-housing
       ::central-adapter :main-body   ; Sic.

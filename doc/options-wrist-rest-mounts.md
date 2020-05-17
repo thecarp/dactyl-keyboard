@@ -10,9 +10,7 @@ This specific document describes options for each “mount”, a pair of cuboid 
 - Section <a href="#user-content-fasteners">`fasteners`</a>
     - Parameter <a href="#user-content-fasteners-amount">`amount`</a>
     - Parameter <a href="#user-content-fasteners-bolt-properties">`bolt-properties`</a>
-    - Section <a href="#user-content-fasteners-height">`height`</a>
-        - Parameter <a href="#user-content-fasteners-height-first">`first`</a>
-        - Parameter <a href="#user-content-fasteners-height-increment">`increment`</a>
+    - Parameter <a href="#user-content-fasteners-heights">`heights`</a>
 - Parameter <a href="#user-content-authority">`authority`</a>
 - Parameter <a href="#user-content-angle">`angle`</a>
 - Section <a href="#user-content-blocks">`blocks`</a>
@@ -26,9 +24,6 @@ This specific document describes options for each “mount”, a pair of cuboid 
             - Parameter <a href="#user-content-blocks-partner-side-anchoring-segment">`segment`</a>
             - Parameter <a href="#user-content-blocks-partner-side-anchoring-offset">`offset`</a>
         - Parameter <a href="#user-content-blocks-partner-side-depth">`depth`</a>
-        - Section <a href="#user-content-blocks-partner-side-nuts">`nuts`</a>
-            - Section <a href="#user-content-blocks-partner-side-nuts-bosses">`bosses`</a>
-                - Parameter <a href="#user-content-blocks-partner-side-nuts-bosses-include">`include`</a>
     - Section <a href="#user-content-blocks-wrist-side">`wrist-side`</a>
         - Section <a href="#user-content-blocks-wrist-side-anchoring">`anchoring`</a>
             - Parameter <a href="#user-content-blocks-wrist-side-anchoring-anchor">`anchor`</a>
@@ -36,8 +31,9 @@ This specific document describes options for each “mount”, a pair of cuboid 
             - Parameter <a href="#user-content-blocks-wrist-side-anchoring-segment">`segment`</a>
             - Parameter <a href="#user-content-blocks-wrist-side-anchoring-offset">`offset`</a>
         - Parameter <a href="#user-content-blocks-wrist-side-depth">`depth`</a>
-        - Parameter <a href="#user-content-blocks-wrist-side-pocket-height">`pocket-height`</a>
-    - Parameter <a href="#user-content-blocks-aliases">`aliases`</a>
+- Section <a href="#user-content-aliases">`aliases`</a>
+    - Parameter <a href="#user-content-aliases-blocks">`blocks`</a>
+    - Parameter <a href="#user-content-aliases-nuts">`nuts`</a>
 
 ## Section <a id="fasteners">`fasteners`</a>
 
@@ -59,17 +55,9 @@ The following describes only a subset of what you can include here:
 
 Default values provided by the application are bare minima. More usefully, the application injects DFM functions and flags negative space for specific uses.
 
-### Section <a id="fasteners-height">`height`</a>
+### Parameter <a id="fasteners-heights">`heights`</a>
 
-The vertical level of the fasteners.
-
-#### Parameter <a id="fasteners-height-first">`first`</a>
-
-The distance in mm from the bottom of the first fastener down to the ground level of the model.
-
-#### Parameter <a id="fasteners-height-increment">`increment`</a>
-
-The vertical distance in mm from the center of each fastener to the center of the next.
+A list of heights in mm, above the ground level. Each number describes the level of a set of fasteners: The centre of one threaded rod and any nuts etc. attaching it.
 
 ## Parameter <a id="authority">`authority`</a>
 
@@ -92,7 +80,7 @@ The distance in mm between the two posts in a mount. This parameter is only used
 
 ### Parameter <a id="blocks-width">`width`</a>
 
-The width in mm of the face or front bezel on each block that will anchor a fastener.
+The width in mm of each block that will hold a fastener.
 
 ### Section <a id="blocks-partner-side">`partner-side`</a>
 
@@ -126,18 +114,6 @@ A two-dimensional offset in mm from the feature named in `anchor`.
 
 The thickness of the block in mm along the axis of the fastener(s).
 
-#### Section <a id="blocks-partner-side-nuts">`nuts`</a>
-
-Extra features for threaded nuts on the case side.
-
-##### Section <a id="blocks-partner-side-nuts-bosses">`bosses`</a>
-
-Nut bosses on the rear (interior) of the mount. You may want this if the distance between case and plinth is big enough for a nut. If that distance is too small, bosses can be counterproductive.
-
-###### Parameter <a id="blocks-partner-side-nuts-bosses-include">`include`</a>
-
-If `true`, include bosses.
-
 ### Section <a id="blocks-wrist-side">`wrist-side`</a>
 
 A block on the side of the wrist rest.
@@ -166,17 +142,26 @@ A two-dimensional offset in mm from the feature named in `anchor`.
 
 #### Parameter <a id="blocks-wrist-side-depth">`depth`</a>
 
-The thickness of the mount in mm along the axis of the fastener(s). This is typically larger than the partner-side depth to allow adjustment.
+The thickness of the mount in mm along the axis of the fastener(s).
 
-#### Parameter <a id="blocks-wrist-side-pocket-height">`pocket-height`</a>
+## Section <a id="aliases">`aliases`</a>
 
-The height of the nut pocket inside the mounting plate, in mm.
+Short names for different parts of the mount, for use elsewhere in the application.
 
-With a large positive value, this will provide a chute for the nut(s) to go in from the top of the plinth, which allows you to hide the hole beneath the pad. With a large negative value, the pocket will instead open from the bottom, which is convenient if `depth` is small. With a small value or the default value of zero, it will be necessary to pause printing in order to insert the nut(s); this last option is therefore recommended for advanced users only.
+### Parameter <a id="aliases-blocks">`blocks`</a>
 
-### Parameter <a id="blocks-aliases">`aliases`</a>
+A map of short names to specific blocks as such, i.e. `partner-side` or `wrist-side`.
 
-A map of short names to specific blocks, i.e. `partner-side` or `wrist-side`. Such aliases are for use elsewhere in the configuration.
+### Parameter <a id="aliases-nuts">`nuts`</a>
+
+A map of short names to nuts. Nuts are identified by tuples (lists of two items) where each tuple names a block, i.e. `partner-side` or `wrist-side`, and indexes a fastener in the `heights` list above. Indexing starts from zero.
+
+This parameter is used to name nuts to go on each end of each threaded rod. The intended use for this is with negative-space `tweaks`, where you target each nut by its name and supply `positive: false`. Some recipes:
+
+- To get a cavity for a nut wholly inside a block, just target the nut for a tweak without an offset or other special arguments. It will be necessary to pause printing in order to insert the nut in such a cavity.
+- To get a pocket for sliding in a nut from the top of the mount, hull a nut in its place with the same nut, offset higher on the z axis. Design the pad of the wrist rest to cover the pocket.
+- To get a similar pocket that opens from the bottom, target a nut in place with `at-ground`. Use a bottom plate to hide the pocket.
+- To get a nut boss instead of a pocket, offset a nut on the y axis. This is also useful with hex-head bolts.
 
 ⸻
 

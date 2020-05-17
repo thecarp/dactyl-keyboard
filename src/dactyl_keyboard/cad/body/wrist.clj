@@ -12,9 +12,9 @@
 
 (ns dactyl-keyboard.cad.body.wrist
   (:require [scad-clj.model :as model]
-            [scad-tarmi.core :as tarmi :refer [abs sin cos π]]
+            [scad-tarmi.core :as tarmi :refer [sin cos π]]
             [scad-tarmi.maybe :as maybe]
-            [scad-klupe.iso :refer [bolt-length nut]]
+            [scad-klupe.iso :as klupe :refer [bolt-length]]
             [thi.ng.geom.core :as geom :refer [tessellate vertices]]
             [thi.ng.geom.polygon :refer [polygon2 inset-polygon]]
             [dactyl-keyboard.cad.misc :as misc]
@@ -331,11 +331,9 @@
   [getopt mount-index]
   (let [prop (partial getopt :wrist-rest :mounts mount-index)
         authority (prop :authority)
-        threaded-center-height
-          ;; The mid-point height of the first threaded fastener.
-          (+ (/ (prop :fasteners :bolt-properties :m-diameter) 2)
-             (prop :fasteners :height :first))
-        to-3d #(misc/pad-to-3d % threaded-center-height)
+        heights (sort (prop :fasteners :heights))
+        to-3d #(misc/pad-to-3d % (last heights))
+        nuts (fn [base] (mapv #(conj (subvec base 0 2) %) heights))
         ofa #(place/offset-from-anchor getopt (prop :blocks % :anchoring) 2)
         partner-side (to-3d (ofa :partner-side))
         wrist-side
@@ -345,22 +343,22 @@
               :mutual (ofa :wrist-side)
               :partner-side
                 (let [θ (prop :angle)
-                      d0 (/ (prop :blocks :partner-side :depth) 2)
-                      d1 (prop :blocks :distance)
-                      d2 (/ (prop :blocks :wrist-side :depth) 2)
-                      d (+ d0 d1 d2)]
-                  (mapv + partner-side [(* d (cos θ)), (* d (sin θ))]))))
+                      d (+ (/ (prop :blocks :partner-side :depth) 2)
+                           (prop :blocks :distance)
+                           (/ (prop :blocks :wrist-side :depth) 2))]
+                  (mapv + partner-side [(* d (sin θ)), (* -1 d (cos θ))]))))
         angle
           (case authority
             :partner-side (prop :angle)  ; The fixed angle supplied by the user.
             :mutual  ; Compute the angle from the position of the blocks.
-              (Math/atan (apply / (reverse (map - (take 2 wrist-side)
-                                                  (take 2 partner-side))))))]
+              (- (Math/atan (apply / (map - (take 2 wrist-side)
+                                            (take 2 partner-side))))))]
     {:angle angle
-     :threaded-center-height threaded-center-height
      :block->position {:partner-side partner-side
                        :wrist-side wrist-side}
-     ;; [x y z] coordinates of the middle of the first threaded rod:
+     :block->nut->position {:partner-side (nuts partner-side)
+                            :wrist-side (nuts wrist-side)}
+     ;; [x y z] coordinates of the middle of the uppermost threaded rod:
      :midpoint (mapv #(/ % 2) (map + partner-side wrist-side))}))
 
 
@@ -372,48 +370,33 @@
 (defn threaded-rod
   "An unthreaded model of a threaded cylindrical rod connecting the keyboard
   and wrist rest."
-  [getopt mount-index]
+  [getopt mount-index fastener-index]
   (let [prop (partial getopt :wrist-rest :mounts mount-index)]
     (->>
       (prop :fasteners :bolt-properties)
       (bolt-length)
       (model/cylinder (/ (prop :fasteners :bolt-properties :m-diameter) 2))
-      (model/rotate [0 (/ π 2) (prop :derived :angle)])
-      (model/translate (prop :derived :midpoint)))))
+      (model/rotate [(/ π 2) 0 (prop :derived :angle)])
+      (model/translate (conj (subvec (prop :derived :midpoint) 0 2)
+                             (prop :fasteners :heights fastener-index))))))
 
-(defn- rod-offset
-  "A rod-specific offset relative to the primary rod (index 0).
-  The binary form returns the offset of the last rod."
-  ([getopt mount-index]
-   (rod-offset getopt mount-index
-     (dec (getopt :wrist-rest :mounts mount-index :fasteners :amount))))
-  ([getopt mount-index rod-index]
-   (let [z (getopt :wrist-rest :mounts mount-index :fasteners :height :increment)]
-     (mapv #(* rod-index %) [0 0 z]))))
-
-(defn- boss-nut
-  "One model of a nut for a partner-side nut boss."
-  [getopt mount-index]
-  (let [prop (partial getopt :wrist-rest :mounts mount-index)]
-    (->>
-      (nut (merge {:negative true}
-                  (prop :fasteners :bolt-properties)))
+(defn nut
+  "A model of a nut for use on or in wrist-rest mounts. Not in place,
+  but rotated to match the threaded rod it fastens."
+  [getopt mount-index block-key fastener-index]
+  (let [bolt (getopt :wrist-rest :mounts mount-index :fasteners :bolt-properties)]
+    (->> (klupe/nut (merge {:negative true} bolt))
       (model/rotate [(/ π 2) 0 0])
-      (model/translate [0 3 0])
-      (model/rotate [0 0 (prop :derived :angle)])
-      (model/translate (prop :derived :block->position :partner-side)))))
+      ((compensator getopt) (:m-diameter bolt) {}))))
 
 (defn- mount-fasteners
-  "One mount’s set of connecting threaded rods with nuts."
+  "One mount’s set of connecting threaded rods."
   [getopt mount-index]
   (let [prop (partial getopt :wrist-rest :mounts mount-index)]
     (apply maybe/union
-      (for [i (range (prop :fasteners :amount))]
-        (model/translate (rod-offset getopt mount-index i)
-          (maybe/union
-            (threaded-rod getopt mount-index)
-            (if (prop :blocks :partner-side :nuts :bosses :include)
-              (boss-nut getopt mount-index))))))))
+      (for [fastener-index (range (count (prop :fasteners :heights)))]
+        (maybe/union
+          (threaded-rod getopt mount-index fastener-index))))))
 
 (defn- all-mounts
   [getopt model-fn]
@@ -421,34 +404,27 @@
     (for [i (range (count (getopt :wrist-rest :mounts)))]
       (model-fn getopt i))))
 
-(defn- plinth-nut-pockets
-  "Nut(s) in the plinth-side plate, with pocket(s)."
-  [getopt mount-index]
-  (let [prop (partial getopt :wrist-rest :mounts mount-index)
-        bolt-properties (prop :fasteners :bolt-properties)
-        d (:m-diameter bolt-properties)
-        height (prop :blocks :wrist-side :pocket-height)
-        nut (->> (nut (merge {:negative true} bolt-properties))
-                 (model/rotate [(/ π 2) 0 (/ π 2)])
-                 ((compensator getopt) d {}))]
-    (->>
-      (apply model/union
-        (for [i (range (prop :fasteners :amount))]
-          (model/translate (rod-offset getopt mount-index i)
-            (model/hull nut (model/translate [0 0 height] nut)))))
-      (model/rotate [0 0 (prop :derived :angle)])
-      (model/translate (prop :derived :block->position :wrist-side)))))
-
 (defn block-model
+  "A model of a mounting bloack. A cuboid with bevelled edges."
+  ;; The reason for the squarish profile is forward compatibility with
+  ;; square-profile nuts in future.
   [getopt mount-index block-key]
   (let [prop (partial getopt :wrist-rest :mounts mount-index)
-        g0 (prop :blocks :width)
-        g1 (dec g0)
-        d0 (prop :blocks block-key :depth)
-        d1 (dec d0)]
-    (model/union
-      (model/cube d1 g0 g0)
-      (model/cube d0 g1 g1))))
+        w (prop :blocks :width)
+        d (prop :blocks block-key :depth)
+        t (getopt :main-body :bottom-plate :thickness)
+        z0 (last (prop :derived :block->position block-key))
+        z1 (+ t z0 (/ w 2))]
+    (when-not (or (zero? w) (zero? d))
+      ;; Extend the model down so that cutting it at t=0 will
+      ;; include its shape in any bottom plate.
+      (model/translate [0 0 (- t)]
+        (model/hull
+          (model/translate [0 0 (+ (/ (dec z1) -2) (/ w 2))]
+            (model/translate [0 0 -1/4]
+              (model/cube (dec w) d (dec z1))
+              (model/cube w (dec d) (dec z1)))
+            (model/cube (dec w) (dec d) z1)))))))
 
 (defn block-in-place
   "Use the placement module without side, segment or offset."
@@ -456,12 +432,12 @@
   (place/wrist-block-place getopt mount-index block-key nil nil nil
     (block-model getopt mount-index block-key)))
 
-(defn case-block
+(defn- partner-side-block
   "A plate on the case side for a threaded rod to the keyboard case."
   [getopt mount-index]
   (block-in-place getopt mount-index :partner-side))
 
-(defn plinth-block
+(defn- wrist-side-block
   "A plate on the plinth side for a threaded rod to the keyboard case."
   [getopt mount-index]
   (block-in-place getopt mount-index :wrist-side))
@@ -472,19 +448,20 @@
 ;;;;;;;;;;;;;
 
 
-(defn all-case-blocks
+(defn all-partner-side-blocks
   [getopt]
-  (all-mounts getopt case-block))
+  (all-mounts getopt partner-side-block))
 
-(defn block-pairs
-  "Pairs of mount blocks. For use in generating a unifying bottom plate."
+(defn hulled-block-pairs
+  "Convex hulls of pairs of mount blocks.
+  For use in generating a unifying bottom plate."
   [getopt]
-  (reduce
-    (fn [coll mount-index]
-      (conj coll [(case-block getopt mount-index)
-                  (plinth-block getopt mount-index)]))
-    []
-    (range (count (getopt :wrist-rest :mounts)))))
+  (apply maybe/union
+    (map (fn [mount-index]
+           (apply model/hull
+             (model/cut (partner-side-block getopt mount-index))
+             (model/cut (wrist-side-block getopt mount-index))))
+         (range (count (getopt :wrist-rest :mounts))))))
 
 (defn all-fasteners
   [getopt]
@@ -498,7 +475,7 @@
       (plinth-polyhedron getopt)
       (place/wrist-place getopt (rubber-bottom getopt)))
     (when (= (getopt :wrist-rest :style) :threaded)
-      (all-mounts getopt plinth-block))))
+      (all-mounts getopt wrist-side-block))))
 
 (defn plinth-plastic
   "The lower portion of a wrist rest, to be printed in a rigid material.
@@ -507,9 +484,7 @@
   (maybe/difference
     (plinth-positive getopt)
     (when (= (getopt :wrist-rest :style) :threaded)
-      (model/union
-        (all-fasteners getopt)
-        (all-mounts getopt plinth-nut-pockets)))
+      (model/union (all-fasteners getopt)))
     (when (getopt :wrist-rest :sprues :include)
       (sprues getopt))))
 
@@ -521,7 +496,7 @@
     (model/color (:rubber colours)
       (place/wrist-place getopt
         (rubber-body getopt)))
-    (all-mounts getopt plinth-block)))
+    (all-mounts getopt wrist-side-block)))
 
 (defn projection-maquette
   "A merged view of a wrist rest. This might be printed in hard plastic for a

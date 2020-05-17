@@ -105,7 +105,7 @@
       (mcu/shelf-model getopt))
     (when (and (getopt :wrist-rest :include)
                (= (getopt :wrist-rest :style) :threaded))
-      (wrist/all-case-blocks getopt))
+      (wrist/all-partner-side-blocks getopt))
     (auxf/ports-positive getopt #{:main-body})
     (when (getopt :main-body :back-plate :include)
       (auxf/backplate-block getopt))

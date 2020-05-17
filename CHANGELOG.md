@@ -31,6 +31,20 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       partial threading, no threading (with a diameter suitable for tapping
       holes manually) etc.
     - The `connection` section has been replaced by a general `ports` map.
+    - Some parameters governing the mounts of wrist rests have changed to
+      strengthen the tweaking system.
+        - The fastener `amount` parameter and `height` section have been
+          replaced by a list of `heights`, no longer requiring even spacing
+          by an `increment` (pitch).
+        - The `aliases` section has been moved up one level, out of `blocks`.
+        - Parameters governing nut pockets and bosses have all been removed.
+          These parameters are replaced by a stronger tweak subsystem where
+          you can name individual nuts and target them as negative space,
+          creating pockets and bosses more freely.
+        - The `angle` parameter has changed in meaning by a quarter turn,
+          generally making configured angles smaller and easier to reason
+          about, as well as putting mount width on the x axis for easier,
+          more consistent tweaks.
     - Heat-set inserts for attaching bottom plates are no longer a separate
       style. Thus the `inserts` option has been removed from the `main-body` →
       `bottom-plate` → `installation` → `style` parameter and replaced by a new
@@ -76,16 +90,19 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       3.
     - The default `side` (previously `corner`) of a target anchor is now `nil`
       (YAML: `null` or omission), meaning the centre (no side).
-- Anchoring one feature to another no longer imposes a rotation. Thus the MCU's
-  `rotation` parameter has moved out of its `anchoring` map (previously
-  `position`), to a new name (`intrinsic-rotation`) and will be needed more
-  often.
+- Anchoring one feature to another no longer imposes a rotation as often.
+  Thus the MCU's `rotation` parameter has moved out of its `anchoring` map
+  (previously `position`), to a new name (`intrinsic-rotation`) and will be
+  needed more often.
 - The alcove generated for the front end of an MCU PCBA now uses the general
   DFM setting (`error-general`). The `mcu` → `margin` setting was removed.
 - Anchors for bottom-plate mounting screws no longer have domed caps by
   default. These are still available but are governed by a new parameter.
   Domes were made optional to make it easier to tap threads rather than print
   them, and use longer screws than was originally intended.
+- Mounts for wrist rests no longer have peaked caps by default. Instead, tops
+  are bevelled like the sides, and the body of the mount has its nominal size
+  at its base instead of at its top only, to help with tweaking.
 
 ### Added
 - Documentation:

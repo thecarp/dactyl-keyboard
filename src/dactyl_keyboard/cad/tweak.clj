@@ -9,8 +9,9 @@
 (ns dactyl-keyboard.cad.tweak
   (:require [clojure.spec.alpha :as spec]
             [scad-clj.model :as model]
-            [scad-tarmi.core :as tarmi-core]
+            [scad-tarmi.core :as tarmi-core :refer [π]]
             [scad-tarmi.maybe :as maybe]
+            [scad-klupe.iso :refer [nut]]
             [dactyl-keyboard.cad.auxf :as auxf]
             [dactyl-keyboard.cad.body.main :as body]
             [dactyl-keyboard.cad.body.central :as central]
@@ -133,6 +134,14 @@
              (if (or side segment offset)
                (default misc/nodule)
                (default (wrist/block-model getopt mount-index block-key)))))]
+      ::anch/wr-nut
+        ;; Ignore side and segment as inapplicable to a nut.
+        [true
+         (let [{:keys [mount-index block-key fastener-index]}
+               (resolve-anchor getopt anchor)]
+           (place/wrist-nut-place getopt mount-index block-key fastener-index
+                                  offset
+             (default (wrist/nut getopt mount-index block-key fastener-index))))]
       ::anch/port-hole
         [true
          (place/port-place getopt anchor

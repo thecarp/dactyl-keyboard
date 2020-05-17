@@ -29,16 +29,11 @@
    [:parameter [:fasteners :bolt-properties]
     stock/implicit-threaded-bolt-metadata
     stock/threaded-bolt-documentation]
-   [:section [:fasteners :height]
-    "The vertical level of the fasteners."]
-   [:parameter [:fasteners :height :first]
-    {:default 0 :parse-fn int}
-    "The distance in mm from the bottom of the first fastener "
-    "down to the ground level of the model."]
-   [:parameter [:fasteners :height :increment]
-    {:default 0 :parse-fn num}
-    "The vertical distance in mm from the center of each fastener to the "
-    "center of the next."]
+   [:parameter [:fasteners :heights]
+    {:default [] :parse-fn vec :validate [(spec/coll-of number?)]}
+    "A list of heights in mm, above the ground level. "
+    "Each number describes the level of a set of fasteners: The centre of one "
+    "threaded rod and any nuts etc. attaching it."]
    [:parameter [:authority]
     {:default :partner-side
      :parse-fn keyword
@@ -52,7 +47,7 @@
     "block is anchored independently. The angle and distance between the "
     "blocks determines the angle of the fasteners."]
    [:parameter [:angle]
-    {:default 0 :parse-fn num}
+    {:default 0 :parse-fn parse/compass-compatible-angle}
     "The angle in radians of the mount, on the xy plane, counter-clockwise "
     "from the y axis. This parameter is only used with `partner-side` anchoring."]
    [:section [:blocks]
@@ -63,8 +58,7 @@
     "This parameter is only used with `partner-side` authority."]
    [:parameter [:blocks :width]
     {:default 1 :parse-fn num}
-    "The width in mm of the face or front bezel on each "
-    "block that will anchor a fastener."]
+    "The width in mm of each block that will hold a fastener."]
    [:section [:blocks :partner-side]
     "A block on the side of the partner body is mandatory."]
    [:parameter [:blocks :partner-side :body]
@@ -83,15 +77,6 @@
    [:parameter [:blocks :partner-side :depth]
     {:default 1 :parse-fn num}
     "The thickness of the block in mm along the axis of the fastener(s)."]
-   [:section [:blocks :partner-side :nuts]
-    "Extra features for threaded nuts on the case side."]
-   [:section [:blocks :partner-side :nuts :bosses]
-    "Nut bosses on the rear (interior) of the mount. You may want this if the "
-    "distance between case and plinth is big enough for a nut. If that "
-    "distance is too small, bosses can be counterproductive."]
-   [:parameter [:blocks :partner-side :nuts :bosses :include]
-    {:default false :parse-fn boolean}
-    "If `true`, include bosses."]
    [:section [:blocks :wrist-side]
     "A block on the side of the wrist rest."]
    [:section [:blocks :wrist-side :anchoring]
@@ -109,21 +94,38 @@
     stock/anchor-2d-vector-metadata stock/anchor-2d-offset-documentation]
    [:parameter [:blocks :wrist-side :depth]
     {:default 1 :parse-fn num}
-    "The thickness of the mount in mm along the axis of the fastener(s). "
-    "This is typically larger than the partner-side depth to allow adjustment."]
-   [:parameter [:blocks :wrist-side :pocket-height]
-    {:default 0 :parse-fn num}
-    "The height of the nut pocket inside the mounting plate, in mm.\n\n"
-    "With a large positive value, this will provide a chute for the nut(s) "
-    "to go in from the top of the plinth, which allows you to hide the hole "
-    "beneath the pad. With a large negative value, the pocket will "
-    "instead open from the bottom, which is convenient if `depth` is small. "
-    "With a small value or the default value of zero, it will be necessary to "
-    "pause printing in order to insert the nut(s); this last option is "
-    "therefore recommended for advanced users only."]
-   [:parameter [:blocks :aliases]
+    "The thickness of the mount in mm along the axis of the fastener(s)."]
+   [:section [:aliases]
+    "Short names for different parts of the mount, for use elsewhere in "
+    "the application."]
+   [:parameter [:aliases :blocks]
     {:default {}
      :parse-fn (parse/map-of keyword keyword)
-     :validate [(spec/map-of keyword? ::valid/wrist-block)]}
-    "A map of short names to specific blocks, i.e. `partner-side` or "
-    "`wrist-side`. Such aliases are for use elsewhere in the configuration."]])
+     :validate [(spec/map-of ::valid/alias ::valid/wrist-block)]}
+    "A map of short names to specific blocks as such, i.e. `partner-side` or "
+    "`wrist-side`."]
+   [:parameter [:aliases :nuts]
+    {:default {}
+     :parse-fn (parse/map-of keyword (parse/tuple-of parse/keyword-or-integer))
+     :validate [(spec/map-of ::valid/alias
+                             (spec/tuple ::valid/wrist-block integer?))]}
+    "A map of short names to nuts. Nuts are identified by tuples "
+    "(lists of two items) where each tuple names a block, i.e. "
+    "`partner-side` or `wrist-side`, and indexes a fastener in the `heights` "
+    "list above. Indexing starts from zero.\n"
+    "\n"
+    "This parameter is used to name nuts to go on each end of each threaded rod. "
+    "The intended use for this is with negative-space `tweaks`, where you target "
+    "each nut by its name and supply `positive: false`. Some recipes:\n"
+    "\n"
+    "- To get a cavity for a nut wholly inside a block, just target the nut "
+    "for a tweak without an offset or other special arguments. "
+    "It will be necessary to pause printing in order to insert "
+    "the nut in such a cavity.\n"
+    "- To get a pocket for sliding in a nut from the top of the mount, "
+    "hull a nut in its place with the same nut, offset higher on the z axis. "
+    "Design the pad of the wrist rest to cover the pocket.\n"
+    "- To get a similar pocket that opens from the bottom, target a "
+    "nut in place with `at-ground`. Use a bottom plate to hide the pocket.\n"
+    "- To get a nut boss instead of a pocket, offset a nut on the y axis. "
+    "This is also useful with hex-head bolts."]])
