@@ -352,8 +352,13 @@
             :partner-side (prop :angle)  ; The fixed angle supplied by the user.
             :mutual  ; Compute the angle from the position of the blocks.
               (- (Math/atan (apply / (map - (take 2 wrist-side)
-                                            (take 2 partner-side))))))]
+                                            (take 2 partner-side))))))
+        width (prop :blocks :width)
+        depth (fn [block-key] (prop :blocks block-key :depth))
+        height (fn [position] (+ (last position) (/ width 2)))]
     {:angle angle
+     :block->size {:partner-side [width (depth :partner-side) (height partner-side)]
+                   :wrist-side [width (depth :wrist-side) (height wrist-side)]}
      :block->position {:partner-side partner-side
                        :wrist-side wrist-side}
      :block->nut->position {:partner-side (nuts partner-side)
@@ -409,22 +414,20 @@
   ;; The reason for the squarish profile is forward compatibility with
   ;; square-profile nuts in future.
   [getopt mount-index block-key]
-  (let [prop (partial getopt :wrist-rest :mounts mount-index)
-        w (prop :blocks :width)
-        d (prop :blocks block-key :depth)
+  (let [[w d h] (getopt :wrist-rest :mounts mount-index
+                        :derived :block->size block-key)
         t (getopt :main-body :bottom-plate :thickness)
-        z0 (last (prop :derived :block->position block-key))
-        z1 (+ t z0 (/ w 2))]
+        z (+ t h)]
     (when-not (or (zero? w) (zero? d))
       ;; Extend the model down so that cutting it at t=0 will
       ;; include its shape in any bottom plate.
       (model/translate [0 0 (- t)]
         (model/hull
-          (model/translate [0 0 (+ (/ (dec z1) -2) (/ w 2))]
+          (model/translate [0 0 (+ (/ (dec z) -2) (/ w 2))]
             (model/translate [0 0 -1/4]
-              (model/cube (dec w) d (dec z1))
-              (model/cube w (dec d) (dec z1)))
-            (model/cube (dec w) (dec d) z1)))))))
+              (model/cube (dec w) d (dec z))
+              (model/cube w (dec d) (dec z)))
+            (model/cube (dec w) (dec d) z)))))))
 
 (defn block-in-place
   "Use the placement module without side, segment or offset."

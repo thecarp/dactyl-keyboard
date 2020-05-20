@@ -156,6 +156,12 @@
     ([direction box axis]
      (get (to-grid direction box) axis))))
 
+(defn to-index
+  "Return a vector index for the axis of movement in a cardinal direction."
+  [direction]
+  {:pre [(cardinals direction)] :post [(#{0 1} %)]}
+  (if (zero? (first (to-grid direction))) 1 0))
+
 (defn- axis-delta
   "Find a coordinate axis delta for movement in any of the stated directions."
   ([axis]

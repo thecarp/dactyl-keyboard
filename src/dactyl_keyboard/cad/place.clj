@@ -383,7 +383,7 @@
               {:configured-segment segment
                :available-segments #{0 1 2}})))
   (let [[[_ x] [_ y] z] (port-hole-size getopt anchor)]
-    (mapv + (misc/cube-corner-xyz side segment [x y z] 0)
+    (mapv + (misc/walled-corner-xyz side segment [x y z] 0)
             offset)))
 
 (defn- port-alignment-offset
@@ -410,7 +410,7 @@
                :available-segments #{0 1 2}})))
   (let [t (getopt :ports anchor :holder :thickness)
         [x y z] (port-holder-size getopt anchor)]
-    (mapv + (misc/cube-corner-xyz side segment [x y z] t)
+    (mapv + (misc/walled-corner-xyz side segment [x y z] t)
             [0 (/ t -2) 0]
             offset)))
 
@@ -496,13 +496,17 @@
       (wrist-segment-coord getopt aware-xy segment))))
 
 (defn wrist-block-place
-  "Place a block for a wrist-rest mount."
+  "Place something for a wrist-rest mount.
+  Where a side or segment is given, find a vertex on the mounting block,
+  using a hardcoded 0.5 bevel."
   [getopt mount-index block-key side segment offset obj]
   {:pre [(integer? mount-index)
          (keyword? block-key)]}
-  (let [prop (partial getopt :wrist-rest :mounts mount-index :derived)]
+  (let [prop (partial getopt :wrist-rest :mounts mount-index :derived)
+        size (prop :block->size block-key)]
     (->> obj
       (flex/translate (or offset [0 0 0]))
+      (flex/translate (misc/bevelled-corner-xyz side segment size 0.5))
       (flex/rotate [0 0 (prop :angle)])
       (flex/translate (prop :block->position block-key)))))
 

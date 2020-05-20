@@ -86,12 +86,19 @@
   ([direction box]
    (if (nil? direction) [0 0] (compass/to-grid direction box))))
 
+(defn- op-xy
+  "Update the first two values of a vector with the same operator."
+  [op coll]
+  (-> coll (update 0 op) (update 1 op)))
+
 (defn- *xy
   "Produce a vector for moving something laterally on a grid."
   ([direction offset]
    (*xy 1 direction offset))
   ([coefficient direction offset]
-   {:pre [(spec/valid? ::tarmi/point-2-3d offset)]}
+   {:pre [(number? coefficient)
+          (or (nil? direction) (direction compass/all-short))
+          (spec/valid? ::tarmi/point-2-3d offset)]}
    (let [[dx dy] (grid-factors direction)]
      (-> offset
        (update 0 (partial * coefficient dx))
@@ -108,22 +115,71 @@
    (-> offset
      (update 2 (partial * coefficient (case segment 0 1, 1 0, 2 -1))))))
 
-(defn cube-corner-xy
+(defn walled-corner-xy
   [direction size wall-thickness]
   (let [rev (when direction (compass/reverse direction))]
     (mapv +
       (*xy 0.5 direction size)
       (*xy 0.5 rev [wall-thickness wall-thickness 0]))))
 
-(defn cube-corner-z
+(defn walled-corner-z
   [segment size wall-thickness]
   (mapv +
     (*z 0.5 segment size)
     (*z 0.5 (tarmi/abs (- 2 segment)) [0 0 wall-thickness])))
 
-(defn cube-corner-xyz
+(defn walled-corner-xyz
   [direction segment size wall-thickness]
   (assoc
-    (cube-corner-xy direction size wall-thickness)
+    (walled-corner-xy direction size wall-thickness)
     2
-    (last (cube-corner-z segment size wall-thickness))))
+    (last (walled-corner-z segment size wall-thickness))))
+
+(defn align-to-bevel
+  [coll cardinal offsets]
+  (let [index (compass/to-index cardinal)]
+    (assoc coll index (nth offsets index))))
+
+(defn- edge-of-bevel
+  [direction size bevel-inset]
+  {:pre [(spec/valid? ::tarmi/point-2-3d size)
+         (direction compass/intermediates)]
+   :post [(spec/valid? ::tarmi/point-2-3d %)]}
+  (let [[primary secondary] (direction compass/keyword-to-tuple)]
+    (-> size
+      (align-to-bevel primary (*xy 0.5 primary size))
+      (align-to-bevel secondary (*xy 0.5 secondary (op-xy #(- % (* 2 bevel-inset)) size))))))
+
+(defn- bevelled-corner-xy
+  "Compute a horizontal offset from the center of a rectangle, the
+  corners of which are bevelled."
+  [direction size bevel-inset]
+  {:pre [(spec/valid? ::tarmi/point-2-3d size)
+         (or (nil? direction) (direction compass/all-short))]
+   :post [(spec/valid? ::tarmi/point-2-3d %)]}
+  (if direction
+    (case (compass/classify direction)
+      ::compass/intermediate (edge-of-bevel direction size bevel-inset)
+      (*xy 0.5 direction size))
+    (vec (repeat (count size) 0.0))))
+
+(defn bevelled-corner-xyz
+  "Compute a 3D offset from the center of a cuboid, the corners of which are
+  bevelled by a given inset on each side and the top.
+  The segmentation is a bit different from *z: 0 is the top, 1 is the bottom
+  edge of the top bevel, 2 is the middle, 3 the bottom."
+  [direction segment size bevel-inset]
+  {:pre [(spec/valid? ::tarmi/point-3d size)
+         (or (nil? direction) (direction compass/all-short))
+         (or (nil? segment) (integer? segment))]
+   :post [(spec/valid? ::tarmi/point-3d %)]}
+  (let [z (last size)
+        segment (or segment 2)]
+    (if (zero? segment)
+      (assoc (*xy 0.5 direction (op-xy #(- % (* 2 bevel-inset)) size))
+             2 (* 0.5 z))
+      (assoc (bevelled-corner-xy direction size bevel-inset)
+             2 (case segment
+                 1 (- (* 0.5 z) bevel-inset)
+                 2 0.0
+                 (* -0.5 z))))))
