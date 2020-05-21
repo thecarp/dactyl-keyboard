@@ -103,6 +103,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - Mounts for wrist rests no longer have peaked caps by default. Instead, tops
   are bevelled like the sides, and the body of the mount has its nominal size
   at its base instead of at its top only, to help with tweaking.
+- File names have changed where they correspond directly to bodies.
 
 ### Added
 - Documentation:
@@ -112,8 +113,8 @@ version 0.2.0, thus covering only a fraction of the project’s history.
     - Stock descriptions of recurring parameters.
 - Support for a number of different types of MCUs beyond the Pro Micro:
   Common Teensies as well as the Elite-C and Proton C.
-- The concept of bodies, making it possible to choose which OpenSCAD output
-  file to target for a given tweak etc.
+- A formal concept of bodies, making it possible to choose which OpenSCAD
+  output file to target for a given tweak etc.
     - Central housing, a new feature adding a body separate from the main body.
 - An MCU shelf. This type of MCU support corresponds directly to the
   Dactyl-ManuForm’s `teensy-holder` object and is therefore not new, but

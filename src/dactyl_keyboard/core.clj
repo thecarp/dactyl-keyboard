@@ -445,10 +445,8 @@
   rotation for ease of printing. The models themselves are described with
   unary precursors that take a completed “getopt” function."
   [getopt]
-  [{:name "preview-keycap-clusters"
-    :modules (get-key-modules getopt :module-keycap)
-    :model-precursor (partial key/metacluster key/cluster-keycaps)}
-   {:name "case-main"
+  ;; Hard-coded bodies go into outputs like “body-” + the ID keyword.
+  [{:name "body-main"
     :modules (concat
                [(when (getopt :central-housing :derived :include-adapter)
                   "housing_adapter_fastener")
@@ -459,17 +457,30 @@
     :model-precursor build-main-body-right
     :chiral (getopt :main-body :reflect)}
    (when (getopt :central-housing :derived :include-main)
-     {:name (str "case-central"  ; With conditional suffix.
+     {:name (str "body-central-housing"  ; With conditional suffix.
               (when (getopt :central-housing :derived :include-sections)
                 "-full"))
       :modules (central-housing-modules getopt)
       :model-precursor build-central-housing})
+   (when (and (getopt :wrist-rest :include)
+              (not (= (getopt :wrist-rest :style) :solid)))
+     {:name "body-wrist-rest"
+      :modules (concat (conditional-bottom-plate-modules getopt)
+                       (when (getopt :wrist-rest :sprues :include)
+                         ["sprue_negative"]))
+      :model-precursor build-plinth-right
+      :chiral (getopt :main-body :reflect)})
+   ;; Preview-only outputs.
+   {:name "preview-keycap-clusters"
+    :modules (get-key-modules getopt :module-keycap)
+    :model-precursor (partial key/metacluster key/cluster-keycaps)}
+   ;; Auxiliary features.
    (when (and (getopt :mcu :include)
               (getopt :mcu :support :lock :include))
      {:name "mcu-lock-bolt"
       :model-precursor mcu/lock-bolt-model
       :rotation [0 π 0]})
-   ;; Wrist rest:
+   ;; Auxiliary outputs specifically for wrist rests.
    (when (getopt :wrist-rest :include)
      {:name "pad-mould"
       :modules (conditional-bottom-plate-modules getopt)
@@ -480,14 +491,6 @@
      {:name "pad-shape"
       :modules (conditional-bottom-plate-modules getopt)
       :model-precursor build-rubber-pad-right
-      :chiral (getopt :main-body :reflect)})
-   (when (and (getopt :wrist-rest :include)
-              (not (= (getopt :wrist-rest :style) :solid)))
-     {:name "wrist-rest-main"
-      :modules (concat (conditional-bottom-plate-modules getopt)
-                       (when (getopt :wrist-rest :sprues :include)
-                         ["sprue_negative"]))
-      :model-precursor build-plinth-right
       :chiral (getopt :main-body :reflect)})
    ;; Bottom plate(s):
    (when (and (getopt :main-body :bottom-plate :include)
@@ -534,7 +537,7 @@
   (when (getopt :central-housing :derived :include-sections)
     (map-indexed
       (fn [idx [left right]]
-        {:name (str "case-central-section-" (inc idx))
+        {:name (str "body-central-housing-section-" (inc idx))
          :modules (central-housing-modules getopt)
          :model-precursor
            (fn [getopt]
