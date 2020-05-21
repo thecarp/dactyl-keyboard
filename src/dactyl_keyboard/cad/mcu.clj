@@ -43,7 +43,7 @@
         body (resolve-body getopt
                (getopt :mcu :body) (getopt :mcu :anchoring :anchor))]
    {:include-centrally (and (getopt :mcu :include) (= body :central-housing))
-    :include-mainly (and (getopt :mcu :include) (= body :main-body))
+    :include-mainly (and (getopt :mcu :include) (= body :main))
     ;; Add [x y z] coordinates of the four corners of the PCB. No DFM.
     :pcb (merge pcb-base pcb-corners)
     :connector (get cots/port-facts (:port-type pcb-base))

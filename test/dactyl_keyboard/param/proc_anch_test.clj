@@ -8,30 +8,30 @@
   (testing "explicit"
     (is (= (anch/resolve-body
              (unit-testing-accessor {})
-             :main-body
+             :main
              :origin)
-           :main-body)))
+           :main)))
   (testing "key mount"
     (is (= (anch/resolve-body
              (unit-testing-accessor
                 {:derived {:anchors {::k {::anch/type ::anch/key-mount}}}})
              :auto
              ::k)
-           :main-body)))
+           :main)))
   (testing "origin without central housing"
     (let [base {:main-body {:reflect false}
                 :central-housing {:include false}
                 :derived {:anchors {:origin {::anch/type ::anch/origin}}}}]
       (is (= (anch/resolve-body (unit-testing-accessor base) :auto :origin)
-             :main-body))
+             :main))
       (is (= (anch/resolve-body (unit-testing-accessor
                                   (assoc-in base [:main-body :reflect] true))
                                 :auto :origin)
-             :main-body))
+             :main))
       (is (= (anch/resolve-body (unit-testing-accessor
                                   (assoc-in base [:central-housing :include] true))
                                 :auto :origin)
-             :main-body))))
+             :main))))
   (testing "origin with central housing"
     (is (= (anch/resolve-body
              (unit-testing-accessor
@@ -54,7 +54,7 @@
                 {:derived {:anchors {::k {::anch/type ::anch/central-adapter}}}})
              :auto
              ::k)
-           :main-body)))
+           :main)))
   (testing "recursion through a number of links"
     (let [base {:derived {:anchors {::m {::anch/type ::anch/key-mount}
                                     ::k {::anch/type ::anch/port-holder
@@ -68,10 +68,10 @@
           res-main (partial anch/resolve-body (unit-testing-accessor base) :auto)
           res-central (partial anch/resolve-body (unit-testing-accessor central) :auto)]
       ; Lengthening chains of resolution:
-      (is (= (res-main ::m) :main-body))  ; Special treatment.
-      (is (= (res-main ::s) :main-body))  ; Defer to m.
-      (is (= (res-main ::p) :main-body))  ; Defer to s.
-      (is (= (res-main ::k) :main-body))  ; Defer to p.
+      (is (= (res-main ::m) :main))  ; Special treatment.
+      (is (= (res-main ::s) :main))  ; Defer to m.
+      (is (= (res-main ::p) :main))  ; Defer to s.
+      (is (= (res-main ::k) :main))  ; Defer to p.
       ; And once again with a different definition of m:
       (is (= (res-central ::m) :central-housing))
       (is (= (res-central ::s) :central-housing))

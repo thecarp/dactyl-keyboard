@@ -107,12 +107,12 @@
     (when (and (getopt :wrist-rest :include)
                (= (getopt :wrist-rest :style) :threaded))
       (wrist/all-partner-side-blocks getopt))
-    (auxf/ports-positive getopt #{:main-body})
+    (auxf/ports-positive getopt #{:main})
     (when (getopt :main-body :back-plate :include)
       (auxf/backplate-block getopt))
     (when (getopt :main-body :rear-housing :include)
       (main-body/rear-housing getopt))
-    (tweak/plating getopt true :main-body)
+    (tweak/plating getopt true :main)
     (when (getopt :main-body :bottom-plate :include)
       (bottom/posts-in-main-body getopt))
     (auxf/foot-plates getopt)
@@ -221,7 +221,7 @@
             ;; Space for an adapter lip, in case the adapter itself is too
             ;; thin.
             (central/lip-body-right getopt))
-          (auxf/ports-negative getopt #{:main-body})
+          (auxf/ports-negative getopt #{:main})
           (when (getopt :mcu :derived :include-mainly)
             (mcu/negative-composite getopt))
           (when (getopt :main-body :leds :include)
@@ -231,7 +231,7 @@
           (when (and (getopt :wrist-rest :include)
                      (= (getopt :wrist-rest :style) :threaded))
             (wrist/all-fasteners getopt))
-          (tweak/plating getopt false :main-body)
+          (tweak/plating getopt false :main)
           (sandbox/negative getopt))
         ;; Outer positives, subject only to outer negatives:
         (when (and (getopt :mcu :derived :include-mainly)
@@ -274,7 +274,7 @@
       (when (getopt :wrist-rest :bottom-plate :include)
         (bottom/posts-in-wrist-rest getopt))
       (when (= (getopt :wrist-rest :style) :solid)
-        (tweak/plating getopt true :main-body)))))
+        (tweak/plating getopt true :main)))))
 
 (defn build-rubber-pad-right
   "Right-hand-side wrist-rest pad model. Useful in visualization and
@@ -287,7 +287,7 @@
         (wrist/rubber-insert-positive getopt))
       (bottom/posts-in-wrist-rest getopt)
       (when (= (getopt :wrist-rest :style) :solid)
-        (tweak/plating getopt true :main-body)))))
+        (tweak/plating getopt true :main)))))
 
 (def derivers-static
   "A vector of configuration locations and functions for expanding them."

@@ -149,24 +149,24 @@
                   (auto-body getopt
                     (apply getopt (concat fragment [:anchoring :anchor]))))
         wr-ambilateral #(case (getopt :derived :anchors anchor :block-key)
-                           :partner-side :main-body
+                           :partner-side :main
                            :wrist-side :wrist-rest)]
     (case (getopt :derived :anchors anchor ::type)
       ::origin (if (and (getopt :main-body :reflect)
                         (getopt :central-housing :include))
                  :central-housing
-                 :main-body)
+                 :main)
       ::wr-block (wr-ambilateral)
       ::wr-nut (wr-ambilateral)
       ::wr-perimeter :wrist-rest
       ::central-gabel :central-housing
-      ::central-adapter :main-body   ; Sic.
+      ::central-adapter :main   ; Sic.
       ::mcu-lock-plate (recurse :mcu)
       ::port-hole (recurse :ports anchor)
       ::port-holder (recurse :ports (getopt :derived :anchors anchor ::primary))
       ::secondary (recurse :secondaries anchor)
       ;; Default:
-      :main-body)))
+      :main)))
 
 (defn resolve-body
   "Take a body setting for an anchor. Return a non-auto body ID."
@@ -175,7 +175,7 @@
   (case body
     :auto (let [resolved (auto-body getopt anchor)]
             (if (= resolved :auto)
-              :main-body  ; Fall back to the main body if autos are chained up.
+              :main  ; Fall back to the main body if autos are chained up.
               resolved))
     ;; Default:
     body))

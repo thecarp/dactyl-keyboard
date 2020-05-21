@@ -239,7 +239,7 @@
   [getopt]
   (mask/main-bottom-plate getopt 3
     (key/metacluster wall/cluster getopt)
-    (tweak/plating getopt true :main-body)))
+    (tweak/plating getopt true :main)))
 
 (defn- floor-finder
   "Make a function that takes a key mount and returns a 2D vertex
@@ -335,7 +335,7 @@
     (when (and (getopt :wrist-rest :include)
                (= (getopt :wrist-rest :style) :threaded))
       (model/cut (wrist/all-partner-side-blocks getopt)))
-    (maybe/cut (auxf/ports-positive getopt #{:main-body :central-housing}))))
+    (maybe/cut (auxf/ports-positive getopt #{:main :central-housing}))))
 
 (defn case-positive
   "A model of a bottom plate for the entire case but not the wrist rests.

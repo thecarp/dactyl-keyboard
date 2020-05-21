@@ -118,14 +118,14 @@ around the z axis.
 
 The anchor metaphor is related to the concept of bodies. Whereas an `anchor`
 setting controls the position of a feature in vector space, a `body` setting
-controls which models and therefore which output files will include the
+controls which 3D models and therefore which output files will include the
 feature, regardless of its position in vector space.
 
-The following bodies are recognized:
+Where a `body` parameter appears, the following settings are recognized:
 
 * `auto` (default): The application will determine the body from the anchor and
   other settings, defaulting to the main body in case of ambiguity.
-* `main-body`: The main body of the keyboard.
+* `main`: The main body of the keyboard.
 * `central-housing`: The central housing.
 * `wrist-rest`: The wrist rest.
 

@@ -65,12 +65,12 @@
     (is (= (filter (screener getopt {:above-ground false}) forest)
            [leaf-a])))
   (testing "main body"
-    (is (= (filter (screener getopt {:bodies #{:main-body}}) forest)
+    (is (= (filter (screener getopt {:bodies #{:main}}) forest)
            [leaf-a branch-b])))
   (testing "central housing"
     (is (= (filter (screener getopt {:bodies #{:central-housing}}) forest)
            [branch-a branch-c])))
   (testing "intersection"
     (is (= (filter (screener getopt {:above-ground true
-                                     :bodies #{:main-body}}) forest)
+                                     :bodies #{:main}}) forest)
            [branch-b]))))

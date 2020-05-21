@@ -37,7 +37,7 @@
 
 (spec/def ::include boolean?)
 (spec/def ::positive boolean?)
-(spec/def ::body #{:auto :main-body :central-housing :wrist-rest})
+(spec/def ::body #{:auto :main :central-housing :wrist-rest})
 (spec/def ::anchor keyword?)
 (spec/def ::alias (spec/and keyword?
                             #(not (= :origin %))
