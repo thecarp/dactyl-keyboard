@@ -76,7 +76,8 @@
       (when (and (getopt :wrist-rest :preview)
                  (getopt :wrist-rest :bottom-plate :include))
         (bottom/wrist-positive getopt)))
-    (tweak/plating getopt false :wrist-rest)
+    (mask/above-wrist-bottom-plate getopt
+      (tweak/plating getopt false :wrist-rest))
     (when (getopt :wrist-rest :bottom-plate :include)
       (maybe/union
         (if (getopt :wrist-rest :preview)

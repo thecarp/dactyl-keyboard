@@ -18,6 +18,7 @@
             [thi.ng.geom.core :as geom :refer [tessellate vertices]]
             [thi.ng.geom.polygon :refer [polygon2 inset-polygon]]
             [dactyl-keyboard.cad.misc :as misc]
+            [dactyl-keyboard.cad.body :refer [wrist-plate-hull]]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.poly :as poly]
             [dactyl-keyboard.misc :refer [colours]]
@@ -332,7 +333,10 @@
   (let [prop (partial getopt :wrist-rest :mounts mount-index)
         authority (prop :authority)
         heights (sort (prop :fasteners :heights))
-        to-3d #(misc/pad-to-3d % (last heights))
+        width (prop :blocks :width)
+        depth (fn [block-key] (prop :blocks block-key :depth))
+        height (fn [position] (* 2 (last position)))
+        to-3d #(misc/pad-to-3d % (+ (/ (last heights) 2) (/ width 4)))
         nuts (fn [base] (mapv #(conj (subvec base 0 2) %) heights))
         ofa #(place/offset-from-anchor getopt (prop :blocks % :anchoring) 2)
         partner-side (to-3d (ofa :partner-side))
@@ -352,10 +356,7 @@
             :partner-side (prop :angle)  ; The fixed angle supplied by the user.
             :mutual  ; Compute the angle from the position of the blocks.
               (- (Math/atan (apply / (map - (take 2 wrist-side)
-                                            (take 2 partner-side))))))
-        width (prop :blocks :width)
-        depth (fn [block-key] (prop :blocks block-key :depth))
-        height (fn [position] (+ (last position) (/ width 2)))]
+                                            (take 2 partner-side))))))]
     {:angle angle
      :block->size {:partner-side [width (depth :partner-side) (height partner-side)]
                    :wrist-side [width (depth :wrist-side) (height wrist-side)]}
@@ -410,24 +411,21 @@
       (model-fn getopt i))))
 
 (defn block-model
-  "A model of a mounting bloack. A cuboid with bevelled edges."
+  "A model of a mounting block. A cuboid with edges bevelled by 0.5 mm.
+  The block is modelled in such a way that it will be pierced by the
+  topmost threaded rod of its mount at the nominal position of the block,
+  once placed in its final position (using block-in-place)."
   ;; The reason for the squarish profile is forward compatibility with
-  ;; square-profile nuts in future.
+  ;; square-profile nuts in future, as well as ergonomy.
   [getopt mount-index block-key]
-  (let [[w d h] (getopt :wrist-rest :mounts mount-index
-                        :derived :block->size block-key)
-        t (getopt :main-body :bottom-plate :thickness)
-        z (+ t h)]
+  (let [prop (partial getopt :wrist-rest :mounts mount-index :derived)
+        [w d h] (prop :block->size block-key)]
     (when-not (or (zero? w) (zero? d))
-      ;; Extend the model down so that cutting it at t=0 will
-      ;; include its shape in any bottom plate.
-      (model/translate [0 0 (- t)]
-        (model/hull
-          (model/translate [0 0 (+ (/ (dec z) -2) (/ w 2))]
-            (model/translate [0 0 -1/4]
-              (model/cube (dec w) d (dec z))
-              (model/cube w (dec d) (dec z)))
-            (model/cube (dec w) (dec d) z)))))))
+      (wrist-plate-hull getopt
+        (model/translate [0 0 -1/4]
+          (model/cube (dec w) d (dec h))
+          (model/cube w (dec d) (dec h)))
+        (model/cube (dec w) (dec d) h)))))
 
 (defn block-in-place
   "Use the placement module without side, segment or offset."
