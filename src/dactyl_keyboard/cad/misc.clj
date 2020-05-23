@@ -11,7 +11,8 @@
             [scad-tarmi.core :as tarmi]
             [scad-tarmi.maybe :as maybe]
             [scad-klupe.iso :refer [bolt]]
-            [dactyl-keyboard.compass :as compass]))
+            [dactyl-keyboard.compass :as compass]
+            [dactyl-keyboard.cad.poly :as poly]))
 
 
 (def wafer 0.001)  ; Generic insignificant feature size.
@@ -183,3 +184,16 @@
                  1 (- (* 0.5 z) bevel-inset)
                  2 0.0
                  (* -0.5 z))))))
+
+(defn bevelled-cuboid
+  "A polyhedron model of a complete bevelled cuboid."
+  [size bevel-inset]
+  (let [corner (fn [direction segment]
+                 (bevelled-corner-xyz direction segment size bevel-inset))
+        edge (fn [turn] [(corner turn 1) (corner turn 3)])]
+   (poly/bevelled-cuboid
+     (map (fn [direction]
+            [(corner direction 0)
+             [(edge (compass/gentle-left direction))
+              (edge (compass/gentle-right direction))]])
+          [:NE :SE :SW :NW]))))

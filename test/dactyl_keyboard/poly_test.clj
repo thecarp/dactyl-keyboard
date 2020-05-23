@@ -11,6 +11,15 @@
     (is (= (vec2 [0 0]) [0.0 0.0]))
     (is (= (mapv vec2 [[0 0] [1 1]]) [[0.0 0.0] [1.0 1.0]]))))
 
+(deftest test-tesselate3
+  (testing "Ready-made triangle."
+    (is (= (poly/tessellate [[0 0 0] [0.5 0.5 0] [1 0 0]])
+           [[[0.0 0.0 0.0] [0.5 0.5 0.0] [1.0 0.0 0.0]]])))
+  (testing "Unit square."
+    (is (= (poly/tessellate [[0 0 0] [0 1 0] [1 1 0] [1 0 0]])
+           [[[0.0 0.0 0.0] [0.0 1.0 0.0] [1.0 1.0 0.0]]
+            [[0.0 0.0 0.0] [1.0 1.0 0.0] [1.0 0.0 0.0]]]))))
+
 (deftest test-spline
   (testing "1D at resolution 0."
     ;; thi.ng allows resolution 0 and will return nil for it.
@@ -64,6 +73,37 @@
     (is (= (poly/coords-to-indices [[4 5 6] [8 5 6] [7 7 7]]
                                    [[[8 5 6] [4 5 6] [7 7 7]]])
            [[1 0 2]]))))  ; First point in input appears second in triangle.
+
+(deftest test-bevelled-cuboid
+  (testing "Single-tier octagon."
+    (let [ne [[2 2 1] [[[2 3 0]] [[3 2 0]]]]
+          se [[2 1 1] [[[3 1 0]] [[2 1 0]]]]
+          sw [[1 1 1] [[[1 0 0]] [[0 1 0]]]]
+          nw [[1 2 1] [[[0 2 0]] [[1 3 0]]]]
+          cuboid (poly/bevelled-cuboid [ne se sw nw])
+          {:keys [points faces]} (second cuboid)]
+      (is (= (first cuboid) :polyhedron))
+      (is (= points [[2 2 1] [2 3 0] [3 2 0]
+                     [2 1 1] [3 1 0] [2 1 0]
+                     [1 1 1] [1 0 0] [0 1 0]
+                     [1 2 1] [0 2 0] [1 3 0]]))
+      (is (= faces [;; Top face:
+                    [0 3 6] [9 6 3]
+                    ;; Upper corner, one triangle per corner:
+                    [0 2 1] [3 5 4] [6 8 7] [9 11 10]
+                    ;; Lower corners, two triangles per corner:
+                    [1 2 1] [2 1 2]
+                    [4 5 4] [5 4 5]
+                    [7 8 7] [8 7 8]
+                    [10 11 10] [11 10 11]
+                    ;; Sides proper, upper faces.
+                    [2 4 2] [4 2 4]
+                    [5 7 5] [7 5 7]
+                    [8 10 8] [10 8 10]
+                    [11 1 11] [1 11 1]
+                    ;; Sides proper, lower faces?
+                    [1 11 10] [10 8 7] [3 4 2] [2 1 10] [10 7 3] [3 2 10]])))))
+
 
 (deftest test-tuboid
   (testing "Minimal valid input."

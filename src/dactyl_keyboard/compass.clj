@@ -128,6 +128,8 @@
   (let [i (.indexOf directions starting-direction)]
     (get directions (mod (+ i steps-clockwise) n-divisions))))
 
+(def gentle-right (partial turn 1))
+(def gentle-left (partial turn -1))
 (def sharp-right (partial turn (/ n-divisions 4)))
 (def sharp-left (partial turn (/ n-divisions -4)))
 (def reverse (partial turn (/ n-divisions 2)))
