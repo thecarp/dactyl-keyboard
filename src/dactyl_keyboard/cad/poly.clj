@@ -6,6 +6,18 @@
 ;;; These are general functions for placing vertices rather than building up
 ;;; complex shapes from primitive solids.
 
+;;; A lot of the logic here is intended to satisfy OpenSCAD’s requirement that:
+;;;
+;;;   “All faces must have points ordered in the same direction. OpenSCAD
+;;;    prefers clockwise when looking at each face from outside inwards.”
+;;;
+;;; Failing to meet this requirement will cause rendering errors on
+;;; intersection, difference etc.
+;;;
+;;; thi.ng.geom seems to have no corresponding requirement, nor does this module
+;;; compute face normals to ensure that faces are correctly ordered. Instead,
+;;; it has unchecked expectations upon its inputs, which is brittle.
+
 (ns dactyl-keyboard.cad.poly
   (:require [clojure.spec.alpha :as spec]
             [scad-clj.model :as model]
@@ -32,75 +44,49 @@
   thi.ng’s typing."
   (first (keep-indexed #(when (same %2 point) %1) coll)))
 
+(defn- face-for-geom [face] [(mapv vec3 face) nil])
+
 (defn tessellate
   "Tessellate an arbitary 3D surface via thi.ng.
   This is all about a round trip through the thi.ng API.
   Return a vector of triangles."
   ;; Exposed for unit testing only.
-  [points]
-  {:pre [(spec/valid? ::tarmi/point-coll-3d points)]
+  [faces]
+  {:pre [(spec/valid? (spec/coll-of ::tarmi/point-coll-3d) faces)]
    :post [(spec/valid? (spec/coll-of ::tarmi/point-coll-3d) %)]}
-  (->> [[(mapv vec3 points) nil]]
+  (->> (mapv face-for-geom faces)
     (geom/into (basic-mesh))
     geom/tessellate
-    :faces
+    :faces  ; Return a set, lose deterministic order.
     (map geom/vertices)
-    sort
+    sort  ; Create a new deterministic order.
     vec))
-
-(defn- tesselate-quadriteral
-  "Naïve 3D tesselation: Return 2 triangles for 4 3D points."
-  [points]
-  {:pre [(spec/valid? ::tarmi/point-coll-3d points)
-         (= (count points) 4)]
-   :post [(spec/valid? (spec/coll-of ::tarmi/point-coll-3d) %)
-          (= (count %) 2)]}
-  [(butlast points) (reverse (rest points))])
 
 (defn- bite-tail [coll] {:pre [(vector? coll)]} (conj coll (first coll)))
 (defn- last-first [coll] (rest (bite-tail coll)))
 
-(defn- pave-space
+(defn- faces-between-lines
   "Describe a surface between two sequences of points of the same length.
-  Return triangles described with point coordinates."
-  [[a b]]
-  {:pre [(spec/valid? ::tarmi/point-coll-3d a)
-         (spec/valid? ::tarmi/point-coll-3d b)
-         (= (count a) (count b))]
+  Return triangles described with point coordinates.
+  As the penultimate step, before calling tessellate, rearrange each group of
+  four points into OpenSCAD’s clockwise order. This assumes that the two
+  sequences of points are themselves roughly parallel."
+  [point-seqs]
+  {:pre [(spec/valid? (spec/coll-of ::tarmi/point-coll-3d :count 2) point-seqs)
+         (apply = (map count point-seqs))
+         (= (count point-seqs) 2)]
    :post [(spec/valid? (spec/coll-of ::tarmi/point-coll-3d) %)]}
-  (mapcat tesselate-quadriteral
-          (partition 4 2 (interleave (bite-tail a) (bite-tail b)))))
+  (->> point-seqs
+    (apply interleave)
+    (partition 4 2)
+    (map (fn [[a b c d]] [a c d b]))
+    (tessellate)))
 
-(defn- bevel-triangles
-  [sides]
-  (let [top-vertices (map first sides)  ; 1 coordinate sequence.
-        corner-seqs (map second sides)  ; 4 pairs of coordinate sequences.
-        corner-pairs (mapv (fn [[top lower]] (mapv (partial into [top]) lower))
-                           sides)
-        bevel-edges (vec (apply concat corner-pairs))  ; 8 coordinate sequences.
-        side-pairs (partition 2 (last-first bevel-edges))]
-    (concat
-      ;; The top rectangle, as two triangles.
-      (tessellate top-vertices)
-      ;; The upper corners, one triangle on each side.
-      (mapv (fn [[top [left right]]] [top (first right) (first left)]) sides)
-      ;; The rectangular lower corners.
-      (mapcat pave-space corner-seqs)
-      ;; The upper bevels along the sides.
-      (mapcat pave-space (take 4 side-pairs))
-      ;; The sides proper, between each of the corners.
-      (mapcat pave-space (drop 4 side-pairs))
-      ;; The bottom octagon.
-      (tessellate (map last bevel-edges)))))
-
-(defn- tuboid-triangles
-  "thi.ng triangles for a hollow tube of sorts."
-  [outer-left inner-left outer-right inner-right]
-  (mapcat pave-space
-    [[outer-left inner-left]      ; Left-hand-side aperture.
-     [inner-right outer-right]    ; Right-hand side aperture, reverse order.
-     [inner-left inner-right]     ; Interior.
-     [outer-right outer-left]]))  ; Exterior. Notice reverse order.
+(defn- fill-between-lines
+  "Like faces-between-lines but connecting each line back to its starting
+  point, forming a complete surface all the way between two loops."
+  [point-seqs]
+  (faces-between-lines (map bite-tail point-seqs)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -151,9 +137,6 @@
   "Take point coordinates and triangles referring to the same
   points by their coordinates. Return point-index triangles.
   This is intended to prepare a list of faces for an OpenSCAD polyhedron."
-  ;; Notice that negative indices, as returned by .indexOf for unrecognized
-  ;; inputs, are checked as illegal here, meaning that the inputs must match.
-  ;; However, all numbers are treated as floats, so that 0 = 0.0 etc.
   [points triangles]
   {:pre [(spec/valid? ::tarmi/point-coll-2-3d points)
          (spec/valid? (spec/coll-of ::tarmi/point-coll-2-3d) triangles)]
@@ -161,6 +144,29 @@
   (let [to-index (fn [coord] (index-of points coord))
         to-face (fn [triangle] (mapv to-index triangle))]
     (mapv to-face triangles)))
+
+(defn from-triangle-coordinates
+  "An OpenSCAD polyhedron. Unlike model/polyhedron, this function takes
+  its triangles defined in terms of coordinates, not indices in the list of
+  points."
+  ([triangles]
+   (from-triangle-coordinates (distinct (apply concat triangles)) triangles))
+  ([points triangles]
+   (from-triangle-coordinates points triangles 4))
+  ([points triangles convexity]
+   {:pre [(spec/valid? ::tarmi/point-coll-3d points)
+          (spec/valid? (spec/coll-of ::tarmi/point-coll-3d) triangles)
+          (nat-int? convexity)]}
+   (model/polyhedron points
+                     (coords-to-indices points triangles)
+                     :convexity convexity)))
+
+(defn from-face-coordinates
+  "An OpenSCAD polyhedron tessellated by thi.ng."
+  ([faces]
+   (from-triangle-coordinates (tessellate faces)))
+  ([points faces & more]
+   (apply from-triangle-coordinates points (tessellate faces) more)))
 
 (defn bevelled-cuboid
   [side-tuples]
@@ -170,29 +176,43 @@
                          (spec/coll-of (spec/coll-of ::tarmi/point-3d)
                                        :count 2)))
            side-tuples)]}
-  (let [points (mapcat (fn [[top [left right]]] (concat [top] left right))
-                       side-tuples)]
-    (model/polyhedron
-      points
-      (coords-to-indices points (bevel-triangles side-tuples))
-      :convexity 1)))
+  (let [corner-pairs (mapv (fn [[top lower]] (mapv (partial into [top]) lower))
+                           side-tuples)
+        bevel-edges (vec (apply concat corner-pairs))]  ; 8 sequences.
+    (from-triangle-coordinates
+      (distinct (apply concat bevel-edges))
+      ;; Find faces; some redundant tessellation here.
+      (->> [;; Top rectangle.
+            [(mapv first side-tuples)]  ; 1 sequence of 4 points.
+            ;; The upper corners, one triangle on each side.
+            (mapv (fn [[top [left right]]]
+                    [(first right) top (first left)])
+                  side-tuples)
+            ;; The rectangular lower corners.
+            (mapcat faces-between-lines
+                    (map second side-tuples))  ; 4 pairs of coordinate sequences.
+            ;; The upper bevels along the sides, and the sides themselves.
+            (mapcat faces-between-lines
+                    (partition 2 (last-first bevel-edges)))
+            ;; The bottom octagon, reversed because it’s facing down.
+            [(reverse (mapv last bevel-edges))]]
+        (apply concat)
+        (tessellate))
+      1)))
 
 (defn tuboid
   "A polyhedron describing an irregular ring- or tube-like shape.
-  This is based on the naïve assumption that incoming point sequences describe
-  the vertices of the object starting on the low end of all three axes and
-  moving to higher values clockwise for the left-hand side (low x) of the
-  object."
-  ;; Assumptions and the logic of relevant internal functions
-  ;; satisfy OpenSCAD’s requirement that:
-  ;;   “All faces must have points ordered in the same direction. OpenSCAD
-  ;;    prefers clockwise when looking at each face from outside inwards.”
-  ;; Failing to meet this requirement will cause rendering errors on
-  ;; intersection.
-  [& point-seqs]
-  {:pre [(spec/valid? (spec/coll-of ::tarmi/point-coll-3d) point-seqs)]}
-  (let [points (apply concat point-seqs)]
-    (model/polyhedron
-      points
-      (coords-to-indices points (apply tuboid-triangles point-seqs))
-      :convexity 3)))
+  This is based on the naïve assumption that incoming point sequences are
+  arranged clockwise as seen looking at the right-hand side (high x) of the
+  object from the outside (higher x)."
+  [& [outer-left inner-left outer-right inner-right :as point-seqs]]
+  {:pre [(spec/valid? (spec/coll-of ::tarmi/point-coll-3d) point-seqs)
+         (apply = (map count point-seqs))
+         (= (count point-seqs) 4)]}
+  (from-triangle-coordinates
+    (apply concat point-seqs)
+    (mapcat fill-between-lines
+      [[inner-left outer-left]    ; Left-hand-side aperture.
+       [outer-right inner-right]  ; Right-hand side aperture, hence flipped.
+       [inner-right inner-left]      ; Interior.
+       [outer-left outer-right]])))  ; Exterior, hence flipped.

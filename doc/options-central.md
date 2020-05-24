@@ -58,12 +58,12 @@ The approximate extent of the housing itself, on the x axis, in mm.
 
 ### Parameter <a id="shape-interface">`interface`</a>
 
-The `interface` setting is essentially a list of points in space. Each of these points can influence the shape of the central housing itself, its adapter, and/or the shape of its bottom plate.
+The `interface` setting is essentially a list of points: Coordinates in space. Each of these points can influence the shape of the central housing itself, its adapter, and/or the shape of its bottom plate.
 
-The question of which bodies will include each item in the list is solved by the properties of each item in the list, including the position of each point. Specifically, the `base` z-axis `offset` coordinate (see below) controls the default values of the following two optional properties if you omit them:
+There are no `body` parameters here (yet). Instead, the question of which bodies will include each item in the list is answered by the properties of each item in the list, including the position of each point. Specifically, the `base` z-axis `offset` coordinate (see below) controls the default values of the following two optional properties, if you omit them:
 
 * `at-ground`: If `true`, or if omitted and the `base` z coordinate is not positive, the item will shape the bottom plate for the central housing, if any.
-* `above-ground`: If `true`, or if the `base` z coordinate is not negative, the item will shape the main body of the central housing itself. If an adapter is included, the item will shape that too.
+* `above-ground`: If `true`, or if the `base` z coordinate is not negative, the item will shape the central housing itself as a body. If an adapter is included, the item will shape that too.
 
 Those items which are “above ground” determine the shape of each outer edge of the housing, at the interface between the housing itself and the rest of the case. They do this as an ordered list of vertices, each defined primarily by an offset in a little section under the `base` key. The following keys are allowed in the value of `base`:
 
@@ -89,7 +89,7 @@ The following example covers only one vertex on the housing and one correspondin
       offset: [10, 0, 0]
       alias: adapter-side-1
 ```
-In this example, the vertex named `adapter-side-1` will be placed 10 mm plus the overall width of the adapter away from `housing-side-1R`, with the body of the adapter covering the intervening distance, so that the shell of the adapter touches both vertices, and the housing only touches one. Given that the `base` z cooridinate is zero, both `at-ground` and `above-ground` have their default values and are therefore redundant.
+In this example, the vertex named `adapter-side-1` will be placed 10 mm plus the overall width of the adapter away from `housing-side-1R`, with the adapter covering the intervening distance, so that the shell of the adapter touches both vertices, and the housing only touches one. Given that the `base` z coordinate is zero, both `at-ground` and `above-ground` have their default values and are therefore redundant.
 
 Aliases for vertices on the interface itself, as opposed to the adapter, are useful mainly when you anchor features like an MCU holder to the central housing. Doing so, you need to be aware that the central housing has both symmetric and asymmetric properties. Its basic shape, including everything you can determine with `interface`, will be bilaterally symmetric. Adapters and their fasteners, and bottom plates, are also symmetric, except for threaded holes. By contrast, central-housing-specific `tweaks` and MCU holders will only appear on the specific side of the housing that you indicate, breaking symmetry.
 
@@ -104,12 +104,11 @@ Here’s an example of a valid, minimal, triangular profile, like a little ridge
   - base:
       offset: [0, 10, 0]
 ```
-In this example, the high point in the middle is offset on the x axis, giving the edge of the central housing a slant as seen from infinite y. Notice also that the lowest z coordinate is 0, which places this central housing on the floor, inside the `mask`. This is not required. A lower z coordinate will cause the `mask` to open the bottom of the central housing, which is usually more practical for running wires through the keyboard. Notice that if you do use a lower z coordinate and you still want the two lower points to be included in the body of the central housing, you will need to set `above-ground` to `true`, as an explicit addition to the two items at the extremes.
+In this example, the high point in the middle is offset on the x axis, giving the edge of the central housing a slant as seen from infinite y. Notice also that the lowest z coordinate is 0, which places this central housing on the floor, inside the `mask`. This is not required. A lower z coordinate will cause the `mask` to open the bottom of the central housing, which is usually more practical for running wires through the keyboard. Notice that if you do use a lower z coordinate and you still want the two lower points to be included in the central housing as a body, you will need to set `above-ground` to `true`, as an explicit addition to the two items at the extremes.
 
-It may not be obvious why `at-ground` and `above-ground` are mutually independent of one another and of the `base` z coordinate that gives them their default values. The main reason for this design is to allow points that are “ethereal”, appearing in neither body. Ethereal points are similar to `secondaries`, but unlike `secondaries`, they are influenced by central-housing width settings and not tied to other points on the interface. They are intended as anchors for key clusters and tweaks, where their responsiveness to width alone comes in handy as you work out the precise shape of the housing.
+The DMOTE application uses the `interface` to construct OpenSCAD polyhedrons. OpenSCAD and CGAL have many requirements upon polyhedrons and a carelessly constructed interface will violate them, resulting in a central housing that cannot be rendered or printed. As a rule of thumb, define your interface moving **clockwise** from the point of view of positive infinite x, like the tent example above. Be especially careful with `adapter` offsets on the y and z axes, and try to keep the housing itself more than twice as broad as its wall thickness.
 
-The DMOTE application uses the `interface` to construct OpenSCAD polyhedrons. OpenSCAD and CGAL have many requirements upon polyhedrons and a carelessly constructed interface will violate them, resulting in a central housing that cannot be rendered or printed. As a rule of thumb, define your interface moving clockwise from the point of view of positive infinite x, like the tent example. Be especially careful with `adapter` offsets on the y and z axes, and try to keep the housing itself more than twice as broad as its wall thickness.
-
+It may not be obvious why `at-ground` and `above-ground` are mutually independent of one another and of the `base` z coordinate that gives them their default values. The main reason for this design is to allow points that are “ethereal”, appearing in neither body. Ethereal points are similar to `secondaries`, except that unlike `secondaries`, they are influenced by width settings and not tied to other points on the interface. They are intended as anchors for key clusters and tweaks, where their responsiveness to width alone comes in handy as you work out the precise shape of the housing.
 
 ## Section <a id="adapter">`adapter`</a>
 
@@ -209,7 +208,7 @@ The maximum thickness of the loop of each receiver where it grabs the fastener, 
 
 ##### Parameter <a id="adapter-receivers-thickness-bridge">`bridge`</a>
 
-The thickness of the main body of each receiver where it extends across the interface, in the plane of the housing wall, in mm.
+The thickness of each receiver where it extends across the interface, in the plane of the housing wall, in mm.
 
 #### Section <a id="adapter-receivers-width">`width`</a>
 
@@ -241,7 +240,7 @@ The scale of each projection, as a 2-tuple of horizontal and vertical factors. T
 
 ### Parameter <a id="bottom-plate-fastener-positions">`fastener-positions`</a>
 
-The positions of threaded fasteners used to attach the bottom plate to the body of the central housing. In addition to the properties permitted in similar lists of such anchors, the central housing permits a `direction`, formulated as a point on the compass or an angle in radians. This property controls the facing of a projection. Typically, you want it facing the central housing’s nearest wall.
+The positions of threaded fasteners used to attach the bottom plate to the central housing. In addition to the properties permitted in similar lists of such anchors, the central housing permits a `direction`, formulated as a point on the compass or an angle in radians. This property controls the facing of a projection. Typically, you want it facing the central housing’s nearest wall.
 
 ⸻
 

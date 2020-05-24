@@ -3,22 +3,84 @@
 
 (ns dactyl-keyboard.poly-test
   (:require [clojure.test :refer [deftest testing is]]
+            [clojure.string :as string]
             [dactyl-keyboard.cad.poly :as poly]
-            [thi.ng.geom.vector :refer [vec2]]))
+            [thi.ng.geom.vector :refer [vec2 vec3]]
+            [scad-clj.model :as model]
+            [scad-clj.scad :refer [write-scad]]))
+
+(defn- scad-scene
+  "Produce copy-paste friendly OpenSCAD code.
+  The scene subtracts a cylinder from an arbitrary shape at
+  a scale appropriate for the default view. Difference is used
+  because OpenSCAD traditionally fails to detect mesh problems until such
+  operations are applied to broken polyhedra."
+  [shape]
+  (string/replace
+    (write-scad (model/difference shape (model/cylinder 25 100)))
+    "\n" ""))
+
+(defn- vec3-seq [& points] (mapv (partial apply vec3) points))
 
 (deftest test-upstream
   (testing "thi.ng.geom spec."
     (is (= (vec2 [0 0]) [0.0 0.0]))
     (is (= (mapv vec2 [[0 0] [1 1]]) [[0.0 0.0] [1.0 1.0]]))))
 
-(deftest test-tesselate3
+(deftest test-tesselate
   (testing "Ready-made triangle."
-    (is (= (poly/tessellate [[0 0 0] [0.5 0.5 0] [1 0 0]])
+    (is (= (poly/tessellate [[[0 0 0] [0.5 0.5 0] [1 0 0]]])
            [[[0.0 0.0 0.0] [0.5 0.5 0.0] [1.0 0.0 0.0]]])))
   (testing "Unit square."
-    (is (= (poly/tessellate [[0 0 0] [0 1 0] [1 1 0] [1 0 0]])
+    (is (= (poly/tessellate [[[0 0 0] [0 1 0] [1 1 0] [1 0 0]]])
            [[[0.0 0.0 0.0] [0.0 1.0 0.0] [1.0 1.0 0.0]]
-            [[0.0 0.0 0.0] [1.0 1.0 0.0] [1.0 0.0 0.0]]]))))
+            [[0.0 0.0 0.0] [1.0 1.0 0.0] [1.0 0.0 0.0]]])))
+  (testing "Irregular tetrahedron."
+    (is (= (poly/tessellate
+             [[[1 2 0] [2 0 0] [1 1 1]]  ; North-east face.
+              [[0 0 0] [1 1 1] [2 0 0]]  ; South face.
+              [[1 2 0] [1 1 1] [0 0 0]]  ; North-west face.
+              [[0 0 0] [2 0 0] [1 2 0]]])  ;  Bottom face.
+           [[[0.0 0.0 0.0] [1.0 1.0 1.0] [2.0 0.0 0.0]]
+            [[0.0 0.0 0.0] [2.0 0.0 0.0] [1.0 2.0 0.0]]
+            [[1.0 2.0 0.0] [1.0 1.0 1.0] [0.0 0.0 0.0]]
+            [[1.0 2.0 0.0] [2.0 0.0 0.0] [1.0 1.0 1.0]]])))
+  (testing "Pyramid."
+    (let [[ne se sw nw top] (vec3-seq [2 2 0] [2 0 0] [0 0 0] [0 2 0] [1 1 1])]
+      (is (= (poly/tessellate [[se top ne]      ; East face.
+                               [sw top se]      ; South face.
+                               [nw top sw]      ; West face.
+                               [ne top nw]      ; North face.
+                               [ne nw sw se]])  ; Bottom.
+             [[sw top se]  ; South face sorts first, starting with [0 0 0].
+              [nw top sw]  ; West face.
+              [se top ne]  ; East face.
+              [ne sw se]  ; Bottom, part one.
+              [ne nw sw]  ; Bottom, part two.
+              [ne top nw]])))))  ; North face.
+
+(deftest test-from-face-coordinates
+  (testing "Pyramid minus cylinder."
+    ;; This is very similar to the tessellation test for a pyramid,
+    ;; but produces an OpenSCAD expression for manually checking rendering.
+    ;; The scale is therefore larger.
+    (let [[ne se sw nw top] (vec3-seq [40 40 0] [40 0 0] [0 0 0] [0 40 0]
+                                      [20 20 20])]
+      (is (= (scad-scene (poly/from-face-coordinates
+                           [[se top ne] [sw top se] [nw top sw] [ne top nw]
+                            [ne nw sw se]]))  ; Bottom.
+             "difference () {  polyhedron (points=[[0.0, 0.0, 0.0], [20.0, 20.0, 20.0], [40.0, 0.0, 0.0], [0.0, 40.0, 0.0], [40.0, 40.0, 0.0]], faces=[[0, 1, 2], [3, 1, 0], [2, 1, 4], [4, 0, 2], [4, 3, 0], [4, 1, 3]], convexity=4);  cylinder (h=100, r=25, center=true);}"))))
+  (testing "Distorted cuboid minus cylinder."
+    (let [[t0 t1 t2 t3] (vec3-seq [40 40 40] [40 0 30] [-5 0 40] [0 40 40])
+          [b0 b1 b2 b3] (vec3-seq [40 40 0]  [10 0 0]  [0 0 0]   [0 40 0])]
+      (is (= (scad-scene (poly/from-face-coordinates
+                           [[t0 t1 t2 t3]  ; Top.
+                            [b3 b2 b1 b0]  ; Bottom.
+                            [t0 b0 b1 t1]
+                            [t1 b1 b2 t2]
+                            [t2 b2 b3 t3]
+                            [t3 b3 b0 t0]]))
+             "difference () {  polyhedron (points=[[-5.0, 0.0, 40.0], [0.0, 0.0, 0.0], [0.0, 40.0, 0.0], [0.0, 40.0, 40.0], [10.0, 0.0, 0.0], [40.0, 40.0, 0.0], [40.0, 40.0, 40.0], [40.0, 0.0, 30.0]], faces=[[0, 1, 2], [0, 2, 3], [2, 1, 4], [2, 4, 5], [3, 2, 5], [3, 5, 6], [7, 1, 0], [7, 4, 1], [6, 0, 3], [6, 4, 7], [6, 7, 0], [6, 5, 4]], convexity=4);  cylinder (h=100, r=25, center=true);}")))))
 
 (deftest test-spline
   (testing "1D at resolution 0."
@@ -87,28 +149,13 @@
                      [2 1 1] [3 1 0] [2 1 0]
                      [1 1 1] [1 0 0] [0 1 0]
                      [1 2 1] [0 2 0] [1 3 0]]))
-      (is (= faces [;; Top face:
-                    [0 3 6] [9 6 3]
-                    ;; Upper corner, one triangle per corner:
-                    [0 2 1] [3 5 4] [6 8 7] [9 11 10]
-                    ;; Lower corners, two triangles per corner:
-                    [1 2 1] [2 1 2]
-                    [4 5 4] [5 4 5]
-                    [7 8 7] [8 7 8]
-                    [10 11 10] [11 10 11]
-                    ;; Sides proper, upper faces.
-                    [2 4 2] [4 2 4]
-                    [5 7 5] [7 5 7]
-                    [8 10 8] [10 8 10]
-                    [11 1 11] [1 11 1]
-                    ;; Sides proper, lower faces?
-                    [1 11 10] [10 8 7] [3 4 2] [2 1 10] [10 7 3] [3 2 10]])))))
+      (is (= faces [[8 6 7] [6 8 10] [6 10 9] [9 11 1] [9 1 0] [11 8 7]
+                    [11 10 8] [11 7 5] [11 9 10] [11 5 4] [11 4 2] [11 2 1]
+                    [5 3 4] [3 7 6] [3 5 7] [0 6 9] [0 3 6] [0 4 3] [0 2 4]
+                    [2 0 1]])))))
 
 
 (deftest test-tuboid
-  (testing "Minimal valid input."
-    (is (= (poly/tuboid [] [] [] [])
-           '(:polyhedron {:points (), :faces [], :convexity 3}))))
   (testing "Square profile."
     (let [left-outer  [[0 0 0] [0 5 0] [0 5 5] [0 0 5]]
           left-inner  [[0 1 1] [0 4 1] [0 4 4] [0 1 4]]
@@ -120,9 +167,9 @@
       (is (= points [[0 0 0] [0 5 0] [0 5 5] [0 0 5] [0 1 1] [0 4 1] [0 4 4]
                      [0 1 4] [1 0 0] [1 5 0] [1 5 5] [1 0 5] [1 1 1] [1 4 1]
                      [1 4 4] [1 1 4]]))
-      (is (= faces [[0 4 1] [5 1 4] [1 5 2] [6 2 5] [2 6 3] [7 3 6] [3 7 0]
-                    [4 0 7] [12 8 13] [9 13 8] [13 9 14] [10 14 9] [14 10 15]
-                    [11 15 10] [15 11 12] [8 12 11] [4 12 5] [13 5 12] [5 13 6]
-                    [14 6 13] [6 14 7] [15 7 14] [7 15 4] [12 4 15] [8 0 9]
-                    [1 9 0] [9 1 10] [2 10 1] [10 2 11] [3 11 2] [11 3 8]
-                    [0 8 3]])))))
+      (is (= faces [[4 5 1] [4 1 0] [7 0 3] [7 4 0] [5 6 2] [5 2 1] [6 3 2]
+                    [6 7 3] [8 13 12] [8 9 13] [11 8 12] [11 12 15] [9 14 13]
+                    [9 10 14] [10 11 15] [10 15 14] [12 5 4] [12 13 5]
+                    [15 4 7] [15 12 4] [13 6 5] [13 14 6] [14 7 6] [14 15 7]
+                    [0 1 9] [0 9 8] [3 0 8] [3 8 11] [1 2 10] [1 10 9]
+                    [2 3 11] [2 11 10]])))))
