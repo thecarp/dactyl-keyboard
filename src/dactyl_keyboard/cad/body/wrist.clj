@@ -418,14 +418,9 @@
   ;; The reason for the squarish profile is forward compatibility with
   ;; square-profile nuts in future, as well as ergonomy.
   [getopt mount-index block-key]
-  (let [prop (partial getopt :wrist-rest :mounts mount-index :derived)
-        [w d h] (prop :block->size block-key)]
-    (when-not (or (zero? w) (zero? d))
-      (wrist-plate-hull getopt
-        (model/translate [0 0 -1/4]
-          (model/cube (dec w) d (dec h))
-          (model/cube w (dec d) (dec h)))
-        (model/cube (dec w) (dec d) h)))))
+  (let [prop (partial getopt :wrist-rest :mounts mount-index :derived)]
+    (wrist-plate-hull getopt
+      (misc/bevelled-cuboid (prop :block->size block-key) 0.5))))
 
 (defn block-in-place
   "Use the placement module without side, segment or offset."

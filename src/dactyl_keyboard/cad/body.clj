@@ -25,3 +25,8 @@
   (apply bottom-plate-hull getopt
          (getopt :wrist-rest :bottom-plate :include) shapes))
 
+(defn body-plate-hull [getopt body & shapes]
+  "Pick a bottom-plate inclusion parameter based on stated
+  body affiliation. Fall back to main plate."
+  (apply (case body :wrist-rest wrist-plate-hull main-plate-hull)
+         getopt shapes))

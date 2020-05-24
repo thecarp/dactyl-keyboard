@@ -11,8 +11,8 @@
             [scad-clj.model :as model]
             [scad-tarmi.core :as tarmi-core :refer [π]]
             [scad-tarmi.maybe :as maybe]
-            [scad-klupe.iso :refer [nut]]
             [dactyl-keyboard.cad.auxf :as auxf]
+            [dactyl-keyboard.cad.body :refer [body-plate-hull]]
             [dactyl-keyboard.cad.body.main :as body]
             [dactyl-keyboard.cad.body.central :as central]
             [dactyl-keyboard.cad.body.wrist :as wrist]
@@ -183,7 +183,9 @@
   {:pre [(spec/valid? ::valid/tweak-branch node)]}
   (let [prefix (if highlight model/-# identity)
         shapes (map (partial model-node-3d getopt) hull-around)
-        hull (if at-ground misc/bottom-hull maybe/hull)]
+        hull (if at-ground (partial body-plate-hull getopt
+                                    (get-body getopt node))
+                           maybe/hull)]
     (prefix
       (apply (if chunk-size model/union hull)
         (if chunk-size
