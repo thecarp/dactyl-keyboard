@@ -176,40 +176,43 @@
     "for the MCU and various other features."]
    [:parameter [:main-body :rear-housing :include]
     {:default false :parse-fn boolean}
-    "If `true`, add a rear housing. Please arrange case walls so as not to "
-    "interfere, by removing them along the far side of the last row of key "
-    "mounts in the indicated cluster."]
-   [:parameter [:main-body :rear-housing :wall-thickness]
+    "If `true`, add a rear housing to the main body."]
+   [:section [:main-body :rear-housing :anchoring]
+    "Where to place the middle of the rear housing. "
+    stock/anchoring-documentation]
+   [:parameter [:main-body :rear-housing :anchoring :anchor]
+    stock/anchor-metadata stock/anchor-documentation]
+   [:parameter [:main-body :rear-housing :anchoring :side]
+    stock/anchor-side-metadata stock/anchor-side-documentation]
+   [:parameter [:main-body :rear-housing :anchoring :segment]
+    stock/anchor-segment-metadata stock/anchor-segment-documentation]
+   [:parameter [:main-body :rear-housing :anchoring :offset]
+    stock/anchor-2d-vector-metadata stock/anchor-2d-offset-documentation]
+   [:parameter [:main-body :rear-housing :size]
+    {:default [1 1 1] :parse-fn vec :validate [::tarmi-core/point-3d]}
+    "The exterior measurements of the rear housing, in mm."]
+   [:section [:main-body :rear-housing :bevel]
+    "The rear housing can be bevelled."]
+   [:parameter [:main-body :rear-housing :bevel :exterior]
+    {:default 0 :parse-fn num}
+    "Insets from the specified `size` in mm for the exterior of the housing."]
+   [:parameter [:main-body :rear-housing :bevel :interior]
+    {:default 0 :parse-fn num}
+    "Insets from the specified `size`, minus thickness, in mm, for the "
+    "interior of the housing.\n\n"
+    "This is separate from the exterior bevel parameter because it can help "
+    "with DFM. A higher setting here can reduce the need for internal print "
+    "supports."]
+   [:section [:main-body :rear-housing :thickness]
+    "The thickness of the rear housing does not influence its external "
+    "dimensions. It grows inward."]
+   [:parameter [:main-body :rear-housing :thickness :walls]
     {:default 1 :parse-fn num}
     "The horizontal thickness in mm of the walls."]
-   [:parameter [:main-body :rear-housing :roof-thickness]
+   [:parameter [:main-body :rear-housing :thickness :roof]
     {:default 1 :parse-fn num}
-    "The vertical thickness in mm of the flat top."]
-   [:section [:main-body :rear-housing :position]
-    "Where to put the rear housing. Unlike a central housing, a rear housing "
-    "is placed in relation to a key cluster. By default, it sits all along "
-    "the far (north) side of the `main` cluster but has no depth."]
-   [:parameter [:main-body :rear-housing :position :cluster]
-    {:default :main :parse-fn keyword :validate [::valid/key-cluster]}
-    "The key cluster at which to anchor the housing."]
-   [:section [:main-body :rear-housing :position :offsets]
-    "Modifiers for where to put the four sides of the roof. All are in mm."]
-   [:parameter [:main-body :rear-housing :position :offsets :north]
-    {:default 0 :parse-fn num}
-    "The extent of the roof on the y axis; its horizontal depth."]
-   [:parameter [:main-body :rear-housing :position :offsets :west]
-    {:default 0 :parse-fn num}
-    "The extent on the x axis past the first key in the row."]
-   [:parameter [:main-body :rear-housing :position :offsets :east]
-    {:default 0 :parse-fn num}
-    "The extent on the x axis past the last key in the row."]
-   [:parameter [:main-body :rear-housing :position :offsets :south]
-    {:default 0 :parse-fn num}
-    "The horizontal distance in mm, on the y axis, between the furthest key "
-    "in the row and the roof of the rear housing."]
-   [:parameter [:main-body :rear-housing :height]
-    {:default 0 :parse-fn num}
-    "The height in mm of the roof, over the floor."]
+    "The vertical thickness in mm of the flat top, inside the insets for "
+    "bevels."]
    [:section [:main-body :rear-housing :fasteners]
     "Threaded bolts can run through the roof of the rear housing, making it a "
     "hardpoint for attachments like a stabilizer to connect the two halves of "

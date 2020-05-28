@@ -114,8 +114,10 @@
         [true
          (central/tweak-post getopt anchor)]
       ::anch/rear-housing
-        [false  ; TODO: Refactor based on central-housing-like logic.
-         (body/rhousing-post getopt)]
+        [true
+         ;; TODO: Support interior.
+         (place/rhousing-place getopt :exterior side segment offset
+           (default misc/nodule))]
       ::anch/mcu-grip
         [false
          (default (apply model/cube (getopt :mcu :support :grip :size)))]

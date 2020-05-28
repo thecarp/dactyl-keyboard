@@ -307,37 +307,22 @@
       (flex/rotate [angle 0 0]
         subject))))
 
+
 ;; Rear housing.
 
-(defn- rhousing-segment-offset
-  "Compute an [x y z] coordinate offset from a part of the rear housing.
-  Here, segment 0 is the top surface, segment 1 is below the chamfer,
-  segment 2 is halfway down the wall and 3 or more is all the way down."
-  [getopt side segment]
-  (conj
-    (if (and side (not (zero? segment))) (compass/to-grid side true) [0 0])
-    (case segment
-      0 0
-      1 -1
-      2 (/ (getopt :main-body :rear-housing :height) -2)
-      (- (getopt :main-body :rear-housing :height)))))
-
-(defn rhousing-vertex-offset
-  [getopt side]
-  {:pre [(compass/noncardinals side)]}
-  (let [t (/ (getopt :main-body :web-thickness) 2)]
-    (matrix/cube-vertex-offset side [t t t] {})))
-
 (defn rhousing-place
-  "Place passed shape in relation to a corner of the rear housing’s roof."
-  [getopt side segment subject]
-  {:pre [(compass/all-short side)]}
-  (flex/translate
-    (mapv +
-      (getopt :main-body :rear-housing :derived :side
-        (compass/convert-to-nonintermediate side))
-      (rhousing-segment-offset getopt side segment))
-    subject))
+  "Place in relation to the exterior of the rear housing of the main body."
+  [getopt layer side segment offset obj]
+  {:pre [(#{:interior :exterior} layer)]}
+  (let [prop (partial getopt :main-body :rear-housing)]
+    (flex/translate
+      (mapv +
+        (or offset [0 0 0])
+        (misc/bevelled-corner-xyz side segment
+          (prop :derived :size layer)
+          (prop :bevel layer))
+        (prop :derived :position layer))
+      obj)))
 
 
 ;; Microcontroller.
@@ -545,7 +530,7 @@
 (defmethod by-type ::anch/rear-housing
   [getopt {:keys [side segment initial] :or {segment 3}}]
   {:pre [(some? side)]}
-  (rhousing-place getopt side segment initial))
+  (rhousing-place getopt :exterior side segment initial initial))
 
 (defmethod by-type ::anch/wr-perimeter
   [getopt {:keys [coordinates outline-key segment initial] :or {segment 3}}]

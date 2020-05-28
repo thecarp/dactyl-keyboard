@@ -28,7 +28,12 @@ main-body:
   key-mount-thickness: 2.5
   web-thickness: 2.5
   rear-housing:
-    wall-thickness: 2.5
+    thickness:
+      walls: 2.5
+      roof: 2.5
+    bevel:
+      exterior: 1
+      interior: 1
   back-plate:
     fasteners:
       bolt-properties:

@@ -10,7 +10,7 @@
             [scad-tarmi.maybe :as maybe]
             [dactyl-keyboard.compass :as compass]
             [dactyl-keyboard.misc :refer [colours]]
-            [dactyl-keyboard.cad.body.main :as main-body]
+            [dactyl-keyboard.cad.body.main :refer [rear-housing-exterior]]
             [dactyl-keyboard.cad.body.central :as central]
             [dactyl-keyboard.cad.body.wrist :as wrist]
             [dactyl-keyboard.cad.mask :as mask]
@@ -295,15 +295,6 @@
     (check-chousing-polygon gabel)
     (model/polygon (concat gabel (reverse adapter)))))
 
-(defn- rhousing-floor-polygon
-  "A polygon describing the area underneath the rear housing.
-  A projection of the 3D shape would work but it would require taking care to
-  hull the straight and other parts of the housing separately, because the
-  connection between them may be concave. The 2D approach is safer."
-  [getopt]
-  (model/polygon (map (fn [pillar-fn] (take 2 (pillar-fn true false)))
-                      (main-body/rhousing-pillar-functions getopt))))
-
 (defn- case-positive-2d
   "A union of polygons representing the interior of the case, including the
   central housing, when configured to appear."
@@ -331,7 +322,9 @@
     (when (getopt :main-body :rear-housing :include)
       ;; To work around the problem, the rear housing floor polygon is moved a
       ;; tiny bit toward the origin, preventing the vertex overlap.
-      (model/translate [0 (- wafer)] (rhousing-floor-polygon getopt)))
+      (model/cut
+        (model/translate [0 (- wafer)])
+        (rear-housing-exterior getopt)))
     (when (and (getopt :wrist-rest :include)
                (= (getopt :wrist-rest :style) :threaded))
       (model/cut (wrist/all-partner-side-blocks getopt)))

@@ -200,9 +200,7 @@
   (let [d (getopt :mcu :support :lock :fastener-properties :m-diameter)
         head-type (getopt :mcu :support :lock :fastener-properties :head-type)
         l0 (head-length d head-type)
-        l1 (if (= (getopt :mcu :anchoring :anchor) :rear-housing)
-             (getopt :main-body :rear-housing :wall-thickness)
-             (getopt :main-body :web-thickness))
+        l1 (getopt :main-body :web-thickness)
         [_ pcb-y pcb-z] (map-to-3d-vec (getopt :mcu :derived :pcb))
         l2 (getopt :mcu :support :lock :plate :clearance)
         y1 (getopt :mcu :support :lock :bolt :mount-length)]

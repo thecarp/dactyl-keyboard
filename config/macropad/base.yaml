@@ -11,6 +11,7 @@ key-clusters:
     - rows-above-home: 3
     - rows-above-home: 3
     aliases:
+      back: [1, last]
       lower-left: [first, first]
       upper-left: [first, last]
       lower-right: [last, first]
@@ -39,13 +40,15 @@ main-body:
   web-thickness: 3
   rear-housing:
     include: true
-    wall-thickness: 1.5
-    roof-thickness: 1
-    position:
-      offsets:
-        north: 11
-        south: 2
-    height: 24.5
+    anchoring:
+      anchor: back
+      offset: [0, 25]
+    size: [60, 10, 23]
+    thickness:
+      walls: 1.5
+      roof: 1
+    bevel:
+      interior: 2
 mcu:
   include: true
   # Stand on the long edge folded into the rear housing.

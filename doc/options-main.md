@@ -20,16 +20,18 @@ Each heading in this document represents a recognized configuration key in the m
     - Parameter <a href="#user-content-main-body-web-thickness">`web-thickness`</a>
     - Section <a href="#user-content-main-body-rear-housing">`rear-housing`</a>
         - Parameter <a href="#user-content-main-body-rear-housing-include">`include`</a>
-        - Parameter <a href="#user-content-main-body-rear-housing-wall-thickness">`wall-thickness`</a>
-        - Parameter <a href="#user-content-main-body-rear-housing-roof-thickness">`roof-thickness`</a>
-        - Section <a href="#user-content-main-body-rear-housing-position">`position`</a>
-            - Parameter <a href="#user-content-main-body-rear-housing-position-cluster">`cluster`</a>
-            - Section <a href="#user-content-main-body-rear-housing-position-offsets">`offsets`</a>
-                - Parameter <a href="#user-content-main-body-rear-housing-position-offsets-north">`north`</a>
-                - Parameter <a href="#user-content-main-body-rear-housing-position-offsets-west">`west`</a>
-                - Parameter <a href="#user-content-main-body-rear-housing-position-offsets-east">`east`</a>
-                - Parameter <a href="#user-content-main-body-rear-housing-position-offsets-south">`south`</a>
-        - Parameter <a href="#user-content-main-body-rear-housing-height">`height`</a>
+        - Section <a href="#user-content-main-body-rear-housing-anchoring">`anchoring`</a>
+            - Parameter <a href="#user-content-main-body-rear-housing-anchoring-anchor">`anchor`</a>
+            - Parameter <a href="#user-content-main-body-rear-housing-anchoring-side">`side`</a>
+            - Parameter <a href="#user-content-main-body-rear-housing-anchoring-segment">`segment`</a>
+            - Parameter <a href="#user-content-main-body-rear-housing-anchoring-offset">`offset`</a>
+        - Parameter <a href="#user-content-main-body-rear-housing-size">`size`</a>
+        - Section <a href="#user-content-main-body-rear-housing-bevel">`bevel`</a>
+            - Parameter <a href="#user-content-main-body-rear-housing-bevel-exterior">`exterior`</a>
+            - Parameter <a href="#user-content-main-body-rear-housing-bevel-interior">`interior`</a>
+        - Section <a href="#user-content-main-body-rear-housing-thickness">`thickness`</a>
+            - Parameter <a href="#user-content-main-body-rear-housing-thickness-walls">`walls`</a>
+            - Parameter <a href="#user-content-main-body-rear-housing-thickness-roof">`roof`</a>
         - Section <a href="#user-content-main-body-rear-housing-fasteners">`fasteners`</a>
             - Parameter <a href="#user-content-main-body-rear-housing-fasteners-bolt-properties">`bolt-properties`</a>
             - Parameter <a href="#user-content-main-body-rear-housing-fasteners-bosses">`bosses`</a>
@@ -268,47 +270,57 @@ The furthest row of a key cluster can be extended into a rear housing for the MC
 
 #### Parameter <a id="main-body-rear-housing-include">`include`</a>
 
-If `true`, add a rear housing. Please arrange case walls so as not to interfere, by removing them along the far side of the last row of key mounts in the indicated cluster.
+If `true`, add a rear housing to the main body.
 
-#### Parameter <a id="main-body-rear-housing-wall-thickness">`wall-thickness`</a>
+#### Section <a id="main-body-rear-housing-anchoring">`anchoring`</a>
+
+Where to place the middle of the rear housing. The concept of anchoring is explained [here](configuration.md).
+
+##### Parameter <a id="main-body-rear-housing-anchoring-anchor">`anchor`</a>
+
+A code identifying an anchor point. This can be the default value (`origin`) or a name (built-in or alias) identifying a feature.
+
+##### Parameter <a id="main-body-rear-housing-anchoring-side">`side`</a>
+
+A compass-point code for one side of the feature named in `anchor`. The default is `null`, signifying the centre.
+
+##### Parameter <a id="main-body-rear-housing-anchoring-segment">`segment`</a>
+
+An integer identifying one vertical segment of the feature named in `anchor`. The default is `0`, signifying the topmost part of the anchor.
+
+##### Parameter <a id="main-body-rear-housing-anchoring-offset">`offset`</a>
+
+A two-dimensional offset in mm from the feature named in `anchor`.
+
+#### Parameter <a id="main-body-rear-housing-size">`size`</a>
+
+The exterior measurements of the rear housing, in mm.
+
+#### Section <a id="main-body-rear-housing-bevel">`bevel`</a>
+
+The rear housing can be bevelled.
+
+##### Parameter <a id="main-body-rear-housing-bevel-exterior">`exterior`</a>
+
+Insets from the specified `size` in mm for the exterior of the housing.
+
+##### Parameter <a id="main-body-rear-housing-bevel-interior">`interior`</a>
+
+Insets from the specified `size`, minus thickness, in mm, for the interior of the housing.
+
+This is separate from the exterior bevel parameter because it can help with DFM. A higher setting here can reduce the need for internal print supports.
+
+#### Section <a id="main-body-rear-housing-thickness">`thickness`</a>
+
+The thickness of the rear housing does not influence its external dimensions. It grows inward.
+
+##### Parameter <a id="main-body-rear-housing-thickness-walls">`walls`</a>
 
 The horizontal thickness in mm of the walls.
 
-#### Parameter <a id="main-body-rear-housing-roof-thickness">`roof-thickness`</a>
+##### Parameter <a id="main-body-rear-housing-thickness-roof">`roof`</a>
 
-The vertical thickness in mm of the flat top.
-
-#### Section <a id="main-body-rear-housing-position">`position`</a>
-
-Where to put the rear housing. Unlike a central housing, a rear housing is placed in relation to a key cluster. By default, it sits all along the far (north) side of the `main` cluster but has no depth.
-
-##### Parameter <a id="main-body-rear-housing-position-cluster">`cluster`</a>
-
-The key cluster at which to anchor the housing.
-
-##### Section <a id="main-body-rear-housing-position-offsets">`offsets`</a>
-
-Modifiers for where to put the four sides of the roof. All are in mm.
-
-###### Parameter <a id="main-body-rear-housing-position-offsets-north">`north`</a>
-
-The extent of the roof on the y axis; its horizontal depth.
-
-###### Parameter <a id="main-body-rear-housing-position-offsets-west">`west`</a>
-
-The extent on the x axis past the first key in the row.
-
-###### Parameter <a id="main-body-rear-housing-position-offsets-east">`east`</a>
-
-The extent on the x axis past the last key in the row.
-
-###### Parameter <a id="main-body-rear-housing-position-offsets-south">`south`</a>
-
-The horizontal distance in mm, on the y axis, between the furthest key in the row and the roof of the rear housing.
-
-#### Parameter <a id="main-body-rear-housing-height">`height`</a>
-
-The height in mm of the roof, over the floor.
+The vertical thickness in mm of the flat top, inside the insets for bevels.
 
 #### Section <a id="main-body-rear-housing-fasteners">`fasteners`</a>
 

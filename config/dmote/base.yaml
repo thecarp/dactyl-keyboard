@@ -33,6 +33,7 @@ key-clusters:
       m03: [3, first]
       back0: [0, last]
       back1: [1, last]
+      back2: [2, last]
       m10: [3, last]
       m11: [3, 0]
       m12: [4, last]
@@ -427,28 +428,21 @@ secondaries:
     anchoring:
       anchor: mt0b
     translation: [6, -2, 1]
-  # Shims for wall posts being thinner than rear housing posts:
-  rh-0:
-    anchoring:
-      anchor: rear-housing
-      side: ESE
-      segment: 1
-    translation: [0, 0, -20]
 main-body:
   reflect: true
   rear-housing:
     include: true
-    position:
-      offsets:
-        north: 15
-        east: -0.2
-        south: -1.8
-        west: 2
-    height: 53.5
+    anchoring:
+      anchor: back2
+      side: NW
+      offset: [0, 10]
+    size: [80, 18, 53.5]
+    bevel:
+      interior: 6
     fasteners:
       bolt-properties:
         m-diameter: 6
-        head-type: countersunk
+        head-type: socket
         total-length: 8.5
       bosses: true
       west:
@@ -776,9 +770,11 @@ ports:
     intrinsic-rotation: [0, 0, π/-2]
     anchoring:
       anchor: rear-housing
-      side: E
+      side: ENE
       segment: 1
-      offset: [1, 2, -2]
+      offset: [0, 0, 0]
+    alignment:
+      side: NW
     holder:
       include: true
       alias: reflection-port-holder

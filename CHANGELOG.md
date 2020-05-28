@@ -50,9 +50,10 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       `bottom-plate` → `installation` → `style` parameter and replaced by a new
       `include` parameter, governing the same feature independently of style.
 - Removed much of the special treatment of the rear housing, no longer needed.
+    - Removed the automatic webbing to key mounts.
     - The two parameters named `prefer-rear-housing` and their associated
-      functionality were all **removed**, having been obviated by placement in
-      relation to a wide range of anchors.
+      functionality, and the `cluster` parameter, were all **removed**, having
+      been obviated by normal placement in relation to a wide range of anchors.
     - The `raise` parameter for `connection` has been replaced by an extension
       of the concept of vertical segments to the rear housing.
     - Removed `into-nook`, which automated some fine tuning for placing ports
@@ -66,6 +67,8 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       mapping no longer gets exceptional treatment; it now occurs in the vector
       space of the anchor. The old behaviour, i.e. translation in the
       global vector space, has a new parameter (`translation`).
+    - More direct and exact control of rear-housing size, thickness and
+      bevels, using new parameters.
 - MCU supports have changed, gaining more power but losing some ease of use,
   to work better with the option of central housing.
     - The default orientation of the MCU PCB has changed, from standing on its

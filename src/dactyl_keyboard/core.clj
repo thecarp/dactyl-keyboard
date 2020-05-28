@@ -111,7 +111,7 @@
     (when (getopt :main-body :back-plate :include)
       (auxf/backplate-block getopt))
     (when (getopt :main-body :rear-housing :include)
-      (main-body/rear-housing getopt))
+      (main-body/rear-housing-model getopt))
     (tweak/plating getopt true :main)
     (when (getopt :main-body :bottom-plate :include)
       (bottom/posts-in-main-body getopt))
