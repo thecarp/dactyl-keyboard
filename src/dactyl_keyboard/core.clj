@@ -7,6 +7,7 @@
   (:require [clojure.tools.cli :refer [parse-opts]]
             [clojure.pprint :refer [pprint]]
             [clojure.java.io :as io]
+            [hawk.core :as hawk]
             [clj-yaml.core :as yaml]
             [scad-clj.model :as model]
             [scad-app.core :refer [filter-by-name
@@ -597,6 +598,18 @@
              {:render render
               :rendering-program renderer
               :filepath-fn output-filepath-fn}))
+
+(defn watch-config!
+  "Build all models every time a configuration file changes.
+  Return a nullary function that terminates the watch.
+  For REPL use only at this point."
+  ;; TODO: Expanded to reload altered source code.
+  ;; TODO: Componentize and run as an application mode from the CLI.
+  [options]
+  (let [watcher (hawk/watch! [{:paths ["config"]
+                               :filter hawk/file?
+                               :handler (fn [ctx e] (run options) ctx)}])]
+    #(hawk/stop! watcher)))
 
 (defn execute-mode
   "Act on arguments received from the command line (shell), already parsed.

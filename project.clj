@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/tools.cli "0.3.7"]
                  [org.flatland/ordered "1.5.7"]
+                 [hawk "0.2.11"]
                  ;; geom uses hiccup v1 whereas dmote-keycap uses v2.
                  [thi.ng/geom "1.0.0-RC3" :exclusions [hiccup]]
                  [clj-yaml "0.4.0"]
