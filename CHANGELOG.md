@@ -150,6 +150,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - More accurate and printer-friendly spaces for the wings on ALPS-style
   switches.
 - Respect for key spacing settings without curvature.
+- Fixed a regression that made the interior of case walls too thick.
 - Made `transpile.sh` sensitive to configuration changes again.
 - A more categorical fix for `dmote-keycap` parameter support, achieved by
   migrating that library’s parsing logic into the library itself.

@@ -172,11 +172,11 @@
                 bevel-factor
                 (* bevel-factor (/ perpendicular (abs perpendicular))))]
    (case (or segment 0)
+     ;; TODO: Redesign for expressiveness, removing thickness.
      0 [0 0 0]
      1 [(* dx t) (* dy t) bevel]
-     2 [(* dx parallel) (* dy parallel) perpendicular]
-     3 [(* dx (+ parallel t)) (* dy (+ parallel t)) perpendicular]
-     [(* dx parallel) (* dy parallel) (+ perpendicular bevel)])))
+     2 [(* dx (+ parallel t)) (* dy (+ parallel t)) (+ bevel perpendicular)]
+     [(* dx parallel) (* dy parallel t) (+ perpendicular bevel)])))
 
 (defn- wall-vertex-offset
   "Compute a 3D offset from the center of a web post to a vertex on it."
@@ -220,40 +220,6 @@
                          [direction (turning-fn direction)])}))
         pair (map + (c compass/sharp-left) (c compass/sharp-right))]
     (vec (map / (vec pair) [2 2 2]))))
-
-(defn wall-edge-sequence
-  "Corner posts for the upper or lower part of the edge of one case wall slab.
-  Return a sequence of transformations on the subject, or nil.
-  Return nil when no wall is requested (extent zero) and when the lower portion
-  of the wall is requested _and_ the wall in question is not full (i.e. should
-  not reach the floor) _and_ the subject is not a coordinate."
-  [getopt cluster upper [coord direction turning-fn] subject]
-  {:pre [(compass/cardinals direction)]}
-  (let [keyseq [:wall (direction compass/short-to-long) :extent]
-        extent (most-specific getopt keyseq cluster coord)
-        last-upper-segment (case extent :full 4, extent)
-        place-segment
-          (fn [segment]
-            (->>
-              subject
-              (flex/translate
-                (wall-corner-offset getopt cluster coord
-                  {:side (compass/tuple-to-intermediate
-                             [direction (turning-fn direction)])
-                   :vertex (spec/valid? ::tarmi-core/point-2-3d subject)
-                   :segment segment}))
-              (cluster-place getopt cluster coord)))]
-    (if-not (zero? last-upper-segment)
-      (if upper
-        ;; The part of the wall above the vertical drop to z = 0.
-        (map place-segment (range (inc last-upper-segment)))
-        ;; The image from which the vertical drop to z = 0 should be made.
-        (cond
-          ;; Use all the lower (post-perpendicular) segments for a full wall.
-          (= extent :full) (map place-segment [2 3 4])
-          ;; Make an exception for coordinate reckoning. This exception is
-          ;; useful for drawing the bottom plate beneath the cluster.
-          (spec/valid? ::tarmi-core/point-2-3d subject) (map place-segment [last-upper-segment]))))))
 
 
 ;; Central housing.

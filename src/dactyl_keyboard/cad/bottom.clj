@@ -246,14 +246,13 @@
   (xy-coordinate pair) for the exterior wall of the case extending from
   that key mount."
   [getopt cluster]
-  (fn [[coord direction turning-fn]]
-    (let [key [:wall (compass/short-to-long direction) :extent]
-          extent (most-specific getopt key cluster coord)
-          side (compass/tuple-to-intermediate
-                   [direction (turning-fn direction)])]
+  (fn [[coord [cardinal :as side-tuple]]]
+    (let [key [:wall (compass/short-to-long cardinal) :extent]
+          extent (most-specific getopt key cluster coord)]
       (when (= extent :full)  ; Ignore partial walls.
         (take 2 (place/wall-corner-place getopt cluster coord
-                  {:side side, :segment 3, :vertex true}))))))
+                  {:side (compass/tuple-to-intermediate side-tuple)
+                   :segment 3, :vertex true}))))))
 
 (defn- cluster-floor-polygon
   "A polygon approximating a floor-level projection of a key clusters’s wall."
