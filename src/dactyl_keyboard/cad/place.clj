@@ -176,7 +176,7 @@
      0 [0 0 0]
      1 [(* dx t) (* dy t) bevel]
      2 [(* dx (+ parallel t)) (* dy (+ parallel t)) (+ bevel perpendicular)]
-     [(* dx parallel) (* dy parallel t) (+ perpendicular bevel)])))
+     [(* dx parallel) (* dy parallel t) (+ (* 2 bevel) perpendicular)])))
 
 (defn- wall-vertex-offset
   "Compute a 3D offset from the center of a web post to a vertex on it."
@@ -494,9 +494,9 @@
   (chousing-place getopt index :adapter side depth initial))
 
 (defmethod by-type ::anch/rear-housing
-  [getopt {:keys [side segment initial] :or {segment 3}}]
+  [getopt {:keys [side segment initial] ::anch/keys [layer] :or {segment 3}}]
   {:pre [(some? side)]}
-  (rhousing-place getopt :exterior side segment initial initial))
+  (rhousing-place getopt layer side segment initial initial))
 
 (defmethod by-type ::anch/wr-perimeter
   [getopt {:keys [coordinates outline-key segment initial] :or {segment 3}}]

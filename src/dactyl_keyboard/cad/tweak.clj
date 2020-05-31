@@ -104,7 +104,7 @@
   [getopt {:keys [anchoring size] :as node}]
   {:pre [(spec/valid? ::valid/tweak-leaf node)]}
   (let [{:keys [anchor side segment offset]} anchoring
-        {::anch/keys [type primary]} (resolve-anchor getopt anchor)
+        {::anch/keys [type primary] :as resolved} (resolve-anchor getopt anchor)
         default (fn [shape] (if size (apply model/cube size) shape))]
     (case type
       ::anch/central-gabel
@@ -115,8 +115,7 @@
          (central/tweak-post getopt anchor)]
       ::anch/rear-housing
         [true
-         ;; TODO: Support interior.
-         (place/rhousing-place getopt :exterior side segment offset
+         (place/rhousing-place getopt (::anch/layer resolved) side segment offset
            (default misc/nodule))]
       ::anch/mcu-grip
         [false
@@ -130,7 +129,7 @@
            (default (mcu/lock-plate-base getopt false)))]
       ::anch/wr-block
         [true
-         (let [{:keys [mount-index block-key]} (resolve-anchor getopt anchor)]
+         (let [{:keys [mount-index block-key]} resolved]
            (place/wrist-block-place getopt mount-index block-key
                                     side segment offset
              (if (or side segment offset)
@@ -139,8 +138,7 @@
       ::anch/wr-nut
         ;; Ignore side and segment as inapplicable to a nut.
         [true
-         (let [{:keys [mount-index block-key fastener-index]}
-               (resolve-anchor getopt anchor)]
+         (let [{:keys [mount-index block-key fastener-index]} resolved]
            (place/wrist-nut-place getopt mount-index block-key fastener-index
                                   offset
              (default (wrist/nut getopt mount-index block-key fastener-index))))]

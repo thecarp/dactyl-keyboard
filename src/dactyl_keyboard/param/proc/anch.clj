@@ -61,7 +61,8 @@
   (merge
     ;; One-of-a-kind types:
     {:origin {::type ::origin}
-     :rear-housing {::type ::rear-housing}
+     :rear-housing-exterior {::type ::rear-housing, ::layer :exterior}
+     :rear-housing-interior {::type ::rear-housing, ::layer :interior}
      (getopt :mcu :support :lock :plate :alias) {::type ::mcu-lock-plate}}
 
     ;; Keys:

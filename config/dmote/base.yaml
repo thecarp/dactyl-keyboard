@@ -31,13 +31,13 @@ key-clusters:
       m01: [1, first]
       m02: [2, first]
       m03: [3, first]
+      m11: [3, 0]
       back0: [0, last]
       back1: [1, last]
       back2: [2, last]
-      m10: [3, last]
-      m11: [3, 0]
-      m12: [4, last]
-      m13: [last, last]
+      back3: [3, last]
+      back4: [4, last]
+      back5: [last, last]
       near-right: [last, first]
   thumb0:
     anchoring:
@@ -64,8 +64,8 @@ key-clusters:
       t5: [first, first]
   aux0:
     anchoring:
-      anchor: m12
-      offset: [1.5, 17, 6]
+      anchor: back4
+      offset: [1.5, 18, 7]
     matrix-columns:
     - rows-above-home: 0
     - rows-above-home: 0
@@ -399,7 +399,7 @@ by-key:
             base: 0
         wall:
           north:
-            extent: 0
+            extent: full
           east:
             extent: 1
           south:
@@ -468,12 +468,12 @@ main-body:
       dome-caps: true
       fasteners:
         positions:
-        - anchor: rear-housing
-          side: NNW
-          offset: [3, -4]
-        - anchor: rear-housing
-          side: NNE
-          offset: [-2.5, -11]
+        - anchor: rear-housing-interior
+          side: NW
+          offset: [3, -3]
+        - anchor: rear-housing-interior
+          side: ENE
+          offset: [-2, -5]
         - anchor: a1
           side: NE
           offset: [-3.5, -3.5]
@@ -659,71 +659,76 @@ tweaks:
       - [t4, SSW, 3, 4]
       - [m03, SSW, 3, 4]
   aux0-to-main-gap:
-    # Strengthening the wall between m11 and m12.
+    # Strengthening the wall between m11 and back4.
     - hull-around:
       - [a0, SSW, 0]
-      - [m10, ESE, 0]
+      - [back3, ESE, 0]
       - [m11, ENE, 0]
       - [m11, ESE, 0]
-      - [m12, WNW, 0]
-      - [m12, WSW, 0]
+      - [back4, WNW, 0]
+      - [back4, WSW, 0]
     # Plating over the main-aux cluster gap.
     - chunk-size: 3
       hull-around:
-      - [m10, ENE, 1]
+      - [back3, ENE, 1]
       - [a0, WNW, 0, 1]
+      - [back3, ESE, 0]
       - [a0, WSW, 0, 1]
-      - [m10, ESE, 0]
-      - [m12, NNW, 0, 1]
-    # More plating over the main-aux cluster gap, starting with a bulkhead to
-    # strengthen the transition to the rear housing.
+      - [back4, NNW, 0, 1]
+    # More plating over the main-aux cluster gap.
     - chunk-size: 3
       hull-around:
-      - [rear-housing, ESE, 1]
-      - [m10, ENE, 1]
+      - [back3, ENE, 1]
       - [a0, WNW, 0]
-      - [m10, ESE, 0]
+      - [back3, ESE, 0]
       - [a0, WSW, 0]
-      - [m12, NNW, 0, 1]
+      - [back4, NNW, 0, 1]
       - [a0, SSE, 0, 1]
-      - [m12, NNE, 0, 1]
+      - [back4, NNE, 0, 1]
       - [a1, SSW, 0, 1]
-      - [m13, NNW, 0, 1]
+      - [back5, NNW, 0, 1]
       - [a1, SSE, 0, 1]
-      - [m13, NNE, 0, 1]
+      - [back5, NNE, 0, 1]
       - [a1, ESE, 0, 1]
-      - [m13, ENE, 0, 1]
+      - [back5, ENE, 0, 1]
     # A prettier outer corner:
     - hull-around:
       - [a1, ENE, 0, 1]
-      - [m13, ENE, 2, 4]
+      - [back5, ENE, 2, 4]
       - [a1, ESE, 0, 1]
-    # A plate to ground at the south-east corner of the rear housing.
-    - at-ground: true
-      chunk-size: 2
-      hull-around:
-      - [rear-housing, ESE, 1]
-      - [m10, ENE, 1]
-      - [a0, WNW, 0, 1]
-      - [a0, NNW, 0, 1]
-      - [a1, NNE, 0, 1]
-      - [a1, ENE, 0, 1]
     - at-ground: true
       chunk-size: 2
       hull-around:
       - [a1, ENE, 0, 1]
-      - [m13, ENE, 2, 4]
+      - [back5, ENE, 2, 4]
     # Bottom-only plating at the main-aux cluster gap:
     - at-ground: true
       above-ground: false
       hull-around:
-      - [m13, ESE, 3]
-      - [m13, ENE, 3]
+      - [back5, ESE, 3]
+      - [back5, ENE, 3]
       - [a1, ESE, 1]
       - [a1, ENE, 1]
       - [a1, NNE, 1]
       - [a0, NNW, 0]
       - [m11, SSW, 0]
+  rear-housing-sides:
+    # A plate to ground at the south-west corner of the rear housing:
+    - at-ground: true
+      hull-around:
+      - [rear-housing-exterior, WSW, 1]
+      - [rear-housing-exterior, SSW, 1]
+      - [rear-housing-interior, WSW, 1]
+      - [back0, WNW, 3]
+    # A plate to ground at the south-east corner of the rear housing,
+    # integrating it with the aux and main clusters:
+    - at-ground: true
+      hull-around:
+      - [rear-housing-exterior, ESE, 1]
+      - [rear-housing-exterior, SSE, 1]
+      - [rear-housing-interior, ESE, 1]
+      - [a0, NNW, 1]
+      - [back3, ENE, 0]
     # Bottom-only plating to compensate for the aux cluster breaking up the
     # ground-level profile of the main cluster:
     - at-ground: true
@@ -731,11 +736,71 @@ tweaks:
       hull-around:
       - [m11, SSW, 0]
       - [a0, NNW, 0]
-      - [m10, ENE, 3]
-      - [rear-housing, ESE, 0]
-      - [rear-housing, WSW, 0]
+      - [back3, ENE, 3]
+      - [rear-housing-exterior, ESE, 0]
+      - [rear-housing-exterior, WSW, 0]
       - [back0, WNW, 3]
       - [back0, WSW, 3]
+  rear-housing-to-main-gap:
+    # This tweak connects the top of the rear housing to the main cluster’s
+    # webbing. First, the near top edge, which completes the arched ceiling of
+    # the rear housing:
+    - hull-around:
+      - [rear-housing-exterior, WSW, 0, 1]
+      - [rear-housing-exterior, SSW, 0, 1]
+      - [rear-housing-exterior, ESE, 0, 1]
+      - [rear-housing-exterior, SSE, 0, 1]
+      - [rear-housing-interior, WSW, 0]
+      - [rear-housing-interior, SSW, 0, 1]
+      - [rear-housing-interior, ESE, 0]
+      - [rear-housing-interior, SSE, 0, 1]
+    # The western half of the connection:
+    - hull-around:
+      - [rear-housing-exterior, SSW, 1]
+      - [rear-housing-interior, SSW, 1]
+      - [back0, WNW, 0, 3]
+      - [back0, NNW, 0, 1]
+    - hull-around:
+      - [rear-housing-exterior, SSW, 1]
+      - [rear-housing-interior, SSW, 1]
+      - [back0, NNW, 0, 1]
+      - [back1, NW, 0]
+    - hull-around:  # Triangle at the edge of the web.
+      - [back0, NNW, 0, 1]
+      - [back0, NE, 0]
+      - [back1, NW, 0]
+    - hull-around:
+      - [rear-housing-exterior, SSW, 1]
+      - [rear-housing-interior, SSW, 1]
+      - [rear-housing-interior, SSW, 1]
+      - [back1, NW, 0]
+      - [rear-housing-exterior, S, 1]
+      - [rear-housing-interior, S, 1]
+    - hull-around:
+      - [back1, NW, 0]
+      - [back1, NE, 0]
+      - [back2, NW, 0]
+      - hull-around:
+        - [rear-housing-exterior, S, 1]
+        - [rear-housing-interior, S, 1]
+    # The eastern half:
+    - hull-around:
+      - hull-around:
+        - [rear-housing-exterior, S, 1]
+        - [rear-housing-interior, S, 1]
+      - [back2, NW, 0]
+      - [back2, NE, 0]
+    - hull-around:
+      - hull-around:
+        - [rear-housing-exterior, S, 1]
+        - [rear-housing-interior, S, 1]
+      - [back2, NW, 0]
+      - [back2, NE, 0]
+      - [back3, NW, 0]
+      - [back3, NE, 0]
+      - hull-around:
+        - [rear-housing-exterior, SSE, 1]
+        - [rear-housing-interior, SSE, 1]
   connector-housing:
     # A slightly pyramidal ceiling to the port, as DFM.
     - positive: false
@@ -743,20 +808,27 @@ tweaks:
       - [reflection-port]
       - [reflection-port,
          {anchoring: {segment: 0, offset: [0, 0, 1]}}]
-    # A gentle transition from the rear housing’s corner to the port holder.
+    # An opening from the port to the interior.
+    - positive: false
+      hull-around:
+      - [reflection-port,
+         {anchoring: {side: S, segment: 1, offset: [0, 0, -3]}, size: [8, 8, 8]}]
+    # A gentle transition from the rear housing’s corners to the port holder.
     - hull-around:
       - [reflection-port-holder]
       - [reflection-port-holder,
          {anchoring: {side: NW, segment: 2, offset: [0, 0, -10]}}]
+      - [rear-housing-exterior, SE, 0]
+      - [back3, NE]
 mcu:
   include: true
   # Stand on the long edge, folded into the rear housing.
   intrinsic-rotation: [0, π/2, π/-2]
   anchoring:
-    anchor: rear-housing
+    anchor: rear-housing-exterior
     side: NE
     segment: 3  # Floor level.
-    offset: [-0.5, -2.5, 11]
+    offset: [-0.5, -2.5, 7]
   support:
     lock:
       include: true
@@ -769,10 +841,10 @@ ports:
     type: modular-4p4c-616e
     intrinsic-rotation: [0, 0, π/-2]
     anchoring:
-      anchor: rear-housing
+      anchor: rear-housing-exterior
       side: ENE
       segment: 1
-      offset: [0, 0, 0]
+      offset: [0, -1, -1]
     alignment:
       side: NW
     holder:

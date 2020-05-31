@@ -9,13 +9,13 @@ main-body:
     height: 3
     polygons:
     - points:
-      - anchor: rear-housing
+      - anchor: rear-housing-exterior
         side: NNW
         offset: [0, 0]
-      - anchor: rear-housing
+      - anchor: rear-housing-exterior
         side: NNW
         offset: [10, 0]
-      - anchor: rear-housing
+      - anchor: rear-housing-exterior
         side: NNW
         offset: [0, -10]
     - points:

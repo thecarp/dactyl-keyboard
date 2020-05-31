@@ -112,7 +112,7 @@
     (when (getopt :main-body :back-plate :include)
       (auxf/backplate-block getopt))
     (when (getopt :main-body :rear-housing :include)
-      (main-body/rear-housing-model getopt))
+      (main-body/rear-housing-positive getopt))
     (tweak/plating getopt true :main)
     (when (getopt :main-body :bottom-plate :include)
       (bottom/posts-in-main-body getopt))
@@ -239,6 +239,8 @@
                    (getopt :mcu :support :lock :include))
           (mcu/lock-fixture-composite getopt)))
       ;; Outer negatives:
+      (when (getopt :main-body :rear-housing :include)
+        (main-body/rear-housing-mount-negatives getopt))
       (when (getopt :central-housing :derived :include-adapter)
         (central/negatives getopt))
       (when (getopt :main-body :bottom-plate :include)

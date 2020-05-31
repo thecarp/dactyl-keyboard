@@ -46,7 +46,7 @@ main-body:
         bolt-properties:
           m-diameter: 4
           head-type: countersunk
-          point-type: cone
+          point-type: cone  # Design for manufacturing: Easy printing.
           total-length: 8.5
 central-housing:
   adapter:

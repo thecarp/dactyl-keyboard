@@ -63,14 +63,23 @@
    (apply model/hull
      (for [op [- +]] (model/translate (position (op leeway)) shape)))))
 
-(defn- rhousing-mount-positive [getopt side]
+(defn- rhousing-mount-pair
+  [getopt function]
+  (let [prop (partial getopt :main-body :rear-housing :fasteners)]
+    (maybe/union
+      (when (prop :west :include) (function getopt :W))
+      (when (prop :east :include) (function getopt :E)))))
+
+(defn- rhousing-mount-positive
+  [getopt side]
   {:pre [(compass/cardinals side)]}
   (let [d (getopt :main-body :rear-housing :fasteners :bolt-properties :m-diameter)
         w (getopt :main-body :rear-housing :derived :mount-width)]
    (place-mount getopt side
      (model/cube w w (threaded/datum d :hex-nut-height)))))
 
-(defn- rhousing-mount-negative [getopt side]
+(defn- rhousing-mount-negative
+  [getopt side]
   {:pre [(compass/cardinals side)]}
   (let [d (getopt :main-body :rear-housing :fasteners :bolt-properties :m-diameter)]
    (model/union
@@ -83,41 +92,41 @@
 
 (defn rear-housing-exterior
   "A single polyhedron in place.
-  Exposed for use in shaping a bottom plate under the rear housing."
+  Exposed for use in shaping a bottom plate under the rear housing and as a
+  mask for features that should be contained inside the rear housing."
   [getopt]
   (place/rhousing-place getopt :exterior nil nil nil
     (misc/bevelled-cuboid
       (getopt :main-body :rear-housing :derived :size :exterior)
       (getopt :main-body :rear-housing :bevel :exterior))))
 
-(defn rear-housing-model
-  "A squarish box at the far end of a key cluster."
+(defn rear-housing-positive
+  "A squarish box, open at the bottom and to the south."
   [getopt]
   (let [prop (partial getopt :main-body :rear-housing)
-        fast (partial prop :fasteners)
-        pair (fn [function]
-               (maybe/union
-                 (when (fast :west :include) (function getopt :W))
-                 (when (fast :east :include) (function getopt :E))))]
-    (model/difference
-      (model/union
+        fast (partial prop :fasteners)]
+    (model/union
+      (model/intersection
+        ;; The mask.
+        (place/rhousing-place getopt :exterior nil nil
+          (prop :derived :position :mask)
+          (apply model/cube (prop :derived :size :mask)))
+        ;; The main part of the housing:
+        ;; An extra deep interior subtracted from an exterior.
+        ;; Using the nominal interior model would usually leave four walls.
+        (model/difference
+          (rear-housing-exterior getopt)
+          (place/rhousing-place getopt :interior nil nil
+            (prop :derived :position :hollow)
+            (misc/bevelled-cuboid
+              (prop :derived :size :hollow)
+              (prop :bevel :interior)))))
+      (when (fast :bosses)
         (model/intersection
-          ;; The mask.
-          (place/rhousing-place getopt :exterior nil nil
-            (prop :derived :position :mask)
-            (apply model/cube (prop :derived :size :mask)))
-          ;; The main part of the housing:
-          ;; An extra deep interior subtracted from an exterior.
-          ;; Using the nominal interior model would usually leave four walls.
-          (model/difference
-            (rear-housing-exterior getopt)
-            (place/rhousing-place getopt :interior nil nil
-              (prop :derived :position :hollow)
-              (misc/bevelled-cuboid
-                (prop :derived :size :hollow)
-                (prop :bevel :interior)))))
-        (when (fast :bosses)
-          (model/intersection
-            (rear-housing-exterior getopt)
-            (pair rhousing-mount-positive))))
-      (pair rhousing-mount-negative))))
+          (rear-housing-exterior getopt)
+          (rhousing-mount-pair getopt rhousing-mount-positive))))))
+
+(defn rear-housing-mount-negatives
+  "Negative space inside the rear housing, in place."
+  [getopt]
+  (rhousing-mount-pair getopt rhousing-mount-negative))

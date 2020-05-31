@@ -30,6 +30,13 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;
+;; Shady Hardcoding ;;
+;;;;;;;;;;;;;;;;;;;;;;
+
+(def built-in-anchors #{:origin :rear-housing-exterior :rear-housing-interior})
+
+
+;;;;;;;;;;;;;;;;;;;;;;
 ;; Local Primitives ;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
@@ -39,9 +46,7 @@
 (spec/def ::positive boolean?)
 (spec/def ::body #{:auto :main :central-housing :wrist-rest})
 (spec/def ::anchor keyword?)
-(spec/def ::alias (spec/and keyword?
-                            #(not (= :origin %))
-                            #(not (= :rear-housing %))))
+(spec/def ::alias (spec/and keyword? #(not (built-in-anchors %))))
 (spec/def ::key-cluster #(not (= :derived %)))
 (spec/def ::segment (spec/int-in 0 5))
 

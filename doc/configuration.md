@@ -51,9 +51,9 @@ which is not always the global vector space.
 ### The anchor metaphor
 
 All of the features of the keyboard are ultimately positioned in relation to
-the origin of the global coordinate system (global vector space), which has the
-coordinates `[0, 0, 0]`. The origin is not a feature of the keyboard, but it
-has a name, which is `origin`, so you can refer to it.
+the origin of the global coordinate system (global vector space). The origin
+has the coordinates `[0, 0, 0]`. The origin is not a feature of the keyboard,
+but it has a name, which is `origin`, so you can refer to it.
 
 If you want to, you can link everything directly to the origin. It’s the
 default `anchor` wherever an anchor can be named. However, if you do link
@@ -62,6 +62,15 @@ can get hard to read and will not be adaptive to further changes you make.
 
 To keep things flexible and easy to maintain, features can be anchored to other
 features, as long as the chain of anchors eventually reaches `origin`.
+
+In addition to `origin`, there are a couple of other named anchors built into
+the application:
+
+* `rear-housing-exterior`: The outside of the rear housing, an optional feature
+  of the main body.
+* `rear-housing-interior`: The inside of the rear housing.
+
+#### Parts of an anchor
 
 Anchoring a feature determines its position in the coordinate system with
 respect to its anchor. Along with the name of the anchor, you can specify a few
@@ -73,13 +82,16 @@ other things to get a specific part of the anchor:
 * `offset`: A two- or three-dimensional vector describing a geometric
   translation away from the anchor.
 
-The precise significance of `side` and `segment` vary with the type of the
-anchor. These differences will be documented here in future.
+These parameters are interpreted with respect to the anchor. Their significance
+therefore varies with the anchor. The differences will be documented here in
+future. Broadly, they are of the following types:
 
-Some anchors are rotated, as governed by their own settings. A feature anchored
-directly to a rotated anchor is not itself rotated, but the `offset` against
-the anchor should be understood with the same caveat as the compass metaphor.
-Any anchoring offset occurs in the local vector space of the anchor.
+* The availability and interpretation of different sides (compass codes) and
+  vertical segment codes.
+* Whether or not the anchored feature will be rotated like its anchor.
+  Generally, the anchored feature itself is not rotated, but the `offset` does
+  occur in the local vector space of the anchor.
+* The default shape of a case tweak.
 
 ## Specifying angles
 
