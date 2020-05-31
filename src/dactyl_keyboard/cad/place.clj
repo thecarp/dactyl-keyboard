@@ -137,19 +137,19 @@
 (defn- wall-dimension
   "Find the most specific wall dimension of a given type, off a given side of
   a given key mount."
-  [getopt cluster coord side type]
+  [getopt cluster coord side parameter]
   (if side
     (case (compass/classify side)
       ::compass/cardinal
         (most-specific
-          getopt [:wall (side compass/short-to-long) type] cluster coord)
+          getopt [:wall parameter] cluster coord (side compass/short-to-long))
       ::compass/intercardinal
         ;; Get the mean value of two sides.
-        (/ (apply + (map #(wall-dimension getopt cluster coord % type)
+        (/ (apply + (map #(wall-dimension getopt cluster coord % parameter)
                          (side compass/keyword-to-tuple)))
            2)
       ;; Else intermediate. Recurse to treat as cardinal.
-      (wall-dimension getopt cluster coord (compass/convert-to-cardinal side) type))
+      (wall-dimension getopt cluster coord (compass/convert-to-cardinal side) parameter))
     0))
 
 (defn- horizontal-wall-offsets
@@ -163,20 +163,20 @@
   "Compute a 3D offset from one corner of a switch mount to a part of its wall."
   [getopt cluster coord side segment]
   {:post [(spec/valid? ::tarmi-core/point-3d %)]}
-  (let [most #(most-specific getopt (concat [:wall] %&) cluster coord)
-        t (most :thickness)
-        bevel-factor (most :bevel)
+  (let [unsigned (wall-dimension getopt cluster coord side :bevel)
         [[dx dy] parallel] (horizontal-wall-offsets getopt cluster coord side)
         perpendicular (wall-dimension getopt cluster coord side :perpendicular)
-        bevel (if (zero? perpendicular)
-                bevel-factor
-                (* bevel-factor (/ perpendicular (abs perpendicular))))]
-   (case (or segment 0)
-     ;; TODO: Redesign for expressiveness, removing thickness.
-     0 [0 0 0]
-     1 [(* dx t) (* dy t) bevel]
-     2 [(* dx (+ parallel t)) (* dy (+ parallel t)) (+ bevel perpendicular)]
-     [(* dx parallel) (* dy parallel t) (+ (* 2 bevel) perpendicular)])))
+        signed (* unsigned (if (zero? perpendicular)
+                             1
+                             (/ perpendicular (abs perpendicular))))]
+    (->
+      (case (or segment 0)
+        0 [0 0 0]
+        1 [unsigned unsigned signed]
+        2 [(+ parallel unsigned) (+ parallel unsigned) (+ perpendicular signed)]
+        [parallel parallel (+ perpendicular (* 2 signed))])
+      (update 0 (partial * dx))
+      (update 1 (partial * dy)))))
 
 (defn- wall-vertex-offset
   "Compute a 3D offset from the center of a web post to a vertex on it."

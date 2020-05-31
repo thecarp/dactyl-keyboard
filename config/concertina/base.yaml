@@ -99,13 +99,6 @@ by-key:
             base: 1.5
           yaw:
             base: 0.12
-        wall:
-          north:
-            extent: 3
-            parallel: 2
-            perpendicular: -10
-          south:
-            extent: 3
       columns:
         "0":
           parameters:
@@ -120,13 +113,6 @@ by-key:
                 base: -0.04
               translation:
                 mid: [0.5, -10, 6]
-            wall:
-              south:
-                extent: 0
-              west:
-                extent: 1
-                parallel: 2
-                perpendicular: -6
           rows:
             first:
               parameters:
@@ -135,17 +121,28 @@ by-key:
                     intrinsic: 0.4
                   translation:
                     early: [-0.5, -1.5, 4]
-                wall:
-                  west:
-                    extent: 0
             "0":
               parameters:
                 layout:
                   translation:
                     early: [0, 0, -1]
+              sides:
+                west:
+                  parameters:
+                    wall:
+                      extent: 1
             last:
               parameters:
                 key-style: ksl
+              sides:
+                north:
+                  parameters:
+                    wall:
+                      extent: 2
+                west:
+                  parameters:
+                    wall:
+                      extent: 1
         "1":
           parameters:
             layout:
@@ -154,14 +151,6 @@ by-key:
                 progressive: 0.4
               translation:
                 mid: [1, -1, 2]
-            wall:
-              north:
-                parallel: 3
-                perpendicular: -8
-              south:
-                extent: 0
-              west:
-                extent: 0
           rows:
             first:
               parameters:
@@ -190,6 +179,13 @@ by-key:
                 layout:
                   translation:
                     early: [0, -1, 0]
+          sides:
+            north:
+              parameters:
+                wall:
+                  extent: 2
+                  parallel: 3
+                  perpendicular: -8
         "2":
           parameters:
             layout:
@@ -197,14 +193,6 @@ by-key:
                 progressive: 0.4
               translation:
                 mid: [0, 3, -3]
-            wall:
-              north:
-                parallel: 0
-                perpendicular: 0
-              east:
-                extent: 4
-              west:
-                extent: 1
           rows:
             "-3":
               parameters:
@@ -213,11 +201,13 @@ by-key:
                     intrinsic: -0.7
                   translation:
                     early: [0, -14, 7]
-                wall:
-                  south:
-                    extent: 4
-                    parallel: 0
-                    perpendicular: -8
+              sides:
+                south:
+                  parameters:
+                    wall:
+                      extent: 3
+                      parallel: 0
+                      perpendicular: -8
             "-2":
               parameters:
                 layout:
@@ -228,6 +218,20 @@ by-key:
             last:
               parameters:
                 key-style: ksl
+          sides:
+            north:
+              parameters:
+                wall:
+                  parallel: 0
+                  perpendicular: 0
+            east:
+              parameters:
+                wall:
+                  extent: 3
+            west:
+              parameters:
+                wall:
+                  extent: 1
         "3":
           parameters:
             layout:
@@ -236,15 +240,6 @@ by-key:
                 progressive: 0.35
               translation:
                 mid: [0, -2, 0]
-            wall:
-              north:
-                parallel: -1
-                perpendicular: -5
-              east:
-                extent: 1
-              south:
-                parallel: 5
-                perpendicular: -9
           rows:
             first:
               parameters:
@@ -262,6 +257,23 @@ by-key:
                     intrinsic: 0.3
                   translation:
                     early: [0, 4, 1]
+          sides:
+            north:
+              parameters:
+                wall:
+                  extent: 2
+                  parallel: -1
+                  perpendicular: -5
+            east:
+              parameters:
+                wall:
+                  extent: 1
+            south:
+              parameters:
+                wall:
+                  extent: 2
+                  parallel: 5
+                  perpendicular: -9
         "4":
           parameters:
             layout:
@@ -270,12 +282,18 @@ by-key:
                 progressive: 0.5
               translation:
                 mid: [0, -2, 3]
-            wall:
-              north:
-                extent: 0
-              south:
-                parallel: 6
-                perpendicular: -3
+          sides:
+            north:
+              parameters:
+                wall:
+                  parallel: 2
+                  perpendicular: -10
+            south:
+              parameters:
+                wall:
+                  extent: 2
+                  parallel: 6
+                  perpendicular: -3
         "5":
           parameters:
             layout:
@@ -286,14 +304,18 @@ by-key:
                 intrinsic: -0.2
               translation:
                 mid: [0, -2, 7]
-            wall:
-              north:
-                extent: 0
-              east:
-                extent: 0
-              south:
-                parallel: 2
-                perpendicular: -6
+          sides:
+            east:
+              parameters:
+                wall:
+                  extent: 0
+                  to-ground: true
+            south:
+              parameters:
+                wall:
+                  extent: 2
+                  parallel: 2
+                  perpendicular: -6
     thumb0:
       parameters:
         layout:
@@ -310,15 +332,6 @@ by-key:
             base: 0
           yaw:
             base: 0.15
-        wall:
-          north:
-            extent: 0
-          east:
-            extent: 0
-          south:
-            extent: 0
-          west:
-            extent: 0
       columns:
         first:
           parameters:
@@ -327,15 +340,18 @@ by-key:
                 base: 0.8
               translation:
                 mid: [0, 9, 0]
-            wall:
-              west:
-                extent: 3
+          sides:
+            west:
+              parameters:
+                wall:
+                  extent: 2
         "1":
-          parameters:
-            wall:
-              south:
-                extent: 3
-                perpendicular: -12
+          sides:
+            south:
+              parameters:
+                wall:
+                  extent: 2
+                  perpendicular: -12
         "2":
           parameters:
             layout:
@@ -343,16 +359,21 @@ by-key:
                 base: 0.7
               translation:
                 mid: [0, 9, 0]
-            wall:
-              north:
-                extent: 3
-              south:
-                perpendicular: -12
+          sides:
+            north:
+              parameters:
+                wall:
+                  extent: 2
+            south:
+              parameters:
+                wall:
+                  perpendicular: -12
         last:
-          parameters:
-            wall:
-              east:
-                extent: 4
+          sides:
+            east:
+              parameters:
+                wall:
+                  extent: 3
 main-body:
   reflect: true
   bottom-plate:
@@ -545,39 +566,39 @@ tweaks:
   near-wall:  # Up the south side of the main key cluster:
   - hull-around:
     - [ca-near-base]
-    - [m5F, SSE, 3]
-    - [m5F, SSW, 3]
+    - [m5F, SSE, 2]
+    - [m5F, SSW, 2]
     - [ca-near-lower-1]
   - hull-around:
     - [ca-near-lower-1]
-    - [m5F, SSW, 3]
-    - [m4F, SSE, 3]
-    - [m4F, SSW, 3]
+    - [m5F, SSW, 2]
+    - [m4F, SSE, 2]
+    - [m4F, SSW, 2]
     - [ca-near-lower-2]
   - hull-around:
     - [ca-near-lower-2]
-    - [m4F, SSW, 3]
-    - [m3F, SSE, 3]
-    - [m3F, SSW, 3]
+    - [m4F, SSW, 2]
+    - [m3F, SSE, 2]
+    - [m3F, SSW, 2]
     - [ca-near-upper-1]
   - chunk-size: 3
     hull-around:
-    - [m3F, SSW, 3]
+    - [m3F, SSW, 2]
     - [ca-near-upper-1]
-    - [m2F, ENE, 4]
+    - [m2F, ENE, 3]
     - [ca-near-upper-2]
     - hull-around:
-      - [m2F, ESE, 4]
-      - [m2F, SSE, 4]
+      - [m2F, ESE, 3]
+      - [m2F, SSE, 3]
     - [sec-near-upper-3]
-    - [m2F, SSW, 4]
+    - [m2F, SSW, 3]
   top-wall:  # The roof of the main key cluster.
   - chunk-size: 3
     hull-around:
-    - [m1L, NNW, 3]
-    - [m0L, NNE, 3]
+    - [m1L, NNW, 2]
+    - [m0L, NNE, 2]
     - [ca-far-wall]
-    - [m0L, NNW, 3]
+    - [m0L, NNW, 2]
     - [ca-far-roof]
     - [m0L, WNW, 1]
     - [ca-mid-4]
@@ -624,92 +645,92 @@ tweaks:
   thumb-border:
   - chunk-size: 2
     hull-around:
-    - [t0F, WSW, 0, 4]
-    - [t0F, SSW, 0, 4]
-    - [t1F, SSW, 0, 4]
+    - [t0F, WSW, 0, 3]
+    - [t0F, SSW, 0, 3]
+    - [t1F, SSW, 0, 3]
   - chunk-size: 2
     hull-around:
-    - [t1F, SSE, 0, 4]
-    - [t2F, SSE, 0, 4]
-    - [t3F, SSE, 0, 4]
-    - [t3F, ESE, 0, 4]
+    - [t1F, SSE, 0, 3]
+    - [t2F, SSE, 0, 3]
+    - [t3F, SSE, 0, 3]
+    - [t3F, ESE, 0, 3]
   - chunk-size: 2
     hull-around:
-    - [t3L, ENE, 0, 4]
-    - [t3L, NNE, 0, 4]
-    - [t2L, NNE, 0, 4]
+    - [t3L, ENE, 0, 3]
+    - [t3L, NNE, 0, 3]
+    - [t2L, NNE, 0, 3]
   thumb-wall:  # More complect additional thumb cluster walling.
   # Bridging the clusters at the top:
   - chunk-size: 3
     hull-around:
-    - [t0L, WNW, 0, 3]
+    - [t0L, WNW, 0, 2]
     - [ca-thumb-1]
-    - [t0L, NNW, 0, 3]
+    - [t0L, NNW, 0, 2]
     - [ca-mid-1]
     - [t1L, NNW, 0, 1]
     - [ca-mid-2]
-    - [t2L, NNW, 0, 3]
+    - [t2L, NNW, 0, 2]
   - chunk-size: 3
     hull-around:
-    - [t2L, NNW, 3, 4]
+    - [t2L, NNW, 2, 3]
     - [ca-mid-2]
-    - [t2L, NNE, 3, 4]
+    - [t2L, NNE, 2, 3]
     - [m0F, WNW, 0]
     - [m0F, WSW, 0]
   # The inside wall between the key clusters:
   - chunk-size: 3
     hull-around:
-    - [t2L, NNE, 3, 4]
+    - [t2L, NNE, 2, 3]
     - [m0F, WSW, 0]
-    - [t3L, NNE, 3, 4]
+    - [t3L, NNE, 2, 3]
     - [m0F, SSW, 0]
-    - [t3L, ESE, 3, 4]
+    - [t3L, ESE, 2, 3]
     - [m0F, SSE, 0]
-    - [t3F, ENE, 3, 4]
+    - [t3F, ENE, 2, 3]
     - [m1F, WSW, 0]
     - [m2F, WNW, 1]
     - [m1F, ESE, 0]
   - chunk-size: 3
     hull-around:
     - [m2F, WNW, 1]
-    - [t3F, ENE, 3, 4]
+    - [t3F, ENE, 2, 3]
     - [m2F, SSW, 0]
-    - [m2F, SSW, 3, 4]
+    - [m2F, SSW, 2, 3]
   - chunk-size: 3
     hull-around:
-    - [t3F, ENE, 3, 4]
-    - [t3F, ESE, 3, 4]
-    - [m2F, SSW, 3, 4]
-    - [t3F, SSE, 3, 4]
-    - [m2F, SSW, 4]
-    - [t2F, SSE, 3, 4]
+    - [t3F, ENE, 2, 3]
+    - [t3F, ESE, 2, 3]
+    - [m2F, SSW, 2, 3]
+    - [t3F, SSE, 2, 3]
+    - [m2F, SSW, 3]
+    - [t2F, SSE, 2, 3]
     - [sec-near-upper-3]
   # Between the thumb cluster and the near side of the central housing:
   - chunk-size: 3
     hull-around:
-    - [t2F, SSE, 3, 4]
+    - [t2F, SSE, 2, 3]
     - [sec-near-upper-3]
-    - [t1F, SSE, 3, 4]
+    - [t1F, SSE, 2, 3]
     - [sec-near-upper-4a]
-    - [t1F, SSW, 3, 4]
-    - [t0F, SSW, 3, 4]
+    - [t1F, SSW, 2, 3]
+    - [t0F, SSW, 2, 3]
   - chunk-size: 3
     hull-around:
     - [sec-near-upper-4a]
-    - [t0F, SSW, 3, 4]
+    - [t0F, SSW, 2, 3]
     - [sec-near-upper-4b]
-    - [t0F, WSW, 3]
+    - [t0F, WSW, 2]
     - hull-around:
       - [ca-near-upper-5]
-      - [t0F, WNW, 3]
-      - [t0L, WSW, 3]
+      - [t0F, WNW, 2]
+      - [t0L, WSW, 2]
   - chunk-size: 3
     hull-around:
-    - [t0F, WNW, 3, 4]
+    - [t0F, WNW, 2, 3]
     - [ca-near-upper-5]
-    - [t0L, WSW, 3, 4]
+    - [t0L, WSW, 2, 3]
     - [ca-near-roof]
-    - [t0L, WNW, 3]
+    - [t0L, WNW, 2]
   # Between the central housing adapter and the secondaries anchoring to it
   # beneath the thumb cluster.
   - chunk-size: 3
@@ -752,11 +773,11 @@ tweaks:
     - hull-around:
       - [m3L, ESE, 0, 1]
       - [m3L, ENE, 1]
-      - [m3L, NNE, 0, 4]
+      - [m3L, NNE, 0, 3]
   # Cosmetic fix for the tiny gap between m3L and m4L.
   - hull-around:
-    - [m3L, NNE, 4]
-    - [m3L, NNW, 4]
+    - [m3L, NNE, 3]
+    - [m3L, NNW, 3]
     - [m2L, NNE, 1]
   # A long, thin, complicated sliver joining the north edge of the web to the
   # central-housing adapter.
@@ -765,12 +786,12 @@ tweaks:
     - [ca-far-wall]
     - [m5L1]
     - [m5L2]
-    - [m3L, NNE, 3]
-    - [m3L, NNW, 3]
-    - [m2L, NNE, 3]
-    - [m2L, NNW, 3]
-    - [m1L, NNE, 3]
-    - [m1L, NNW, 3]
+    - [m3L, NNE, 2]
+    - [m3L, NNW, 2]
+    - [m2L, NNE, 2]
+    - [m2L, NNW, 2]
+    - [m1L, NNE, 2]
+    - [m1L, NNW, 2]
   # Tweaks for fitting an external USB port and printing the central housing
   # standing on end.
   external-usb:
@@ -792,14 +813,18 @@ tweaks:
         size: [16, 2.01, 12]}]
   bottom:
   # A thin strip along the east side of the main cluster.
-  # This comes in two parts because hulling the entire strip would extend the
+  # This comes in three parts because hulling the entire strip would extend the
   # bottom plate outside the case.
+  # Notice there is some redundancy with case wall generated from settings by
+  # key. Apart from expanding the bottom plate, the extra material also
+  # strengthens the outside edge of the main body and helps support
+  # bottom-plate fasteners.
   - at-ground: true
     hull-around:
     - [ca-bottom-1]
     - [ci-near-base]
     - [ca-near-base]
-    - [m5F, SSE, 0, 3]
+    - [m5F, SSE, 0, 2]
     - [m5F, ESE, 0]
     - [m5F, ENE, 0]
   - at-ground: true

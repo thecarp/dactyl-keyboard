@@ -23,6 +23,17 @@ version 0.2.0, thus covering only a fraction of the project’s history.
         - The parameter governing how to source the angle of fasteners for a
           wrist rest mount has been renamed from `anchoring` to `authority` to
           remove ambiguity.
+    - Parameters for key-cluster walls have been restructured.
+        - Parameters formerly sorted under side-specific settings have been
+          promoted to nest directly under `wall` and can now be used without
+          selecting a side.
+        - As a consequence of more flexible selection criteria, the `bevel`
+          setting can now be side-specific.
+        - Wall `extent` is now strictly numeric. Extending a wall to ground
+          is governed by the new parameter `to-ground` and can now be done
+          from any segment, no longer just segment 4.
+        - The vertical segment sequence for key walls has been shortened and
+          simplified. Wall `thickness` has been removed as redundant.
     - All parameters governing individual properties of threaded bolts have
       been removed in favour of more powerful new parameters based on options
       exposed by a new library (`scad-klupe`) that draws bolts for the
@@ -119,6 +130,12 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - A formal concept of bodies, making it possible to choose which OpenSCAD
   output file to target for a given tweak etc.
     - Central housing, a new feature adding a body separate from the main body.
+- The `by-key` section of parameters has become more flexible.
+    - It is now possible to influence all keys on a row, without duplicating
+      settings for all columns in that row.
+    - `sides` is now a selection criterion just like `clusters`, `columns` and
+      `rows`, matching the general strengthening of the concept of sides in
+      this version.
 - An MCU shelf. This type of MCU support corresponds directly to the
   Dactyl-ManuForm’s `teensy-holder` object and is therefore not new, but
   it has some parameters to extend its functionality.
@@ -163,26 +180,27 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 ### Developer
 - Improved REPL support.
 - New namespaces:
-  - `anch`, collecting collectors of anchor points.
-  - `body`, collecting logic specific to the new concept of bodies.
-    Code previously in the single-file `body` module, but not specific to the
-    main body, moved into the `key` and `mask` namespaces. The `key` namespace
-    branched into a package of several modules as a result.
-  - `compass`, gathering code from `generics` and `matrix` with refactoring
-    to improve the compass metaphor for feature placement. For example, the new
-    MCU grip anchors are created with a corner such as `SW`, and this maps to a
-    keyword (`:SW`), not to a tuple of cardinal-direction keywords (`[:south
-    :west]`). Corner keywords are translated to tuples at need. Note that
-    the new direction keywords are not yet namespaced to the compass module.
-  - `cots`, gathering information on commercial off-the-shelf goods.
-  - `mask`, taking the above-ground mask function out of the main body module,
-    and the bottom-plate masks too.
-  - `mcu`, breaking MCU features out of `auxf`.
-  - `misc`, which collects everything that remained of `generics` after
-    compass code moved out. This makes two `misc` modules.
-  - `poly`, collecting helper functions for making polyhedra.
-  - `tweak`, breaking tweak plating out of `body` and `bottom`.
-  - Split the `schema` module into separate modules for parsers and specs.
+    - `anch`, collecting collectors of anchor points.
+    - `body`, collecting logic specific to the new concept of bodies.  Code
+      previously in the single-file `body` module, but not specific to the main
+      body, moved into the `key` and `mask` namespaces. The `key` namespace
+      branched into a package of several modules as a result.
+    - `compass`, gathering code from `generics` and `matrix` with refactoring
+      to improve the compass metaphor for feature placement. For example, the
+      new MCU grip anchors are created with a corner such as `SW`, and this
+      maps to a keyword (`:SW`), not to a tuple of cardinal-direction keywords
+      (`[:south :west]`). Corner keywords are translated to tuples at need.
+      Note that the new direction keywords are not yet namespaced to the
+      compass module.
+    - `cots`, gathering information on commercial off-the-shelf goods.
+    - `mask`, taking the above-ground mask function out of the main body
+      module, and the bottom-plate masks too.
+    - `mcu`, breaking MCU features out of `auxf`.
+    - `misc`, which collects everything that remained of `generics` after
+      compass code moved out. This makes two `misc` modules.
+    - `poly`, collecting helper functions for making polyhedra.
+    - `tweak`, breaking tweak plating out of `body` and `bottom`.
+    - Split the `schema` module into separate modules for parsers and specs.
 - The parameter interpreter now bans `nil` only as a function of explicit
   validators, no longer categorically.
 - Removed functions from the derived user configuration.
@@ -194,17 +212,20 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 Compare versions of `config/dmote/base.yaml` to see how to migrate your old
 configuration files. Salient points:
 
-* Replace each `fasteners` → `diameter` with a `bolt-properties` → `m-diameter`
+- Move a setting like `parameters` → `wall` → `north` → `extent` into `sides` →
+  `north` → `parameters` → `wall` → `extent`.
+    - Replace a `full` extent with `3` and set `to-ground` to `true`.
+- Replace each `fasteners` → `diameter` with a `bolt-properties` → `m-diameter`
   setting, and each bolt length setting with `bolt-properties` → `total-length`
   or `threaded-length`, depending on whether you want the head to count towards
   length. For the MCU lock, the term is `fastener-properties` to avoid
   confusion with the bolt of a lock.
-* To compensate for the changed default orientation of the MCU in an existing
+- To compensate for the changed default orientation of the MCU in an existing
   custom configuration, use the moved `intrinsic-rotation` setting for your MCU
   support, with the approximate value `[0, 1.5708, 0]`, plus something for the
   z axis if that used to be rotated by its anchor.
-* Rename `corner` parameters to `side`.
-* Remove `connection` and add equivalent settings to the new `ports` map.
+- Rename `corner` parameters to `side`.
+- Remove `connection` and add equivalent settings to the new `ports` map.
 
 ## [Version 0.5.1] - 2019-10-16
 ### Fixed

@@ -145,7 +145,6 @@
 (spec/def ::column-disposition
   (spec/keys ::opt-un [::rows-below-home ::rows-above-home]))
 (spec/def ::flexcoord (spec/or :absolute int? :extreme #{:first :last}))
-(spec/def ::wall-extent (spec/or :partial ::segment :full #{:full}))
 (spec/def ::tweak-leaf
   (spec/and
     (spec/keys :req-un [:three/anchoring] :opt-un [:tweak/sweep :tweak/size])

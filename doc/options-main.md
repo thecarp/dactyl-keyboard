@@ -9,9 +9,7 @@ Each heading in this document represents a recognized configuration key in the m
     - Parameter <a href="#user-content-keys-preview">`preview`</a>
     - Parameter <a href="#user-content-keys-styles">`styles`</a>
 - Special section <a href="#user-content-key-clusters">`key-clusters`</a>
-- Section <a href="#user-content-by-key">`by-key`</a>
-    - Special recurring section <a href="#user-content-by-key-parameters">`parameters`</a>
-    - Special section <a href="#user-content-by-key-clusters">`clusters`</a> ← overrides go in here
+- Special section <a href="#user-content-by-key">`by-key`</a>
 - Parameter <a href="#user-content-secondaries">`secondaries`</a>
 - Section <a href="#user-content-main-body">`main-body`</a>
     - Parameter <a href="#user-content-main-body-reflect">`reflect`</a>
@@ -205,17 +203,9 @@ In options by key, documented [here](options-nested.md), you specify which style
 
 This section describes the general size, shape and position of the clusters of keys on the keyboard, each in its own subsection. It is documented in detail [here](options-clusters.md).
 
-## Section <a id="by-key">`by-key`</a>
+## Special section <a id="by-key">`by-key`</a>
 
-This section repeats. Each level of settings inside it is more specific to a smaller part of the keyboard, eventually reaching the level of individual keys. It’s all documented [here](options-nested.md).
-
-### Special recurring section <a id="by-key-parameters">`parameters`</a>
-
-Default values at the global level.
-
-### Special section <a id="by-key-clusters">`clusters`</a> ← overrides go in here
-
-Starting here, you gradually descend from the global level toward the key level.
+This section contains a nested structure of parameters. Each level within controls a smaller part of the keyboard, eventually reaching the level of specific sides of individual keys. It’s all documented [here](options-nested.md).
 
 ## Parameter <a id="secondaries">`secondaries`</a>
 
@@ -621,7 +611,7 @@ In the following example, `A` and `B` are key aliases that would be defined else
       hull-around:
       - [A, SSE, 0]
       - [B, NNE, 0]
-      - [A, SSW, 0, 4]
+      - [A, SSW, 0, 3]
 ```
 
 The example is interpreted to mean that a plate should be created stretching from the south-by-southeast corner of `A` to the north-by-northeast corner of `B`. Due to `chunk-size` 2, that first plate will be joined to, but not fully hulled with, a second plate from `B` back to a different corner of `A`, with a longer stretch of (all) wall segments running down the corner of `A`.

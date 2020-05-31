@@ -19,19 +19,23 @@
             [dactyl-keyboard.param.tree.port :as port]
             [dactyl-keyboard.param.tree.nested :as nested]
             [dactyl-keyboard.param.tree.restmnt :as restmnt]
-            [dactyl-keyboard.cots :as cots]))
+            [dactyl-keyboard.cots :as cots]
+            [dactyl-keyboard.compass :as compass]))
 
 
 ;; Though this module describes the main body of parameters, it contains
 ;; within it certain sections specified elsewhere. Validators for these
 ;; sections are created from the detailed specifications by delegation.
 
-(spec/def ::parameters (base/delegated-validation nested/raws))
-(spec/def ::individual-row (spec/keys :opt-un [::parameters]))
-(spec/def ::rows (spec/map-of ::valid/flexcoord ::individual-row))
-(spec/def ::individual-column (spec/keys :opt-un [::rows ::parameters]))
-(spec/def ::columns (spec/map-of ::valid/flexcoord ::individual-column))
-(spec/def ::overrides (spec/keys :opt-un [::columns ::parameters]))
+(spec/def :nested/parameters (base/delegated-validation nested/raws))
+(spec/def :nested/rows (spec/map-of ::valid/flexcoord ::nested-key-configuration))
+(spec/def :nested/columns (spec/map-of ::valid/flexcoord ::nested-key-configuration))
+(spec/def :nested/clusters (spec/map-of ::valid/key-cluster ::nested-key-configuration))
+(spec/def :nested/sides (spec/map-of (set (keys compass/long-to-short))
+                                     ::nested-key-configuration))
+(spec/def ::nested-key-configuration
+  (spec/keys :opt-un [:nested/parameters :nested/clusters :nested/columns
+                      :nested/rows :nested/rows]))
 
 (def raws
   "A flat version of the specification for a complete user configuration.
@@ -77,37 +81,16 @@
     "This section describes the general size, shape and position of "
     "the clusters of keys on the keyboard, each in its own subsection. "
     "It is documented in detail [here](options-clusters.md)."]
-   [:section [:by-key]
-    "This section repeats. Each level of settings inside it "
-    "is more specific to a smaller part of the keyboard, eventually reaching "
-    "the level of individual keys. It’s all documented "
-    "[here](options-nested.md)."]
-   [:parameter [:by-key :parameters]
-    {:heading-template "Special recurring section %s"
-     :default (base/extract-defaults nested/raws)
-     :parse-fn (base/parser-with-defaults nested/raws)
-     :validate [(base/delegated-validation nested/raws)]}
-    "Default values at the global level."]
-   [:parameter [:by-key :clusters]
-    (let [rep (base/parser-wo-defaults nested/raws)]
-      {:heading-template "Special section %s ← overrides go in here"
-       :default {}
-       :parse-fn (parse/map-of
-                   keyword
-                   (parse/map-like
-                     {:parameters rep
-                      :columns
-                       (parse/map-of
-                         parse/keyword-or-integer
-                         (parse/map-like
-                           {:parameters rep
-                            :rows
-                              (parse/map-of
-                                parse/keyword-or-integer
-                                (parse/map-like {:parameters rep}))}))}))
-       :validate [(spec/map-of ::valid/key-cluster ::overrides)]})
-    "Starting here, you gradually descend from the global level "
-    "toward the key level."]
+   [:parameter [:by-key]
+    {:heading-template "Special section %s"
+     :default {:parameters (base/extract-defaults nested/raws)}
+     :parse-fn (parse/nested-key-fn (base/parser-wo-defaults nested/raws) 5)
+     :resolve-fn base/soft-defaults
+     :validate [::nested-key-configuration]}
+    "This section contains a nested structure of parameters. "
+    "Each level within controls a smaller part of the keyboard, "
+    "eventually reaching the level of specific sides of individual keys. "
+    "It’s all documented [here](options-nested.md)."]
    [:parameter [:secondaries]
     {:default {}
      :parse-fn parse/named-secondary-positions
@@ -537,7 +520,7 @@
     "      hull-around:\n"
     "      - [A, SSE, 0]\n"
     "      - [B, NNE, 0]\n"
-    "      - [A, SSW, 0, 4]\n```\n"
+    "      - [A, SSW, 0, 3]\n```\n"
     "\n"
     "The example is interpreted to mean that a plate should be "
     "created stretching from the south-by-southeast corner of `A` to the "

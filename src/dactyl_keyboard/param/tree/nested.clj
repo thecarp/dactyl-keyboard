@@ -12,39 +12,39 @@
   "A flat version of a special part of a user configuration."
   [["# Nestable configuration options\n\n"
     "This document describes all those settings which can be made at any "
-    "level of specificity, from the entire keyboard down to an individual "
-    "key. These settings all go under `by-key` in a YAML file.\n"
+    "level of specificity, from the entire keyboard down to one side of one "
+    "key. These settings all go under `by-key` in a YAML file, as indicated "
+    "[here](options-main.md).\n"
     "\n"
     "## Conceptual overview\n"
     "\n"
-    "Specificity is accomplished by nesting. The following "
-    "levels of specificity are currently available. Each one branches out, "
-    "containing the next:\n"
+    "The `by-key` section contains a map of up to five items:\n"
     "\n"
-    "- The global level, directly under `by-key` (cf. the "
-    "[main document](options-main.md)).\n"
-    "- The key cluster level, at `by-key` → `clusters` → your cluster.\n"
-    "- The column level, nested still further under your cluster → "
-    "`columns` → column index.\n"
-    "- The row level, nested at the bottom, under column index → `rows` → "
-    "row index.\n"
+    "- `parameters`, where you put actual settings for the entire keyboard. "
+    "Sections described in this document all pertain to this map.\n"
+    "- `clusters`, starting a nested map for specific clusters only, "
+    "keyed by their names.\n"
+    "- `columns` and/or `rows`, each starting a nested map for specific "
+    "columns or rows only, keyed either by their indices (ordinal integers) "
+    "or by the special words `first` or `last`. Due to a peculiarity of the "
+    "YAML parser, **numeric indices must appear in quotation marks** as in the "
+    "example below.\n"
+    "- `sides`, starting a nested map for specific sides only, "
+    "keyed by the long-form cardinal points of the compass, i.e. the words "
+    "`north`, `east`, `south` or `west`.\n"
     "\n"
-    "A setting at the row level will only affect keys in the specific cluster "
-    "and column selected along the way, i.e. only one key per row. Therefore, "
-    "the row level is effectively the key level.\n"
+    "Each of the nested maps have the same structure as this root-level map. "
+    "Greater specificity is accomplished by nesting a series of these maps.\n"
     "\n"
-    "At each level, two subsections are permitted: `parameters`, where you "
-    "put the settings themselves, and a section for the next level of "
-    "nesting: `clusters`, then `columns`, then `rows`. More specific settings "
-    "take precedence.\n"
+    "### Example\n"
     "\n"
-    "In the following hypothetical example, the parameter `P`, which is "
-    "not really supported, is defined three times: Once at the global level "
-    "and twice at the row (key) level.\n"
+    "In the following example, the parameter `key-style` is set three times: "
+    "Once at the root level and twice with enough selection criteria to limit "
+    "the effect to two individual keys.\n"
     "\n"
     "```by-key:\n"
     "  parameters:\n"
-    "    P: true\n"
+    "    key-style: plump\n"
     "  clusters:\n"
     "    C:\n"
     "      columns:\n"
@@ -52,25 +52,104 @@
     "          rows:\n"
     "            first:\n"
     "              parameters:\n"
-    "                P: false\n"
+    "                key-style: svelte\n"
     "            \"3\":\n"
     "              parameters:\n"
-    "                P: false\n```"
+    "                key-style: svelte\n```"
     "\n\n"
-    "In this example, `P` will have the value “true” for all keys except two "
-    "on each half of the keyboard. On the right-hand side, `P` will be false "
-    "for the key closest to the user (“first” row) in the second column "
-    "from the left (column “1”) in a cluster of keys here named `C`. `P` will "
-    "also be false for the fourth key from the user (row “3”) in the same "
-    "column.\n"
+    "In this example, `key-style` will have the value `plump` for all keys "
+    "except two. It will have the value `svelte` for the key closest to the "
+    "user (first row) and the key three steps above the home row (row 3), both "
+    "in the second column from the left (column 1) of key cluster `C`.\n"
     "\n"
-    "Columns and rows are indexed by their ordinal integers "
-    "or the words “first” or “last”, which take priority.\n"
+    "Key cluster `C` and the two key styles must be defined elsewhere. Also, "
+    "if the keyboard uses reflection, notice that the descriptions given in "
+    "the previous paragraph must be mirrored for the left-hand side of the "
+    "keyboard.\n"
     "\n"
-    "WARNING: Due to a peculiarity of the YAML parser, take care "
-    "to quote your numeric column and row indices as strings. This is why "
-    "there are quotation marks around column index 1 and row index 3 in the "
-    "example."]
+    "### Unique selection criteria\n"
+    "\n"
+    "The nested maps named `clusters`, `columns`, `rows` and `sides`, "
+    "together with the identifiers they take as keys, are selection criteria. "
+    "The order in which these criteria "
+    "appear is significant, but only under the following circumstances.\n"
+    "\n"
+    "- The special words `first` and `last` can only be used when nested "
+    "inside a cluster-specific configuration, because they are informed by "
+    "the cluster matrix specification.\n"
+    "- As a further requirement for rows only, `first` and `last` can only "
+    "be used when nested inside a column-specific configuration, as in the "
+    "example above.\n"
+    "\n"
+    "Each set of criteria must be unique. That is to say, each set of "
+    "`parameters` must describe some new part of the keyboard. "
+    "For instance, you can have either `by-key` → `rows` → `"0"` → `columns`"
+    "→ `"0"` → `parameters` *or* `by-key` → `columns` → `"0"` → `rows` → `"0"`"
+    "→ `parameters`, but you cannot have both. They are equivalent because "
+    "they amount to identical selection criteria.\n"
+    "\n"
+    "This restriction applies even to the use of `first` and `last` with "
+    "numeric indices. If column 8 is the last column, you can refer to it "
+    "either way, but there cannot be two exactly equivalent sets of criteria, "
+    "even if one uses `"8"` and the other uses the special keyword `last` to "
+    "select column 8.\n"
+    "\n"
+    "### Specificity\n"
+    "\n"
+    "The application picks the most specific value available. "
+    "Specificity is determined by permutations of selection criteria. "
+    "More specifically, each criterion is switched on and off, starting "
+    "with the least significant. Rows are considered less "
+    "significant than columns for this purpose. The complete hiearchy is "
+    "clusters > colums > rows > sides.\n"
+    "\n"
+    "An example: To find the right `key-style` "
+    "for a key at coordinates `[0, -1]` in a cluster named `C`, "
+    "the application checks for `parameters` → `key-style` with the "
+    "following criteria, using the first setting it finds.\n"
+    "\n"
+    "- Cluster `C`, column 0, row -1.\n"
+    "- Cluster `C`, column 0, without any specific row selector.\n"
+    "- Cluster `C`, row -1, without any specific column.\n"
+    "- Cluster `C`, without any specific column or row.\n"
+    "- No specific cluster, column 0, row -1.\n"
+    "- No specific cluster, column 0, no specific row.\n"
+    "- No specific cluster or column, row -1.\n"
+    "- No specific cluster, column or row.\n"
+    "\n"
+    "The first item in this example requires a setting specific to the "
+    "individual key under consideration. "
+    "The last item is at the opposite end of the spectrum of specificity: "
+    "It reaches the root level, specifically looking at the "
+    "setting `by-key` → `parameters` → `key-style`. This root level serves "
+    "as a global fallback. It’s the only level with any default values.\n"
+    "\n"
+    "Notice that `sides` are ignored in the example above, because "
+    "setting a `key-style` for just one side of a key, though it is permitted, "
+    "is overly specific and therefore meaningless. You can compare it to "
+    "a decision to paint one atom.\n"
+    "\n"
+    "Here follows the complete order of resolution in an extended example, "
+    "for a `wall` of the same key as above. Where walls are concerned, the "
+    "side of the key *would* be relevant, so its gets included in the "
+    "permutations, from most to least specific.\n"
+    "\n"
+    "- Cluster `C`, column 0, row -1, west side.\n"
+    "- Cluster `C`, column 0, row -1, no side.\n"
+    "- Cluster `C`, column 0, no row, west side.\n"
+    "- Cluster `C`, column 0, no row, no side.\n"
+    "- Cluster `C`, no column, row -1, west side.\n"
+    "- Cluster `C`, no column, row -1, no side.\n"
+    "- Cluster `C`, no column, no row, west side.\n"
+    "- Cluster `C`, no column, no row, no side.\n"
+    "- No cluster, column 0, row -1, west side.\n"
+    "- No cluster, column 0, row -1, no side.\n"
+    "- No cluster, column 0, no row, west side.\n"
+    "- No cluster, column 0, no row, no side.\n"
+    "- No cluster, no column, row -1, west side.\n"
+    "- No cluster, no column, row -1, no side.\n"
+    "- No cluster, no column, no row, west side.\n"
+    "- No cluster, no column, no row, no side.\n"]
    [:section [:layout]
     "Settings for how to place keys."]
    [:section [:layout :matrix]
@@ -162,7 +241,7 @@
    [:parameter [:key-style]
     {:default :default :parse-fn keyword}
     "The name of a key style defined in the [global](options-main.md) `keys` "
-    "section. The default value for this setting is the name `default`."]
+    "section. The default setting is the name `default`."]
    [:section [:channel]
     "Above each switch mount, there is a channel of negative space for the "
     "user’s finger and the keycap to move inside. This is only useful in those "
@@ -181,75 +260,43 @@
     "The width in mm of extra negative space around the edges of a keycap, on "
     "all sides. This is applied before the `error-general` DFM compensator."]
    [:section [:wall]
+    "Properties of a wall built around the edge of the cluster.\n"
+    "\n"
     "The walls of the keyboard case support the key mounts and protect the "
     "electronics. They are generated by an algorithm that walks around each "
-    "key cluster.\n"
+    "key cluster, optionally complemented by `tweaks`.\n"
     "\n"
-    "This section determines the shape of the case wall, specifically "
-    "the skirt around each key mount along the edges of the board. These skirts "
-    "are made up of convex hulls wrapping sets of corner posts.\n"
+    "The `wall` section determines the shape of the case wall, specifically "
+    "the skirt around each key mount along the edges of the board. These "
+    "skirts are made up of convex hulls wrapping sets of corner posts.\n"
     "\n"
-    "There is one corner post at each actual corner of every key mount. "
+    "There is one corner post at each actual corner of every key mount "
+    "(segment 0). "
     "More posts are displaced from it, going down the sides. Their placement "
-    "is affected by the way the key mounts are rotated etc."]
-   [:parameter [:wall :thickness]
-    {:default 0 :parse-fn num}
-    "A distance in mm.\n"
-    "\n"
-    "This is actually the distance between some pairs of corner posts "
-    "(cf. `key-mount-corner-margin`), in the key mount’s frame of reference. "
-    "It is therefore inaccurate as a measure of wall thickness on the x-y plane."]
+    "is affected by the way the key mounts are rotated etc.\n"]
+   [:parameter [:wall :extent]
+    {:default 0 :parse-fn num :validate [::valid/segment]}
+    "A segment ID describing how far away from the key mount to extend its "
+    "wall. Note that even if this is set low, you can still use `tweaks` to "
+    "target other segments."]
+   [:parameter [:wall :to-ground]
+    {:default false :parse-fn boolean}
+    "If `true`, draw one extra, vertical section of wall between the segment "
+    "identified in `extent` and the ground beneath the key."]
    [:parameter [:wall :bevel]
     {:default 0 :parse-fn num}
-    "A distance in mm.\n"
+    "A distance in mm, describing where to place some vertical segments.\n"
     "\n"
-    "This is applied at the very top of a wall, making up the difference "
+    "The `bevel` is applied at the top of a wall, making up the difference "
     "between wall segments 0 and 1. It is applied again at the bottom, making "
-    "up the difference between segments 3 and 4."]
-   [:section [:wall :north]
-    "As explained [elsewhere](intro.md), “north” refers to the side facing "
-    "away from the user, barring yaw.\n\n"
-    "This section describes the shape of the wall on the north side of the "
-    "keyboard. There are identical sections for the other cardinal directions."]
-   [:parameter [:wall :north :extent]
-    {:default :full :parse-fn parse/keyword-or-integer
-     :validate [::valid/wall-extent]}
-    "Two types of values are permitted here:\n\n"
-    "- The keyword `full`. This means a complete wall extending from the key "
-    "mount all the way down to the ground via segments numbered 0 through 4 "
-    "and a vertical drop thereafter.\n"
-    "- An integer corresponding to the last wall segment to be included. A "
-    "zero means there will be no wall. No matter the number, there will be no "
-    "vertical drop to the floor."]
-   [:parameter [:wall :north :parallel]
+    "up the difference between segments 2 and 3. It affects all "
+    "coordinates. The mathematical operation by which it is applied to the z "
+    "coordinate is determined by the sign of `perpendicular`."]
+   [:parameter [:wall :parallel]
     {:default 0 :parse-fn num}
-    "A distance in mm. The later wall segments extend this far "
+    "A distance in mm. Wall segments 2 and 3 extend this far "
     "away from the corners of their key mount, on its plane."]
-   [:parameter [:wall :north :perpendicular]
+   [:parameter [:wall :perpendicular]
     {:default 0 :parse-fn num}
-    "A distance in mm. The later wall segments extend this far away from the "
-    "corners of their key mount, away from its plane."]
-   [:section [:wall :east] "See `north`."]
-   [:parameter [:wall :east :extent]
-    {:default :full :parse-fn parse/keyword-or-integer
-     :validate [::valid/wall-extent]}]
-   [:parameter [:wall :east :parallel]
-    {:default 0 :parse-fn num}]
-   [:parameter [:wall :east :perpendicular]
-    {:default 0 :parse-fn num}]
-   [:section [:wall :south] "See `north`."]
-   [:parameter [:wall :south :extent]
-    {:default :full :parse-fn parse/keyword-or-integer
-     :validate [::valid/wall-extent]}]
-   [:parameter [:wall :south :parallel]
-    {:default 0 :parse-fn num}]
-   [:parameter [:wall :south :perpendicular]
-    {:default 0 :parse-fn num}]
-   [:section [:wall :west] "See `north`."]
-   [:parameter [:wall :west :extent]
-    {:default :full :parse-fn parse/keyword-or-integer
-     :validate [::valid/wall-extent]}]
-   [:parameter [:wall :west :parallel]
-    {:default 0 :parse-fn num}]
-   [:parameter [:wall :west :perpendicular]
-    {:default 0 :parse-fn num}]])
+    "A distance in mm. Wall segments 2 and 3 extend this far "
+    "away from the corners of their key mount, along its normal."]])

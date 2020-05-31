@@ -79,7 +79,6 @@
   This is an alternate method for resolving overlap, intended for use with
   defaults that are so complicated the user will not want to write a complete,
   explicit replacement every time."
-  ;; WARNING: Unused as of v0.6.0 but preserved for possible reuse.
   [nominal candidate]
   (soft-merge (:default nominal) candidate))
 
@@ -95,20 +94,20 @@
 (defn parse-leaf
   "Resolve differences between default values and user-supplied values.
   Run the result through a specified parsing function and return it."
-  [nominal candidate]
+  [{:keys [parse-fn resolve-fn] :as nominal
+    :or {parse-fn identity, resolve-fn hard-defaults}}
+   candidate]
   {:pre [(leaf? nominal)]}
-  (let [resolve-fn (get nominal :resolve-fn hard-defaults)
-        parse-fn (get nominal :parse-fn identity)
-        merged (resolve-fn nominal candidate)]
-   (try
-     (parse-fn merged)
-     (catch Exception e
-       (throw (ex-info "Could not cast value to correct data type"
-                       {:type :parsing-error
-                        :raw-value candidate
-                        :merged-value merged
-                        :parser parse-fn
-                        :original-exception e}))))))
+  (let [merged (resolve-fn nominal candidate)]
+    (try
+      (parse-fn merged)
+      (catch Exception e
+        (throw (ex-info "Could not cast value to correct data type"
+                        {:type :parsing-error
+                         :raw-value candidate
+                         :merged-value merged
+                         :parser parse-fn
+                         :original-exception e}))))))
 
 (declare parse-node)
 

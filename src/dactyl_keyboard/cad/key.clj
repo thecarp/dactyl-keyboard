@@ -114,6 +114,109 @@
   (let [by-cluster (fn [coll key] (assoc coll key (chart-cluster key getopt)))]
    {:by-cluster (reduce by-cluster {} (all-clusters getopt))}))
 
+(defn- superlative-to-index
+  [coll value]
+  (case value :first (first coll), :last (last coll), value))
+
+(defn- resolve-column-superlative
+  [getopt cluster column]
+  (let [prop (partial getopt :key-clusters :derived :by-cluster)]
+    (superlative-to-index (prop cluster :column-range) column)))
+
+(defn- resolve-row-superlative
+  [getopt {::keys [cluster column] :as selectors} row]
+  (when (nil? column)
+    ;; TODO: Consider deferring resolution to a later stage.
+    (throw (ex-info "Relative matrix row lacks column context."
+                    {:enclosing-selectors selectors
+                     :target-selector-type ::row
+                     :target-value row})))
+  (let [prop (partial getopt :key-clusters :derived :by-cluster cluster)]
+    (superlative-to-index (get (prop :row-indices-by-column) column) row)))
+
+(defn- resolve-superlative
+  [getopt {::keys [cluster] :as selectors} selector-type id]
+  (if (and (#{::column ::row} selector-type) (#{:first :last} id))
+    (do
+      (when (nil? cluster)
+        ;; TODO: As in resolve-row-superlative.
+        (throw (ex-info "Relative matrix position lacks cluster context."
+                        {:enclosing-selectors selectors
+                         :target-selector-type selector-type
+                         :target-value id})))
+      (case selector-type
+        ::column (resolve-column-superlative getopt cluster id)
+        ::row (resolve-row-superlative getopt selectors id)))
+    ;; Else there is nothing to translate.
+    id))
+
+(def heading->selector
+  {:clusters ::cluster
+   :columns  ::column
+   :rows     ::row
+   :sides    ::side})
+
+(def nested-headings (concat [:parameters] (keys heading->selector)))
+
+(defn- breadcrumb-to-selector
+  [getopt coll [heading id]]
+  (let [selector (heading heading->selector)]
+    (assoc coll selector (resolve-superlative getopt coll selector id))))
+
+(defn- breadcrumbs-to-selectors
+  [getopt breadcrumbs]
+  ;; TODO: Check for duplicates, e.g. two of the same column ID, or two
+  ;; different column IDs. Throw ex-info.
+  (reduce (partial breadcrumb-to-selector getopt) {} (partition 2 breadcrumbs)))
+
+(defn- traverse-nested-node
+  [getopt breadcrumbs selections heading]
+  (let [local (apply getopt (concat [:by-key] breadcrumbs))
+        value (heading local)]
+    (if (nil? value)
+      ;; Not a node.
+      selections
+      ;; Else a node.
+      (if (= heading :parameters)
+        ;; Expand collection. First, check for a collision.
+        (let [selectors (breadcrumbs-to-selectors getopt breadcrumbs)]
+          (assert selectors)
+          (when-let [prior (get selections selectors)]
+            (throw (ex-info (str "Key property criteria overlap")
+                     {:criteria selectors
+                      :settings [prior, value]})))
+          (assoc selections selectors value))
+        ;; Else recurse, by first looking at each of the branch IDs.
+        (reduce
+          (fn [selections branch]
+            (reduce (partial traverse-nested-node getopt
+                             (concat breadcrumbs [heading branch]))
+                    selections
+                    nested-headings))
+          selections
+          (keys value))))))  ;; Find raw branch IDs.
+
+(defn- marshal-selectors
+  "Rearrange the raw user configuration.
+  Resolve non-numeric names for columns and rows and return a map of unique
+  clouds of such selectors to values specific to each cloud."
+  [getopt]
+  (reduce (partial traverse-nested-node getopt []) {} nested-headings))
+
+(defn- finalize-nested-structure
+  "Rerrange the marshaled user configuration.
+  Return a data structure nested hierarchically and with the special token
+  ::any where no restriction is specified, i.e. in the absence of a selector
+  for that level of the hiearchy."
+  [coll selectors values]
+  (let [k (mapv #(get selectors % ::any) [::cluster ::column ::row ::side])]
+    (assert (nil? (get-in coll k)))
+    (assoc-in coll k values)))
+
+(defn derive-nested-properties
+  [getopt]
+  (reduce-kv finalize-nested-structure {} (marshal-selectors getopt)))
+
 (defn print-matrix
   "Print a schematic picture of a key cluster. For your REPL."
   [getopt cluster]
@@ -130,6 +233,7 @@
 (defn- single-plate
   "The shape of a key mounting plate."
   [getopt key-style]
+  {:pre [(keyword? key-style)]}
   (let [thickness (getopt :main-body :key-mount-thickness)
         style-data (getopt :keys :derived key-style)
         [x y] (map measure/key-length (get style-data :unit-size [1 1]))]
@@ -158,8 +262,7 @@
 (defn cluster-plates [getopt cluster]
   (apply model/union
     (map #(place/cluster-place getopt cluster %
-            (single-plate getopt
-              (most-specific getopt [:key-style] cluster %)))
+            (single-plate getopt (most-specific getopt [:key-style] cluster %)))
          (derived getopt cluster :key-coordinates))))
 
 (defn cluster-cutouts [getopt cluster]
@@ -171,8 +274,7 @@
 
 (defn cluster-channels [getopt cluster]
   (letfn [(modeller [coord]
-            (letfn [(most [path]
-                      (most-specific getopt path cluster coord))]
+            (letfn [(most [path] (most-specific getopt path cluster coord))]
               (cap-channel-negative getopt cluster coord
                 {:top-width (most [:channel :top-width])
                  :height (most [:channel :height])

@@ -27,21 +27,22 @@ key-clusters:
     - rows-below-home: 2
     - rows-below-home: 2
     aliases:
-      m00: [0, first]
-      m01: [1, first]
-      m02: [2, first]
-      m03: [3, first]
-      m11: [3, 0]
+      front0: [0, first]
+      front1: [1, first]
+      front2: [2, first]
+      front3: [3, first]
+      front5: [last, first]
       back0: [0, last]
       back1: [1, last]
       back2: [2, last]
       back3: [3, last]
       back4: [4, last]
       back5: [last, last]
-      near-right: [last, first]
+      m0: [0, 0]
+      m1: [3, 0]
   thumb0:
     anchoring:
-      anchor: m01
+      anchor: front1
       offset: [-8, -16, 29]
     matrix-columns:
     - rows-above-home: 1
@@ -73,6 +74,10 @@ key-clusters:
       a0: [0, 0]
       a1: [1, 0]
 by-key:
+  parameters:
+    wall:
+      extent: 0
+      to-ground: false
   clusters:
     main:
       parameters:
@@ -107,11 +112,6 @@ by-key:
                 base: -0.04
               translation:
                 mid: [0.5, -10, 4]
-            wall:
-              north:
-                extent: 0
-              south:
-                extent: 0
           rows:
             "0":
               parameters:
@@ -119,6 +119,19 @@ by-key:
                 layout:
                   translation:
                     early: [0, 0, -1]
+            first:
+              sides:
+                west:
+                  parameters:
+                    wall:
+                      extent: 1
+                      to-ground: false
+          sides:
+            west:
+              parameters:
+                wall:
+                  extent: 2
+                  to-ground: true
         "1":
           parameters:
             layout:
@@ -127,13 +140,6 @@ by-key:
                 progressive: 0.4
               translation:
                 mid: [0, -1, 0]
-            wall:
-              north:
-                extent: 0
-              south:
-                extent: 0
-              west:
-                extent: 0
           rows:
             first:
               parameters:
@@ -172,15 +178,6 @@ by-key:
                 progressive: 0.4
               translation:
                 mid: [0, 3, -3]
-            wall:
-              north:
-                extent: 0
-              east:
-                extent: 1
-              south:
-                extent: 1
-              west:
-                extent: 0
           rows:
             "-3":
               parameters:
@@ -189,9 +186,11 @@ by-key:
                     intrinsic: -0.7
                   translation:
                     early: [0, -14, 7]
-                wall:
-                  east:
-                    extent: 4
+              sides:
+                east:
+                  parameters:
+                    wall:
+                      extent: 3
             "-2":
               parameters:
                 layout:
@@ -223,9 +222,6 @@ by-key:
                     intrinsic: 0.03
                   translation:
                     early: [0.9, -4, 5]
-                wall:
-                  south:
-                    perpendicular: -12
             last:
               parameters:
                 layout:
@@ -233,11 +229,13 @@ by-key:
                     intrinsic: 0.3
                   translation:
                     early: [0, 4, 1]
+          sides:
+            south:
+              parameters:
                 wall:
-                  north:
-                    extent: 0
-                  east:
-                    extent: 1
+                  extent: 2
+                  to-ground: true
+                  perpendicular: -12
         "4":
           parameters:
             layout:
@@ -248,9 +246,6 @@ by-key:
                 base: 0.1
               translation:
                 late: [0.6, -5, 5.5]
-            wall:
-              north:
-                extent: 1
           rows:
             last:
               parameters:
@@ -259,6 +254,12 @@ by-key:
                     intrinsic: 0.2
                   translation:
                     mid: [0, 3.5, 2]
+          sides:
+            south:
+              parameters:
+                wall:
+                  extent: 2
+                  to-ground: true
         "5":
           parameters:
             layout:
@@ -269,9 +270,6 @@ by-key:
                 base: 0.12
               translation:
                 late: [1, -6, 5.5]
-            wall:
-              north:
-                extent: 1
           rows:
             last:
               parameters:
@@ -280,6 +278,17 @@ by-key:
                     intrinsic: 0.2
                   translation:
                     mid: [0, 3.5, 2]
+          sides:
+            east:
+              parameters:
+                wall:
+                  extent: 1
+                  to-ground: true
+            south:
+              parameters:
+                wall:
+                  extent: 2
+                  to-ground: true
     thumb0:
       parameters:
         layout:
@@ -297,15 +306,6 @@ by-key:
             progressive: 0.25
           yaw:
             base: 0.9
-        wall:
-          north:
-            extent: 1
-          east:
-            extent: 4
-          south:
-            extent: 0
-          west:
-            extent: 0
       columns:
         first:
           parameters:
@@ -314,10 +314,6 @@ by-key:
                 progressive: 0.37
               translation:
                 mid: [0, 3, 0]
-            wall:
-              north:
-                extent: 4
-                perpendicular: -6
           rows:
             first:
               parameters:
@@ -326,17 +322,22 @@ by-key:
                     early: [0, -1.5, -1]
                   pitch:
                     intrinsic: -0.3
-                wall:
-                  east:
-                    extent: 0
-                  south:
-                    extent: 1
-                    parallel: -2
             last:
               parameters:
                 layout:
                   translation:
                     early: [0, 1, 5]
+          sides:
+            north:
+              parameters:
+                wall:
+                  extent: 3
+                  perpendicular: -6
+            south:
+              parameters:
+                wall:
+                  extent: 1
+                  parallel: -2
         last:
           parameters:
             layout:
@@ -359,11 +360,16 @@ by-key:
                     early: [0.5, 1, 0]
                   yaw:
                     intrinsic: -0.1
+          sides:
+            north:
+              parameters:
                 wall:
-                  north:
-                    perpendicular: -11
-                  east:
-                    perpendicular: -11
+                  perpendicular: -11
+            east:
+              parameters:
+                wall:
+                  extent: 3
+                  perpendicular: -11
     thumb1:
       parameters:
         layout:
@@ -374,15 +380,6 @@ by-key:
             progressive: 0.8
           yaw:
             base: 0.8
-        wall:
-          north:
-            extent: 0
-          east:
-            extent: 0
-          south:
-            extent: 0
-          west:
-            extent: 0
       columns:
         first:
           rows:
@@ -397,26 +394,28 @@ by-key:
         layout:
           pitch:
             base: 0
-        wall:
-          north:
-            extent: full
-          east:
-            extent: 1
-          south:
-            extent: 1
-          west:
-            extent: 0
       columns:
         last:
           parameters:
             layout:
               translation:
                 early: [-1, 0, 0]
+      sides:
+        north:
+          parameters:
+            wall:
+              extent: 1
+              to-ground: true
+        east:
+          parameters:
+            wall:
+              extent: 1
+              to-ground: true
 secondaries:
   # Main-to-thumb0 cluster bridge points:
   mt0a:
     anchoring:
-      anchor: m00
+      anchor: front0
       side: SSE
       segment: 0
     translation: [0, -2, 2]
@@ -436,7 +435,7 @@ main-body:
       anchor: back2
       side: NW
       offset: [0, 10]
-    size: [80, 18, 53.5]
+    size: [80, 18, 53.7]
     bevel:
       interior: 6
     fasteners:
@@ -477,7 +476,7 @@ main-body:
         - anchor: a1
           side: NE
           offset: [-3.5, -3.5]
-        - anchor: near-right
+        - anchor: front5
           side: SE
           offset: [-4, 0]
         - anchor: t4
@@ -497,102 +496,101 @@ tweaks:
   thumb-to-finger-gap:
     # This large tweak covers the gap between the thumb clusters and the main
     # cluster of keys.
-    # Webbing at the outer m00–m01 triangle at the edge of the cluster gap:
+    # Webbing at the outer front0–front1 triangle at the edge of the cluster gap:
     - chunk-size: 3
       hull-around:
-      - [m00, SSW, 0]
-      - [m00, SSE, 0]
+      - [front0, SSW, 0]
+      - [front0, SSE, 0]
       - [mt0a]
       - hull-around:
-        - [m00, NNE, 0]
-        - [m01, NNW, 0]
-      - [m01, SSW, 0]
+        - [front0, NNE, 0]
+        - [front1, NNW, 0]
+      - [front1, SSW, 0]
     # The near (user-facing) wall of the thumb0 cluster:
     - chunk-size: 3
       hull-around:
       - hull-around:
         - [t3, ESE, 0, 1]
         - [t3, SSE, 0, 1]
-      - [t3, SSE, 3, 4]
+      - hull-around:
+        - [t3, ESE, 2, 3]
+        - [t3, SSE, 2, 3]
       - hull-around:
         - [t4, ESE, 0, 1]
         - [t4, SSE, 0, 1]
-      - [t4, SSE, 3, 4]
+      - [t4, SSE, 2, 3]
       - hull-around:
         - [t4, WSW, 0, 1]
         - [t4, SSW, 0, 1]
-      - [t4, SSW, 3, 4]
-    # Wide plating over the gap:
+      - [t4, SSW, 2, 3]
+    # West side:
     - chunk-size: 2
       hull-around:
-      - [t1, NNE, 0, 4]
-      - [t2, NNE, 0, 4]
-      - [t2, ENE, 0, 4]
-    # West side:
-    - chunk-size: 3
-      hull-around:
-      - [t1, NNW, 3, 4]
-      - [m00, WSW, 2, 3]
-      - [t1, NNE, 3, 4]
-      - [m00, WSW, 0, 1]
-      - [t2, NNE, 3, 4]
-    # Between m00–m02 and t2, taking a low road under the secondaries:
-    - chunk-size: 3
-      hull-around:
-      - [m00, SSW, 0]
       - hull-around:
-        - [t2, NNE, 4]
-        - [t2, ENE, 4]
+        - [t1, NNW, 2]
+        - [t1, NNE, 2]
+        - [t1, NNE, 2, {anchoring: {offset: [1, -1, 0]}}]
+        - [front0, SW, 0]
+      - [front0, W, 0, 2]
+      - [front0, WNW, 0, 2]
+      - [m0, WSW, 2]
+    # Between front0–front2 and t2, taking a low road under the secondaries:
+    - chunk-size: 3
+      hull-around:
+      - [front0, SW]
+      - hull-around:
+        - [t2, NNE, 3]
+        - [t2, ENE, 3]
       - [mt0a]
       - [mt0b]
-      - [m01, SSW, 0]
+      - [front1, SSW, 0]
       - [mt0c]
-      - [m01, SSE, 0]
+      - [front1, SSE, 0]
       - hull-around:
-        - [m02, NNW, 0]
-        - [m02, SSW, 0]
+        - [front2, NNW, 0]
+        - [front2, SSW, 0]
     # More cluster gap, taking a high road over the secondaries:
     - chunk-size: 3
       hull-around:
-      - [t2, ENE, 4]
+      - [t2, ENE, 3]
       - [mt0b]
-      - [t2, ESE, 4]
+      - [t2, ESE, 3]
       - [mt0c]
-      - [t3, ENE, 4]
-      - [m02, SSW, 0]
-    # The west side of m02:
+      - [t3, ENE, 3]
+      - [front2, SSW, 0]
+    # The west side of front2:
     - hull-around:
-      - [m01, SSE, 0]
-      - [m02, WNW, 0]
-      - [m02, WSW, 0]
-    # The eastern topside plate, ending in a wedge between m02 and m03:
+      - [front1, SSE, 0]
+      - [front2, WNW, 0]
+      - [front2, WSW, 0]
+    # The eastern topside plate, ending in a wedge between front2 and front3:
     - chunk-size: 3
       hull-around:
-      - [m02, WSW, 0]
-      - [t3, NNE, 4]
-      - [m02, SSW, 0]
+      - [front2, WSW, 0]
+      - [t3, NNE, 3]
+      - [front2, SSW, 0]
       - hull-around:
-        - [t3, ESE, 3, 4]
-        - [t3, SSE, 3, 4]
+        - [t3, ESE, 2, 3]
+        - [t3, SSE, 2, 3]
       - hull-around:
-        - [m02, ESE, 3, 4]
-        - [m02, SSE, 3, 4]
-      - [t4, SSE, 3, 4]
-      - [m02, ENE, 3, 4]
-      - [t4, SSW, 3, 4]
-      - [m03, SSW, 3, 4]
+        - [front2, ESE, 2, 3]
+        - [front2, SSE, 2, 3]
+      - [t4, SSE, 2, 3]
+      - [front2, ENE, 2, 3]
+      - [t4, SSW, 2, 3]
+      - [front3, SSW, 2, 3]
     # The low eastern plate:
     - chunk-size: 3
       hull-around:
       - hull-around:
-        - [m02, ESE, 3, 4]
-        - [m02, SSE, 3, 4]
-      - [m02, ENE, 3, 4]
-    # A triangular southern wall of m02:
+        - [front2, ESE, 2, 3]
+        - [front2, SSE, 2, 3]
+      - [front2, ENE, 2, 3]
+    # A triangular southern wall of front2:
     - hull-around:
-      - [m02, SSW, 0, 1]
-      - [m02, SSE, 0, 3]
-      - [m02, ESE, 0, 3]
+      - [front2, SSW, 0, 1]
+      - [front2, SSE, 0, 3]
+      - [front2, ESE, 0, 3]
   thumb-corner-webbing:
     # Extra webbing at the four corners of the thumb0 and thumb1 clusters:
     - hull-around:
@@ -600,9 +598,14 @@ tweaks:
       - [t0, NNE, 0]
       - [t1, NNW, 0]
     - hull-around:
-      - [t2, NNW, 0, 1]
-      - [t2, NNE, 0, 1]
-      - [t1, NNE, 0, 1]
+      - [t2, NNW, 0]
+      - [t2, NNE, 0, 3]
+      - [t2, ENE, 0, 3]
+      - [t1, NNE, 0, 3]
+    - hull-around:
+      - [t2, NNE, 2, 3]
+      - [t1, NNE, 2, 3]
+      - [front0, SW]
     - hull-around:
       - [tc, SSE, 0]
       - [t3, WSW, 0]
@@ -642,13 +645,14 @@ tweaks:
       - [t4, SSW, 0]
       - [t5, SSW, 0]
   thumb-to-main-to-ground:
-    # A plate to ground beneath the thumb clusters, stretching between two
-    # keys in the main cluster:
+    # Plating to ground beneath the thumb clusters:
     - at-ground: true
       chunk-size: 2
       hull-around:
-      - [m00, WSW, 2, 3]
-      - [t1, NNW, 3, 4]
+      - [m0, WSW, 2]
+      - [front0, WNW, 2]
+      - [front0, W, 2]
+      - [t1, NNW, 2, 3]
       - [t1, NNW, 0, 1]
       - [t0, WNW, 0, 1]
       - [t0, WSW, 0, 1]
@@ -656,21 +660,21 @@ tweaks:
       - [t5, WSW, 0, 1]
       - [t5, SSW, 0, 1]
       - [t4, SSW, 0, 1]
-      - [t4, SSW, 3, 4]
-      - [m03, SSW, 3, 4]
+      - [t4, SSW, 2, 3]
+      - [front3, SSW, 2, 3]
   aux0-to-main-gap:
-    # Strengthening the wall between m11 and back4.
+    # Strengthening the wall between m1 and back4.
     - hull-around:
       - [a0, SSW, 0]
       - [back3, ESE, 0]
-      - [m11, ENE, 0]
-      - [m11, ESE, 0]
+      - [m1, ENE, 0]
+      - [m1, ESE, 0]
       - [back4, WNW, 0]
       - [back4, WSW, 0]
     # Plating over the main-aux cluster gap.
     - chunk-size: 3
       hull-around:
-      - [back3, ENE, 1]
+      - [back3, ENE, 0, 1]
       - [a0, WNW, 0, 1]
       - [back3, ESE, 0]
       - [a0, WSW, 0, 1]
@@ -691,35 +695,27 @@ tweaks:
       - [back5, NNE, 0, 1]
       - [a1, ESE, 0, 1]
       - [back5, ENE, 0, 1]
-    # A prettier outer corner:
-    - hull-around:
-      - [a1, ENE, 0, 1]
-      - [back5, ENE, 2, 4]
-      - [a1, ESE, 0, 1]
     - at-ground: true
-      chunk-size: 2
       hull-around:
-      - [a1, ENE, 0, 1]
-      - [back5, ENE, 2, 4]
+      - [a1, ESE, 1]
+      - [a1, ENE, 1]
+      - [back5, ENE, 1]
     # Bottom-only plating at the main-aux cluster gap:
     - at-ground: true
       above-ground: false
       hull-around:
-      - [back5, ESE, 3]
-      - [back5, ENE, 3]
-      - [a1, ESE, 1]
-      - [a1, ENE, 1]
-      - [a1, NNE, 1]
-      - [a0, NNW, 0]
-      - [m11, SSW, 0]
+      - [back5, ESE, 1]
+      - [a1, NE, 1]
+      - [a0, NW, 1]
+      - [back2, S]
   rear-housing-sides:
     # A plate to ground at the south-west corner of the rear housing:
     - at-ground: true
       hull-around:
-      - [rear-housing-exterior, WSW, 1]
+      - [rear-housing-exterior, WSW, 0, 1]
       - [rear-housing-exterior, SSW, 1]
       - [rear-housing-interior, WSW, 1]
-      - [back0, WNW, 3]
+      - [back0, WNW, 2]
     # A plate to ground at the south-east corner of the rear housing,
     # integrating it with the aux and main clusters:
     - at-ground: true
@@ -734,17 +730,15 @@ tweaks:
     - at-ground: true
       above-ground: false
       hull-around:
-      - [m11, SSW, 0]
+      - [m1, SSW, 0]
       - [a0, NNW, 0]
       - [back3, ENE, 3]
       - [rear-housing-exterior, ESE, 0]
       - [rear-housing-exterior, WSW, 0]
       - [back0, WNW, 3]
       - [back0, WSW, 3]
-  rear-housing-to-main-gap:
-    # This tweak connects the top of the rear housing to the main cluster’s
-    # webbing. First, the near top edge, which completes the arched ceiling of
-    # the rear housing:
+  rear-housing-near-edge:
+    # Complete the arched ceiling of the rear housing:
     - hull-around:
       - [rear-housing-exterior, WSW, 0, 1]
       - [rear-housing-exterior, SSW, 0, 1]
@@ -754,28 +748,30 @@ tweaks:
       - [rear-housing-interior, SSW, 0, 1]
       - [rear-housing-interior, ESE, 0]
       - [rear-housing-interior, SSE, 0, 1]
-    # The western half of the connection:
+  rear-housing-to-main-gap:
+    # This tweak connects the top of the rear housing to the main cluster’s
+    # webbing. First, the western half of the connection:
     - hull-around:
-      - [rear-housing-exterior, SSW, 1]
-      - [rear-housing-interior, SSW, 1]
-      - [back0, WNW, 0, 3]
-      - [back0, NNW, 0, 1]
-    - hull-around:
-      - [rear-housing-exterior, SSW, 1]
-      - [rear-housing-interior, SSW, 1]
-      - [back0, NNW, 0, 1]
-      - [back1, NW, 0]
+      - [rear-housing-exterior, WSW, 0, 1]
+      - [rear-housing-interior, WSW, 0]
+      - [rear-housing-interior, SSW, 0, 1]
+      - [rear-housing-interior, SSW, 1, {anchoring: {offset: [-7, 0, 0]}}]
+      - [back0, WNW, 2]
     - hull-around:  # Triangle at the edge of the web.
       - [back0, NNW, 0, 1]
       - [back0, NE, 0]
       - [back1, NW, 0]
     - hull-around:
-      - [rear-housing-exterior, SSW, 1]
-      - [rear-housing-interior, SSW, 1]
-      - [rear-housing-interior, SSW, 1]
-      - [back1, NW, 0]
+      - [rear-housing-exterior, WSW, 0, 1]
+      - [rear-housing-exterior, SSW, 0]
+      - [rear-housing-interior, SSW, 0]
+      - [back0, NNW, 0, 1]
+      - [back0, WNW, 0, 2]
+      - [rear-housing-exterior, S, 0, {anchoring: {offset: [-1, 0, 0]}}]
       - [rear-housing-exterior, S, 1]
       - [rear-housing-interior, S, 1]
+      - [rear-housing-interior, SSW, 1]
+      - [back1, NW, 0]
     - hull-around:
       - [back1, NW, 0]
       - [back1, NE, 0]

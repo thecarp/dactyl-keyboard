@@ -297,6 +297,7 @@
   ;; Mind the order. One of these may depend upon earlier steps.
   [[[:keys] key/derive-style-properties]
    [[:key-clusters] key/derive-cluster-properties]
+   [[:by-key] key/derive-nested-properties]
    [[:central-housing] central/derive-properties]
    [[] (fn [getopt] {:anchors (anch/collect getopt)})]
    [[:main-body :rear-housing] main-body/rhousing-properties]

@@ -21,7 +21,7 @@ wrist-rest:
           anchor: t4
           side: NNE
           segment: 3
-          offset: [7, -9]
+          offset: [7, -6]
         depth: 9
       wrist-side:
         depth: 5
@@ -44,7 +44,7 @@ wrist-rest:
       width: 10
       partner-side:
         anchoring:
-          anchor: near-right
+          anchor: front5
           side: SSW
           segment: 3
           offset: [-5, 0]

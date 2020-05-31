@@ -13,8 +13,7 @@
             [dactyl-keyboard.misc :as misc]
             [dactyl-keyboard.cad.misc :refer [wafer]]
             [dactyl-keyboard.cots :refer [switch-facts]]
-            [dactyl-keyboard.param.access :refer [most-specific key-properties
-                                                  compensator]]))
+            [dactyl-keyboard.param.access :refer [key-properties compensator]]))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Keycap Models ;;

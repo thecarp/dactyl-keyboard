@@ -14,19 +14,12 @@ by-key:
       height: 20
       top-width: 10
     wall:
-      thickness: 1
       bevel: 1
-      north:
-        perpendicular: -8
-      east:
-        perpendicular: -8
-      south:
-        perpendicular: -8
-      west:
-        perpendicular: -8
+      perpendicular: -8
 main-body:
-  key-mount-thickness: 2.5
-  web-thickness: 2.5
+  key-mount-corner-margin: 2
+  key-mount-thickness: 2
+  web-thickness: 2
   rear-housing:
     thickness:
       walls: 2.5

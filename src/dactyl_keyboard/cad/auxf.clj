@@ -76,9 +76,7 @@
         rows (getopt :key-clusters :derived :by-cluster cluster
                :row-indices-by-column column)]
     (for [row rows, side [:WSW :WNW]]
-     (let [[x y _] (place/wall-corner-place
-                     getopt cluster [column row] {:side side})]
-      [(+ x (getopt :by-key :parameters :wall :thickness)) y]))))
+      (take 2 (place/wall-corner-place getopt cluster [column row] {:side side})))))
 
 (defn- west-wall-east-points [getopt]
   (map (fn [[x y]] [(+ x 10) y]) (west-wall-west-points getopt)))

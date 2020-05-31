@@ -2,26 +2,26 @@
 
 # Nestable configuration options
 
-This document describes all those settings which can be made at any level of specificity, from the entire keyboard down to an individual key. These settings all go under `by-key` in a YAML file.
+This document describes all those settings which can be made at any level of specificity, from the entire keyboard down to one side of one key. These settings all go under `by-key` in a YAML file, as indicated [here](options-main.md).
 
 ## Conceptual overview
 
-Specificity is accomplished by nesting. The following levels of specificity are currently available. Each one branches out, containing the next:
+The `by-key` section contains a map of up to five items:
 
-- The global level, directly under `by-key` (cf. the [main document](options-main.md)).
-- The key cluster level, at `by-key` → `clusters` → your cluster.
-- The column level, nested still further under your cluster → `columns` → column index.
-- The row level, nested at the bottom, under column index → `rows` → row index.
+- `parameters`, where you put actual settings for the entire keyboard. Sections described in this document all pertain to this map.
+- `clusters`, starting a nested map for specific clusters only, keyed by their names.
+- `columns` and/or `rows`, each starting a nested map for specific columns or rows only, keyed either by their indices (ordinal integers) or by the special words `first` or `last`. Due to a peculiarity of the YAML parser, **numeric indices must appear in quotation marks** as in the example below.
+- `sides`, starting a nested map for specific sides only, keyed by the long-form cardinal points of the compass, i.e. the words `north`, `east`, `south` or `west`.
 
-A setting at the row level will only affect keys in the specific cluster and column selected along the way, i.e. only one key per row. Therefore, the row level is effectively the key level.
+Each of the nested maps have the same structure as this root-level map. Greater specificity is accomplished by nesting a series of these maps.
 
-At each level, two subsections are permitted: `parameters`, where you put the settings themselves, and a section for the next level of nesting: `clusters`, then `columns`, then `rows`. More specific settings take precedence.
+### Example
 
-In the following hypothetical example, the parameter `P`, which is not really supported, is defined three times: Once at the global level and twice at the row (key) level.
+In the following example, the parameter `key-style` is set three times: Once at the root level and twice with enough selection criteria to limit the effect to two individual keys.
 
 ```by-key:
   parameters:
-    P: true
+    key-style: plump
   clusters:
     C:
       columns:
@@ -29,17 +29,65 @@ In the following hypothetical example, the parameter `P`, which is not really su
           rows:
             first:
               parameters:
-                P: false
+                key-style: svelte
             "3":
               parameters:
-                P: false
+                key-style: svelte
 ```
 
-In this example, `P` will have the value “true” for all keys except two on each half of the keyboard. On the right-hand side, `P` will be false for the key closest to the user (“first” row) in the second column from the left (column “1”) in a cluster of keys here named `C`. `P` will also be false for the fourth key from the user (row “3”) in the same column.
+In this example, `key-style` will have the value `plump` for all keys except two. It will have the value `svelte` for the key closest to the user (first row) and the key three steps above the home row (row 3), both in the second column from the left (column 1) of key cluster `C`.
 
-Columns and rows are indexed by their ordinal integers or the words “first” or “last”, which take priority.
+Key cluster `C` and the two key styles must be defined elsewhere. Also, if the keyboard uses reflection, notice that the descriptions given in the previous paragraph must be mirrored for the left-hand side of the keyboard.
 
-WARNING: Due to a peculiarity of the YAML parser, take care to quote your numeric column and row indices as strings. This is why there are quotation marks around column index 1 and row index 3 in the example.
+### Unique selection criteria
+
+The nested maps named `clusters`, `columns`, `rows` and `sides`, together with the identifiers they take as keys, are selection criteria. The order in which these criteria appear is significant, but only under the following circumstances.
+
+- The special words `first` and `last` can only be used when nested inside a cluster-specific configuration, because they are informed by the cluster matrix specification.
+- As a further requirement for rows only, `first` and `last` can only be used when nested inside a column-specific configuration, as in the example above.
+
+Each set of criteria must be unique. That is to say, each set of `parameters` must describe some new part of the keyboard. For instance, you can have either `by-key` → `rows` → `0` → `columns`→ `0` → `parameters` *or* `by-key` → `columns` → `0` → `rows` → `0`→ `parameters`, but you cannot have both. They are equivalent because they amount to identical selection criteria.
+
+This restriction applies even to the use of `first` and `last` with numeric indices. If column 8 is the last column, you can refer to it either way, but there cannot be two exactly equivalent sets of criteria, even if one uses `8` and the other uses the special keyword `last` to select column 8.
+
+### Specificity
+
+The application picks the most specific value available. Specificity is determined by permutations of selection criteria. More specifically, each criterion is switched on and off, starting with the least significant. Rows are considered less significant than columns for this purpose. The complete hiearchy is clusters > colums > rows > sides.
+
+An example: To find the right `key-style` for a key at coordinates `[0, -1]` in a cluster named `C`, the application checks for `parameters` → `key-style` with the following criteria, using the first setting it finds.
+
+- Cluster `C`, column 0, row -1.
+- Cluster `C`, column 0, without any specific row selector.
+- Cluster `C`, row -1, without any specific column.
+- Cluster `C`, without any specific column or row.
+- No specific cluster, column 0, row -1.
+- No specific cluster, column 0, no specific row.
+- No specific cluster or column, row -1.
+- No specific cluster, column or row.
+
+The first item in this example requires a setting specific to the individual key under consideration. The last item is at the opposite end of the spectrum of specificity: It reaches the root level, specifically looking at the setting `by-key` → `parameters` → `key-style`. This root level serves as a global fallback. It’s the only level with any default values.
+
+Notice that `sides` are ignored in the example above, because setting a `key-style` for just one side of a key, though it is permitted, is overly specific and therefore meaningless. You can compare it to a decision to paint one atom.
+
+Here follows the complete order of resolution in an extended example, for a `wall` of the same key as above. Where walls are concerned, the side of the key *would* be relevant, so its gets included in the permutations, from most to least specific.
+
+- Cluster `C`, column 0, row -1, west side.
+- Cluster `C`, column 0, row -1, no side.
+- Cluster `C`, column 0, no row, west side.
+- Cluster `C`, column 0, no row, no side.
+- Cluster `C`, no column, row -1, west side.
+- Cluster `C`, no column, row -1, no side.
+- Cluster `C`, no column, no row, west side.
+- Cluster `C`, no column, no row, no side.
+- No cluster, column 0, row -1, west side.
+- No cluster, column 0, row -1, no side.
+- No cluster, column 0, no row, west side.
+- No cluster, column 0, no row, no side.
+- No cluster, no column, row -1, west side.
+- No cluster, no column, row -1, no side.
+- No cluster, no column, no row, west side.
+- No cluster, no column, no row, no side.
+
 
 ## Table of contents
 - Section <a href="#user-content-layout">`layout`</a>
@@ -71,24 +119,11 @@ WARNING: Due to a peculiarity of the YAML parser, take care to quote your numeri
     - Parameter <a href="#user-content-channel-top-width">`top-width`</a>
     - Parameter <a href="#user-content-channel-margin">`margin`</a>
 - Section <a href="#user-content-wall">`wall`</a>
-    - Parameter <a href="#user-content-wall-thickness">`thickness`</a>
+    - Parameter <a href="#user-content-wall-extent">`extent`</a>
+    - Parameter <a href="#user-content-wall-to-ground">`to-ground`</a>
     - Parameter <a href="#user-content-wall-bevel">`bevel`</a>
-    - Section <a href="#user-content-wall-north">`north`</a>
-        - Parameter <a href="#user-content-wall-north-extent">`extent`</a>
-        - Parameter <a href="#user-content-wall-north-parallel">`parallel`</a>
-        - Parameter <a href="#user-content-wall-north-perpendicular">`perpendicular`</a>
-    - Section <a href="#user-content-wall-east">`east`</a>
-        - Parameter <a href="#user-content-wall-east-extent">`extent`</a>
-        - Parameter <a href="#user-content-wall-east-parallel">`parallel`</a>
-        - Parameter <a href="#user-content-wall-east-perpendicular">`perpendicular`</a>
-    - Section <a href="#user-content-wall-south">`south`</a>
-        - Parameter <a href="#user-content-wall-south-extent">`extent`</a>
-        - Parameter <a href="#user-content-wall-south-parallel">`parallel`</a>
-        - Parameter <a href="#user-content-wall-south-perpendicular">`perpendicular`</a>
-    - Section <a href="#user-content-wall-west">`west`</a>
-        - Parameter <a href="#user-content-wall-west-extent">`extent`</a>
-        - Parameter <a href="#user-content-wall-west-parallel">`parallel`</a>
-        - Parameter <a href="#user-content-wall-west-perpendicular">`perpendicular`</a>
+    - Parameter <a href="#user-content-wall-parallel">`parallel`</a>
+    - Parameter <a href="#user-content-wall-perpendicular">`perpendicular`</a>
 
 ## Section <a id="layout">`layout`</a>
 
@@ -186,7 +221,7 @@ This happens after columns are styled but before base pitch and roll. As such it
 
 ## Parameter <a id="key-style">`key-style`</a>
 
-The name of a key style defined in the [global](options-main.md) `keys` section. The default value for this setting is the name `default`.
+The name of a key style defined in the [global](options-main.md) `keys` section. The default setting is the name `default`.
 
 ## Section <a id="channel">`channel`</a>
 
@@ -206,92 +241,36 @@ The width in mm of extra negative space around the edges of a keycap, on all sid
 
 ## Section <a id="wall">`wall`</a>
 
-The walls of the keyboard case support the key mounts and protect the electronics. They are generated by an algorithm that walks around each key cluster.
+Properties of a wall built around the edge of the cluster.
 
-This section determines the shape of the case wall, specifically the skirt around each key mount along the edges of the board. These skirts are made up of convex hulls wrapping sets of corner posts.
+The walls of the keyboard case support the key mounts and protect the electronics. They are generated by an algorithm that walks around each key cluster, optionally complemented by `tweaks`.
 
-There is one corner post at each actual corner of every key mount. More posts are displaced from it, going down the sides. Their placement is affected by the way the key mounts are rotated etc.
+The `wall` section determines the shape of the case wall, specifically the skirt around each key mount along the edges of the board. These skirts are made up of convex hulls wrapping sets of corner posts.
 
-### Parameter <a id="wall-thickness">`thickness`</a>
+There is one corner post at each actual corner of every key mount (segment 0). More posts are displaced from it, going down the sides. Their placement is affected by the way the key mounts are rotated etc.
 
-A distance in mm.
 
-This is actually the distance between some pairs of corner posts (cf. `key-mount-corner-margin`), in the key mount’s frame of reference. It is therefore inaccurate as a measure of wall thickness on the x-y plane.
+### Parameter <a id="wall-extent">`extent`</a>
+
+A segment ID describing how far away from the key mount to extend its wall. Note that even if this is set low, you can still use `tweaks` to target other segments.
+
+### Parameter <a id="wall-to-ground">`to-ground`</a>
+
+If `true`, draw one extra, vertical section of wall between the segment identified in `extent` and the ground beneath the key.
 
 ### Parameter <a id="wall-bevel">`bevel`</a>
 
-A distance in mm.
+A distance in mm, describing where to place some vertical segments.
 
-This is applied at the very top of a wall, making up the difference between wall segments 0 and 1. It is applied again at the bottom, making up the difference between segments 3 and 4.
+The `bevel` is applied at the top of a wall, making up the difference between wall segments 0 and 1. It is applied again at the bottom, making up the difference between segments 2 and 3. It affects all coordinates. The mathematical operation by which it is applied to the z coordinate is determined by the sign of `perpendicular`.
 
-### Section <a id="wall-north">`north`</a>
+### Parameter <a id="wall-parallel">`parallel`</a>
 
-As explained [elsewhere](intro.md), “north” refers to the side facing away from the user, barring yaw.
+A distance in mm. Wall segments 2 and 3 extend this far away from the corners of their key mount, on its plane.
 
-This section describes the shape of the wall on the north side of the keyboard. There are identical sections for the other cardinal directions.
+### Parameter <a id="wall-perpendicular">`perpendicular`</a>
 
-#### Parameter <a id="wall-north-extent">`extent`</a>
-
-Two types of values are permitted here:
-
-- The keyword `full`. This means a complete wall extending from the key mount all the way down to the ground via segments numbered 0 through 4 and a vertical drop thereafter.
-- An integer corresponding to the last wall segment to be included. A zero means there will be no wall. No matter the number, there will be no vertical drop to the floor.
-
-#### Parameter <a id="wall-north-parallel">`parallel`</a>
-
-A distance in mm. The later wall segments extend this far away from the corners of their key mount, on its plane.
-
-#### Parameter <a id="wall-north-perpendicular">`perpendicular`</a>
-
-A distance in mm. The later wall segments extend this far away from the corners of their key mount, away from its plane.
-
-### Section <a id="wall-east">`east`</a>
-
-See `north`.
-
-#### Parameter <a id="wall-east-extent">`extent`</a>
-
-
-
-#### Parameter <a id="wall-east-parallel">`parallel`</a>
-
-
-
-#### Parameter <a id="wall-east-perpendicular">`perpendicular`</a>
-
-
-
-### Section <a id="wall-south">`south`</a>
-
-See `north`.
-
-#### Parameter <a id="wall-south-extent">`extent`</a>
-
-
-
-#### Parameter <a id="wall-south-parallel">`parallel`</a>
-
-
-
-#### Parameter <a id="wall-south-perpendicular">`perpendicular`</a>
-
-
-
-### Section <a id="wall-west">`west`</a>
-
-See `north`.
-
-#### Parameter <a id="wall-west-extent">`extent`</a>
-
-
-
-#### Parameter <a id="wall-west-parallel">`parallel`</a>
-
-
-
-#### Parameter <a id="wall-west-perpendicular">`perpendicular`</a>
-
-
+A distance in mm. Wall segments 2 and 3 extend this far away from the corners of their key mount, along its normal.
 
 ⸻
 

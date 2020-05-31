@@ -10,6 +10,7 @@
 (ns dactyl-keyboard.param.access
   (:require [clojure.string :as string]
             [scad-tarmi.dfm :refer [error-fn]]
+            [dactyl-keyboard.compass :as compass]
             [dactyl-keyboard.param.base :as base]
             [dactyl-keyboard.param.tree.main :as main]))
 
@@ -18,53 +19,9 @@
 ;; Internal ;;
 ;;;;;;;;;;;;;;
 
-(defn- specific-getter
-  "Return a function that will find the most specific configuration value
-  available for a key on the keyboard."
-  [getopt end-path]
-  (let [get-in-section
-          (fn [section-path]
-            (let [full-path (concat [:by-key] section-path [:parameters] end-path)]
-              (apply getopt full-path)))
-        get-default (fn [] (get-in-section []))
-        try-get
-          (fn [section-path]
-            (try
-              (get-in-section section-path)
-              (catch clojure.lang.ExceptionInfo e
-                (if-not (= (:type (ex-data e)) :missing-parameter)
-                  (throw e)))))]
-    (fn [cluster [column row]]
-      "Check, in order: Key-specific values favouring first/last row;
-      column-specific values favouring first/last column;
-      cluster-specific values; and finally the base section, where a
-      value is required to exist if we get there."
-      (let [columns (getopt :key-clusters :derived :by-cluster cluster :column-range)
-            by-col (getopt :key-clusters :derived :by-cluster cluster :row-indices-by-column)
-            rows (by-col column)
-            first-column (= (first columns) column)
-            last-column (= (last columns) column)
-            first-row (= (first rows) row)
-            last-row (= (last rows) row)
-            sources
-              [[[]                       []]
-               [[first-column]           [:columns :first]]
-               [[last-column]            [:columns :last]]
-               [[]                       [:columns column]]
-               [[first-column first-row] [:columns :first :rows :first]]
-               [[first-column last-row]  [:columns :first :rows :last]]
-               [[last-column first-row]  [:columns :last :rows :first]]
-               [[last-column last-row]   [:columns :last :rows :last]]
-               [[first-row]              [:columns column :rows :first]]
-               [[last-row]               [:columns column :rows :last]]
-               [[]                       [:columns column :rows row]]]
-            good-source
-              (fn [coll [requirements section-path]]
-                (if (every? boolean requirements)
-                  (conj coll (concat [:clusters cluster] section-path))
-                  coll))
-            prio (reduce good-source [] (reverse sources))]
-        (if-let [non-default (some try-get prio)] non-default (get-default))))))
+;; The locally namespaced keyword ::none is used as a sentinel for trawling the
+;; user configuration.
+(def setting? (fn [value] (not (= ::none value))))
 
 
 ;;;;;;;;;;;;;;;
@@ -103,7 +60,7 @@
   "Close over a—potentially incomplete—user configuration."
   [build-options]
   (letfn [(value-at [path] (get-in build-options path ::none))
-          (path-exists? [path] (not (= ::none (value-at path))))
+          (path-exists? [path] (setting? (value-at path)))
           (step [path key]
             (let [next-path (conj path key)]
               (if (path-exists? next-path) next-path path)))
@@ -118,8 +75,35 @@
                   :type :missing-parameter})))
       (value-at path))))
 
-(defn most-specific [getopt end-path cluster coord]
-  ((specific-getter getopt end-path) cluster coord))
+(let [a :dactyl-keyboard.cad.key/any
+      side-ids (conj (set (keys compass/long-to-short)) a)]
+  (defn most-specific
+    "Find the most specific setting applicable to a given key."
+    ([getopt end-path cluster coord]
+     (most-specific getopt end-path cluster coord a))
+    ([getopt end-path cluster [column row] side]
+     {:pre [(side side-ids)]}
+     (let [pool (getopt :by-key :derived)
+           combos (for [C [cluster a], c [column a], r [row a], s [side a]]
+                    [C c r s])
+           value (first
+                   (filter setting?
+                     (map #(get-in pool (concat % end-path) ::none)
+                          (distinct combos))))]
+       (when-not (setting? value)
+         (throw
+           (ex-info "Sought key-specific configuration on invalid path"
+             {:end-of-path end-path
+              :type :missing-parameter})))
+       (when (nil? value)
+         (throw
+           ;; nil is not a valid setting for any key-specific parmeters.
+           ;; Getting nil therefore applies that built-in defaults have
+           ;; been disabled by the user.
+           (ex-info "Unset key-specific configuration"
+             {:end-of-path end-path
+              :type :missing-parameter})))
+       value))))
 
 (defn resolve-anchor
   "Resolve the name of a feature using derived settings."

@@ -68,6 +68,11 @@
 ;; Edge Walking ;;
 ;;;;;;;;;;;;;;;;;;
 
+(defn- property
+  [getopt parameter cluster [coord [short-direction _]]]
+  (most-specific getopt [:wall parameter]
+    cluster coord (short-direction compass/short-to-long)))
+
 (defn- edge-post
   "Place an individual wall post."
   [getopt cluster coord side segment]
@@ -79,51 +84,43 @@
          :segment segment}))
     (place/cluster-place getopt cluster coord)))
 
-(defn- hull
-  "Pick and apply an appropriate hull function for two edges.
-  When both edges go to the bottom, use bottom-hull. However, if only one edge
-  goes to the bottom, ignore the pair, returning nil, so that edges without a
-  specified full-extent wall do not reach the bottom with their neighbours."
-  [edge-and-segment-pairs & shapes]
-  (let [segments (set (map last edge-and-segment-pairs))
-        function (cond (= segments #{::to-ground}) misc/bottom-hull
-                       (::to-ground segments) (constantly nil)
-                       :else maybe/hull)]
-    (apply function shapes)))
-
-(defn- post-pair
+(defn- combine-pair
   "Combine two posts, one from each of two edges."
   [getopt cluster edge-and-segment-pairs]
-  (apply hull edge-and-segment-pairs
+  (apply maybe/hull
     (map (fn [[[coord side] segment]]
            (edge-post getopt cluster coord side segment))
          edge-and-segment-pairs)))
 
-(defn- post-pair2
+(defn- segment-pair
   [getopt cluster edges braid segment-index]
   "Make posts at one segment along passed edges."
-  (post-pair getopt cluster
+  (combine-pair getopt cluster
     (map (fn [edge-index]
            (let [edge (nth edges edge-index)
                  segments (nth braid edge-index)]
              [edge (nth segments segment-index)]))
          (range (count edges)))))
 
-(defn- shared-posts
+(defn- asymmetric-segment-post-pairs
   "Make posts of each segment along passed edges."
   [getopt cluster edges braid]
-  (map (partial post-pair2 getopt cluster edges braid)
+  (map (partial segment-pair getopt cluster edges braid)
        (range (count (first braid)))))
+
+(defn- pair-to-ground
+  [getopt cluster edges]
+  (when (every? (partial property getopt :to-ground cluster) edges)
+    (apply misc/bottom-hull
+      (map (fn [[coord side :as edge]]
+             (edge-post getopt cluster coord side
+               (property getopt :extent cluster edge)))
+           edges))))
 
 (defn- segment-sequence
   "Produce a sequence of segment IDs at one corner."
-  [getopt cluster [coord [short-direction _]]]
-  (let [direction (short-direction compass/short-to-long)
-        extent (most-specific getopt [:wall direction :extent] cluster coord)
-        full (= extent :full)]
-    (concat
-      (range (inc (if full 4, extent)))
-      (when full [::to-ground]))))
+  [getopt cluster edge]
+  (range (inc (property getopt :extent cluster edge))))
 
 (defn- segment-sequence-pair
   "Produce a sequence of segment IDs per edge."
@@ -144,8 +141,10 @@
 (defn- slab
   "Produce a single shape joining two edges."
   [getopt cluster edges]
-  (loft (shared-posts getopt cluster edges
-          (braid-segments getopt cluster edges))))
+  (maybe/union
+    (loft (asymmetric-segment-post-pairs getopt cluster edges
+            (braid-segments getopt cluster edges)))
+    (pair-to-ground getopt cluster edges)))
 
 (defn cluster
   "Walk the perimeter of a key cluster, walling it in."

@@ -139,6 +139,16 @@
                   explicit)
         {:unthreaded-length 10}))))
 
+(defn nested-key-fn
+  [parameter-set depth]
+  (map-like (merge {:parameters parameter-set}
+                   (when (pos? depth)
+                     (let [descent (nested-key-fn parameter-set (dec depth))]
+                       {:clusters (map-of keyword descent)
+                        :columns (map-of keyword-or-integer descent)
+                        :rows (map-of keyword-or-integer descent)
+                        :sides (map-of keyword descent)})))))
+
 (def central-housing-interface
   (tuple-of
     (map-like

@@ -247,12 +247,12 @@
   that key mount."
   [getopt cluster]
   (fn [[coord [cardinal :as side-tuple]]]
-    (let [key [:wall (compass/short-to-long cardinal) :extent]
-          extent (most-specific getopt key cluster coord)]
-      (when (= extent :full)  ; Ignore partial walls.
+    (let [most #(most-specific getopt [:wall %] cluster coord
+                               (compass/short-to-long cardinal))]
+      (when (most :to-ground)
         (take 2 (place/wall-corner-place getopt cluster coord
                   {:side (compass/tuple-to-intermediate side-tuple)
-                   :segment 3, :vertex true}))))))
+                   :segment (most :extent), :vertex true}))))))
 
 (defn- cluster-floor-polygon
   "A polygon approximating a floor-level projection of a key clusters’s wall."
