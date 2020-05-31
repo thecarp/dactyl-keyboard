@@ -1,0 +1,27 @@
+# Configuration fragment for simplified geometry where it’s least visible.
+# This will affect functionality and should not be used for a final render.
+# It is intended to speed up rendering for previews in the design process,
+# and should be applied after other files for this purpose.
+
+main-body:
+  back-plate:
+    fasteners:
+      bolt-properties:
+        include-threading: false
+  bottom-plate:
+    installation:
+      fasteners:
+        bolt-properties:
+          include-threading: false
+central-housing:
+  adapter:
+    fasteners:
+      bolt-properties:
+        include-threading: false
+mcu:
+  support:
+    lock:
+      fastener-properties:
+        include-threading: false
+resolution:
+  include: false
