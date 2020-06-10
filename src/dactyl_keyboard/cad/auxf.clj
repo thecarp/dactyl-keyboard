@@ -76,7 +76,8 @@
         rows (getopt :key-clusters :derived :by-cluster cluster
                :row-indices-by-column column)]
     (for [row rows, side [:WSW :WNW]]
-      (take 2 (place/wall-corner-place getopt cluster [column row] {:side side})))))
+      (take 2 (place/wall-corner-place getopt cluster
+                                       [column row] {:side side, :segment 2})))))
 
 (defn- west-wall-east-points [getopt]
   (map (fn [[x y]] [(+ x 10) y]) (west-wall-west-points getopt)))
@@ -94,7 +95,7 @@
                  :row-indices-by-column column)
         row (first rows)
         [x0 y0 _] (place/wall-corner-place
-                    getopt cluster [column row] {:side :WNW})
+                    getopt cluster [column row] {:side :W, :segment 2})
         h (+ 5 (/ (getopt :main-body :leds :housing-size) 2))]
    [x0 (+ y0 (* (getopt :main-body :leds :interval) ordinal)) h]))
 
