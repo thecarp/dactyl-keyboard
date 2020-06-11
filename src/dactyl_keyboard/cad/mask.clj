@@ -27,7 +27,7 @@
     (intersect (maybe/translate [0 0 plate]
                  (model/translate (getopt :mask :center)
                    (apply model/cube (getopt :mask :size))))
-               shapes)))
+               (remove nil? shapes))))
 
 (defn above-main-bottom-plate
   "Choose whether to include plate height based on the main-body setting."
@@ -53,7 +53,7 @@
     (intersect (maybe/translate (take dimensions [(if c (/ x 4) 0) 0 (/ z 2)])
                  (apply (case dimensions 2 model/square model/cube)
                    (take dimensions [(if c (/ x 2) x) y z])))
-               shapes)))
+               (remove nil? shapes))))
 
 (defn at-ground
   "A 2D slice of a 3D object at z=0, restricted by the bottom-plate mask."
