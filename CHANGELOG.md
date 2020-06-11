@@ -153,6 +153,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
     - The ability to target ports, including port holders, and the plate of an
       MCU lock, including a set of vertical segments. The rear housing has also
       gotten vertical segments.
+- Support for specifying sizes with less than 3-tuples.
 - Support for specifying angles with mathematical formulae using π.
 - The ability to anchor things to a wider array of the parts of a key mount,
   including different sides of its wall, using cardinal and intercardinal

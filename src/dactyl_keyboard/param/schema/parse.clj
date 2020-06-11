@@ -52,6 +52,19 @@
         (catch java.lang.NumberFormatException _
           (keyword candidate))))))           ; Input like “:first” or “"first"”.
 
+(defn pad-to-3-tuple
+  "Pad a single number, or a vector of 1–3 numbers, to a vector of 3 numbers."
+  ;; Notice this is distinct from the pad-to-3d utility function. This one
+  ;; favours the duplication of an xy coordinate over z when given a 2-tuple.
+  [candidate]
+  (vec
+    (if (number? candidate)
+      (repeat 3 candidate)
+      (case (count candidate)
+        1 (pad-to-3-tuple (first candidate))
+        2 [(first candidate) (first candidate) (second candidate)]
+        3 candidate))))
+
 (let [re #"(?i)^(π|pi)(\s?(\*|/)\s?(-?\d+\.?\d*))?$"]
   (defn compass-incompatible-angle
     "A parser for angles in radians.
@@ -177,7 +190,7 @@
 
 (let [leaf-skeleton {:anchoring (map-like anchored-3d-position-map)
                      :sweep int
-                     :size vec}
+                     :size pad-to-3-tuple}
       branch-skeleton {:chunk-size int
                        :highlight boolean}
       top-extras {:positive boolean

@@ -58,7 +58,8 @@
     "* `custom`, meaning that `size` (below) will take effect.\n"
     (cots/support-list cots/port-facts)]
    [:parameter [:size]
-    {:default [1 1 1] :parse-fn vec :validate [::tarmi-core/point-3d]}
+    {:default 1 :parse-fn parse/pad-to-3-tuple
+     :validate [::tarmi-core/point-3d]}
     "An `[x, y, z]` vector specifying the size of the port in mm. "
     "This is used only with the `custom` port type.\n\n"
     "There are limited facilities for specifying the shape of a port. "

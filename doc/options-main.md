@@ -1102,7 +1102,7 @@ A box limits the entire shape, cutting off any projecting by-products of the alg
 
 ### Parameter <a id="mask-size">`size`</a>
 
-The size of the mask in mm. By default, `[1000, 1000, 1000]`.
+The size of the mask in mm. By default, a cube of 1 m³.
 
 ### Parameter <a id="mask-center">`center`</a>
 

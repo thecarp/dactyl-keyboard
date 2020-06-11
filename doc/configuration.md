@@ -93,7 +93,28 @@ future. Broadly, they are of the following types:
   occur in the local vector space of the anchor.
 * The default shape of a case tweak.
 
-## Specifying angles
+## Notation
+
+The application offers some conveniences for specifying sizes and angles.
+
+### Sizes
+
+Dimensional settings typically use millimetres, by pragmatic convention.
+
+For three-dimensional objects, parameters named `size` can take a few different
+kinds of values. Ultimately, they need three: One for each dimension. The
+completely literal way to specify a cube of 1 mm³ is as a list of x, y and z
+coordinates in that order: `[1, 1, 1]`. For convenience, size parameters can
+expand a more compact notation to that form.
+
+| YAML         | Expanded result |
+| ------------ | --------------- |
+| `1`          | `[1, 1, 1]`     |
+| `[1]`        | `[1, 1, 1]`     |
+| `[1, 2]`     | `[1, 1, 2]`     |
+| `[1, 2, 3]`  | `[1, 2, 3]`     |
+
+### Angles
 
 Like `scad-clj`, this application describes angles in
 [radians](https://en.wikipedia.org/wiki/Radian). For parameters that take one

@@ -172,7 +172,8 @@
    [:parameter [:main-body :rear-housing :anchoring :offset]
     stock/anchor-2d-vector-metadata stock/anchor-2d-offset-documentation]
    [:parameter [:main-body :rear-housing :size]
-    {:default [1 1 1] :parse-fn vec :validate [::tarmi-core/point-3d]}
+    {:default 1 :parse-fn parse/pad-to-3-tuple
+     :validate [::tarmi-core/point-3d]}
     "The exterior measurements of the rear housing, in mm."]
    [:section [:main-body :rear-housing :bevel]
     "The rear housing can be bevelled."]
@@ -740,7 +741,8 @@
     "create notches in the grips, which is how they hold onto the PCB. The "
     "deeper the notch, the more flexible the case has to be to allow assembly."]
    [:parameter [:mcu :support :grip :size]
-    {:default [1 1 1] :parse-fn vec :validate [::tarmi-core/point-3d]}
+    {:default 1 :parse-fn parse/pad-to-3-tuple
+     :validate [::tarmi-core/point-3d]}
     "The three dimensions of a grip post, in mm.\n\n"
     "This parameter determines the size of the object that will occupy an "
     "anchor point for a grip when that point is targeted by a tweak. It "
@@ -1045,8 +1047,9 @@
     "subsection for printing. You might want this while you are printing "
     "prototypes for a new style of switch, MCU support etc."]
    [:parameter [:mask :size]
-    {:default [1000 1000 1000] :parse-fn vec :validate [::tarmi-core/point-3d]}
-    "The size of the mask in mm. By default, `[1000, 1000, 1000]`."]
+    {:default 1000 :parse-fn parse/pad-to-3-tuple
+     :validate [::tarmi-core/point-3d]}
+    "The size of the mask in mm. By default, a cube of 1 m³."]
    [:parameter [:mask :center]
     {:default [0 0 500] :parse-fn vec :validate [::tarmi-core/point-3d]}
     "The position of the center point of the mask. By default, `[0, 0, 500]`, "
