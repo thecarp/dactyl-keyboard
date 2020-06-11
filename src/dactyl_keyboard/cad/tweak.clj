@@ -13,7 +13,6 @@
             [scad-tarmi.maybe :as maybe]
             [dactyl-keyboard.cad.auxf :as auxf]
             [dactyl-keyboard.cad.body :refer [body-plate-hull]]
-            [dactyl-keyboard.cad.body.main :as body]
             [dactyl-keyboard.cad.body.central :as central]
             [dactyl-keyboard.cad.body.wrist :as wrist]
             [dactyl-keyboard.cad.mcu :as mcu]
@@ -105,7 +104,8 @@
   {:pre [(spec/valid? ::valid/tweak-leaf node)]}
   (let [{:keys [anchor side segment offset]} anchoring
         {::anch/keys [type primary] :as resolved} (resolve-anchor getopt anchor)
-        default (fn [shape] (if size (apply model/cube size) shape))]
+        default (fn [& shapes] (if size (apply model/cube size)
+                                        (first (filter some? shapes))))]
     (case type
       ::anch/central-gabel
         [true
@@ -159,6 +159,10 @@
                                 (assoc anchoring :anchor primary))
                (default (auxf/port-tweak-post getopt primary)))
              (default (auxf/port-holder getopt primary))))]
+      ::anch/secondary
+        [false
+         (let [{:keys [size]} (getopt :secondaries anchor)]
+           (default (when size (apply model/cube size)) misc/nodule))]
       [false (default (key/web-post getopt))])))
 
 (defn- leaf-blade-3d

@@ -155,6 +155,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       gotten vertical segments.
 - Support for specifying sizes with less than 3-tuples.
 - Support for specifying angles with mathematical formulae using π.
+- A `size` property of `secondaries`, for terser `tweaks`.
 - The ability to anchor things to a wider array of the parts of a key mount,
   including different sides of its wall, using cardinal and intercardinal
   compass points, whereas before, only points intermediate between cardinals

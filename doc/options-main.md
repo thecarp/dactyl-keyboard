@@ -209,7 +209,7 @@ This section contains a nested structure of parameters. Each level within contro
 
 ## Parameter <a id="secondaries">`secondaries`</a>
 
-A map where each item provides a name for a position in space. Such positions exist in relation to other named features of the keyboard and can themselves be used as named features: Typically as supplementary targets for `tweaks`, which are defined below.
+A map where each item provides a name for a position in space. Such positions exist in relation to other named features of the keyboard and can themselves be used as anchors, most typically as supplementary targets for `tweaks` (see below).
 
 An example:
 
@@ -222,13 +222,18 @@ An example:
       offset: [1, 0, 0]
     override [null, null, 2]
     translation: [0, 3, 0]
+    size: 4
 ```
 
 This example gives the name `s0` to a point near some feature named `f0`, which must be defined elsewhere. All parameters in the `anchoring` map work like their equivalent for primary features like `mcu`, so that `offset` is applied in the vector space of the anchor.
 
 Populated coordinates in `override` replace corresponding coordinates given by the anchor, and `translation` finally shifts the position of the secondary feature in the global vector space.
 
-In the example, `s0` is a position 1 mm to the local right of the south-east corner of vertical segment 2 of `f0`, projected onto the global x-y plane at z = 2 (i.e. 2 mm above the floor), and then shifted 3 mm away from the user on that plane.
+In the example, `s0` is a position 1 mm to the local right of the southeast corner of vertical segment 2 of `f0`, projected onto the global x-y plane at z = 2 (i.e. 2 mm above the floor), and then shifted 3 mm away from the user on that plane.
+
+The `size` parameter is relevant only as a fallback for `tweaks` that target the position and do not specify a size in turn. If both are omitted, tweaks fall back still further, to a tiny point.
+
+All of these properties are optional.
 
 ## Section <a id="main-body">`main-body`</a>
 

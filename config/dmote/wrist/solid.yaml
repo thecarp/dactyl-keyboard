@@ -3,134 +3,94 @@
 secondaries:
   wrb-case:
     anchoring:
-      anchor: m03
+      anchor: front3
       side: SSE
       segment: 3
-    translation: [-16, 0, -10]
+    translation: [-16, 0, -8]
   wrb-rest:
     anchoring:
       anchor: plinth-left
     translation: [0, 0, -3]
-  wrb1a:
+  wrb1-west:
     anchoring:
       anchor: wrb-case
-  wrb1b:
+  wrb1-top:
     anchoring:
-      anchor: wrb1a
-    translation: [10, 0, 8]
-  wrb1c:
+      anchor: wrb1-west
+    translation: [15, 0, 3]
+    size: [8, 2, 8]
+  wrb1-east:
     anchoring:
-      anchor: wrb1a
-    translation: [20, 0, 8]
-  wrb1d:
-    anchoring:
-      anchor: wrb1a
+      anchor: wrb1-west
     translation: [30, 0, 0]
-  wrb2a:
+  wrb2-bottom:
     anchoring:
-      anchor: wrb1a
-    translation: [5, -15, 0]
-  wrb2b:
+      anchor: wrb1-top
+    translation: [0, -15, -3]
+    size: [20, 1, 1]
+  wrb2-top:
     anchoring:
-      anchor: wrb1b
-    translation: [2, -15, -5]
-  wrb2c:
+      anchor: wrb2-bottom
+    size: 8
+  wrb3-bottom:
     anchoring:
-      anchor: wrb1c
-    translation: [-2, -15, -5]
-  wrb2d:
-    anchoring:
-      anchor: wrb1d
-    translation: [-5, -15, 0]
-  wrb3a:
-    anchoring:
-      anchor: wrb2a
+      anchor: wrb2-bottom
     translation: [0, -25, 0]
-  wrb3b:
+    size: [20, 1, 1]
+  wrb3-top:
     anchoring:
-      anchor: wrb2b
-    translation: [0, -25, 0]
-  wrb3c:
+      anchor: wrb3-bottom
+    size: 8
+  wrb4-west:
     anchoring:
-      anchor: wrb2c
-    translation: [0, -25, 0]
-  wrb3d:
-    anchoring:
-      anchor: wrb2d
-    translation: [0, -25, 0]
-  wrb4a:
-    anchoring:
-      anchor: wrb1a
+      anchor: wrb1-west
     translation: [0, -55, 0]
-  wrb4b:
+  wrb4-top:
     anchoring:
-      anchor: wrb1b
+      anchor: wrb1-top
     translation: [0, -55, 0]
-  wrb4c:
+    size: [8, 12, 8]
+  wrb4-east:
     anchoring:
-      anchor: wrb1c
+      anchor: wrb1-east
     translation: [0, -55, 0]
-  wrb4d:
-    anchoring:
-      anchor: wrb1d
-    translation: [0, -55, 0]
-  wrb5b:
-    anchoring:
-      anchor: wrb4b
-    translation: [0, -10, 0]
-  wrb5c:
-    anchoring:
-      anchor: wrb4c
-    translation: [0, -10, 0]
 tweaks:
   wrist-rest-bridge-main-body:
     - chunk-size: 2
       at-ground: true
       hull-around:
       - hull-around:
-        - [wrb1a]
-        - [wrb1b]
-        - [wrb1c]
-        - [wrb1d]
+        - [wrb1-west]
+        - [wrb1-top]
+        - [wrb1-east]
       - hull-around:
-        - [wrb2a]
-        - [wrb2b]
-        - [wrb2c]
-        - [wrb2d]
+        - [wrb2-bottom]
+        - [wrb2-top]
   wrist-rest-bridge-middle:
     - chunk-size: 2
       at-ground: true
       hull-around:
       - hull-around:
-        - [wrb2a]
-        - [wrb2b]
-        - [wrb2c]
-        - [wrb2d]
+        - [wrb2-bottom]
+        - [wrb2-top]
       - hull-around:
-        - [wrb3a]
-        - [wrb3b]
-        - [wrb3c]
-        - [wrb3d]
+        - [wrb3-bottom]
+        - [wrb3-top]
   wrist-rest-bridge-rest:
     - chunk-size: 2
       at-ground: true
       hull-around:
       - hull-around:
-        - [wrb3a]
-        - [wrb3b]
-        - [wrb3c]
-        - [wrb3d]
+        - [wrb3-bottom]
+        - [wrb3-top]
       - hull-around:
-        - [wrb4a]
-        - [wrb4b]
-        - [wrb4c]
-        - [wrb4d]
+        - [wrb4-west]
+        - [wrb4-top]
+        - [wrb4-east]
       - hull-around:
         - [wrb-rest]
         - [plinth-mid0]
         - [plinth-mid1]
-        - [wrb5b]
-        - [wrb5c]
 wrist-rest:
   include: true
   style: solid

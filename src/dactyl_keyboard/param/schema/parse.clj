@@ -117,7 +117,8 @@
     (map-like
       {:anchoring (map-like anchored-3d-position-map)
        :override vec
-       :translation vec})))
+       :translation vec
+       :size pad-to-3-tuple})))
 
 (def anchored-2d-positions
   (tuple-of (map-like anchored-2d-position-map)))

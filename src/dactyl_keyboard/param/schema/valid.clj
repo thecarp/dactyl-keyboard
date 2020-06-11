@@ -111,7 +111,7 @@
 (spec/def ::named-secondary-positions
   (spec/map-of ::alias
                (spec/keys :opt-un [:three/anchoring :three/override
-                                   :three/translation])))
+                                   :three/translation :tweak/size])))
 (spec/def ::anchored-2d-list (spec/coll-of :two/anchoring))
 (spec/def :two/points ::anchored-2d-list)  ; Synonym for composition.
 (spec/def ::projecting-2d-list (spec/coll-of

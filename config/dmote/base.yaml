@@ -419,14 +419,17 @@ secondaries:
       side: SSE
       segment: 0
     translation: [0, -2, 2]
+    size: 2
   mt0b:
     anchoring:
       anchor: mt0a
     translation: [4, -3, 16]
+    size: 2
   mt0c:
     anchoring:
       anchor: mt0b
     translation: [6, -2, 1]
+    size: 2
 main-body:
   reflect: true
   rear-housing:
