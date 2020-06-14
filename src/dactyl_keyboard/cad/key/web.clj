@@ -11,13 +11,13 @@
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.key :as key]
-            [dactyl-keyboard.compass :as compass :refer [sharp-left sharp-right]]
-            [dactyl-keyboard.param.access :as access :refer [most-specific compensator]]))
-
+            [dactyl-keyboard.compass :as compass]
+            [dactyl-keyboard.param.proc.anch :as anch]
+            [dactyl-keyboard.param.access :refer [most-specific]]))
 
 (defn- bridge
   "Produce bridges between one key mount and its immediate neighbours."
-  [spotter placer corner-finder coord-here]
+  [spotter placer coord-here]
   (let [coord-north (matrix/walk coord-here :N)
         coord-east (matrix/walk coord-here :E)
         coord-northeast (matrix/walk coord-here :N :E)
@@ -28,23 +28,33 @@
     [;; Connecting columns.
      (when (and fill-here fill-east)
        (loft 3
-         [(placer coord-here (corner-finder :ENE))
-          (placer coord-east (corner-finder :WNW))
-          (placer coord-here (corner-finder :ESE))
-          (placer coord-east (corner-finder :WSW))]))
+         [(placer coord-here :NE)
+          (placer coord-east :NW)
+          (placer coord-here :SE)
+          (placer coord-east :SW)]))
      ;; Connecting rows.
      (when (and fill-here fill-north)
        (loft 3
-         [(placer coord-here (corner-finder :WNW))
-          (placer coord-north (corner-finder :WSW))
-          (placer coord-here (corner-finder :ENE))
-          (placer coord-north (corner-finder :ESE))]))
+         [(placer coord-here :NW)
+          (placer coord-north :SW)
+          (placer coord-here :NE)
+          (placer coord-north :SE)]))
      ;; Selectively filling the area between all four possible mounts.
      (loft 3
-       [(when fill-here (placer coord-here (corner-finder :ENE)))
-        (when fill-north (placer coord-north (corner-finder :ESE)))
-        (when fill-east (placer coord-east (corner-finder :WNW)))
-        (when fill-northeast (placer coord-northeast (corner-finder :WSW)))])]))
+       [(when fill-here (placer coord-here :NE))
+        (when fill-north (placer coord-north :SE))
+        (when fill-east (placer coord-east :NW))
+        (when fill-northeast (placer coord-northeast :SW))])]))
+
+(defn web-post
+  "The shape of a corner of a switch mount."
+  [getopt cluster coord side]
+  {:pre [(compass/all-short side)]}
+  (->> side
+    compass/convert-to-cardinal
+    compass/short-to-long
+    (most-specific getopt [:wall :thickness] cluster coord)
+    (apply model/cube)))
 
 (defn cluster [getopt cluster]
   "A union of shapes covering the interstices between points in a matrix.
@@ -53,12 +63,10 @@
     (mapcat
       (partial bridge
         (partial key/key-requested? getopt cluster)  ; Spotter.
-        (partial place/cluster-place getopt cluster)  ; Placer.
-        (fn [side]  ; Corner finder.
-          {:pre [(compass/intermediates side)]}
-          (let [directions (compass/intermediate-to-tuple side)
-                key-style (most-specific getopt [:key-style] cluster directions)]
-             (key/mount-corner-post getopt key-style side))))
+        (fn [coord side]  ; Placer.
+          (place/by-type getopt
+            {::anch/type ::anch/key-mount, :cluster cluster, :coordinates coord
+             :side side, :initial (web-post getopt cluster coord side)})))
       (matrix/coordinate-pairs
         (getopt :key-clusters :derived :by-cluster cluster :column-range)
         (getopt :key-clusters :derived :by-cluster cluster :row-range)))))

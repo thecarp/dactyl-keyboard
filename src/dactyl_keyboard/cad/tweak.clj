@@ -18,7 +18,7 @@
             [dactyl-keyboard.cad.mcu :as mcu]
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.cad.place :as place]
-            [dactyl-keyboard.cad.key :as key]
+            [dactyl-keyboard.cad.key.web :refer [web-post]]
             [dactyl-keyboard.param.schema.valid :as valid]
             [dactyl-keyboard.param.access :refer [resolve-anchor]]
             [dactyl-keyboard.param.proc.anch :as anch]))
@@ -107,6 +107,10 @@
         default (fn [& shapes] (if size (apply model/cube size)
                                         (first (filter some? shapes))))]
     (case type
+      ::anch/key-mount
+        [false
+         (let [{:keys [cluster coordinates]} resolved]
+           (web-post getopt cluster coordinates (or side ::anch/any)))]
       ::anch/central-gabel
         [true
          (central/tweak-post getopt anchor)]
@@ -163,7 +167,7 @@
         [false
          (let [{:keys [size]} (getopt :secondaries anchor)]
            (default (when size (apply model/cube size)) misc/nodule))]
-      [false (default (key/web-post getopt))])))
+      [false (default misc/nodule)])))
 
 (defn- leaf-blade-3d
   "One model at one vertical segment of one feature."

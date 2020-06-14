@@ -15,6 +15,7 @@
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.key :as key]
+            [dactyl-keyboard.cad.key.web :refer [web-post]]
             [dactyl-keyboard.compass :as compass :refer [sharp-left sharp-right]]
             [dactyl-keyboard.param.access :refer [most-specific]]))
 
@@ -77,7 +78,7 @@
   "Place an individual wall post."
   [getopt cluster coord side segment]
   (->>
-    (key/web-post getopt)
+    (web-post getopt cluster coord (first side))
     (flex/translate
       (place/wall-corner-offset getopt cluster coord
         {:side (compass/tuple-to-intermediate side)

@@ -33,7 +33,9 @@ version 0.2.0, thus covering only a fraction of the project’s history.
           is governed by the new parameter `to-ground` and can now be done
           from any segment, no longer just segment 4.
         - The vertical segment sequence for key walls has been shortened and
-          simplified. Wall `thickness` has been removed as redundant.
+          simplified. Wall `thickness` has been expanded into three dimensions,
+          replacing three parameters under `main-body`:
+          `key-mount-corner-margin`, `key-mount-thickness` and `web-thickness`.
     - All parameters governing individual properties of threaded bolts have
       been removed in favour of more powerful new parameters based on options
       exposed by a new library (`scad-klupe`) that draws bolts for the
@@ -108,6 +110,12 @@ version 0.2.0, thus covering only a fraction of the project’s history.
   Thus the MCU's `rotation` parameter has moved out of its `anchoring` map
   (previously `position`), to a new name (`intrinsic-rotation`) and will be
   needed more often.
+- The default size of a tweak has changed from the size of a key-mount corner
+  post to a nodule of 10⁻⁹ mm³, effectively a mere point. This matches the
+  way that the rear and central housings, and some other features, are now
+  drawn: As polyhedra made up of points rather than bodies with volume.
+  This change was precipitated by moving key-mount thickness control out of
+  its privileged position on `main-body`.
 - The alcove generated for the front end of an MCU PCBA now uses the general
   DFM setting (`error-general`). The `mcu` → `margin` setting was removed.
 - Anchors for bottom-plate mounting screws no longer have domed caps by
@@ -139,6 +147,8 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - An MCU shelf. This type of MCU support corresponds directly to the
   Dactyl-ManuForm’s `teensy-holder` object and is therefore not new, but
   it has some parameters to extend its functionality.
+- A new `backing-thickness` parameter to help control how far way from an MCU
+  lock its fastener will extend.
 - Support for an arbitrary number of ports.
     - Support for standard types of ports, including different USB connectors
       and a modular connector (616E for 4P4C, previously emulated in

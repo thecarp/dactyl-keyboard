@@ -411,7 +411,7 @@
              :model-main (single-cap getopt key-style false)}
             module-switch  ; Uniqueness of input not guaranteed.
             {:name module-switch
-             :model-main (single-switch getopt switch-type)})))
+             :model-main (single-switch switch-type)})))
       {}
       (keys (getopt :keys :styles)))))
 

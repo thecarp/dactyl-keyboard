@@ -119,6 +119,7 @@ Here follows the complete order of resolution in an extended example, for a `wal
     - Parameter <a href="#user-content-channel-top-width">`top-width`</a>
     - Parameter <a href="#user-content-channel-margin">`margin`</a>
 - Section <a href="#user-content-wall">`wall`</a>
+    - Parameter <a href="#user-content-wall-thickness">`thickness`</a>
     - Parameter <a href="#user-content-wall-extent">`extent`</a>
     - Parameter <a href="#user-content-wall-to-ground">`to-ground`</a>
     - Parameter <a href="#user-content-wall-bevel">`bevel`</a>
@@ -163,13 +164,11 @@ Tait-Bryan pitch, meaning the rotation of keys around the x axis.
 
 #### Parameter <a id="layout-pitch-base">`base`</a>
 
-An angle in radians. Set at a high level, this controls the general front-to-back incline of a key cluster.
+An angle in radians. Set at cluster level, this controls the general front-to-back incline of the key cluster.
 
 #### Parameter <a id="layout-pitch-intrinsic">`intrinsic`</a>
 
 An angle in radians. Intrinsic pitching occurs early in key placement. It is typically intended to produce a tactile break between two rows of keys, as in the typewriter-like terracing common on flat keyboards with OEM-profile or similarly angled caps.
-
-The term “intrinsic” is used here because the key spins roughly around its own center. The term should not be confused with intrinsic rotations in the sense that each step is performed on a coordinate system resulting from previous operations.
 
 #### Parameter <a id="layout-pitch-progressive">`progressive`</a>
 
@@ -181,7 +180,7 @@ Tait-Bryan roll, meaning the rotation of keys around the y axis.
 
 #### Parameter <a id="layout-roll-base">`base`</a>
 
-An angle in radians. This is the “tenting” angle. Applied to your main cluster, it controls the overall left-to-right tilt of each half of the keyboard.
+An angle in radians. This is the “tenting” angle. Applied to your main cluster on a split keyboard, it controls the overall left-to-right tilt of each half.
 
 #### Parameter <a id="layout-roll-intrinsic">`intrinsic`</a>
 
@@ -249,6 +248,17 @@ The `wall` section determines the shape of the case wall, specifically the skirt
 
 There is one corner post at each actual corner of every key mount (segment 0). More posts are displaced from it, going down the sides. Their placement is affected by the way the key mounts are rotated etc.
 
+
+### Parameter <a id="wall-thickness">`thickness`</a>
+
+The size in mm of the key mount and each wall post.
+
+Notice that the unit size of each key, and therefore the horizontal extent of each key mounting plate, is a function of `key-style`, not of this parameter.
+
+The `thickness` parameter instead controls three other aspects of the keyboard case:
+
+- The thickness of the key mounting plate itself. When specifying `thickness` as a list of three dimensions (`[1, 2, 3]`), mounting plate thickness is governed solely by the z-axis dimension (`3`) and the other figures are ignored.
+- The thickness of the walls as drawn automatically and as targeted by `tweaks`. Whereas mounting-plate thickness ignores the x- and y-axis dimensions of this parameter, wall posts are cuboids that use all three dimensions.
 
 ### Parameter <a id="wall-extent">`extent`</a>
 

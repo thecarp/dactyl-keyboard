@@ -13,9 +13,6 @@ Each heading in this document represents a recognized configuration key in the m
 - Parameter <a href="#user-content-secondaries">`secondaries`</a>
 - Section <a href="#user-content-main-body">`main-body`</a>
     - Parameter <a href="#user-content-main-body-reflect">`reflect`</a>
-    - Parameter <a href="#user-content-main-body-key-mount-thickness">`key-mount-thickness`</a>
-    - Parameter <a href="#user-content-main-body-key-mount-corner-margin">`key-mount-corner-margin`</a>
-    - Parameter <a href="#user-content-main-body-web-thickness">`web-thickness`</a>
     - Section <a href="#user-content-main-body-rear-housing">`rear-housing`</a>
         - Parameter <a href="#user-content-main-body-rear-housing-include">`include`</a>
         - Section <a href="#user-content-main-body-rear-housing-anchoring">`anchoring`</a>
@@ -111,6 +108,7 @@ Each heading in this document represents a recognized configuration key in the m
             - Section <a href="#user-content-mcu-support-lock-plate">`plate`</a>
                 - Parameter <a href="#user-content-mcu-support-lock-plate-alias">`alias`</a>
                 - Parameter <a href="#user-content-mcu-support-lock-plate-base-thickness">`base-thickness`</a>
+                - Parameter <a href="#user-content-mcu-support-lock-plate-backing-thickness">`backing-thickness`</a>
                 - Parameter <a href="#user-content-mcu-support-lock-plate-clearance">`clearance`</a>
             - Section <a href="#user-content-mcu-support-lock-socket">`socket`</a>
                 - Parameter <a href="#user-content-mcu-support-lock-socket-thickness">`thickness`</a>
@@ -244,20 +242,6 @@ The main body of the keyboard is the main output of this application. It may be 
 If `true`, mirror the main body, producing one version for the right hand and another for the left. The two halves will be almost identical: Only chiral parts, such as threaded holes, are exempt from mirroring with `main-body` → `reflect`.
 
 You can use this option to make a ‘split’ keyboard, though the two halves are typically connected by a signalling cable, by a rigid `central-housing`, or by one or more rods anchored to some feature such as `rear-housing` or `back-plate`.
-
-### Parameter <a id="main-body-key-mount-thickness">`key-mount-thickness`</a>
-
-The thickness in mm of each switch key mounting plate.
-
-### Parameter <a id="main-body-key-mount-corner-margin">`key-mount-corner-margin`</a>
-
-The thickness in mm of an imaginary “post” at each corner of each key mount. Copies of such posts project from the key mounts to form the main walls of the case.
-
-`key-mount-thickness` is similarly the height of each post.
-
-### Parameter <a id="main-body-web-thickness">`web-thickness`</a>
-
-The thickness in mm of the webbing between switch key mounting plates, and of the rear housing’s walls and roof.
 
 ### Section <a id="main-body-rear-housing">`rear-housing`</a>
 
@@ -775,6 +759,10 @@ A name you can use to target the base of the plate for `tweaks`. This is useful 
 
 The thickness of the base of the plate, in mm.
 
+###### Parameter <a id="mcu-support-lock-plate-backing-thickness">`backing-thickness`</a>
+
+The thickness of whatever is behind the plate, in mm. The only influence of this parameter is on the length and position of the fastener, which is extended this far away from the plate to penetrate its support.
+
 ###### Parameter <a id="mcu-support-lock-plate-clearance">`clearance`</a>
 
 The distance between the MCU PCB and the base of the plate, in mm.
@@ -821,7 +809,7 @@ Space is reserved for the MCU PCB. This space will cut into each grip that inter
 
 The three dimensions of a grip post, in mm.
 
-This parameter determines the size of the object that will occupy an anchor point for a grip when that point is targeted by a tweak. It corresponds to `key-mount-corner-margin` and `web-thickness` but provides more control and is specific to MCU grips.
+Like the `size` of a secondary, this parameter determines the size of the object that will occupy an anchor point for a grip when that point is targeted by a tweak.
 
 ##### Parameter <a id="mcu-support-grip-anchors">`anchors`</a>
 

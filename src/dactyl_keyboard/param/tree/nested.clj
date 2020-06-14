@@ -177,18 +177,14 @@
     "Tait-Bryan pitch, meaning the rotation of keys around the x axis."]
    [:parameter [:layout :pitch :base]
     {:default 0 :parse-fn parse/compass-incompatible-angle}
-    "An angle in radians. Set at a high level, this controls the general "
-    "front-to-back incline of a key cluster."]
+    "An angle in radians. Set at cluster level, this controls the general "
+    "front-to-back incline of the key cluster."]
    [:parameter [:layout :pitch :intrinsic]
     {:default 0 :parse-fn parse/compass-incompatible-angle}
     "An angle in radians. Intrinsic pitching occurs early in key placement. "
     "It is typically intended to produce a tactile break between two rows of "
     "keys, as in the typewriter-like terracing common on flat keyboards with "
-    "OEM-profile or similarly angled caps.\n\n"
-    "The term “intrinsic” is used here because the key spins roughly around "
-    "its own center. The term should not be confused with intrinsic rotations "
-    "in the sense that each step is performed on a coordinate system "
-    "resulting from previous operations."]
+    "OEM-profile or similarly angled caps."]
    [:parameter [:layout :pitch :progressive]
     {:default 0 :parse-fn parse/compass-incompatible-angle}
     "An angle in radians. This progressive pitch factor bends columns "
@@ -198,8 +194,8 @@
    [:parameter [:layout :roll :base]
     {:default 0 :parse-fn parse/compass-incompatible-angle}
     "An angle in radians. This is the “tenting” angle. Applied to your main "
-    "cluster, it controls the overall left-to-right tilt of each half of the "
-    "keyboard."]
+    "cluster on a split keyboard, it controls the overall left-to-right tilt "
+    "of each half."]
    [:parameter [:layout :roll :intrinsic]
     {:default 0 :parse-fn parse/compass-incompatible-angle}
     "An angle in radians, analogous to intrinsic pitching. Where more than "
@@ -274,6 +270,23 @@
     "(segment 0). "
     "More posts are displaced from it, going down the sides. Their placement "
     "is affected by the way the key mounts are rotated etc.\n"]
+   [:parameter [:wall :thickness]
+    {:default [1 1 1] :parse-fn parse/pad-to-3-tuple
+     :validate [::tarmi-core/point-3d]}
+    "The size in mm of the key mount and each wall post.\n\n"
+    "Notice that the unit size of each key, and therefore the horizontal "
+    "extent of each key mounting plate, is a function of `key-style`, not of "
+    "this parameter.\n\n"
+    "The `thickness` parameter instead controls three other aspects of the "
+    "keyboard case:\n\n"
+    "- The thickness of the key mounting plate itself. When specifying "
+    "`thickness` as a list of three dimensions (`[1, 2, 3]`), mounting plate "
+    "thickness is governed solely by the z-axis dimension (`3`) and the other "
+    "figures are ignored.\n"
+    "- The thickness of the walls as drawn automatically and as targeted by "
+    "`tweaks`. Whereas mounting-plate thickness ignores the x- and y-axis "
+    "dimensions of this parameter, wall posts are cuboids that use all three "
+    "dimensions."]
    [:parameter [:wall :extent]
     {:default 0 :parse-fn num :validate [::valid/segment]}
     "A segment ID describing how far away from the key mount to extend its "

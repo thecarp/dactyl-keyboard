@@ -831,6 +831,8 @@ mcu:
   support:
     lock:
       include: true
+      plate:
+        backing-thickness: 3
 ports:
   # A port in the top far-right corner of the rear housing. This is for running
   # the wire between the two halves of the keyboard on or through a connecting rod

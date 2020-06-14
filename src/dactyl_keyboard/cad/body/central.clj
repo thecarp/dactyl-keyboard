@@ -5,7 +5,8 @@
 
 ;;; The central housing is one of the predefined bodies of the application.
 ;;; It is distinguished by its shape, uniquely defined in terms of a hollow
-;;; polyhedral block extending between two reflected main bodies.
+;;; polyhedral block extending between two copies of the main body, one of
+;;; these copies being reflected.
 
 (ns dactyl-keyboard.cad.body.central
   (:require [clojure.spec.alpha :as spec]
@@ -70,7 +71,7 @@
 
 ;; Predicates for filtering items in the interface for drawing different
 ;; bodies.
-(defn- above-ground?  ; If true, to be included in main body.
+(defn- above-ground?  ; If true, to be included in body.
   [{:keys [above-ground] :as point}]
   (if (nil? above-ground) (not (neg? (get-z-offset point))) above-ground))
 (defn- at-ground?  ; If true, to be included in bottom plate.
@@ -100,12 +101,13 @@
 (defn- single-receiver
   "An extension through the central-housing interface array to receive a single
   fastener. This design is a bit rough; more parameters would be needed to
-  account for the possibility of wall surfaces angled on the x or y axes."
+  account for the possibility of wall surfaces angled on the x or y axes.
+  Key-cluster wall thickness is not taken into account."
   [getopt {:keys [lateral-offset]}]
   (let [rprop (partial getopt :central-housing :adapter :receivers)
         fprop (partial getopt :central-housing :adapter :fasteners)
         diameter (fprop :bolt-properties :m-diameter)
-        z-wall (getopt :main-body :web-thickness)
+        z-wall (getopt :central-housing :shape :thickness)
         width (+ diameter (* 2 (rprop :thickness :rim)))
         z-hole (- (iso/bolt-length (fprop :bolt-properties)) z-wall)
         z-bridge (min z-hole (rprop :thickness :bridge))
@@ -191,10 +193,10 @@
     interface))
 
 (defn- locate-above-ground-points
-  "Derive 3D coordinates on the main body of the central housing."
+  "Derive 3D coordinates on the body of the central housing."
   [getopt interface]
   (let [[half-width _] (get-widths getopt)
-        thickness (getopt :main-body :web-thickness)
+        thickness (getopt :central-housing :shape :thickness)
         [cross-indexed items] (index-map interface :above-ground)
         [base-offsets _] (get-offsets items)
         [right-gabel-outer adapter-outer] (resolve-offsets getopt items)

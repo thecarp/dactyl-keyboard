@@ -11,6 +11,7 @@ When present, a central housing naturally determines the position of each other 
 - Parameter <a href="#user-content-preview">`preview`</a>
 - Section <a href="#user-content-shape">`shape`</a>
     - Parameter <a href="#user-content-shape-width">`width`</a>
+    - Parameter <a href="#user-content-shape-thickness">`thickness`</a>
     - Parameter <a href="#user-content-shape-interface">`interface`</a>
 - Section <a href="#user-content-adapter">`adapter`</a>
     - Parameter <a href="#user-content-adapter-include">`include`</a>
@@ -55,6 +56,10 @@ Assuming that adapters are included, you can think of a keyboard with a central 
 ### Parameter <a id="shape-width">`width`</a>
 
 The approximate extent of the housing itself, on the x axis, in mm.
+
+### Parameter <a id="shape-thickness">`thickness`</a>
+
+The thickness of the housing and its adapter (if any), in mm.
 
 ### Parameter <a id="shape-interface">`interface`</a>
 

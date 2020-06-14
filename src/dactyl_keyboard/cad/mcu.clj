@@ -197,21 +197,21 @@
 (defn lock-fasteners-model
   "Negative space for a threaded bolt fastening an MCU lock."
   [getopt]
-  (let [d (getopt :mcu :support :lock :fastener-properties :m-diameter)
+  (let [p (getopt :mcu :derived :plate :thickness)
+        c (getopt :mcu :support :lock :plate :clearance)
+        b (getopt :mcu :support :lock :plate :backing-thickness)
+        m (getopt :mcu :support :lock :bolt :mount-length)
+        d (getopt :mcu :support :lock :fastener-properties :m-diameter)
         head-type (getopt :mcu :support :lock :fastener-properties :head-type)
-        l0 (head-length d head-type)
-        l1 (getopt :main-body :web-thickness)
-        [_ pcb-y pcb-z] (map-to-3d-vec (getopt :mcu :derived :pcb))
-        l2 (getopt :mcu :support :lock :plate :clearance)
-        y1 (getopt :mcu :support :lock :bolt :mount-length)]
+        [_ pcb-y pcb-z] (map-to-3d-vec (getopt :mcu :derived :pcb))]
     (->>
       (merge-bolt
-        {:unthreaded-length (max 0 (- (+ l1 l2) l0))
+        {:unthreaded-length (+ p b (max 0 (- c (head-length d head-type))))
          :threaded-length (getopt :mcu :support :lock :bolt :mount-thickness)
          :negative true}
         (getopt :mcu :support :lock :fastener-properties))
       (model/rotate [π 0 0])
-      (model/translate [0 (- (+ pcb-y (/ y1 2))) (- (+ (/ pcb-z 2) l1 l2))]))))
+      (model/translate [0 (- (+ pcb-y (/ m 2))) (- (+ (/ pcb-z 2) p b c))]))))
 
 (defn lock-sink [getopt]
   (place/mcu-place getopt

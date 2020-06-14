@@ -39,19 +39,23 @@
 
 ;; Key mounts.
 
-(defn mount-corner-offset
+(defn- mount-corner-offset
   "Produce a mm coordinate offset for a corner of a switch mount.
   This is not to be confused with offsets for walls, which are additive."
-  [getopt key-style side]
+  [getopt cluster coord side]
   {:pre [(or (nil? side) (side compass/all-short))]}
-  (let [style-data (getopt :keys :derived key-style)
+  (let [specific-side (if (nil? side)
+                        :dactyl-keyboard.cad.key/any
+                        (compass/short-to-long (compass/convert-to-cardinal side)))
+        directions (get compass/keyword-to-tuple side (if side [side] []))
+        most #(most-specific getopt %& cluster coord specific-side)
+        style-data (getopt :keys :derived (most :key-style))
         [subject-x subject-y] (map measure/key-length
                                    (get style-data :unit-size [1 1]))
-        m (getopt :main-body :key-mount-corner-margin)
-        directions (get compass/keyword-to-tuple side (if side [side] []))]
-    [(* (apply compass/delta-x directions) (- (/ subject-x 2) (/ m 2)))
-     (* (apply compass/delta-y directions) (- (/ subject-y 2) (/ m 2)))
-     (/ (getopt :main-body :web-thickness) -2)]))
+        [wall-x wall-y wall-z] (map #(/ % 2) (most :wall :thickness))]
+    [(* (apply compass/delta-x directions) (- (/ subject-x 2) wall-x))
+     (* (apply compass/delta-y directions) (- (/ subject-y 2) wall-y))
+     (- wall-z)]))
 
 (defn- curver
   "Given an angle for progressive curvature, apply it. Else lay keys out flat."
@@ -178,13 +182,6 @@
       (update 0 (partial * dx))
       (update 1 (partial * dy)))))
 
-(defn- wall-vertex-offset
-  "Compute a 3D offset from the center of a web post to a vertex on it."
-  [getopt side keyopts]
-  (let [xy (/ (getopt :main-body :key-mount-corner-margin) 2)
-        z (/ (getopt :main-body :key-mount-thickness) 2)]
-    (matrix/cube-vertex-offset side [xy xy z] keyopts)))
-
 (defn wall-corner-offset
   "Combined [x y z] offset from the center of a switch mount.
   This can go to one corner of the hem of the mount’s skirt of
@@ -192,11 +189,17 @@
   [getopt cluster coordinates
    {:keys [side segment vertex] :or {vertex false} :as keyopts}]
   {:pre [(or (nil? side) (compass/all-short side))]}
-  (let [key-style (most-specific getopt [:key-style] cluster coordinates)]
-    (mapv +
-      (mount-corner-offset getopt key-style side)
-      (wall-segment-offset getopt cluster coordinates side segment)
-      (if (and side vertex) (wall-vertex-offset getopt side keyopts) [0 0 0]))))
+  (mapv +
+    (mount-corner-offset getopt cluster coordinates side)
+    (wall-segment-offset getopt cluster coordinates side segment)
+    (if (and side vertex)
+      ;; Compute a 3D offset from the center of a web post to a vertex on it.
+      (matrix/cube-vertex-offset
+        side
+        (most-specific getopt [:wall :thickness] cluster coordinates
+          (compass/short-to-long (compass/convert-to-cardinal side)))
+        keyopts)
+      [0 0 0])))
 
 (defn wall-corner-place
   "Absolute position of the lower wall around a key mount."

@@ -89,6 +89,7 @@ by-key:
           column: 1.5
           row: 1.2
     wall:
+      thickness: [3, 3, 4]
       parallel: 5
       perpendicular: -15
   clusters:
@@ -249,9 +250,6 @@ secondaries:
     override: [null, null, 3]
 main-body:
   reflect: true
-  key-mount-thickness: 4
-  key-mount-corner-margin: 1.5
-  web-thickness: 3.5
   bottom-plate:
     include: true
     installation:

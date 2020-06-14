@@ -7,17 +7,24 @@
   (:require [clojure.java.io :as io]
             [scad-clj.model :as model]
             [scad-tarmi.core :refer [abs π]]
+            [scad-tarmi.maybe :as maybe]
             [scad-tarmi.util :refer [loft]]
             [dmote-keycap.measure :as measure]
             [dmote-keycap.models :refer [keycap]]
             [dactyl-keyboard.misc :as misc]
             [dactyl-keyboard.cad.misc :refer [wafer]]
             [dactyl-keyboard.cots :refer [switch-facts]]
-            [dactyl-keyboard.param.access :refer [key-properties compensator]]))
+            [dactyl-keyboard.param.access :refer [key-properties most-specific
+                                                  compensator]]))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Keycap Models ;;
 ;;;;;;;;;;;;;;;;;;;
+
+(defn- mount-thickness
+  "Key mount thickness."
+  [getopt cluster coord]
+  (most-specific getopt [:wall :thickness 2] cluster coord))
 
 (defn cap-channel-negative
   "The shape of a channel for a keycap to move in."
@@ -35,7 +42,7 @@
         h1 (measure/pressed-clearance switch-type skirt-length)
         h2 (measure/resting-clearance switch-type skirt-length)]
     (model/color (:cap-negative misc/colours)
-      (model/translate [0 0 (getopt :main-body :key-mount-thickness)]
+      (model/translate [0 0 (mount-thickness getopt cluster coord)]
         (loft
           [(step (+ sx m) (+ sy m) (/ t 2)) ; A bottom plate for ease of mounting a switch.
            (step (+ sx m) (+ sy m) 1) ; Roughly the height of the foot of the switch.
@@ -58,15 +65,14 @@
     (merge {:supported supported
             :importable-filepath-fn #(str (io/file misc/output-directory "scad" %))})
     keycap
-    (model/translate
-      [0 0 (+ (getopt :main-body :key-mount-thickness)
-              (getopt :keys :derived key-style :vertical-offset))])
-    (model/color (:cap-body misc/colours))))
+    (model/color (:cap-body misc/colours))
+    (maybe/translate [0 0 (getopt :keys :derived key-style :vertical-offset)])))
 
 (defn cap-positive
   "Recall of the results of single-cap for a particular coordinate."
   [getopt cluster coord]
-  (model/call-module (:module-keycap (key-properties getopt cluster coord))))
+  (maybe/translate [0 0 (mount-thickness getopt cluster coord)]
+    (model/call-module (:module-keycap (key-properties getopt cluster coord)))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -76,9 +82,20 @@
 ;; These models are intended solely for use as cutouts and therefore lack
 ;; features that would not interact with key mounts.
 
-(defn- plate-cutout-height
-  [getopt switch-height-to-plate-top]
-  (- (* 2 switch-height-to-plate-top) (getopt :main-body :key-mount-thickness)))
+(defn- plate-blocks
+  "Basic block outlines of a switch for negative space."
+  [type-key]
+  (let [facts (get switch-facts type-key)
+        {:keys [above-plate into-plate]} (:height facts)
+        {hole-x :x, hole-y :y} (:hole facts)
+        {foot-x :x, foot-y :y} (:foot facts)]
+    (model/union
+      ;; Space for the part of a switch above the mounting hole.
+      (model/translate [0 0 (/ above-plate 2)]
+        (model/cube foot-x foot-y above-plate))
+      ;; The hole through the plate.
+      (model/translate [0 0 (/ into-plate -2)]
+        (model/cube hole-x hole-y (inc into-plate))))))
 
 (defn- alps-wing
   "Negative space for a pair of wings flaring out from the base of an
@@ -101,32 +118,22 @@
 
 (defn- alps-switch
   "One ALPS-compatible cutout model."
-  [getopt]
-  (let [thickness (getopt :main-body :key-mount-thickness)
-        {hole-x :x, hole-y :y} (get-in switch-facts [:alps :hole])
-        height-to-plate-top 4.5
-        {foot-x :x, foot-y :y} (get-in switch-facts [:alps :foot])]
+  []
+  (let [into-plate (get-in switch-facts [:alps :height :into-plate])
+        {hole-x :x, hole-y :y} (get-in switch-facts [:alps :hole])]
     (model/union
-      ;; Space for the part of a switch above the mounting hole.
       ;; The actual height of the notches is 1 mm and it’s not a full cuboid.
-      (model/translate [0 0 (/ thickness 2)]
-        (model/cube foot-x foot-y thickness))
-      ;; The hole through the plate.
-      (model/translate [0 0 (/ height-to-plate-top -2)]
-        (model/cube hole-x hole-y (plate-cutout-height getopt height-to-plate-top)))
+      (plate-blocks :alps)
       ;; ALPS-specific space for wings to flare out inside the plate.
       (model/union
-        (alps-wing hole-x hole-y height-to-plate-top)
+        (alps-wing hole-x hole-y into-plate)
         (model/mirror [0 1 0]
-          (alps-wing hole-x hole-y height-to-plate-top))))))
+          (alps-wing hole-x hole-y into-plate))))))
 
 (defn- mx-switch
-  "One MX Cherry-compatible cutout model. Square."
-  [getopt]
-  (let [thickness (getopt :main-body :key-mount-thickness)
-        hole-xy (get-in switch-facts [:mx :hole :x])
-        foot-xy (get-in switch-facts [:mx :foot :x])
-        height-to-plate-top 5.004
+  "One Cherry MX-compatible cutout model. Square."
+  []
+  (let [hole-xy (get-in switch-facts [:mx :hole :x])
         nub-radius 1
         nub-depth 4
         nub (->> (model/cylinder nub-radius 2.75)
@@ -137,14 +144,7 @@
                    (model/translate [(+ 3/4 (/ hole-xy 2)) 0 (/ nub-depth -2)]
                      (model/cube 1.5 2.75 nub-depth))))]
     (model/difference
-      (model/union
-        ;; Space for the part of a switch above the mounting hole.
-        (model/translate [0 0 (/ thickness 2)]
-          (model/cube foot-xy foot-xy thickness))
-        ;; The hole through the plate.
-        (model/translate [0 0 (/ height-to-plate-top -2)]
-          (model/cube hole-xy hole-xy
-            (plate-cutout-height getopt height-to-plate-top))))
+      (plate-blocks :mx)
       ;; MX-specific nubs that hold the keyswitch in place.
       (model/union
         nub
@@ -152,8 +152,8 @@
 
 (defn single-switch
   "Negative space for the insertion of a key switch through a mounting plate."
-  [getopt switch-type]
+  [switch-type]
   (case switch-type
-    :alps (alps-switch getopt)
-    :mx (mx-switch getopt)))
+    :alps (alps-switch)
+    :mx (mx-switch)))
 

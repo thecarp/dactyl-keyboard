@@ -61,3 +61,5 @@ mcu:
   support:
     lock:
       include: true
+      plate:
+        backing-thickness: 3

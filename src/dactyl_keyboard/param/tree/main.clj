@@ -147,20 +147,6 @@
     "halves are typically connected by a signalling cable, by a rigid "
     "`central-housing`, or by one or more rods anchored to "
     "some feature such as `rear-housing` or `back-plate`."]
-   [:parameter [:main-body :key-mount-thickness]
-    {:default 1 :parse-fn num}
-    "The thickness in mm of each switch key mounting plate."]
-   [:parameter [:main-body :key-mount-corner-margin]
-    {:default 1 :parse-fn num}
-    "The thickness in mm of an imaginary “post” at each corner of each key "
-    "mount. Copies of such posts project from the key mounts to form the main "
-    "walls of the case.\n"
-    "\n"
-    "`key-mount-thickness` is similarly the height of each post."]
-   [:parameter [:main-body :web-thickness]
-    {:default 1 :parse-fn num}
-    "The thickness in mm of the webbing between switch key "
-    "mounting plates, and of the rear housing’s walls and roof."]
    [:section [:main-body :rear-housing]
     "The furthest row of a key cluster can be extended into a rear housing "
     "for the MCU and various other features."]
@@ -701,6 +687,12 @@
    [:parameter [:mcu :support :lock :plate :base-thickness]
     {:default 1 :parse-fn num}
     "The thickness of the base of the plate, in mm."]
+   [:parameter [:mcu :support :lock :plate :backing-thickness]
+    {:default 0 :parse-fn num}
+    "The thickness of whatever is behind the plate, in mm. "
+    "The only influence of this parameter is on the length and position of "
+    "the fastener, which is extended this far away from the plate to "
+    "penetrate its support."]
    [:parameter [:mcu :support :lock :plate :clearance]
     {:default 1 :parse-fn num}
     "The distance between the MCU PCB and the base of the plate, in mm.\n\n"
@@ -751,10 +743,9 @@
     {:default 1 :parse-fn parse/pad-to-3-tuple
      :validate [::tarmi-core/point-3d]}
     "The three dimensions of a grip post, in mm.\n\n"
-    "This parameter determines the size of the object that will occupy an "
-    "anchor point for a grip when that point is targeted by a tweak. It "
-    "corresponds to `key-mount-corner-margin` and `web-thickness` but "
-    "provides more control and is specific to MCU grips."]
+    "Like the `size` of a secondary, this parameter determines the size of "
+    "the object that will occupy an anchor point for a grip when that point "
+    "is targeted by a tweak."]
    [:parameter [:mcu :support :grip :anchors]
     {:default [] :parse-fn parse/mcu-grip-anchors
      :validate [::valid/mcu-grip-anchors]}

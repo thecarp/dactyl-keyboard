@@ -232,27 +232,13 @@
 
 (defn- single-plate
   "The shape of a key mounting plate."
-  [getopt key-style]
-  {:pre [(keyword? key-style)]}
-  (let [thickness (getopt :main-body :key-mount-thickness)
-        style-data (getopt :keys :derived key-style)
-        [x y] (map measure/key-length (get style-data :unit-size [1 1]))]
-   (model/translate [0 0 (/ thickness -2)]
-     (model/cube x y thickness))))
-
-(defn web-post
-  "A shape for attaching things to a corner of a switch mount."
-  [getopt]
-  (model/cube (getopt :main-body :key-mount-corner-margin)
-              (getopt :main-body :key-mount-corner-margin)
-              (getopt :main-body :web-thickness)))
-
-(defn mount-corner-post
-  "A post shape that comes offset for one corner of a key mount."
-  [getopt key-style side]
-  {:pre [(compass/intermediates side)]}
-  (->> (web-post getopt)
-       (model/translate (place/mount-corner-offset getopt key-style side))))
+  [getopt cluster coord]
+  (let [most #(most-specific getopt % cluster coord)
+        style-data (getopt :keys :derived (most [:key-style]))
+        [x y] (map measure/key-length (get style-data :unit-size [1 1]))
+        z (most [:wall :thickness 2])]
+    (model/translate [0 0 (/ z -2)]
+      (model/cube x y z))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -262,7 +248,7 @@
 (defn cluster-plates [getopt cluster]
   (apply model/union
     (map #(place/cluster-place getopt cluster %
-            (single-plate getopt (most-specific getopt [:key-style] cluster %)))
+            (single-plate getopt cluster %))
          (derived getopt cluster :key-coordinates))))
 
 (defn cluster-cutouts [getopt cluster]

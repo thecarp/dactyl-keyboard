@@ -147,6 +147,16 @@ your right, you would set this parameter like `[0, π, π/2]`. That’s no rotat
 around the x axis, a half turn (flip) around the y axis, and a quarter turn
 around the z axis.
 
+#### Intrinsic rotation
+
+In this application, the phrase “intrinsic rotation” refers to features of the
+keyboard spinning in place, each around its own centre. Such rotation is
+applied first, before other rotations of the feature.
+
+The phrase does not refer to intrinsic rotation in the alternative sense that
+each step is performed on a coordinate system (vector space) resulting from
+previous operations.
+
 ## Bodies
 
 The anchor metaphor is related to the concept of bodies. Whereas an `anchor`

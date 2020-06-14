@@ -401,6 +401,7 @@ central-housing:
   include: true
   shape:
     width: 200
+    thickness: 2
     interface:
     # The near side, ascending:
     - above-ground: true

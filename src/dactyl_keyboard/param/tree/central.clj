@@ -46,6 +46,9 @@
    [:parameter [:shape :width]
     {:default 1 :parse-fn num}
     "The approximate extent of the housing itself, on the x axis, in mm."]
+   [:parameter [:shape :thickness]
+    {:default 1 :parse-fn num}
+    "The thickness of the housing and its adapter (if any), in mm."]
    [:parameter [:shape :interface]
     {:default [] :parse-fn parse/central-housing-interface
      :validate [::valid/central-housing-interface]}
