@@ -224,12 +224,13 @@
               [sweep [:sweep] int]])))
       dispatch-fn
         (fn [brancher leafer]
-           (fn dispatch [cnd]
-             (cond
-               (and (map? cnd) (contains? cnd :hull-around)) (brancher cnd)
-               (map? cnd) (leafer (destructure-leaf cnd))
-               (string? (first cnd)) (leafer (apply destructure-leaf cnd))
-               :else (map dispatch cnd))))
+          (fn dispatch [cnd]
+            (cond
+              (nil? cnd) nil
+              (and (map? cnd) (contains? cnd :hull-around)) (brancher cnd)
+              (map? cnd) (leafer (destructure-leaf cnd))
+              (string? (first cnd)) (leafer (apply destructure-leaf cnd))
+              :else (map dispatch cnd))))
       tail-brancher (fn parse [candidate]
                       ((map-like (merge branch-skeleton
                                         {:hull-around

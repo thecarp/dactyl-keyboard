@@ -3,6 +3,7 @@
 # connector on the MCU directly through the case wall.
 
 tweaks:
+  hole-through-small-port: null  # Disabled; replaced by gripper.
   mcu-grip:
     - chunk-size: 2
       hull-around:
@@ -36,7 +37,7 @@ mcu:
   intrinsic-rotation: [0, 0, 0]  # Lie flat.
   anchoring:
     anchor: big-port
-    offset: [18, -4, -16]
+    offset: [10, 0, -8]
   support:
     shelf:
       include: false

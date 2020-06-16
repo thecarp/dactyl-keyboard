@@ -74,9 +74,15 @@
         node (fn [raw]  ; Parse and validate single node.
                (let [[validity parsed] (forest {::trash [raw]})]
                  [validity (-> parsed ::trash first)]))]
+    (testing "nil forest"
+      (is (= (forest nil)  ; Entire section nullified.
+             [true {}])))
     (testing "empty forest"
       (is (= (forest {})
              [true {}])))
+    (testing "nil grove"
+      (is (= (forest {"a" nil})  ; Single grove (from upstream) nullified.
+             [true {:a nil}])))
     (testing "empty grove"
       (is (= (forest {"a" []})
              [false {:a []}])))
@@ -98,6 +104,9 @@
                :b [{:hull-around [{:anchoring {:anchor :origin}
                                    :size [2 1 2]}]}
                    {:anchoring {:anchor :origin} :size [1 2 1]}]}])))
+    (testing "nil branch"
+      (is (= (node {:hull-around nil})
+             [false {:hull-around nil}])))
     (testing "empty branch"
       (is (= (node {:hull-around []})
              [false {:hull-around []}])))

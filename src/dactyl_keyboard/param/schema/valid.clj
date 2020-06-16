@@ -126,7 +126,7 @@
 (spec/def ::tweak-node (spec/or :leaf ::tweak-leaf, :branch ::tweak-branch))
 (spec/def ::tweak-list (spec/coll-of ::tweak-node :min-count 1))
 (spec/def :tweak/hull-around ::tweak-list)
-(spec/def ::tweak-name-map (spec/map-of keyword? ::tweak-list))
+(spec/def ::tweak-name-map (spec/map-of keyword? (spec/nilable ::tweak-list)))
 (spec/def ::tweak-branch (spec/keys :req-un [:tweak/hull-around]
                                     :opt-un [::highlight :tweak/chunk-size
                                              ::above-ground

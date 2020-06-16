@@ -384,11 +384,11 @@ tweaks:
       - [thumb-mr, SSE, 0, 3]
       - [thumb-tr, SSE, 0, 3]
       - [m03, SSW, 0, 3]
-  ports:
-    # Holes from port holders into the case.
+  hole-through-big-port:
     - {positive: false,
        anchoring: {anchor: big-port, side: S, offset: [0, 0, 5]},
        size: [10.78, 13, 5]}
+  hole-through-small-port:
     - {positive: false,
        anchoring: {anchor: small-port},
        size: [6.5, 20, 13.6]}
