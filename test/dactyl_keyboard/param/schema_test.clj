@@ -148,7 +148,8 @@
                                 :segment 0
                                 :offset [-3 -2 -1]}
                     :sweep 1
-                    :size [1 10 2]})
+                    :size [1 10 2]
+                    :intrinsic-rotation ["pi/-10" 0 0]})
              [true {:positive false
                     :body :central-housing
                     :at-ground true
@@ -158,4 +159,5 @@
                                 :segment 0
                                 :offset [-3 -2 -1]}
                     :sweep 1
-                    :size [1 10 2]}])))))
+                    :size [1 10 2]
+                    :intrinsic-rotation [(/ π -10) 0 0]}])))))

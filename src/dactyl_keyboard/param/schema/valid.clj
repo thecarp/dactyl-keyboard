@@ -57,6 +57,7 @@
 (spec/def ::above-ground boolean?)
 (spec/def :tweak/chunk-size (spec/and int? #(> % 1)))
 (spec/def :tweak/size ::tarmi/point-3d)
+(spec/def :three/intrinsic-rotation ::tarmi/point-3d)
 
 (spec/def :central/offset ::tarmi/point-3d)
 (spec/def :central/left-hand-alias ::alias)
@@ -147,7 +148,8 @@
 (spec/def ::flexcoord (spec/or :absolute int? :extreme #{:first :last}))
 (spec/def ::tweak-leaf
   (spec/and
-    (spec/keys :req-un [:three/anchoring] :opt-un [:tweak/sweep :tweak/size])
+    (spec/keys :req-un [:three/anchoring] :opt-un [:tweak/sweep :tweak/size
+                                                   :three/intrinsic-rotation])
     ;; Require a start to a sweep
     (fn [{:keys [anchoring sweep]}] (if (some? sweep)
                                         (some? (:segment anchoring))

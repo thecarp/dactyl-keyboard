@@ -560,7 +560,8 @@ Each **leaf node** places something near a named part of the keyboard. This is o
 
 - `anchoring` (required): A nested map. See the general documentation [here](configuration.md).
 - `sweep` (optional): An integer. If you supply a sweep, you must also supply a `segment` in `anchoring`. `sweep` identifies another segment and must be the larger of the two numbers. With both, the leaf will represent the convex hull of the two segments plus all segments between them, off the same anchor. This is most commonly used to finish the outer walls of a case.
-- `size` (optional): An `[x, y, z]` vector describing a cuboid, in mm. If you supply this, for certain types of anchors, it overrides the default model. However, some types of anchors will ignore a custom size. The default size depends both on the type of anchor and on which anchoring parameters you use.
+- `intrinsic-rotation` (optional): An `[x, y, z]` vector describing angles of rotation around the center of the leaf at each segment of its anchor. Certain types of anchors will ignore this setting.
+- `size` (optional): An `[x, y, z]` vector describing a cuboid, in mm. If you supply this, for certain types of anchors, it overrides the default model. However, some types of anchors will ignore a custom size as well as `intrinsic-rotation`. The default size depends both on the type of anchor and on which anchoring parameters you use. For types of anchors that have no basic size associated with them, the default is a tiny point.
 
 All those keys in a leaf map take a up a lot of space. If you wish, you can instead define each leaf in the form of a list of 1 to 5 elements:
 

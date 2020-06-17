@@ -191,7 +191,8 @@
 
 (let [leaf-skeleton {:anchoring (map-like anchored-3d-position-map)
                      :sweep int
-                     :size pad-to-3-tuple}
+                     :size pad-to-3-tuple
+                     :intrinsic-rotation (tuple-of compass-incompatible-angle)}
       branch-skeleton {:chunk-size int
                        :highlight boolean}
       top-extras {:positive boolean
