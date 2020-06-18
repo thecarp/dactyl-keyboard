@@ -9,7 +9,6 @@
             [scad-tarmi.maybe :as maybe]
             [dmote-keycap.data :as capdata]
             [dmote-keycap.measure :as measure]
-            [dactyl-keyboard.compass :as compass]
             [dactyl-keyboard.misc :as misc]
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.place :as place]
@@ -226,11 +225,11 @@
       (if (= column (prop :last-column)) (println)))))
 
 
-;;;;;;;;;;;;;;;;;;
-;; Other Models ;;
-;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Interface Functions ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn- single-plate
+(defn single-plate
   "The shape of a key mounting plate."
   [getopt cluster coord]
   (let [most #(most-specific getopt % cluster coord)
@@ -239,11 +238,6 @@
         z (most [:wall :thickness 2])]
     (model/translate [0 0 (/ z -2)]
       (model/cube x y z))))
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Interface Functions ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn cluster-plates [getopt cluster]
   (apply model/union

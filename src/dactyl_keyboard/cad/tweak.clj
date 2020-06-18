@@ -19,6 +19,7 @@
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.key.web :refer [web-post]]
+            [dactyl-keyboard.cad.key :refer [single-plate]]
             [dactyl-keyboard.param.schema.valid :as valid]
             [dactyl-keyboard.param.access :refer [resolve-anchor]]
             [dactyl-keyboard.param.proc.anch :as anch]))
@@ -115,7 +116,8 @@
       ::anch/key-mount
         [false
          (let [{:keys [cluster coordinates]} resolved]
-           (shape (web-post getopt cluster coordinates (or side ::anch/any))))]
+           (shape (if side (web-post getopt cluster coordinates side)
+                           (single-plate getopt cluster coordinates))))]
       ::anch/central-gabel
         [true
          (central/tweak-post getopt anchor)]
