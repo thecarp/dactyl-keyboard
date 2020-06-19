@@ -9,7 +9,7 @@ SOURCECODE := $(shell find src -type f)
 
 # YAML files are not made from here but are treated as targets anyway.
 # This is a means of activating them by naming them as CLI arguments.
-.PHONY: $(YAML) dmote_62key macropad_12key vis mutual caseside all docs test clean
+.PHONY: $(YAML) dmote_62key macropad_12key vis low mutual caseside all docs test clean
 
 # CONFFILES is a space-separated array of relative paths to selected
 # YAML files, starting with a near-neutral base.
@@ -51,6 +51,7 @@ macropad_12key: target/dmote.jar macropad/base.yaml
 
 # Curated shorthand for configuration fragments. These run no shell commands.
 vis: visualization.yaml
+low: low_resolution.yaml
 mutual: dmote/wrist/threaded_mutual.yaml
 caseside: dmote/wrist/threaded_caseside.yaml
 
