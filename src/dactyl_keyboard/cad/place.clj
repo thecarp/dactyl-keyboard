@@ -196,8 +196,9 @@
       ;; Compute a 3D offset from the center of a web post to a vertex on it.
       (matrix/cube-vertex-offset
         side
-        (most-specific getopt [:wall :thickness] cluster coordinates
-          (compass/short-to-long (compass/convert-to-cardinal side)))
+        (map #(/ % 2)
+             (most-specific getopt [:wall :thickness] cluster coordinates
+               (compass/short-to-long (compass/convert-to-cardinal side))))
         keyopts)
       [0 0 0])))
 
