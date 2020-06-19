@@ -37,7 +37,7 @@ mcu:
   intrinsic-rotation: [0, 0, 0]  # Lie flat.
   anchoring:
     anchor: big-port
-    offset: [10, 0, -8]
+    offset: [18, 0, -8]
   support:
     shelf:
       include: false

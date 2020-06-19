@@ -566,16 +566,12 @@
       initial)))
 
 (defmethod by-type ::anch/port-hole
-  [getopt {:keys [anchor initial] :as opts}]
-  (->> initial
-    (flex/translate (port-hole-offset getopt opts))
-    (port-place getopt anchor)))
+  [getopt {:keys [anchor initial]}]
+  (port-place getopt anchor initial))
 
 (defmethod by-type ::anch/port-holder
   [getopt {:keys [initial] ::anch/keys [primary] :as opts}]
-  (->> initial
-    (flex/translate (port-holder-offset getopt (assoc opts :anchor primary)))
-    (port-place getopt primary)))
+  (port-place getopt primary initial))
 
 (defmethod by-type ::anch/secondary
   [getopt {:keys [initial] ::anch/keys [primary]}]

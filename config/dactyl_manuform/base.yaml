@@ -398,7 +398,7 @@ mcu:
   intrinsic-rotation: [0, π/2, 0]
   anchoring:
     anchor: back-plane
-    offset: [-17, -20, 11]
+    offset: [-16, -17, 12]
   support:
     shelf:
       include: true
