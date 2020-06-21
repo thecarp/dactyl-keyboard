@@ -292,20 +292,20 @@ tweaks:
   webbing:
     - chunk-size: 3
       hull-around:  # Between the two thumb clusters.
-      - [thumb-tl, WNW, 0]
-      - [thumb-ml, ENE, 0]
-      - [thumb-tl, WSW, 0]
-      - [thumb-ml, ESE, 0]
-      - [thumb-tl, SSE, 0]
-      - [thumb-mr, ENE, 0]
-      - [thumb-tr, SSW, 0]
-      - [thumb-mr, SSE, 0]
-      - [thumb-tr, SSE, 0]
+      - [thumb-tl, NW, 0]
+      - [thumb-ml, NE, 0]
+      - [thumb-tl, SW, 0]
+      - [thumb-ml, SE, 0]
+      - [thumb-tl, SE, 0]
+      - [thumb-mr, NE, 0]
+      - [thumb-tr, SW, 0]
+      - [thumb-mr, SE, 0]
+      - [thumb-tr, SE, 0]
     - chunk-size: 3
       hull-around:  # Between thumb0 and the main cluster.
-      - [thumb-tl, NNW, 0]
+      - [thumb-tl, NW, 0]
       - [m00, SSW, 0]
-      - [thumb-tl, NNE, 0]
+      - [thumb-tl, NE, 0]
       - [m00, SSE, 0]
       - [thumb-tr, NNW, 0, 1]
       - [m01, SSW, 0]
@@ -384,6 +384,7 @@ tweaks:
       - [thumb-mr, SSE, 0, 3]
       - [thumb-tr, SSE, 0, 3]
       - [m03, SSW, 0, 3]
+      - [thumb-tr, ESE, 0, 1]
   hole-through-big-port:
     - {positive: false,
        anchoring: {anchor: big-port, side: S, offset: [0, 0, 5]},
