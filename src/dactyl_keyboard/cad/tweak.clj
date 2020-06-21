@@ -68,8 +68,10 @@
     (mapv (partial single-step-node node) (segment-range node))
     [node]))
 
-(defn- forest
-  "Retrieve the complete set of nodes as one list, without names."
+(defn unfence [setting] (apply concat (vals setting)))
+
+(defn- tweak-forest
+  "Retrieve the complete set of tweak nodes as one list, without names."
   [getopt]
   (apply concat (vals (getopt :tweaks))))
 
@@ -99,8 +101,7 @@
   "Pick the model for a tweak. Return a tuple of that model and an indicator
   for whether the model is already in place. Positioning depends both on the
   type of anchor and secondary parameters about the target detail upon it.
-  By default, use the most specific dimensions available for the post,
-  defaulting to a post for key-cluster webbing."
+  Use the most specific dimensions available."
   [getopt {:keys [anchoring intrinsic-rotation size]
            :or {intrinsic-rotation [0 0 0]}
            :as node}]
@@ -215,16 +216,19 @@
     ::branch (model-branch-3d getopt node)
     ::leaf (model-leaf-3d getopt node)))
 
-(defn plating
+(defn grow
+  "A user-specified shape, composed with the structure of a tweak forest."
+  [getopt unfenced]
+  (apply maybe/union (map (partial model-node-3d getopt) unfenced)))
+
+(defn selected-tweaks
   "User-requested additional shapes for some body, in 3D."
   [getopt positive body]
-  (apply maybe/union
-    (map (partial model-node-3d getopt)
-         (filter
-           (screener getopt {:positive positive,
-                             :above-ground true,
-                             :bodies #{body}})
-           (forest getopt)))))
+  (grow getopt (filter
+                 (screener getopt {:positive positive
+                                   :above-ground true
+                                   :bodies #{body}})
+                 (tweak-forest getopt))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -285,5 +289,5 @@
   [getopt]
   (apply maybe/union
     (map (partial floor-shadow-set getopt)
-         (filter (screener getopt {:at-ground true}) (forest getopt)))))
+         (filter (screener getopt {:at-ground true}) (tweak-forest getopt)))))
 

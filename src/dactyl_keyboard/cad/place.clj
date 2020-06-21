@@ -570,7 +570,7 @@
   (port-place getopt anchor initial))
 
 (defmethod by-type ::anch/port-holder
-  [getopt {:keys [initial] ::anch/keys [primary] :as opts}]
+  [getopt {:keys [initial] ::anch/keys [primary]}]
   (port-place getopt primary initial))
 
 (defmethod by-type ::anch/secondary

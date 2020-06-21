@@ -239,7 +239,7 @@
   [getopt]
   (mask/main-bottom-plate getopt 3
     (key/metacluster wall/cluster getopt)
-    (tweak/plating getopt true :main)))
+    (tweak/selected-tweaks getopt true :main)))
 
 (defn- floor-finder
   "Make a function that takes a key mount and returns a 2D vertex

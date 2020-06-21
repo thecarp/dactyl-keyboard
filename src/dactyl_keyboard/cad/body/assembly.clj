@@ -28,14 +28,14 @@
     (maybe/union
       (mask/above-wrist-bottom-plate getopt
         (wrist/plinth-plastic getopt)
-        (tweak/plating getopt true :wrist-rest)
+        (tweak/selected-tweaks getopt true :wrist-rest)
         (when (getopt :wrist-rest :bottom-plate :include)
           (bottom/posts-in-wrist-rest getopt)))
       (when (and (getopt :wrist-rest :preview)
                  (getopt :wrist-rest :bottom-plate :include))
         (bottom/wrist-positive getopt)))
     (mask/above-wrist-bottom-plate getopt
-      (tweak/plating getopt false :wrist-rest))
+      (tweak/selected-tweaks getopt false :wrist-rest))
     (when (getopt :wrist-rest :bottom-plate :include)
       (maybe/union
         (if (getopt :wrist-rest :preview)
@@ -57,7 +57,7 @@
       (when (getopt :wrist-rest :bottom-plate :include)
         (bottom/posts-in-wrist-rest getopt))
       (when (= (getopt :wrist-rest :style) :solid)
-        (tweak/plating getopt true :main)))))
+        (tweak/selected-tweaks getopt true :main)))))
 
 (defn wrist-rest-rubber-pad-right
   "Right-hand-side wrist-rest pad model. Useful in visualization and
@@ -70,7 +70,7 @@
         (wrist/rubber-insert-positive getopt))
       (bottom/posts-in-wrist-rest getopt)
       (when (= (getopt :wrist-rest :style) :solid)
-        (tweak/plating getopt true :main)))))
+        (tweak/selected-tweaks getopt true :main)))))
 
 (defn- wrist-rest-preview
   "Right-hand-side preview wrist-rest model."
@@ -104,7 +104,7 @@
               (when (getopt :central-housing :derived :include-adapter)
                 (bilateral (central/adapter-fastener-receivers getopt)))
               (auxf/ports-positive getopt #{:central-housing})
-              (tweak/plating getopt true :central-housing))
+              (tweak/selected-tweaks getopt true :central-housing))
             (when (getopt :central-housing :derived :include-adapter)
               (bilateral
                 (central/adapter-right-fasteners getopt)
@@ -126,7 +126,7 @@
                      (getopt :mcu :support :lock :include))
             (mcu/lock-fixture-composite getopt))
           (sandbox/positive getopt))
-        (tweak/plating getopt false :central-housing)
+        (tweak/selected-tweaks getopt false :central-housing)
         (sandbox/negative getopt))
       (when (and (getopt :main-body :bottom-plate :include)
                  (getopt :main-body :bottom-plate :preview))
@@ -157,7 +157,7 @@
       (auxf/backplate-block getopt))
     (when (getopt :main-body :rear-housing :include)
       (main-body/rear-housing-positive getopt))
-    (tweak/plating getopt true :main)
+    (tweak/selected-tweaks getopt true :main)
     (when (getopt :main-body :bottom-plate :include)
       (bottom/posts-in-main-body getopt))
     (auxf/foot-plates getopt)
@@ -217,7 +217,7 @@
           (when (and (getopt :wrist-rest :include)
                      (= (getopt :wrist-rest :style) :threaded))
             (wrist/all-fasteners getopt))
-          (tweak/plating getopt false :main)
+          (tweak/selected-tweaks getopt false :main)
           (sandbox/negative getopt))
         ;; Outer positives, subject only to outer negatives:
         (when (and (getopt :mcu :derived :include-mainly)

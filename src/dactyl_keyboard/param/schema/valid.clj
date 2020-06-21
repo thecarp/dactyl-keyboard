@@ -33,6 +33,7 @@
 ;; Shady Hardcoding ;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
+(def built-in-bodies #{:auto :main :central-housing :wrist-rest})
 (def built-in-anchors #{:origin :rear-housing-exterior :rear-housing-interior})
 
 
@@ -44,7 +45,8 @@
 
 (spec/def ::include boolean?)
 (spec/def ::positive boolean?)
-(spec/def ::body #{:auto :main :central-housing :wrist-rest})
+(spec/def ::body keyword?)
+(spec/def ::custom-body (spec/and ::body #(not (built-in-bodies %))))
 (spec/def ::anchor keyword?)
 (spec/def ::alias (spec/and keyword? #(not (built-in-anchors %))))
 (spec/def ::key-cluster #(not (= :derived %)))

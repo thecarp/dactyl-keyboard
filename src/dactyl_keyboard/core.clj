@@ -18,6 +18,7 @@
             [dactyl-keyboard.param.access :as access]
             [dactyl-keyboard.param.proc.doc :refer [print-markdown-section]]
             [dactyl-keyboard.param.proc.anch :as anch]
+            [dactyl-keyboard.cad.body.custom :as custom-body]
             [dactyl-keyboard.cad.body.assembly :as assembly]
             [dactyl-keyboard.cad.body.main :as main-body]
             [dactyl-keyboard.cad.body.central :as central]
@@ -65,7 +66,8 @@
    [[:key-clusters] key/derive-cluster-properties]
    [[:by-key] key/derive-nested-properties]
    [[:central-housing] central/derive-properties]
-   [[] (fn [getopt] {:anchors (anch/collect getopt)})]
+   [[] (fn [getopt] {:anchors (anch/collect getopt)
+                     :bodies (custom-body/collect getopt)})]
    [[:main-body :rear-housing] main-body/rhousing-properties]
    [[:mcu] mcu/derive-properties]
    [[:wrist-rest] wrist/derive-properties]])
@@ -217,6 +219,7 @@
   [getopt]
   ;; Hard-coded bodies go into outputs like “body-” + the ID keyword.
   [{:name "body-main"
+    ::body :main
     :modules (concat
                [(when (getopt :central-housing :derived :include-adapter)
                   "housing_adapter_fastener")
@@ -230,11 +233,13 @@
      {:name (str "body-central-housing"  ; With conditional suffix.
               (when (getopt :central-housing :derived :include-sections)
                 "-full"))
+      ::body :central-housing
       :modules (central-housing-modules getopt)
       :model-precursor assembly/central-housing})
    (when (and (getopt :wrist-rest :include)
               (not (= (getopt :wrist-rest :style) :solid)))
      {:name "body-wrist-rest"
+      ::body :wrist-rest
       :modules (concat (conditional-bottom-plate-modules getopt)
                        (when (getopt :wrist-rest :sprues :include)
                          ["sprue_negative"]))
@@ -303,6 +308,7 @@
 (defn get-dfm-subassemblies
   "Collate model precursors for subassemblies.
   This currently consists of central housing sections only."
+  ;; TODO: Subsume this into the more recent custom-body subsystem.
   [getopt]
   (when (getopt :central-housing :derived :include-sections)
     (map-indexed
@@ -322,7 +328,7 @@
         (sort)
         (partition 2 1)))))
 
-(defn get-all-precursors
+(defn get-builtin-precursors
   "Add dynamic elements to static precursors."
   [getopt]
   (concat
@@ -341,19 +347,58 @@
     {:original-fn #(str "right-hand-" %),
      :mirrored-fn #(str "left-hand-" %)}
     (conj
-      (select-keys proto-asset [:name :chiral])  ; Simplified base.
+      (select-keys proto-asset [:name :chiral ::body])  ; Simplified base.
       [:model-main (maybe/rotate rotation (model-precursor getopt))]
       (when (getopt :resolution :include)
         [:minimum-face-size (getopt :resolution :minimum-face-size)]))
     (map (partial get module-map) (remove nil? modules))))
 
-(defn- finalize-all
-  [cli-options]
-  (let [getopt (get-accessor cli-options)
-        module-map (module-asset-map getopt)
-        requested (remove nil? (get-all-precursors getopt))]
-    (refine-all requested
-      {:refine-fn (partial finalize-asset getopt module-map)})))
+(defn- builtin-assets
+  "All assets prior to the addition and subtraction of custom bodies."
+  [getopt]
+  (refine-all (remove nil? (get-builtin-precursors getopt))
+    {:refine-fn (partial finalize-asset getopt (module-asset-map getopt))}))
+
+(declare customize)
+
+(defn- fork-for-custom-bodies
+  "Take a refined asset representing the positive form of a body.
+  Return a vector of assets: The complete body with all custom bodies subtracted,
+  and one new asset for each of those custom bodies."
+  [getopt {:keys [chiral mirrored model-vector] ::keys [body]
+           :as parent-asset}]
+  (let [[modules parent-base] (map vec (split-at (dec (count model-vector))
+                                                 model-vector))
+        children (getopt :derived :bodies :parent->children body)]
+    (concat
+      ;; The modified parent.
+      [(assoc parent-asset :model-vector
+              (conj modules
+                    (custom-body/difference
+                      getopt mirrored children parent-base)))]
+      ;; Each custom-body child, and its children in turn, if any.
+      (mapcat
+        (fn [id]
+          (customize getopt
+            (merge
+              parent-asset
+              {:name (format (cond (and chiral mirrored) "left-hand-body-%s"
+                                   chiral "right-hand-body-%s"
+                                   :else "body-%s")
+                             (name id))
+               ::body id
+               :model-vector (conj modules
+                                   (custom-body/intersection
+                                     getopt mirrored id parent-base))})))
+        children))))
+
+(defn- customize
+  "Add custom bodies as assets. Subtract them from their parent bodies."
+  [getopt {::keys [body] :as parent-asset}]
+  (if (contains? (getopt :derived :bodies :parent->children) body)
+    ;; The asset describes the positive form of a body.
+    (fork-for-custom-bodies getopt parent-asset)
+    [parent-asset]))
 
 (defn- output-filepath-fn
   [base suffix]
@@ -363,10 +408,13 @@
 (defn run
   "Build all models, authoring files in parallel. Easily used from a REPL."
   [{:keys [whitelist render renderer] :or {whitelist #""} :as options}]
-  (build-all (filter-by-name whitelist (finalize-all options))
-             {:render render
-              :rendering-program renderer
-              :filepath-fn output-filepath-fn}))
+  (let [getopt (get-accessor options)
+        final-assets (mapcat (partial customize getopt)
+                             (builtin-assets getopt))]
+    (build-all (filter-by-name whitelist final-assets)
+               {:render render
+                :rendering-program renderer
+                :filepath-fn output-filepath-fn})))
 
 (defn watch-config!
   "Build all models every time a configuration file changes.

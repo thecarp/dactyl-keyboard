@@ -77,6 +77,7 @@ Each heading in this document represents a recognized configuration key in the m
         - Parameter <a href="#user-content-main-body-foot-plates-height">`height`</a>
         - Parameter <a href="#user-content-main-body-foot-plates-polygons">`polygons`</a>
 - Section <a href="#user-content-central-housing">`central-housing`</a>
+- Section <a href="#user-content-custom-bodies">`custom-bodies`</a>
 - Parameter <a href="#user-content-tweaks">`tweaks`</a>
 - Section <a href="#user-content-mcu">`mcu`</a>
     - Parameter <a href="#user-content-mcu-include">`include`</a>
@@ -543,55 +544,40 @@ A list describing the horizontal shape, size and position of each mounting plate
 
 A major body separate from the main body, located in between and connecting the two halves of a reflected main body. The central housing is documented in detail [here](options-central.md).
 
+## Section <a id="custom-bodies">`custom-bodies`</a>
+
+Bodies in addition to those built into the application.
+
+This feature is intended for dividing up a keyboard case into parts for easier printing (see also `dfm`) or easier assembly. It is not intended for adding novel shapes, such as cup holders to fit into `ports` etc. Custom bodies can be combined with `tweaks` to add shapes, but complex novel shapes should typically be designed separately from this application (cf. `dmote-beam`), or else added as features of the application.
+
+The structure of the `custom-bodies` section is a map of new body names to maps of the following parameters:
+
+- `include`: If `true`, and the parent body is also set to be included, make the custom body an output of the application, with its own SCAD file.
+- `parent-body`: The name of another body, into which the custom body fits. By default, the main body. If the parent body is governed by `reflect`, the custom body will also be reflected.
+- `mask`: Where the custom body is taken from the parent body.
+
+Whereas the name of a custom body cannot match that of a built-in body such as `main`, parent bodies must be resolvable to a built-in body; it is not meaningful to have two custom bodies with one another as their parents.
+
+`mask` takes a map of [arbitrary shapes](options-arbitrary-shapes.md) and ultimately describes the shape of the custom body. However, the combined shape of the mask is not the shape of the custom body itself. The term “mask” refers to an intersection with the parent body, such that those parts of the parent body that would normally have fallen within the mask instead disappear from the parent body *and* constitute the entire custom body instead. What’s already inside the mask effectively moves from one body to the other.
+
+Here’s an example of a custom body named B, with a simple mask, arbitrarily named `shape`:
+
+```custom-bodies:
+  B:
+    include: true
+    parent-body: central-housing
+    mask:
+      shape:
+      - [origin, {size: 60}]
+```
+
+This example describes a cube-shaped hole in the middle of the central housing.
+
+In `mask` nodes, the `positive` parameter is ignored, as is `body`. Neither `at-ground` nor `to-ground` will affect bottom plates.
+
 ## Parameter <a id="tweaks">`tweaks`</a>
 
-Additional shapes. This parameter is usually needed to bridge gaps between the walls of key clusters. The expected value here is an arbitrarily nested structure starting with a map of names to lists.
-
-The names at the entry level are arbitrary but should be distinct and descriptive. They cannot serve as anchors. Their only technical significance lies in the fact that when you combine multiple configuration files, a later tweak will override a previous tweak if and only if they share the same name.
-
-In the list below each name, each item can follow one of the following patterns:
-
-- A leaf node, representing a simple shape in a specific place.
-- A branch node, containing a list like the one below each name and representing some combination of the nodes in it.
-
-These terms are metaphorical. In the metaphor, the list itself is not one tree but the soil of a grove of trees.
-
-Each **leaf node** places something near a named part of the keyboard. This is ordinary [anchoring](configuration.md) of simple shapes. In the final form of a leaf, it is a map with the following keys:
-
-- `anchoring` (required): A nested map. See the general documentation [here](configuration.md).
-- `sweep` (optional): An integer. If you supply a sweep, you must also supply a `segment` in `anchoring`. `sweep` identifies another segment and must be the larger of the two numbers. With both, the leaf will represent the convex hull of the two segments plus all segments between them, off the same anchor. This is most commonly used to finish the outer walls of a case.
-- `intrinsic-rotation` (optional): An `[x, y, z]` vector describing angles of rotation around the center of the leaf at each segment of its anchor. Certain types of anchors will ignore this setting.
-- `size` (optional): An `[x, y, z]` vector describing a cuboid, in mm. If you supply this, for certain types of anchors, it overrides the default model. However, some types of anchors will ignore a custom size as well as `intrinsic-rotation`. The default size depends both on the type of anchor and on which anchoring parameters you use. For types of anchors that have no basic size associated with them, the default is a tiny point.
-
-All those keys in a leaf map take a up a lot of space. If you wish, you can instead define each leaf in the form of a list of 1 to 5 elements:
-
-1. The `anchor`.
-2. The `side`.
-3. The starting vertical segment ID.
-4. The sweep, which is the stopping vertical segment ID.
-
-As a fifth element, and/or in place of any of the last three, the list may contain a map of additional leaf settings that is merged into the final representation specified above.
-
-Here’s the fine print on the two different ways to specify a leaf:
-
-- You cannot use the list format alone to specify a size or offset.
-- When you use the list format, the first element must be the name of an anchor. You cannot have a map as the first element.
-- In the list format, you can specify `null` in place of elements you don’t want to specify, but this is only meaningful for `side`.
-
-By default, a **branch node** will create a convex hull around the nodes it contains. However, this behaviour can be modified. The following keys are recognized in any branch node:
-
-- `hull-around` (required): The list of child nodes.
-- `chunk-size` (optional): Any integer greater than 1. If this is set, child nodes will not share a single convex hull. Instead, there will be a sequence of smaller hulls, each encompassing this many items.
-- `highlight` (optional): If `true`, render the node in OpenSCAD’s highlighting style. This is convenient while you work.
-
-Leaf and branch nodes at the entry level, in the list following the name of a tweak, are special. They grow in the soil and represent individual plants with their own roots. When nodes are selected for a particular purpose, that selection happens at the entry level. Nodes at the entry level may therefore contain the following extra keys, which determine how each node affects the keyboard:
-
-- `positive` (optional): If `true`, add material to the case. If `false`, subtract material. The default value is `true`.
-- `at-ground` (optional): This setting has two effects. If `true`, extend vertically down to the ground plane, as with a `full` wall, *and* influence the shape of a `bottom-plate`. The default value is `false`.
-- `above-ground` (optional): If `true`, appear as part of the case. The default value is `true`. When this is `false` and `at-ground` is `true`, the node affects the bottom plate only, which is the only use for this option.
-- `body` (optional): Refer to general documentation [here](configuration.md). As usual, the default value is `auto`. When the node is a branch, `auto` uses the first leaf subordinate to the branch for the usual heuristics.
-
-Nodes subordinate to branches may not contain these extra keys.
+Additional shapes. This parameter is usually needed to bridge gaps between the walls of key clusters. The expected value here is a map of [arbitrary shapes](options-arbitrary-shapes.md).
 
 In the following example, `A` and `B` are key aliases that would be defined elsewhere.
 
@@ -605,6 +591,8 @@ In the following example, `A` and `B` are key aliases that would be defined else
 ```
 
 The example is interpreted to mean that a plate should be created stretching from the south-by-southeast corner of `A` to the north-by-northeast corner of `B`. Due to `chunk-size` 2, that first plate will be joined to, but not fully hulled with, a second plate from `B` back to a different corner of `A`, with a longer stretch of (all) wall segments running down the corner of `A`.
+
+In `tweaks` nodes, the `body` setting is meaningful, but should not refer to a custom body, because the shape of a custom body is always fully determined by its parent body and its mask. Tweaks are not applied to custom bodies as such.
 
 ## Section <a id="mcu">`mcu`</a>
 

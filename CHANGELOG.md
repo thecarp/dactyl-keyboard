@@ -138,6 +138,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - A formal concept of bodies, making it possible to choose which OpenSCAD
   output file to target for a given tweak etc.
     - Central housing, a new feature adding a body separate from the main body.
+    - Custom bodies.
 - The `by-key` section of parameters has become more flexible.
     - It is now possible to influence all keys on a row, without duplicating
       settings for all columns in that row.
