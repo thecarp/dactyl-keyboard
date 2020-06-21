@@ -72,6 +72,7 @@ key-clusters:
       t1F: [1, first]
       t2F: [2, first]
       t3F: [3, first]
+      t1C: [1, 0]
       t0L: [0, last]
       t1L: [1, last]
       t2L: [2, last]
@@ -563,6 +564,19 @@ central-housing:
     - anchor: ci-far-base
       offset: [-42, -4]
       direction: north
+custom-bodies:
+  # For ease of assembly, print the thumb cluster separately.
+  thumb-cluster:
+    include: true
+    parent-body: main
+    mask:
+      shape:
+        - hull-around:
+          - [thumb-cluster-plate,
+             {anchoring: {offset: [0, 0, 20]},
+              intrinsic-rotation: [π/7, 0, 0],
+              size: [100, 100, 50]}]
+          highlight: true
 tweaks:
   near-wall:  # Up the south side of the main key cluster:
   - hull-around:
@@ -910,6 +924,9 @@ ports:
       include: true
       thickness: 2
 secondaries:
+  thumb-cluster-plate:
+    anchoring:
+      anchor: t1C
   m5L1:
     anchoring:
       anchor: m5L
