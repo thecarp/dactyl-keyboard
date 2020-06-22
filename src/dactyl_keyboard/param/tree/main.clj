@@ -413,23 +413,23 @@
             {:default false :parse-fn boolean}]
            [:parameter [:parent-body]
             {:default :main :parse-fn keyword}]
-           [:parameter [:mask]
+           [:parameter [:cut]
             {:default {} :parse-fn parse/tweak-grove
-             :validate [::valid/tweak-name-map]}]]]
-      {:heading-template "Section %s"
+             :validate [::valid/arbitrary-shape-map]}]]]
+      {:heading-template "Special section %s"
        :default {}
        :parse-fn (parse/map-of keyword (base/parser-with-defaults custom-body))
        :validate [(spec/map-of ::valid/custom-body
                                (base/delegated-validation custom-body))]})
-    "Bodies in addition to those built into the application.\n\n"
+    "Bodies in addition to those predefined by the application.\n\n"
     "This feature is intended for dividing up a keyboard case into parts for "
     "easier printing (see also `dfm`) or easier assembly. "
-    "It is not intended for adding novel shapes, such as cup holders to fit "
-    "into `ports` etc. "
-    "Custom bodies can be combined with `tweaks` to add shapes, but "
-    "complex novel shapes should typically be designed separately from this "
-    "application (cf. `dmote-beam`), or else added as features of the "
-    "application.\n"
+    "It is not intended for adding novel shapes, such as washable cup holders "
+    "to fit into `ports` etc. "
+    "Custom bodies can be combined with `tweaks` to add and separate shapes, "
+    "but complex novel shapes should typically be designed separately from "
+    "this application (see `dmote-beam` for an example), or else added as "
+    "features of the application.\n"
     "\n"
     "The structure of the `custom-bodies` section is a map of new body names "
     "to maps of the following parameters:\n"
@@ -438,43 +438,49 @@
     "make the custom body an output of the application, with its own SCAD "
     "file.\n"
     "- `parent-body`: The name of another body, into which the custom body "
-    "fits. By default, the main body. If the parent body is governed by "
-    "`reflect`, the custom body will also be reflected.\n"
-    "- `mask`: Where the custom body is taken from the parent body.\n"
+    "fits. By default, the main body (`main`). `auto` cannot be used, but "
+    "another custom body can be, so long as there is no loop of custom bodies "
+    "being one another’s parents.\n"
+    "- `cut`: Where the custom body fits into the parent body.\n"
     "\n"
-    "Whereas the name of a custom body cannot match that of a built-in body "
-    "such as `main`, parent bodies must be resolvable to a built-in body; "
-    "it is not meaningful to have two custom bodies with one another as "
-    "their parents.\n"
+    "The name of a custom body cannot match that of a predefined body "
+    "such as `main`.\n"
     "\n"
-    "`mask` takes a map of [arbitrary shapes](options-arbitrary-shapes.md) "
+    "`cut` takes a map of [arbitrary shapes](options-arbitrary-shapes.md) "
     "and ultimately describes the shape of the custom body. "
-    "However, the combined shape of the mask is not the shape of the custom "
-    "body itself. The term “mask” refers to an intersection with the parent "
-    "body, such that those parts of the parent body that would normally have "
-    "fallen within the mask instead disappear from the parent body *and* "
-    "constitute the entire custom body instead. What’s already inside the mask "
-    "effectively moves from one body to the other.\n"
+    "However, the combined shape of the cut is not the shape of the custom "
+    "body itself. Those parts of the parent body that would normally have "
+    "fallen within the area instead disappear from the parent body *and* "
+    "constitute the entire custom body instead. What’s already inside the area "
+    "effectively moves from one body to the other. This behaviour can be "
+    "broken by `preview` settings, since they artificially extend bodies for "
+    "purposes of visualization.\n"
     "\n"
-    "Here’s an example of a custom body named B, with a simple mask, "
+    "Here’s an example of a custom body named `pet-flap`, with a simple cut, "
     "arbitrarily named `shape`:\n"
     "\n"
     "```custom-bodies:\n"
-    "  B:\n"
+    "  pet-flap:\n"
     "    include: true\n"
     "    parent-body: central-housing\n"
-    "    mask:\n"
+    "    cut\n"
     "      shape:\n"
     "      - [origin, {size: 60}]\n```\n"
     "\n"
-    "This example describes a cube-shaped hole in the middle of the central "
-    "housing.\n"
+    "This example describes a cube-shaped area in the middle of the central "
+    "housing. The wall there will gets its own SCAD file, so you can print it "
+    "separately and then mount it on hinges for small animals to live in your "
+    "keyboard.\n"
     "\n"
-    "In `mask` nodes, the `positive` parameter is ignored, as is `body`. "
-    "Neither `at-ground` nor `to-ground` will affect bottom plates."]
+    "In `cut` nodes, the `positive` parameter is ignored, as is `body`. "
+    "Neither `at-ground` nor `to-ground` will affect bottom plates.\n"
+    "\n"
+    "If its parent body is governed by `reflect`, the custom body will also "
+    "be reflected, appearing in left- and right-hand versions."]
    [:parameter [:tweaks]
-    {:default {} :parse-fn parse/tweak-grove
-     :validate [::valid/tweak-name-map]}
+    {:heading-template "Special section %s"
+     :default {} :parse-fn parse/tweak-grove
+     :validate [::valid/arbitrary-shape-map]}
     "Additional shapes. This parameter is usually needed to bridge gaps "
     "between the walls of key clusters. The expected value here is a map of "
     "[arbitrary shapes](options-arbitrary-shapes.md).\n"
@@ -499,7 +505,7 @@
     "\n"
     "In `tweaks` nodes, the `body` setting is meaningful, but should not "
     "refer to a custom body, because the shape of a custom body is always "
-    "fully determined by its parent body and its mask. Tweaks are not "
+    "fully determined by its parent body and its cut. Tweaks are not "
     "applied to custom bodies as such."]
    [:section [:mcu]
     "MCU is short for ”micro-controller unit”. You need at least one of "

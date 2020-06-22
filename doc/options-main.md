@@ -77,8 +77,8 @@ Each heading in this document represents a recognized configuration key in the m
         - Parameter <a href="#user-content-main-body-foot-plates-height">`height`</a>
         - Parameter <a href="#user-content-main-body-foot-plates-polygons">`polygons`</a>
 - Section <a href="#user-content-central-housing">`central-housing`</a>
-- Section <a href="#user-content-custom-bodies">`custom-bodies`</a>
-- Parameter <a href="#user-content-tweaks">`tweaks`</a>
+- Special section <a href="#user-content-custom-bodies">`custom-bodies`</a>
+- Special section <a href="#user-content-tweaks">`tweaks`</a>
 - Section <a href="#user-content-mcu">`mcu`</a>
     - Parameter <a href="#user-content-mcu-include">`include`</a>
     - Parameter <a href="#user-content-mcu-preview">`preview`</a>
@@ -544,38 +544,40 @@ A list describing the horizontal shape, size and position of each mounting plate
 
 A major body separate from the main body, located in between and connecting the two halves of a reflected main body. The central housing is documented in detail [here](options-central.md).
 
-## Section <a id="custom-bodies">`custom-bodies`</a>
+## Special section <a id="custom-bodies">`custom-bodies`</a>
 
-Bodies in addition to those built into the application.
+Bodies in addition to those predefined by the application.
 
-This feature is intended for dividing up a keyboard case into parts for easier printing (see also `dfm`) or easier assembly. It is not intended for adding novel shapes, such as cup holders to fit into `ports` etc. Custom bodies can be combined with `tweaks` to add shapes, but complex novel shapes should typically be designed separately from this application (cf. `dmote-beam`), or else added as features of the application.
+This feature is intended for dividing up a keyboard case into parts for easier printing (see also `dfm`) or easier assembly. It is not intended for adding novel shapes, such as washable cup holders to fit into `ports` etc. Custom bodies can be combined with `tweaks` to add and separate shapes, but complex novel shapes should typically be designed separately from this application (see `dmote-beam` for an example), or else added as features of the application.
 
 The structure of the `custom-bodies` section is a map of new body names to maps of the following parameters:
 
 - `include`: If `true`, and the parent body is also set to be included, make the custom body an output of the application, with its own SCAD file.
-- `parent-body`: The name of another body, into which the custom body fits. By default, the main body. If the parent body is governed by `reflect`, the custom body will also be reflected.
-- `mask`: Where the custom body is taken from the parent body.
+- `parent-body`: The name of another body, into which the custom body fits. By default, the main body (`main`). `auto` cannot be used, but another custom body can be, so long as there is no loop of custom bodies being one another’s parents.
+- `cut`: Where the custom body fits into the parent body.
 
-Whereas the name of a custom body cannot match that of a built-in body such as `main`, parent bodies must be resolvable to a built-in body; it is not meaningful to have two custom bodies with one another as their parents.
+The name of a custom body cannot match that of a predefined body such as `main`.
 
-`mask` takes a map of [arbitrary shapes](options-arbitrary-shapes.md) and ultimately describes the shape of the custom body. However, the combined shape of the mask is not the shape of the custom body itself. The term “mask” refers to an intersection with the parent body, such that those parts of the parent body that would normally have fallen within the mask instead disappear from the parent body *and* constitute the entire custom body instead. What’s already inside the mask effectively moves from one body to the other.
+`cut` takes a map of [arbitrary shapes](options-arbitrary-shapes.md) and ultimately describes the shape of the custom body. However, the combined shape of the cut is not the shape of the custom body itself. Those parts of the parent body that would normally have fallen within the area instead disappear from the parent body *and* constitute the entire custom body instead. What’s already inside the area effectively moves from one body to the other. This behaviour can be broken by `preview` settings, since they artificially extend bodies for purposes of visualization.
 
-Here’s an example of a custom body named B, with a simple mask, arbitrarily named `shape`:
+Here’s an example of a custom body named `pet-flap`, with a simple cut, arbitrarily named `shape`:
 
 ```custom-bodies:
-  B:
+  pet-flap:
     include: true
     parent-body: central-housing
-    mask:
+    cut
       shape:
       - [origin, {size: 60}]
 ```
 
-This example describes a cube-shaped hole in the middle of the central housing.
+This example describes a cube-shaped area in the middle of the central housing. The wall there will gets its own SCAD file, so you can print it separately and then mount it on hinges for small animals to live in your keyboard.
 
-In `mask` nodes, the `positive` parameter is ignored, as is `body`. Neither `at-ground` nor `to-ground` will affect bottom plates.
+In `cut` nodes, the `positive` parameter is ignored, as is `body`. Neither `at-ground` nor `to-ground` will affect bottom plates.
 
-## Parameter <a id="tweaks">`tweaks`</a>
+If its parent body is governed by `reflect`, the custom body will also be reflected, appearing in left- and right-hand versions.
+
+## Special section <a id="tweaks">`tweaks`</a>
 
 Additional shapes. This parameter is usually needed to bridge gaps between the walls of key clusters. The expected value here is a map of [arbitrary shapes](options-arbitrary-shapes.md).
 
@@ -592,7 +594,7 @@ In the following example, `A` and `B` are key aliases that would be defined else
 
 The example is interpreted to mean that a plate should be created stretching from the south-by-southeast corner of `A` to the north-by-northeast corner of `B`. Due to `chunk-size` 2, that first plate will be joined to, but not fully hulled with, a second plate from `B` back to a different corner of `A`, with a longer stretch of (all) wall segments running down the corner of `A`.
 
-In `tweaks` nodes, the `body` setting is meaningful, but should not refer to a custom body, because the shape of a custom body is always fully determined by its parent body and its mask. Tweaks are not applied to custom bodies as such.
+In `tweaks` nodes, the `body` setting is meaningful, but should not refer to a custom body, because the shape of a custom body is always fully determined by its parent body and its cut. Tweaks are not applied to custom bodies as such.
 
 ## Section <a id="mcu">`mcu`</a>
 

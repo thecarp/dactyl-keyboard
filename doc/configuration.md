@@ -176,3 +176,7 @@ The `auto` setting should cover most needs. When you deviate from it, take care
 to harmonize with other settings. For example, if you specify
 `central-housing`, the application will not check whether you have enabled the
 central housing itself, and will not automatically enable it.
+
+Note that although custom bodies can be defined, they should not be named in a
+`body` setting, because they are formed entirely from parts of the predefined
+bodies named above.

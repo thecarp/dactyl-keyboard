@@ -2,7 +2,7 @@
 
 This document does not describe any specific options for the application, but a
 *structure* common to a couple of different options. It is used for both
-custom-body masks and tweaks, as described [here](options-main.md) with
+custom-body cuts and tweaks, as described [here](options-main.md) with
 examples specific to each use case.
 
 The structure described in this document is a crude
@@ -109,4 +109,4 @@ keyboard in a tweak:
   uses the first leaf subordinate to the branch for the usual heuristics.
 
 Nodes subordinate to branches may not contain these extra keys. They are
-largely ignored for custom-body masks.
+largely ignored for custom-body cuts.

@@ -69,7 +69,7 @@
 (deftest test-tweaks
   (let [forest (fn [raw]  ; Parse and validate tweak setting.
                  (let [parsed (parse/tweak-grove raw)]
-                   [(spec/valid? ::valid/tweak-name-map parsed)
+                   [(spec/valid? ::valid/arbitrary-shape-map parsed)
                     parsed]))
         node (fn [raw]  ; Parse and validate single node.
                (let [[validity parsed] (forest {::trash [raw]})]

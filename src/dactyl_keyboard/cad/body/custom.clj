@@ -24,22 +24,22 @@
                                (filter (partial included? getopt)
                                        (keys (getopt :custom-bodies))))})
 
-(defn- mask
+(defn- cut
   "Grow the mask that delimits a specific, possibly chiral, custom body."
   [getopt mirrored id]
   (let [contain (if mirrored (partial model/mirror [-1 0 0]) model/union)]
-    (->> (getopt :custom-bodies id :mask) (unfence) (grow getopt) (contain))))
+    (->> (getopt :custom-bodies id :cut) (unfence) (grow getopt) (contain))))
 
 (defn intersection
   "Model a custom body as a positive shape, without removing child bodies."
   [getopt mirrored child-id parent-base-model]
-  (model/intersection parent-base-model (mask getopt mirrored child-id)))
+  (model/intersection parent-base-model (cut getopt mirrored child-id)))
 
 (defn difference
   "Model a parent body with custom bodies removed."
   [getopt mirrored child-ids parent-base-model]
   (apply model/difference parent-base-model
-         (map (partial mask getopt mirrored) child-ids)))
+         (map (partial cut getopt mirrored) child-ids)))
 
 
 

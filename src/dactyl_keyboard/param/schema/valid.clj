@@ -45,8 +45,8 @@
 
 (spec/def ::include boolean?)
 (spec/def ::positive boolean?)
-(spec/def ::body keyword?)
-(spec/def ::custom-body (spec/and ::body #(not (built-in-bodies %))))
+(spec/def ::body (spec/and keyword? built-in-bodies))
+(spec/def ::custom-body (spec/and keyword? #(not (built-in-bodies %))))
 (spec/def ::anchor keyword?)
 (spec/def ::alias (spec/and keyword? #(not (built-in-anchors %))))
 (spec/def ::key-cluster #(not (= :derived %)))
@@ -129,7 +129,7 @@
 (spec/def ::tweak-node (spec/or :leaf ::tweak-leaf, :branch ::tweak-branch))
 (spec/def ::tweak-list (spec/coll-of ::tweak-node :min-count 1))
 (spec/def :tweak/hull-around ::tweak-list)
-(spec/def ::tweak-name-map (spec/map-of keyword? (spec/nilable ::tweak-list)))
+(spec/def ::arbitrary-shape-map (spec/map-of keyword? (spec/nilable ::tweak-list)))
 (spec/def ::tweak-branch (spec/keys :req-un [:tweak/hull-around]
                                     :opt-un [::highlight :tweak/chunk-size
                                              ::above-ground

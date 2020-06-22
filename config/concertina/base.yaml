@@ -569,14 +569,13 @@ custom-bodies:
   thumb-cluster:
     include: true
     parent-body: main
-    mask:
+    cut:
       shape:
         - hull-around:
           - [thumb-cluster-plate,
              {anchoring: {offset: [0, 0, 20]},
               intrinsic-rotation: [π/7, 0, 0],
               size: [100, 100, 50]}]
-          highlight: true
 tweaks:
   near-wall:  # Up the south side of the main key cluster:
   - hull-around:
