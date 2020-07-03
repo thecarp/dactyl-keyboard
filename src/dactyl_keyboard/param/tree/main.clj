@@ -477,6 +477,69 @@
     "\n"
     "If its parent body is governed by `reflect`, the custom body will also "
     "be reflected, appearing in left- and right-hand versions."]
+   [:parameter [:flanges]
+    (let [flange-position
+          [[]  ;; This header will not be rendered and is therefore empty.
+           [:parameter [:alias]
+            stock/alias-metadata]
+           [:parameter [:body]
+            {:default :auto :parse-fn keyword :validate [::valid/body]}
+            "A code identifying the predefined [body](configuration.md) "
+            "that contains the screw, before the effect of any custom bodies."]
+           [:section [:anchoring]
+            stock/anchoring-documentation]
+           [:parameter [:anchoring :anchor]
+            stock/anchor-metadata]
+           [:parameter [:anchoring :side]
+            stock/anchor-side-metadata]
+           [:parameter [:anchoring :segment]
+            stock/anchor-segment-metadata]
+           [:parameter [:anchoring :offset]
+            stock/anchor-3d-vector-metadata]
+           [:parameter [:intrinsic-rotation]
+            stock/compass-incompatible-3d-angle-metadata]]
+          flange-type
+          [[]  ;; This header will not be rendered and is therefore empty.
+           [:parameter [:bolt-properties]
+            stock/implicit-threaded-bolt-metadata]
+           [:parameter [:boss-diameter-factor]
+            {:default 1 :parse-fn num}]
+           [:parameter [:positions]
+            {:default []
+             :parse-fn (parse/tuple-of
+                         (base/parser-with-defaults flange-position))
+             :validate [(spec/coll-of
+                          (base/delegated-validation flange-position))]}]]]
+      {:heading-template "Special section %s"
+       :default {}
+       :parse-fn (parse/map-of keyword (base/parser-with-defaults flange-type))
+       :validate [(spec/map-of keyword? (base/delegated-validation flange-type))]})
+    "Extra screws.\n\n"
+    "`flanges` is named by analogy. It is intended to connect custom "
+    "bodies to their parent bodies by means of screws, in the manner of "
+    "pipe flanges joined by threaded fasteners.\n\n"
+    "The structure of the `flanges` section is a map of arbitrary "
+    "names to maps of the following parameters:\n\n"
+    "- `bolt-properties` (required): A map of standard `scad-klupe` "
+    "parameters, as for `bolt-properties` elsewhere.\n"
+    "- `boss-diameter-factor` (optional): This factor multiplies the "
+    "`m-diameter` of `bolt-properties` to produce the total exterior "
+    "diameter of a boss for each screw. Typical values range from about "
+    "1.5 to 2.5. Even if a value is supplied, bosses are not included "
+    "by default. Instead, they are added to the keyboard as a result of "
+    "`tweaks` targeting each individual flange screw by its alias.\n"
+    "- `positions` (optional): A list of individual flange screws.\n"
+    "\n"
+    "Each item in the list of `positions`, in turn, has the following "
+    "structure:\n"
+    "\n"
+    "- `alias` (optional): A name for the position. Unlike the name for the "
+    "flange as a whole, the alias can be used with `tweaks` to target the "
+    "screw and build a boss or larger positive shape.\n"
+    "- `anchoring` (optional): Room for standard 3D anchoring parameters as "
+    "documented [here](configuration.md).\n"
+    "- `intrinsic-rotation` (optional): Rotation of the screw around the top "
+    "of its head."]
    [:parameter [:tweaks]
     {:heading-template "Special section %s"
      :default {} :parse-fn parse/tweak-grove
@@ -666,7 +729,7 @@
     "determined by `width-factor`. Its total height is the sum of this "
     "section’s `base-thickness` and `clearance`."]
    [:parameter [:mcu :support :lock :plate :alias]
-    {:default ::placeholder :parse-fn keyword :validate [::valid/alias]}
+    stock/alias-metadata
     "A name you can use to target the base of the plate for `tweaks`. "
     "This is useful mainly when there isn’t a flat wall behind the lock."]
    [:parameter [:mcu :support :lock :plate :base-thickness]

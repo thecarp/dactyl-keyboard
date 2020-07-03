@@ -20,6 +20,9 @@
 ;;;;;;;;;;;;;;
 
 
+(def alias-metadata
+  {:default ::placeholder :parse-fn keyword :validate [::valid/alias]})
+
 (def anchoring-documentation
   (str "The concept of anchoring is explained [here](configuration.md)."))
 

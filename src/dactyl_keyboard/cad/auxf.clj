@@ -7,7 +7,7 @@
   (:require [scad-clj.model :as model]
             [scad-tarmi.core :refer [π]]
             [scad-tarmi.maybe :as maybe]
-            [scad-klupe.iso :refer [nut]]
+            [scad-klupe.iso :as iso :refer [nut]]
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.param.proc.anch :as anch]))
@@ -181,6 +181,34 @@
 ;; Unions of the positive and negative spaces for holding all ports, in place.
 (defn ports-positive [getopt bodies] (port-set getopt bodies true))
 (defn ports-negative [getopt bodies] (port-set getopt bodies false))
+
+
+;;;;;;;;;;;;;
+;; Flanges ;;
+;;;;;;;;;;;;;
+
+(defn- flange-sequence
+  [getopt id]
+  (let [{:keys [positions] :as base} (getopt :flanges id)]
+    (for [p positions] (merge (dissoc base :positions) p))))
+
+(defn- filtered-flanges
+  [getopt]
+  (mapcat (partial flange-sequence getopt) (keys (getopt :flanges))))
+
+(defn- flange-filter
+  [getopt subject]
+  (fn [{:keys [body anchoring]}]
+    (= subject (anch/resolve-body getopt (:anchor anchoring) body))))
+
+(defn flange-negatives
+  [getopt body]
+  (map (fn [{:keys [bolt-properties anchoring intrinsic-rotation]}]
+         (place/reckon-with-anchor getopt
+           (assoc anchoring :subject
+             (maybe/rotate intrinsic-rotation
+               (misc/merge-bolt {:negative true} bolt-properties)))))
+       (filter (partial flange-filter getopt) (filtered-flanges getopt))))
 
 
 ;;;;;;;;;;;;;;;;;;;;

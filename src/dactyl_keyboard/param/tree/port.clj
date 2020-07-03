@@ -100,7 +100,7 @@
     {:default false :parse-fn boolean :validate [::valid/include]}
     "If `true`, build a wall around the port."]
    [:parameter [:holder :alias]
-    {:default ::placeholder :parse-fn keyword :validate [::valid/alias]}
+    stock/alias-metadata
     "A name for the holder, to allow anchoring other features to it."]
    [:parameter [:holder :thickness]
     {:default 1 :parse-fn num :validate [::valid/thickness]}

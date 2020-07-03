@@ -78,6 +78,7 @@ Each heading in this document represents a recognized configuration key in the m
         - Parameter <a href="#user-content-main-body-foot-plates-polygons">`polygons`</a>
 - Section <a href="#user-content-central-housing">`central-housing`</a>
 - Special section <a href="#user-content-custom-bodies">`custom-bodies`</a>
+- Special section <a href="#user-content-flanges">`flanges`</a>
 - Special section <a href="#user-content-tweaks">`tweaks`</a>
 - Section <a href="#user-content-mcu">`mcu`</a>
     - Parameter <a href="#user-content-mcu-include">`include`</a>
@@ -576,6 +577,24 @@ This example describes a cube-shaped area in the middle of the central housing. 
 In `cut` nodes, the `positive` parameter is ignored, as is `body`. Neither `at-ground` nor `to-ground` will affect bottom plates.
 
 If its parent body is governed by `reflect`, the custom body will also be reflected, appearing in left- and right-hand versions.
+
+## Special section <a id="flanges">`flanges`</a>
+
+Extra screws.
+
+`flanges` is named by analogy. It is intended to connect custom bodies to their parent bodies by means of screws, in the manner of pipe flanges joined by threaded fasteners.
+
+The structure of the `flanges` section is a map of arbitrary names to maps of the following parameters:
+
+- `bolt-properties` (required): A map of standard `scad-klupe` parameters, as for `bolt-properties` elsewhere.
+- `boss-diameter-factor` (optional): This factor multiplies the `m-diameter` of `bolt-properties` to produce the total exterior diameter of a boss for each screw. Typical values range from about 1.5 to 2.5. Even if a value is supplied, bosses are not included by default. Instead, they are added to the keyboard as a result of `tweaks` targeting each individual flange screw by its alias.
+- `positions` (optional): A list of individual flange screws.
+
+Each item in the list of `positions`, in turn, has the following structure:
+
+- `alias` (optional): A name for the position. Unlike the name for the flange as a whole, the alias can be used with `tweaks` to target the screw and build a boss or larger positive shape.
+- `anchoring` (optional): Room for standard 3D anchoring parameters as documented [here](configuration.md).
+- `intrinsic-rotation` (optional): Rotation of the screw around the top of its head.
 
 ## Special section <a id="tweaks">`tweaks`</a>
 

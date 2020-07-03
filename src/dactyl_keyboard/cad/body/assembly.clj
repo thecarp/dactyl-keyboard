@@ -21,6 +21,15 @@
             [dactyl-keyboard.cad.tweak :as tweak]))
 
 
+(defn- custom-negatives
+  "Assorted negative space for a predefined body.
+  This includes negative sandbox shapes, applied to all bodies."
+  [getopt body]
+  (maybe/union
+    (tweak/selected-tweaks getopt false body)
+    (auxf/flange-negatives getopt body)
+    (sandbox/negative getopt)))
+
 (defn wrist-rest-plinth-right
   "Right-hand-side non-preview wrist-rest plinth model."
   [getopt]
@@ -35,7 +44,7 @@
                  (getopt :wrist-rest :bottom-plate :include))
         (bottom/wrist-positive getopt)))
     (mask/above-wrist-bottom-plate getopt
-      (tweak/selected-tweaks getopt false :wrist-rest))
+      (custom-negatives getopt :wrist-rest))
     (when (getopt :wrist-rest :bottom-plate :include)
       (maybe/union
         (if (getopt :wrist-rest :preview)
@@ -126,8 +135,7 @@
                      (getopt :mcu :support :lock :include))
             (mcu/lock-fixture-composite getopt))
           (sandbox/positive getopt))
-        (tweak/selected-tweaks getopt false :central-housing)
-        (sandbox/negative getopt))
+        (custom-negatives getopt :central-housing))
       (when (and (getopt :main-body :bottom-plate :include)
                  (getopt :main-body :bottom-plate :preview))
         (if (and (getopt :wrist-rest :include)
@@ -217,8 +225,7 @@
           (when (and (getopt :wrist-rest :include)
                      (= (getopt :wrist-rest :style) :threaded))
             (wrist/all-fasteners getopt))
-          (tweak/selected-tweaks getopt false :main)
-          (sandbox/negative getopt))
+          (custom-negatives getopt :main))
         ;; Outer positives, subject only to outer negatives:
         (when (and (getopt :mcu :derived :include-mainly)
                    (getopt :mcu :support :lock :include))
