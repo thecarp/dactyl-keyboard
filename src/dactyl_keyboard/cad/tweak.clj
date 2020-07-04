@@ -171,6 +171,15 @@
                                 (assoc anchoring :anchor primary))
                (shape (auxf/port-tweak-post getopt primary)))
              (shape (auxf/port-holder getopt primary))))]
+      ::anch/flange-screw
+        [true
+         (let [{:keys [flange position-index]} resolved
+               {:keys [boss-radius boss-height]} (getopt :flanges :derived flange)]
+           (place/flange-place getopt flange position-index (or segment 0)
+             (shape (if segment
+                      (model/cylinder boss-radius misc/wafer)
+                      (model/translate [0 0 (/ boss-height -2)]
+                        (model/cylinder boss-radius boss-height))))))]
       ::anch/secondary
         [false
          (let [{:keys [size]} (getopt :secondaries anchor)]

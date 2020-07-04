@@ -35,6 +35,7 @@
 
 (def built-in-bodies #{:auto :main :central-housing :wrist-rest})
 (def built-in-anchors #{:origin :rear-housing-exterior :rear-housing-interior})
+(spec/def ::original #(not (= :derived %)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -49,7 +50,7 @@
 (spec/def ::custom-body (spec/and keyword? #(not (built-in-bodies %))))
 (spec/def ::anchor keyword?)
 (spec/def ::alias (spec/and keyword? #(not (built-in-anchors %))))
-(spec/def ::key-cluster #(not (= :derived %)))
+(spec/def ::key-cluster ::original)
 (spec/def ::segment (spec/int-in 0 5))
 
 (spec/def :tweak/sweep ::segment)

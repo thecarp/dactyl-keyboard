@@ -513,7 +513,8 @@
       {:heading-template "Special section %s"
        :default {}
        :parse-fn (parse/map-of keyword (base/parser-with-defaults flange-type))
-       :validate [(spec/map-of keyword? (base/delegated-validation flange-type))]})
+       :validate [(spec/map-of ::valid/original
+                               (base/delegated-validation flange-type))]})
     "Extra screws.\n\n"
     "`flanges` is named by analogy. It is intended to connect custom "
     "bodies to their parent bodies by means of screws, in the manner of "

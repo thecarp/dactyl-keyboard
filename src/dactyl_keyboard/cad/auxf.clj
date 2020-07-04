@@ -187,10 +187,27 @@
 ;; Flanges ;;
 ;;;;;;;;;;;;;
 
+(defn derive-flange-properties
+  [getopt]
+  (into {}
+    (map (fn [[flange {:keys [bolt-properties boss-diameter-factor]}]]
+           [flange {:boss-radius (/ (* boss-diameter-factor
+                                       (:m-diameter bolt-properties))
+                                    2)
+                    :boss-height (iso/bolt-length bolt-properties)}])
+         (getopt :flanges))))
+
 (defn- flange-sequence
   [getopt id]
   (let [{:keys [positions] :as base} (getopt :flanges id)]
-    (for [p positions] (merge (dissoc base :positions) p))))
+    (map-indexed
+      (fn [index position]
+        (-> base
+          (dissoc :positions)
+          (assoc :flange id)
+          (assoc :position-index index)
+          (merge position)))
+      positions)))
 
 (defn- filtered-flanges
   [getopt]
@@ -203,11 +220,9 @@
 
 (defn flange-negatives
   [getopt body]
-  (map (fn [{:keys [bolt-properties anchoring intrinsic-rotation]}]
-         (place/reckon-with-anchor getopt
-           (assoc anchoring :subject
-             (maybe/rotate intrinsic-rotation
-               (misc/merge-bolt {:negative true} bolt-properties)))))
+  (map (fn [{:keys [flange position-index bolt-properties]}]
+         (place/flange-place getopt flange position-index 0
+           (misc/merge-bolt {:negative true} bolt-properties)))
        (filter (partial flange-filter getopt) (filtered-flanges getopt))))
 
 

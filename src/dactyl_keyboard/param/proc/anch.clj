@@ -131,6 +131,18 @@
          (getopt :wrist-rest :mounts mount-index :aliases :nuts)))
       (getopt :wrist-rest :mounts))
 
+    ;; Flanges:
+    (mapmap
+      (fn [[flange {:keys [positions]}]]
+        (mapmap-indexed
+          (fn [index {:keys [alias]}]
+            (when alias
+              {alias {::type ::flange-screw
+                      :flange flange
+                      :position-index index}}))
+          positions))
+      (getopt :flanges))
+
     ;; Named secondary positions:
     (mapmap
       (fn [[name properties]]

@@ -17,6 +17,8 @@
             [scad-tarmi.core :refer [abs π] :as tarmi-core]
             [scad-tarmi.maybe :as maybe]
             [scad-tarmi.flex :as flex]
+            [scad-klupe.base :refer [shank-section-lengths]]
+            [scad-klupe.iso :refer [head-length]]
             [dmote-keycap.data :as capdata]
             [dmote-keycap.measure :as measure]
             [dactyl-keyboard.cots :as cots]
@@ -477,6 +479,31 @@
       (flex/rotate [0 0 (prop :angle)])
       (flex/translate (prop :block->nut->position block-key fastener-index)))))
 
+;; Flanges.
+
+(defn- flange-boss-zoffset
+  "Compute the z-axis offset for part of a flange screw."
+  [getopt flange segment]
+  (let [{:keys [m-diameter head-type] :as bolt-properties}
+        (getopt :flanges flange :bolt-properties)
+        head (head-length m-diameter head-type)
+        bolt-lengths (shank-section-lengths
+                       (assoc bolt-properties :head-length head))
+        [unthreaded threaded] bolt-lengths]
+    (- (case segment 0 0
+                     1 head
+                     2 (+ head unthreaded)
+                     3 (+ head unthreaded threaded)))))
+
+(defn flange-place
+  "Place a flange screw or part of a boss for such a screw."
+  [getopt flange position-index segment obj]
+  (let [prop (partial getopt :flanges flange :positions position-index)]
+    (->> obj
+      (flex/translate [0 0 (flange-boss-zoffset getopt flange segment)])
+      (flex/rotate (prop :intrinsic-rotation))
+      (flex/translate (reckon-with-anchor getopt (prop :anchoring))))))
+
 ;; Polymorphic treatment of the properties of aliases.
 
 (defmulti by-type
@@ -572,6 +599,10 @@
 (defmethod by-type ::anch/port-holder
   [getopt {:keys [initial] ::anch/keys [primary]}]
   (port-place getopt primary initial))
+
+(defmethod by-type ::anch/flange-screw
+  [getopt {:keys [flange position-index segment initial]}]
+  (flange-place getopt flange position-index (or segment 0) initial))
 
 (defmethod by-type ::anch/secondary
   [getopt {:keys [initial] ::anch/keys [primary]}]
