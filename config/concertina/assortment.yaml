@@ -1,0 +1,116 @@
+# Configuration fragment for assortment drawers.
+# This fragment adds a set of three large cuboid holes in the front of the
+# central housing. They’re about the right size for drawers to hold stationery.
+# The drawers themselves are not modeled by the DMOTE application.
+
+custom-bodies:
+  # As a piece of design for manufacturing, both to support printers with a
+  # z-axis limitation lower than the full central housing and to limit the need
+  # for supports, print the outermost parts of the central housing separately.
+  left-hand-bookend:
+    include: true
+    parent-body: central-housing
+    cut:
+      shape:
+        - [assortment1, E,
+           {anchoring: {offset: [100, 0, 0]},
+            size: [200, 200, 200]}]
+  right-hand-bookend:
+    include: true
+    parent-body: central-housing
+    cut:
+      shape:
+        - [assortment1, W,
+           {anchoring: {offset: [-100, 0, 0]},
+            size: [200, 200, 200]}]
+flanges:
+  left-assortment-divider-flange:
+    bolt-properties:
+      m-diameter: 3
+      head-type: countersunk
+      include-threading: false
+      total-length: 8
+      channel-length: 4
+    positions:
+    - anchoring:
+        anchor: assortment1
+        side: NW
+        segment: 0
+        offset: [-2, -14, 6]
+      intrinsic-rotation: [0, π/2, 0]
+    - anchoring:
+        anchor: assortment1
+        side: SW
+        segment: 2
+        offset: [-2, 15, -1.75]
+      intrinsic-rotation: [0, π/2, 0]
+ports:
+  # Three slots follow for assortment drawers, with 3.5 mm between each.
+  assortment1:
+    include: true
+    size: [162, 92, 25]
+    anchoring:
+      offset: [0, -55, 108]
+    intrinsic-rotation: [0, 0, π]
+    holder:
+      include: true
+      alias: assortment1-holder
+      thickness: 2
+  assortment2:
+    include: true
+    size: [162, 92, 25]
+    anchoring:
+      offset: [0, -55, 79.5]
+    intrinsic-rotation: [0, 0, π]
+    holder:
+      include: true
+      alias: assortment2-holder
+      thickness: 2
+  assortment3:
+    include: true
+    size: [162, 92, 25]
+    anchoring:
+      offset: [0, -55, 51]
+    intrinsic-rotation: [0, 0, π]
+    holder:
+      include: true
+      alias: assortment3-holder
+      thickness: 2
+tweaks:
+  # Walls to ground on both flanks of the assortment ports.
+  # These provide an additional lower compartment that is not a port but can be
+  # filled with non-printed material to add mass to the keyboard.
+  central-dividers:
+  - at-ground: true
+    hull-around:
+    - [assortment1, NE, {anchoring: {offset: [0.5, -1, 0]}, size: 1}]
+    - [assortment1, SE, {anchoring: {offset: [0.5, 0, 0]}, size: 1}]
+  - at-ground: true
+    hull-around:
+    - [assortment1, NW, {anchoring: {offset: [-0.5, -1, 0]}, size: 1}]
+    - [assortment1, SW, {anchoring: {offset: [-0.5, 0, 0]}, size: 1}]
+  central-flanges:
+  - hull-around:
+    - [assortment1, NW, 0, {anchoring: {offset: [0, -2, 0]}, size: 4}]
+    - [assortment1, NW, 0, {anchoring: {offset: [0, -17, 15]}, size: 4}]
+    - [assortment1, NW, 0, {anchoring: {offset: [0, -17, 0]}, size: 4}]
+    - [assortment1, NW, 0, {anchoring: {offset: [30, -2, 0]}, size: 4}]
+  - hull-around:
+    - [assortment1, NE, 0, {anchoring: {offset: [0, -2, 0]}, size: 4}]
+    - [assortment1, NE, 0, {anchoring: {offset: [0, -17, 15]}, size: 4}]
+    - [assortment1, NE, 0, {anchoring: {offset: [0, -17, 0]}, size: 4}]
+    - [assortment1, NE, 0, {anchoring: {offset: [-30, -2, 0]}, size: 4}]
+  bosses-beneath-drawer-stack-front:
+  - hull-around:
+    - [assortment3, NW, 2, {anchoring: {offset: [6, -5, -2]}, size: [12, 10, 4]}]
+    - [assortment3, NW, 2, {anchoring: {offset: [9, -5, -1]}, size: [18, 10, 2]}]
+  - hull-around:
+    - [assortment3, NE, 2, {anchoring: {offset: [-6, -5, -2]}, size: [12, 10, 4]}]
+    - [assortment3, NE, 2, {anchoring: {offset: [-9, -5, -1]}, size: [18, 10, 2]}]
+  bosses-beneath-drawer-stack-rear:
+  - hull-around:
+    - [assortment3, SW, 2, {anchoring: {offset: [6, 9, -2]}, size: [12, 20, 4]}]
+    - [assortment3, SW, 2, {anchoring: {offset: [9, 9, -1]}, size: [18, 20, 2]}]
+  - hull-around:
+    - [assortment3, SE, 2, {anchoring: {offset: [-6, 9, -2]}, size: [12, 20, 4]}]
+    - [assortment3, SE, 2, {anchoring: {offset: [-9, 9, -1]}, size: [18, 20, 2]}]
