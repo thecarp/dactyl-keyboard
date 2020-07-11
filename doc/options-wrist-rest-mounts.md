@@ -19,17 +19,9 @@ This specific document describes options for each “mount”, a pair of cuboid 
     - Section <a href="#user-content-blocks-partner-side">`partner-side`</a>
         - Parameter <a href="#user-content-blocks-partner-side-body">`body`</a>
         - Section <a href="#user-content-blocks-partner-side-anchoring">`anchoring`</a>
-            - Parameter <a href="#user-content-blocks-partner-side-anchoring-anchor">`anchor`</a>
-            - Parameter <a href="#user-content-blocks-partner-side-anchoring-side">`side`</a>
-            - Parameter <a href="#user-content-blocks-partner-side-anchoring-segment">`segment`</a>
-            - Parameter <a href="#user-content-blocks-partner-side-anchoring-offset">`offset`</a>
         - Parameter <a href="#user-content-blocks-partner-side-depth">`depth`</a>
     - Section <a href="#user-content-blocks-wrist-side">`wrist-side`</a>
         - Section <a href="#user-content-blocks-wrist-side-anchoring">`anchoring`</a>
-            - Parameter <a href="#user-content-blocks-wrist-side-anchoring-anchor">`anchor`</a>
-            - Parameter <a href="#user-content-blocks-wrist-side-anchoring-side">`side`</a>
-            - Parameter <a href="#user-content-blocks-wrist-side-anchoring-segment">`segment`</a>
-            - Parameter <a href="#user-content-blocks-wrist-side-anchoring-offset">`offset`</a>
         - Parameter <a href="#user-content-blocks-wrist-side-depth">`depth`</a>
 - Section <a href="#user-content-aliases">`aliases`</a>
     - Parameter <a href="#user-content-aliases-blocks">`blocks`</a>
@@ -92,23 +84,7 @@ A code identifying the [body](configuration.md) that houses the block.
 
 #### Section <a id="blocks-partner-side-anchoring">`anchoring`</a>
 
-Where to place the block.
-
-##### Parameter <a id="blocks-partner-side-anchoring-anchor">`anchor`</a>
-
-A code identifying an anchor point. This can be the default value (`origin`) or a name (built-in or alias) identifying a feature.
-
-##### Parameter <a id="blocks-partner-side-anchoring-side">`side`</a>
-
-A compass-point code for one side of the feature named in `anchor`. The default is `null`, signifying the centre.
-
-##### Parameter <a id="blocks-partner-side-anchoring-segment">`segment`</a>
-
-An integer identifying one vertical segment of the feature named in `anchor`. The default is `0`, signifying the topmost part of the anchor.
-
-##### Parameter <a id="blocks-partner-side-anchoring-offset">`offset`</a>
-
-A two-dimensional offset in mm from the feature named in `anchor`.
+Where on the ground to place the block. The concept of anchoring is explained [here](options-anchoring.md), along with the parameters available in this section.
 
 #### Parameter <a id="blocks-partner-side-depth">`depth`</a>
 
@@ -120,25 +96,7 @@ A block on the side of the wrist rest.
 
 #### Section <a id="blocks-wrist-side-anchoring">`anchoring`</a>
 
-Where to place the block. This entire section is ignored with `partner-side` authority.
-
-##### Parameter <a id="blocks-wrist-side-anchoring-anchor">`anchor`</a>
-
-A code identifying an anchor point. This can be the default value (`origin`) or a name (built-in or alias) identifying a feature.
-
-Whereas the partner-side mount is typically anchored to a key, the wrist-side mount is typically anchored to a named point on the plinth.
-
-##### Parameter <a id="blocks-wrist-side-anchoring-side">`side`</a>
-
-A compass-point code for one side of the feature named in `anchor`. The default is `null`, signifying the centre.
-
-##### Parameter <a id="blocks-wrist-side-anchoring-segment">`segment`</a>
-
-An integer identifying one vertical segment of the feature named in `anchor`. The default is `0`, signifying the topmost part of the anchor.
-
-##### Parameter <a id="blocks-wrist-side-anchoring-offset">`offset`</a>
-
-A two-dimensional offset in mm from the feature named in `anchor`.
+Where on the ground to place the block, as for the partner side. This entire section is ignored with `partner-side` authority.
 
 #### Parameter <a id="blocks-wrist-side-depth">`depth`</a>
 

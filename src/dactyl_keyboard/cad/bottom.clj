@@ -204,10 +204,14 @@
     ([type-id pred offset-z mirror]
      (fn [getopt]
        (let [z-offset (getopt :dfm :bottom-plate :fastener-plate-offset)
-             module (get module-names type-id)]
+             module (model/call-module (get module-names type-id))]
          (maybe/translate [0 0 (if offset-z z-offset 0)]
            (apply maybe/union
-             (map (place/module-z0-2d-placer getopt module mirror)
+             (map (fn [anchoring]
+                    (place/at-named getopt
+                     (merge anchoring {:preserve-orientation true  ; Override!)
+                                       ::place/n-dimensions 2})
+                     (if mirror (model/mirror [-1 0 0] module) module)))
                   (filter pred (all-fastener-positions getopt))))))))))
 
 (defn- any-type

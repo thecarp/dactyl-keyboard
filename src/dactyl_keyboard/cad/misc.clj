@@ -43,11 +43,10 @@
      coordinates
      (pad-to-3d (conj coordinates padding) padding))))
 
-(defn z0
-  "No relation to Cicero."
-  [coordinates]
-  {:pre [(vector? coordinates)]}
-  (pad-to-3d (subvec coordinates 0 2) 0))
+(defn limit-d
+  "Nullify coordinates for an arbitrary dimensionality."
+  [n-dimensions coordinates]
+  (pad-to-3d (subvec coordinates 0 n-dimensions) 0))
 
 (defn bottom-extrusion [height p]
   (model/extrude-linear {:height height, :twist 0, :convexity 0, :center false}

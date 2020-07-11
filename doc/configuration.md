@@ -1,22 +1,22 @@
 # Configuration of the application
 
 As noted in the [introduction](intro.md), the DMOTE application is governed by
-parameters in YAML files. The specifics of these files are [documented
-here](options-main.md), with subordinate, nested structures linked through that
-document.
-
-This document is not about the specifics. It outlines some of the general
-concepts.
+parameters in YAML files. This document outlines some of the general concepts
+you need to understand such files. The specifics are documented starting
+[here](options-main.md), with subordinate, nested structures linked through
+that document.
 
 ## Picking files
 
-The application comes bundled with some YAML files under `config`.  You can
-change these files if you like. However, it is generally easier to add your own
-files, maintaining them separately from the DMOTE repository. That way, there
-will be no collisions when you upgrade the application with a `git pull`.
+The application comes bundled with some YAML files under `config`. You don’t
+have to use them. If you do use them, you can change them according to your
+needs. However, it is generally easier to add your own files, maintaining them
+separately from the DMOTE repository. That way, there will be no collisions
+when you upgrade the application with a `git pull`.
 
 The [execution guide](execution.md) shows how to run the application with a
-given file or a whole series of files at once.
+given file or a whole series of files at once, including any combination of
+bundled and personal files.
 
 ## Nomenclature
 
@@ -50,48 +50,13 @@ which is not always the global vector space.
 
 ### The anchor metaphor
 
-All of the features of the keyboard are ultimately positioned in relation to
-the origin of the global coordinate system (global vector space). The origin
-has the coordinates `[0, 0, 0]`. The origin is not a feature of the keyboard,
-but it has a name, which is `origin`, so you can refer to it.
+An anchor is a named starting point for the position of a part of the keyboard.
+As the metaphor implies, an anchored feature is allowed to drift as if on a
+rode, a set distance away from its anchor, in a given direction.
 
-If you want to, you can link everything directly to the origin. It’s the
-default `anchor` wherever an anchor can be named. However, if you do link
-everything to that point, there will be lots of large coordinate offsets. That
-can get hard to read and will not be adaptive to further changes you make.
-
-To keep things flexible and easy to maintain, features can be anchored to other
-features, as long as the chain of anchors eventually reaches `origin`.
-
-In addition to `origin`, there are a couple of other named anchors built into
-the application:
-
-* `rear-housing-exterior`: The outside of the rear housing, an optional feature
-  of the main body.
-* `rear-housing-interior`: The inside of the rear housing.
-
-#### Parts of an anchor
-
-Anchoring a feature determines its position in the coordinate system with
-respect to its anchor. Along with the name of the anchor, you can specify a few
-other things to get a specific part of the anchor:
-
-* `side`: A compass point relative to the middle of the anchor, to target its
-  periphery.
-* `segment`: A numeric ID for a vertical segment of the anchor.
-* `offset`: A two- or three-dimensional vector describing a geometric
-  translation away from the anchor.
-
-These parameters are interpreted with respect to the anchor. Their significance
-therefore varies with the anchor. The differences will be documented here in
-future. Broadly, they are of the following types:
-
-* The availability and interpretation of different sides (compass codes) and
-  vertical segment codes.
-* Whether or not the anchored feature will be rotated like its anchor.
-  Generally, the anchored feature itself is not rotated, but the `offset` does
-  occur in the local vector space of the anchor.
-* The default shape of a case tweak.
+You can define new anchors as part of the configuration, and refer to different
+pieces of them by side and segment codes. Anchoring is explained in detail
+[here](options-anchoring.md).
 
 ## Notation
 
@@ -118,16 +83,15 @@ expand a more compact notation to that form.
 
 Like `scad-clj`, this application describes angles in
 [radians](https://en.wikipedia.org/wiki/Radian). For parameters that take one
-or more angles, including parameters with names like `rotation`,
-`intrinsic-rotation`, `pitch`, `roll`, `yaw` etc., you can specify each angle
-in at least two ways:
+or more angles, including parameters with names like `intrinsic-rotation`,
+`pitch`, `roll`, `yaw` etc., you can specify each angle in at least two ways:
 
 * As a real number, such as `1`, for 1 radian.
 * As a mathematical formula using [π](https://en.wikipedia.org/wiki/Pi), such
   as `π * 2`, for one full turn.
-* As text. For those parameters that are limited to rotation in the xy plane,
-  you can name a point of the compass, such as `NNE`, for one sixteenth turn,
-  i.e π/8 radians.
+* As text, naming a point of the compass, such as `NNE` for one sixteenth turn,
+  i.e π/8 radians. This is intended for rotation in the xy plane and would be
+  confusing in other uses.
 
 A formula must obey the following rules:
 
@@ -141,21 +105,11 @@ A formula must obey the following rules:
 
 A practical example: By default, as described in the
 [parameter manual](options-main.md), a keyboard microcontroller PCB will lie
-flat. This can be changed with a setting called `intrinsic-rotation`. To flip
-it over, getting the component side facing down and the connector edge facing
-your right, you would set this parameter like `[0, π, π/2]`. That’s no rotation
-around the x axis, a half turn (flip) around the y axis, and a quarter turn
-around the z axis.
-
-#### Intrinsic rotation
-
-In this application, the phrase “intrinsic rotation” refers to features of the
-keyboard spinning in place, each around its own centre. Such rotation is
-applied first, before other rotations of the feature.
-
-The phrase does not refer to intrinsic rotation in the alternative sense that
-each step is performed on a coordinate system (vector space) resulting from
-previous operations.
+flat. This can be changed with the `intrinsic-rotation` parameter for its
+`anchoring`. To flip it over, getting the component side facing down and the
+connector edge facing your right, you would set this parameter like `[0, π,
+π/2]`. That’s no rotation around the x axis, a half turn (flip) around the y
+axis, and a quarter turn around the z axis.
 
 ## Bodies
 

@@ -6,6 +6,7 @@
 (ns dactyl-keyboard.param.tree.port
   (:require [scad-tarmi.core :as tarmi-core]
             [dactyl-keyboard.cots :as cots]
+            [dactyl-keyboard.param.schema.anch :as anch]
             [dactyl-keyboard.param.schema.parse :as parse]
             [dactyl-keyboard.param.schema.valid :as valid]
             [dactyl-keyboard.param.stock :as stock]
@@ -79,20 +80,10 @@
     "Which wall or corner of the port itself to place at its anchor. "
     "The default value here is `N` (nominal north), which is the open face "
     "of the port."]
-   [:parameter [:intrinsic-rotation]
-    stock/compass-incompatible-3d-angle-metadata
-    "An `[x, y, z]` vector of radians, rotating the port around its point "
-    "of `alignment` before moving it to `anchor`."]
-   [:section [:anchoring]
+   [:parameter [:anchoring]
+    anch/anchoring-metadata
+    "Where to place the port. "
     stock/anchoring-documentation]
-   [:parameter [:anchoring :anchor]
-    stock/anchor-metadata stock/anchor-documentation]
-   [:parameter [:anchoring :side]
-    stock/anchor-side-metadata stock/anchor-side-documentation]
-   [:parameter [:anchoring :segment]
-    stock/anchor-segment-metadata stock/anchor-segment-documentation]
-   [:parameter [:anchoring :offset]
-    stock/anchor-3d-vector-metadata stock/anchor-3d-offset-documentation]
    [:section [:holder]
     "A map describing a positive addition to the case on five "
     "sides of the port: Every side but the front."]

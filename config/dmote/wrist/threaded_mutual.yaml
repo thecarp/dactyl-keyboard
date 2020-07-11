@@ -18,12 +18,12 @@ wrist-rest:
           anchor: t4
           side: NNE
           segment: 3
-          offset: [7, -6]
+          extrinsic-offset: [7, -6, 0]
         depth: 10
       wrist-side:
         anchoring:
           anchor: plinth-left
-          offset: [10, 4]
+          extrinsic-offset: [10, 4, 0]
         depth: 8
     aliases:
       blocks:

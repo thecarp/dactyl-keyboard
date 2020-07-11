@@ -16,10 +16,9 @@
             [dactyl-keyboard.param.proc.anch :refer [resolve-body]]))
 
 
-;;;;;;;;;;;;
-;; Models ;;
-;;;;;;;;;;;;
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Configuration Interface ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn derive-properties
   "Derive secondary properties of the MCU."
@@ -55,7 +54,15 @@
                                 (/ zₚ 2)))}
              plate-corners)}))
 
-(defn pcba-model
+
+;;;;;;;;;;;;
+;; Models ;;
+;;;;;;;;;;;;
+
+;; Mostly internal but with a couple of functions exposed for use in
+;; tweaks.
+
+(defn- pcba-model
   "A model of an MCU: PCB and integrated USB connector (if any). The
   orientation of the model is flat with the connector on top, facing “north”.
   The middle of that short edge of the PCB centers at the origin of the local
@@ -78,14 +85,10 @@
         (model/color (:metal colours)
           (mcube usb-x usb-y usb-z))))))
 
-(defn pcba-visualization [getopt]
-  (place/mcu-place getopt (pcba-model getopt false 0)))
+(defn- pcba-negative [getopt] (pcba-model getopt true 10))
 
-(defn pcba-negative [getopt]
-  (place/mcu-place getopt (pcba-model getopt true 10)))
-
-(defn alcove
-  "A blocky shape at the connector end of the MCU.
+(defn- alcove-model
+  "A blocky shape for the connector end of the MCU.
   For use as a complement to pcba-negative.
   This is provided because a negative of the MCU model itself digging into the
   inside of a wall would create only a narrow notch, which would require
@@ -96,14 +99,13 @@
         usb-z (prop :connector :height)
         error (getopt :dfm :error-general)
         x (- pcb-x error)]
-    (place/mcu-place getopt
-      (model/hull
-        (model/translate [0 (/ x -2) 0]
-          (model/cube x x (- pcb-z error)))
-        (model/translate [0 (/ x -2) (/ (+ pcb-z usb-z) 2)]
-          (model/cube (dec x) x (- usb-z error)))))))
+    (model/hull
+      (model/translate [0 (/ x -2) 0]
+        (model/cube x x (- pcb-z error)))
+      (model/translate [0 (/ x -2) (/ (+ pcb-z usb-z) 2)]
+        (model/cube (dec x) x (- usb-z error))))))
 
-(defn shelf-model
+(defn- shelf-model
   "An MCU shelf. This is intended primarily for use with
   a pigtail cable between the MCU itself and a primary USB connector
   in the case wall."
@@ -132,26 +134,25 @@
                    ;; Overhang.
                    (tc [(+ (x-op (/ xₒ -2)) (x-op t1)) 0 (+ zₚ (/ t2 2))]
                        [xₒ yₚ t2]))))]
-    (place/mcu-place getopt
-      (maybe/intersection
-        ;; The positive body of the shelf.
-        (model/union ;; The back plate and grips, without a bevel.
-          (tc [0 (/ yₚ -2) (- 0 (/ zₚ 2) (/ t0 2))] [X Y t0])
-          (model/union (side - off0) (side + off1)))
-        ;; End bevel, rotating on the x axis.
-        (model/translate [0 0 (/ zₚ -2)]
-          (let [d [X (/ yₚ 2) Z]]
-            (maybe/union
-              (tc [0 (/ yₚ -2) 0] d)
-              (tr [0 0 0] [N 0 0] (tc [0 (/ yₚ -4) 0] d))
-              (tr [0 (- yₚ) 0] [(- S) 0 0] (tc [0 (/ yₚ 4) 0] d)))))
-        ;; Side (lengthwise) bevel, rotating on the y axis.
-        (model/translate [0 0 (/ zₚ -2)]
-          (let [d [(/ xₜ 2) Y Z]]
-            (maybe/union
-              (tc [0 (/ yₚ -2) 0] d)
-              (tr [(/ xₜ 2) 0 0] [0 (- E) 0] (tc [(/ xₜ -4) (/ yₚ -2) 0] d))
-              (tr [(/ xₜ -2) 0 0] [0 W 0] (tc [(/ xₜ 4) (/ yₚ -2) 0] d)))))))))
+    (maybe/intersection
+      ;; The positive body of the shelf.
+      (model/union ;; The back plate and grips, without a bevel.
+        (tc [0 (/ yₚ -2) (- 0 (/ zₚ 2) (/ t0 2))] [X Y t0])
+        (model/union (side - off0) (side + off1)))
+      ;; End bevel, rotating on the x axis.
+      (model/translate [0 0 (/ zₚ -2)]
+        (let [d [X (/ yₚ 2) Z]]
+          (maybe/union
+            (tc [0 (/ yₚ -2) 0] d)
+            (tr [0 0 0] [N 0 0] (tc [0 (/ yₚ -4) 0] d))
+            (tr [0 (- yₚ) 0] [(- S) 0 0] (tc [0 (/ yₚ 4) 0] d)))))
+      ;; Side (lengthwise) bevel, rotating on the y axis.
+      (model/translate [0 0 (/ zₚ -2)]
+        (let [d [(/ xₜ 2) Y Z]]
+          (maybe/union
+            (tc [0 (/ yₚ -2) 0] d)
+            (tr [(/ xₜ 2) 0 0] [0 (- E) 0] (tc [(/ xₜ -4) (/ yₚ -2) 0] d))
+            (tr [(/ xₜ -2) 0 0] [0 W 0] (tc [(/ xₜ 4) (/ yₚ -2) 0] d))))))))
 
 (defn lock-plate-base
   "The model of the plate upon which an MCU PCBA rests in a lock.
@@ -165,7 +166,7 @@
    (model/translate [0 (/ plate-y -2) (+ (- full-z) (/ main-z 2))]
      (model/cube plate-x plate-y main-z))))
 
-(defn lock-fixture-positive
+(defn- lock-fixture-positive
   "Parts of the lock-style MCU support that integrate with the case.
   These comprise a plate for the bare side of the PCB to lay against and a socket
   that encloses the USB connector on the MCU to stabilize it, since integrated
@@ -178,23 +179,22 @@
         socket-z-thickness (+ (/ usb-z 2) thickness)
         socket-z-offset (+ (/ pcb-z 2) (* 3/4 usb-z) (/ thickness 2))
         socket-x (+ usb-x (* 2 thickness))]
-   (place/mcu-place getopt
-     (model/union
-       (lock-plate-base getopt true)
-       ;; The socket:
-       (model/hull
-         ;; Purposely ignore connector overshoot in placing the socket.
-         ;; This has the advantages that the lock itself can also be stabilized
-         ;; by the socket, while the socket does not protrude outside the case.
-         (model/translate [0 (/ usb-y -2) socket-z-offset]
-           (model/cube socket-x usb-y socket-z-thickness))
-         ;; Stabilizers for the socket:
-         (model/translate [0 0 10]
-           (model/cube socket-x 1 1))
-         (model/translate [0 0 socket-z-offset]
-           (model/cube (+ socket-x 6) 1 1)))))))
+    (model/union
+      (lock-plate-base getopt true)
+      ;; The socket:
+      (model/hull
+        ;; Purposely ignore connector overshoot in placing the socket.
+        ;; This has the advantages that the lock itself can also be stabilized
+        ;; by the socket, while the socket does not protrude outside the case.
+        (model/translate [0 (/ usb-y -2) socket-z-offset]
+          (model/cube socket-x usb-y socket-z-thickness))
+        ;; Stabilizers for the socket:
+        (model/translate [0 0 10]
+          (model/cube socket-x 1 1))
+        (model/translate [0 0 socket-z-offset]
+          (model/cube (+ socket-x 6) 1 1))))))
 
-(defn lock-fasteners-model
+(defn- lock-fasteners-model
   "Negative space for a threaded bolt fastening an MCU lock."
   [getopt]
   (let [p (getopt :mcu :derived :plate :thickness)
@@ -212,10 +212,6 @@
         (getopt :mcu :support :lock :fastener-properties))
       (model/rotate [π 0 0])
       (model/translate [0 (- (+ pcb-y (/ m 2))) (- (+ (/ pcb-z 2) p b c))]))))
-
-(defn lock-sink [getopt]
-  (place/mcu-place getopt
-    (lock-fasteners-model getopt)))
 
 (defn lock-bolt-model
   "Parts of the lock-style MCU support that don’t integrate with the case.
@@ -252,29 +248,42 @@
      (pcba-model getopt true 0)  ; Notch the mount.
      (lock-fasteners-model getopt))))
 
-(defn lock-bolt-locked [getopt]
-  (place/mcu-place getopt (lock-bolt-model getopt)))
+
+(defn- at-pcba [getopt subject]
+  (place/at-named getopt {:anchor :mcu-pcba} subject))
+
+
+;;;;;;;;;;;;;;;;;;;;;
+;; Model Interface ;;
+;;;;;;;;;;;;;;;;;;;;;
+
+;; Models in place.
+
+(defn shelf-in-place [getopt] (at-pcba getopt (shelf-model getopt)))
 
 (defn negative-composite [getopt]
-  (model/union
-    (pcba-negative getopt)
-    (alcove getopt)
-    (when (getopt :mcu :support :lock :include)
-      (lock-sink getopt))))
+  (at-pcba getopt
+    (model/union
+      (pcba-negative getopt)
+      (alcove-model getopt)
+      (when (getopt :mcu :support :lock :include)
+        (lock-fasteners-model getopt)))))
 
 (defn lock-fixture-composite
   "MCU support features outside the alcove."
   [getopt]
-  (model/difference
-    (lock-fixture-positive getopt)
-    (lock-bolt-locked getopt)
-    (pcba-negative getopt)
-    (lock-sink getopt)))
+  (at-pcba getopt
+    (model/difference
+      (lock-fixture-positive getopt)
+      (lock-bolt-model getopt)
+      (pcba-negative getopt)
+      (lock-fasteners-model getopt))))
 
 (defn preview-composite
   [getopt]
-  (maybe/union
-    (pcba-visualization getopt)
-    (when (getopt :mcu :support :lock :include)
-      (lock-bolt-locked getopt))))
+  (at-pcba getopt
+    (maybe/union
+      (pcba-model getopt false 0)  ; Visualization.
+      (when (getopt :mcu :support :lock :include)
+        (lock-bolt-model getopt)))))
 

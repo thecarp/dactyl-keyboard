@@ -5,8 +5,7 @@
 
 (ns dactyl-keyboard.param.tree.nested
   (:require [scad-tarmi.core :as tarmi-core]
-            [dactyl-keyboard.param.schema.parse :as parse]
-            [dactyl-keyboard.param.schema.valid :as valid]))
+            [dactyl-keyboard.param.schema.parse :as parse]))
 
 (def raws
   "A flat version of a special part of a user configuration."
@@ -288,7 +287,7 @@
     "dimensions of this parameter, wall posts are cuboids that use all three "
     "dimensions."]
    [:parameter [:wall :extent]
-    {:default 0 :parse-fn num :validate [::valid/segment]}
+    {:default 0 :parse-fn num :validate [(set (range 4))]}
     "A segment ID describing how far away from the key mount to extend its "
     "wall. Note that even if this is set low, you can still use `tweaks` to "
     "target other segments."]

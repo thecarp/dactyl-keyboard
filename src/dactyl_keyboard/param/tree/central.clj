@@ -4,7 +4,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns dactyl-keyboard.param.tree.central
-  (:require [scad-tarmi.core :as tarmi-core]
+  (:require [clojure.spec.alpha :as spec]
+            [scad-tarmi.core :as tarmi-core]
+            [dactyl-keyboard.param.schema.anch :as anch]
             [dactyl-keyboard.param.schema.parse :as parse]
             [dactyl-keyboard.param.schema.valid :as valid]
             [dactyl-keyboard.param.stock :as stock]))
@@ -330,8 +332,9 @@
     "at the distance between the center of the anchor and the outermost "
     "part of its shell."]
    [:parameter [:bottom-plate :fastener-positions]
-    {:default [] :parse-fn parse/projecting-2d-positions
-     :validate [::valid/projecting-2d-list]}
+    {:default []
+     :parse-fn (parse/tuple-of anch/parse-anchoring)
+     :validate [(spec/coll-of anch/validate-anchoring)]}
     "The positions of threaded fasteners used to attach the bottom plate to "
     "the central housing. In addition to the properties permitted "
     "in similar lists of such anchors, the central housing permits a "

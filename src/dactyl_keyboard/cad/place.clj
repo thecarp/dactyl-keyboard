@@ -13,7 +13,6 @@
             [thi.ng.geom.vector :refer [vec3]]
             [thi.ng.geom.core :as geom]
             [thi.ng.math.core :as math]
-            [scad-clj.model :as model]
             [scad-tarmi.core :refer [abs π] :as tarmi-core]
             [scad-tarmi.maybe :as maybe]
             [scad-tarmi.flex :as flex]
@@ -26,7 +25,8 @@
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.param.access
-             :refer [most-specific resolve-anchor key-properties compensator]]
+             :refer [most-specific resolve-anchor key-properties
+                     salient-anchoring compensator]]
             [dactyl-keyboard.param.proc.anch :as anch]))
 
 
@@ -34,10 +34,7 @@
 ;; Functions ;;
 ;;;;;;;;;;;;;;;
 
-;; Primitives.
-
-(declare reckon-from-anchor)
-(declare reckon-with-anchor)
+(declare at-named)  ;; The most general placement function.
 
 ;; Key mounts.
 
@@ -102,17 +99,6 @@
    (curver :column 0 :roll #(- %2 %1) (= style :orthographic)
            rot-ax-fn getopt cluster coord obj)))
 
-(declare reckon-feature)
-
-(defn- cluster-origin-finder
-  "Compute 3D coordinates for the middle of a key cluster.
-  Return a unary function: A partial translator."
-  [getopt subject-cluster]
-  (let [settings (getopt :key-clusters subject-cluster)
-        {:keys [anchor offset] :or {offset [0 0 0]}} (:anchoring settings)
-        feature (reckon-feature getopt (resolve-anchor getopt anchor))]
-   (partial flex/translate (mapv + feature offset))))
-
 (defn cluster-place
   "Place and tilt passed ‘subject’ as if into a key cluster.
   This uses flex, so the ‘subject’ argument can be a
@@ -120,8 +106,7 @@
   middle of the indicated key, or a scad-clj object."
   [getopt cluster coord subject]
   (let [most #(most-specific getopt (concat [:layout] %&) cluster coord)
-        center (most :matrix :neutral :row)
-        bridge (cluster-origin-finder getopt cluster)]
+        center (most :matrix :neutral :row)]
     (->> subject
          (flex/translate (most :translation :early))
          (flex/rotate [(most :pitch :intrinsic)
@@ -135,7 +120,7 @@
                        (most :yaw :base)])
          (flex/translate [0 (* capdata/mount-1u center) 0])
          (flex/translate (most :translation :late))
-         (bridge))))
+         (at-named getopt (getopt :key-clusters cluster :anchoring)))))
 
 
 ;; Case walls extending from key mounts.
@@ -245,18 +230,34 @@
                (get-in points [:ethereal part]))]  ; Fallback even for at-ground.
     (flex/translate coord subject)))
 
+(defn- next-chousing-point
+  "Find the properties of a central-housing interface point.
+  Apply an arbitrary filter to the interface, remapping indices."
+  [getopt pred base-index index-offset]
+  {:pre [(integer? base-index) (integer? index-offset)]}
+  (let [raw-interface (getopt :central-housing :derived :interface)
+        base-item (get raw-interface base-index)
+        cooked-interface (filterv pred raw-interface)
+        is-base #(when (= %2 base-item) %1)
+        cooked-index (->> cooked-interface
+                       (map-indexed is-base) (filter some?) first)
+        next-index (misc/shallow-wrap cooked-interface
+                                      (+ cooked-index index-offset))]
+    (get cooked-interface next-index)))
+
 (defn- chousing-fastener-landmark
   "Find a 3-tuple of coordinates for a fastener element for the central
   housing adapter."
-  [getopt name base-index distance]
+  [getopt name {:keys [index]} distance]
   {:pre [(or (keyword? name) (nil? name))]
    :post [(spec/valid? ::tarmi-core/point-3d %)]}
   (if name
-    (reckon-from-anchor getopt name {})
-    (let [prop (partial getopt :central-housing :shape)
-          index (misc/shallow-wrap (prop :interface)
-                                   (+ base-index (math/sign distance)))]
-      (mapv + [(/ (prop :width) 2) 0 0] (prop :interface index :base :offset)))))
+    (at-named getopt {:anchor name})
+    ;; Else find the next point of the interface above ground.
+    (let [point (next-chousing-point
+                  getopt :above-ground index (math/sign distance))]
+      (mapv + [(/ (getopt :central-housing :shape :width) 2) 0 0]
+              (get-in point [:base :offset])))))
 
 (defn chousing-fastener
   "Placement function for an arbitrary object in relation to the site of a
@@ -267,9 +268,9 @@
   [getopt {:keys [starting-point direction-point lateral-offset radial-offset]} subject]
   (let [pred (fn [{::anch/keys [type]}] (= type ::anch/central-gabel))
         anchor (resolve-anchor getopt starting-point pred)
-        starting-coord (vec3 (reckon-from-anchor getopt starting-point {}))
+        starting-coord (vec3 (at-named getopt {:anchor starting-point}))
         target-coord (chousing-fastener-landmark
-                       getopt direction-point (:index anchor) radial-offset)
+                       getopt direction-point anchor radial-offset)
         nonlocal (math/- (vec3 target-coord) starting-coord)
         ;; There’s likely a simpler way to scale a thi.ng vector by a scalar.
         multiplier (* (math/sign radial-offset) (/ radial-offset (math/mag nonlocal)))
@@ -284,28 +285,17 @@
 
 (defn rhousing-place
   "Place in relation to the exterior of the rear housing of the main body."
-  [getopt layer side segment offset obj]
-  {:pre [(#{:interior :exterior} layer)]}
+  [getopt layer side segment obj]
+  {:pre [(#{:interior :exterior} layer)
+         (or (nil? side) (side compass/all-short))]}
   (let [prop (partial getopt :main-body :rear-housing)]
     (flex/translate
       (mapv +
-        (or offset [0 0 0])
         (misc/bevelled-corner-xyz side segment
           (prop :derived :size layer)
           (prop :bevel layer))
         (prop :derived :position layer))
       obj)))
-
-
-;; Microcontroller.
-
-(defn mcu-place
-  "Transform passed shape into the reference frame for an MCU PCB."
-  ;; This function did a lot more tweaking for convenience in version 0.5.0.
-  [getopt subject]
-  (->> subject
-    (flex/rotate (getopt :mcu :intrinsic-rotation))
-    (flex/translate (reckon-with-anchor getopt (getopt :mcu :anchoring)))))
 
 
 ;; Ports.
@@ -333,32 +323,27 @@
 (defn port-hole-offset
   "Shift an offset for one part of a port hole.
   This is designed to hit a corner of the negative space."
-  [getopt {:keys [anchor side segment offset]
-           :or {segment 1, offset [0 0 0]}}]
+  [getopt {:keys [anchor side segment] :or {segment 1}}]
   (when-not (#{0 1 2} segment)
     (throw (ex-info "Invalid segment ID specified for port hole."
               {:configured-segment segment
                :available-segments #{0 1 2}})))
   (let [[[_ x] [_ y] z] (port-hole-size getopt anchor)]
-    (mapv + (misc/walled-corner-xyz side segment [x y z] 0)
-            offset)))
+    (misc/walled-corner-xyz side segment [x y z] 0)))
 
 (defn- port-alignment-offset
   "Return a vector moving the centre of one port away from its anchor."
   [getopt id]
-  (mapv -
-    (port-hole-offset getopt
-      {:anchor id
-       :side (getopt :ports id :alignment :side)
-       :segment (getopt :ports id :alignment :segment)})))
+  (mapv - (port-hole-offset getopt
+            {:anchor id
+             :side (getopt :ports id :alignment :side)
+             :segment (getopt :ports id :alignment :segment)})))
 
 (defn port-holder-offset
   "Shift an offset for one part of a port holder.
-  This is designed to hit inside the wall, not at a corner,
-  on the assumption that a tweak post with the thickness of the
-  wall is being placed."
-  [getopt {:keys [anchor side segment offset]
-           :or {segment 1, offset [0 0 0]}}]
+  This is designed to hit inside the wall, not at a corner, on the assumption
+  that a tweak post with the thickness of the wall is being placed."
+  [getopt {:keys [anchor side segment] :or {segment 1}}]
   {:pre [(keyword? anchor)
          (= (getopt :derived :anchors anchor ::anch/type) ::anch/port-hole)]}
   (when-not (#{0 1 2} segment)
@@ -368,18 +353,15 @@
   (let [t (getopt :ports anchor :holder :thickness)
         [x y z] (port-holder-size getopt anchor)]
     (mapv + (misc/walled-corner-xyz side segment [x y z] t)
-            [0 (/ t -2) 0]
-            offset)))
+            [0 (/ t -2) 0])))
 
 (defn port-place
-  "Place passed object as the indicated port."
-  [getopt id obj]
+  "Place passed object in relation to the indicated port."
+  [getopt id subject]
   {:pre [(keyword? id)
          (= (getopt :derived :anchors id ::anch/type) ::anch/port-hole)]}
-  (->> obj
-    (flex/translate (port-alignment-offset getopt id))
-    (flex/rotate (getopt :ports id :intrinsic-rotation))
-    (flex/translate (reckon-with-anchor getopt (getopt :ports id :anchoring)))))
+  (at-named getopt (getopt :ports id :anchoring)
+    (flex/translate (port-alignment-offset getopt id) subject)))
 
 
 ;; Wrist rests.
@@ -456,26 +438,24 @@
   "Place something for a wrist-rest mount.
   Where a side or segment is given, find a vertex on the mounting block,
   using a hardcoded 0.5 bevel."
-  [getopt mount-index block-key side segment offset obj]
+  [getopt mount-index block-key side segment obj]
   {:pre [(integer? mount-index)
          (keyword? block-key)]}
   (let [prop (partial getopt :wrist-rest :mounts mount-index :derived)
         size (prop :block->size block-key)]
     (->> obj
-      (flex/translate (or offset [0 0 0]))
       (flex/translate (misc/bevelled-corner-xyz side segment size 0.5))
       (flex/rotate [0 0 (prop :angle)])
       (flex/translate (prop :block->position block-key)))))
 
 (defn wrist-nut-place
   "Place a nut for a wrist-rest mounting block."
-  [getopt mount-index block-key fastener-index offset obj]
+  [getopt mount-index block-key fastener-index obj]
   {:pre [(integer? mount-index)
          (keyword? block-key)
          (integer? fastener-index)]}
   (let [prop (partial getopt :wrist-rest :mounts mount-index :derived)]
     (->> obj
-      (flex/translate (or offset [0 0 0]))
       (flex/rotate [0 0 (prop :angle)])
       (flex/translate (prop :block->nut->position block-key fastener-index)))))
 
@@ -497,12 +477,11 @@
 
 (defn flange-place
   "Place a flange screw or part of a boss for such a screw."
-  [getopt flange position-index segment obj]
-  (let [prop (partial getopt :flanges flange :positions position-index)]
-    (->> obj
-      (flex/translate [0 0 (flange-boss-zoffset getopt flange segment)])
-      (flex/rotate (prop :intrinsic-rotation))
-      (flex/translate (reckon-with-anchor getopt (prop :anchoring))))))
+  [getopt flange position-index segment subject]
+  (at-named getopt
+    (getopt :flanges flange :positions position-index :anchoring)
+    (flex/translate [0 0 (flange-boss-zoffset getopt flange segment)]
+                    subject)))
 
 ;; Polymorphic treatment of the properties of aliases.
 
@@ -527,7 +506,7 @@
 (defmethod by-type ::anch/rear-housing
   [getopt {:keys [side segment initial] ::anch/keys [layer] :or {segment 3}}]
   {:pre [(some? side)]}
-  (rhousing-place getopt layer side segment initial initial))
+  (rhousing-place getopt layer side segment initial))
 
 (defmethod by-type ::anch/wr-perimeter
   [getopt {:keys [coordinates outline-key segment initial] :or {segment 3}}]
@@ -536,12 +515,12 @@
     initial))
 
 (defmethod by-type ::anch/wr-block
-  [getopt {:keys [mount-index block-key side segment offset initial]}]
-  (wrist-block-place getopt mount-index block-key side segment offset initial))
+  [getopt {:keys [mount-index block-key side segment initial]}]
+  (wrist-block-place getopt mount-index block-key side segment initial))
 
 (defmethod by-type ::anch/wr-nut
-  [getopt {:keys [mount-index block-key side segment offset initial]}]
-  (wrist-block-place getopt mount-index block-key side segment offset initial))
+  [getopt {:keys [mount-index block-key fastener-index initial]}]
+  (wrist-nut-place getopt mount-index block-key fastener-index initial))
 
 (defmethod by-type ::anch/key-mount
   [getopt {:keys [cluster coordinates side segment initial] :as opts}]
@@ -557,48 +536,56 @@
       ;; The target feature is the middle of the key mounting plate.
       initial)))
 
+(defmethod by-type ::anch/mcu-pcba
+  [getopt {:keys [initial]}]  ; TODO: Support side & segment.
+  (at-named getopt (getopt :mcu :anchoring) initial))
+
 (defmethod by-type ::anch/mcu-lock-plate
   [getopt {:keys [side segment initial] :or {segment 0}}]
   {:pre [(or (nil? side) (compass/noncardinals side))]}
-  (mcu-place getopt
-    (if side
-      ;; One side of the lock plate.
-      ;; Typically, this means that “initial” is either a nodule object
-      ;; for a tweak or else some coordinate being used as an anchor.
-      (let [side (compass/convert-to-intercardinal side)]
-        ;; Here, segment 0 describes the plane of the PCB,
-        ;; segment 1 the transition to the base of the lock plate,
-        ;; and segment 2 the bottom of the lock plate.
-        (flex/translate
-          (conj (subvec (getopt :mcu :derived :plate side) 0 2)
-                (case segment
-                  0 0
-                  1 (getopt :mcu :derived :plate :transition)
-                  2 (- (getopt :mcu :derived :plate :transition)
-                       (getopt :mcu :support :lock :plate :base-thickness))
-                  (throw (ex-info "Invalid segment ID specified for lock plate."
-                            {:configured-segment segment
-                             :available-segments #{0 1 2}}))))
-          initial))
-      ;; Else the midpoint of the plate.
-      ;; Typically, “initial” is the entire lock plate for a tweak.
-      initial)))
+  (at-named getopt {:anchor :mcu-pcba}
+     (if side
+       ;; One side of the lock plate.
+       ;; Typically, this means that “initial” is either a nodule object
+       ;; for a tweak or else some coordinate being used as an anchor.
+       (let [side (compass/convert-to-intercardinal side)]
+         ;; Here, segment 0 describes the plane of the PCB,
+         ;; segment 1 the transition to the base of the lock plate,
+         ;; and segment 2 the bottom of the lock plate.
+         (flex/translate
+           (conj (subvec (getopt :mcu :derived :plate side) 0 2)
+                 (case segment
+                   0 0
+                   1 (getopt :mcu :derived :plate :transition)
+                   2 (- (getopt :mcu :derived :plate :transition)
+                        (getopt :mcu :support :lock :plate :base-thickness))
+                   (throw (ex-info "Invalid segment ID specified for lock plate."
+                             {:configured-segment segment
+                              :available-segments #{0 1 2}}))))
+           initial))
+       ;; Else the midpoint of the plate.
+       ;; Typically, “initial” is the entire lock plate for a tweak.
+       initial)))
 
 (defmethod by-type ::anch/mcu-grip
   [getopt {:keys [side initial]}]
   {:pre [(compass/noncardinals side)]}
-  (mcu-place getopt
+  (at-named getopt {:anchor :mcu-pcba}
     (flex/translate
       (getopt :mcu :derived :pcb (compass/convert-to-intercardinal side))
       initial)))
 
 (defmethod by-type ::anch/port-hole
-  [getopt {:keys [anchor initial]}]
-  (port-place getopt anchor initial))
+  [getopt {:keys [anchor initial] :as opts}]
+  (port-place getopt anchor
+    (flex/translate (port-hole-offset getopt opts)
+       initial)))
 
 (defmethod by-type ::anch/port-holder
-  [getopt {:keys [initial] ::anch/keys [primary]}]
-  (port-place getopt primary initial))
+  [getopt {:keys [initial] ::anch/keys [primary] :as opts}]
+  (port-place getopt primary
+    (flex/translate (port-holder-offset getopt (assoc opts :anchor primary))
+       initial)))
 
 (defmethod by-type ::anch/flange-screw
   [getopt {:keys [flange position-index segment initial]}]
@@ -606,7 +593,8 @@
 
 (defmethod by-type ::anch/secondary
   [getopt {:keys [initial] ::anch/keys [primary]}]
-  (let [base (reckon-with-anchor getopt (:anchoring primary))
+  {:pre [(map? primary)]}
+  (let [base (at-named getopt (:anchoring primary))
         ;; Apply the override by walking across the primary anchor’s position,
         ;; picking coordinates from the override where not nil.
         override (fn [i coord] (or (get (:override primary) i) coord))]
@@ -616,61 +604,69 @@
 
 ;; Generalizations.
 
-(defn- reckon-feature
-  "A convenience for placing stuff in relation to other features.
+(defn- transformation-sequence
+  [rotation translation subject]
+  (->> subject (flex/rotate rotation) (flex/translate translation)))
+
+(defn- intrinsics
+  "Apply intrinsic tuning to an anchored feature.
+  This is not to be confused with intrinsic rotation in the alternative sense
+  that each step is performed on a coordinate system resulting from previous
+  operations."
+  [{:keys [intrinsic-offset intrinsic-rotation]
+    :or {intrinsic-offset [0 0 0], intrinsic-rotation [0 0 0]}}
+   subject]
+  (transformation-sequence intrinsic-rotation intrinsic-offset subject))
+
+(defn- extrinsics
+  [{:keys [extrinsic-offset extrinsic-rotation]
+    :or {extrinsic-offset [0 0 0], extrinsic-rotation [0 0 0]}}
+   subject]
+  (transformation-sequence extrinsic-rotation extrinsic-offset subject))
+
+(defn- dissoc-generics
+  [options & extras]
+  (apply dissoc options :intrinsic-offset :intrinsic-rotation
+                        :extrinsic-offset :extrinsic-rotation
+                        extras))
+
+(defn- limit-dimensions
+  [{::keys [n-dimensions] :or {n-dimensions 3}} coordinates]
+  (misc/limit-d n-dimensions coordinates))
+
+(defn at-named
+  "Find a position corresponding to a specific named feature.
   Differents parts of a feature can be targeted with keyword parameters.
   Return a scad-clj node or, by default, a vector of three numbers.
-  Generally, the vector refers to what would be the middle of the outer wall
-  of a feature. For keys, rear housing and wrist-rest mount blocks, this
-  is the middle of a wall post. For central housing and the perimeter of the
-  wrist rest, it’s a vertex on the surface.
-  Any offset passed to this function will be interpreted in the native context
-  of each feature placement function, with varying results."
-  [getopt {:keys [offset subject] :or {offset [0 0 0], subject [0 0 0]}
-           :as opts}]
-  (by-type getopt (assoc opts :initial (flex/translate offset subject))))
-
-(defn reckon-from-anchor
-  "Find a position corresponding to a named point."
-  [getopt anchor extras]
-  {:pre [(keyword? anchor) (map? extras)]}
-  (reckon-feature getopt (merge extras (resolve-anchor getopt anchor))))
-
-(defn reckon-with-anchor
-  "Produce coordinates for a specific feature using a single map that names
-  an anchor."
-  [getopt {:keys [anchor] :as opts}]
-  {:pre [(keyword? anchor)]}
-  (reckon-from-anchor getopt anchor opts))
-
-(defn offset-from-anchor
-  "Apply an offset from a user configuration to the output of
-  reckon-with-anchor, instead of passing it as an input.
-  The results are typically more predictable than passing the offset to
-  reckon-with-anchor, being simple addition at a late stage.
-  This function also supports explicit 2-dimensional inputs and outputs."
-  [getopt opts dimensions]
-  {:pre [(integer? dimensions)]}
-  (let [base-3d (reckon-with-anchor getopt (dissoc opts :offset))
-        base-nd (subvec base-3d 0 dimensions)
-        offset-nd (get opts :offset (take dimensions (repeat 0)))]
-    (mapv + base-nd offset-nd)))
-
-(defn module-z0-2d-placer
-  "Produce a function that places a named module in relation to an anchor.
-  If “mirror”, a Boolean, is true, the module is mirrored on its own x axis,
-  without affecting its position in relation to the anchor. This mirroring
-  is intended to support chiral components of what are otherwise bilaterally
-  symmetrical features of single program outputs.
-  The returned function supports some general anchoring parameters but
-  intercepts a numerical “direction” parameter and uses that to rotate the
-  module on the z axis following any mirroring, instead of passing it on."
-  [getopt module-name mirror]
-  (let [prefix (if mirror (partial model/mirror [-1 0 0]) identity)]
-    (fn [{:keys [direction] :or {direction 0} :as options}]
-      {:pre [(number? direction)]}
-      (let [anchor-map (dissoc options :direction)]
-        (maybe/translate
-          (misc/z0 (offset-from-anchor getopt anchor-map 2))
-          (maybe/rotate [0 0 direction]
-            (prefix (model/call-module module-name))))))))
+  General (not anchor-type-specific) parameters passed to this function will be
+  applied before and after treatment specific to the named anchor, and will be
+  stripped from the input to by-type so as to prevent them being applied twice
+  in any subordinate call to at-named.
+  Where they collide in the map of passed options, override incoming options
+  with the prepared properties of the named feature as a registered anchor."
+  ([getopt {:keys [anchor subject preserve-orientation]
+            :or {subject [0 0 0]} :as opts}]
+   {:pre [(keyword? anchor)]}
+   (extrinsics opts
+     (if preserve-orientation
+       ;; Implicit rotation of the model with the target has been countermanded.
+       ;; Recurse to get coordinates only, then translate the true subject.
+       (flex/translate
+         (limit-dimensions opts
+           (at-named getopt
+             (dissoc-generics opts :subject :initial :preserve-orientation)))
+         (intrinsics opts subject))
+       ;; Else allow rotation of the subject itself (even a shape) along with the
+       ;; target feature, by passing it to by-type for target-specific treatment.
+       (as-> opts o
+         ;; Drop neutral values and cumbersome nils.
+         (salient-anchoring o)
+         ;; Prevent repetition of transformations being applied here.
+         (dissoc-generics o)
+         ;; Add registered anchor properties, including type.
+         (merge o (resolve-anchor getopt anchor))
+         ;; Add initial subject.
+         (assoc o :initial (intrinsics opts subject))
+         (by-type getopt o)))))
+  ([getopt opts subject]  ; Convenience resembling scad-clj operations.
+   (at-named getopt (assoc opts :subject subject))))

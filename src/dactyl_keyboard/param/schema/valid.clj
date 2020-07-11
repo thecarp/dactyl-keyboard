@@ -34,7 +34,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;
 
 (def built-in-bodies #{:auto :main :central-housing :wrist-rest})
-(def built-in-anchors #{:origin :rear-housing-exterior :rear-housing-interior})
+(def built-in-anchors #{:origin :mcu-pcba
+                        :rear-housing-exterior :rear-housing-interior})
 (spec/def ::original #(not (= :derived %)))
 
 
@@ -51,15 +52,11 @@
 (spec/def ::anchor keyword?)
 (spec/def ::alias (spec/and keyword? #(not (built-in-anchors %))))
 (spec/def ::key-cluster ::original)
-(spec/def ::segment (spec/int-in 0 5))
 
-(spec/def :tweak/sweep ::segment)
 (spec/def ::thickness (spec/and number? (complement neg?)))
 (spec/def ::highlight boolean?)
 (spec/def ::at-ground boolean?)
 (spec/def ::above-ground boolean?)
-(spec/def :tweak/chunk-size (spec/and int? #(> % 1)))
-(spec/def :tweak/size ::tarmi/point-3d)
 (spec/def :three/intrinsic-rotation ::tarmi/point-3d)
 
 (spec/def :central/offset ::tarmi/point-3d)
@@ -107,36 +104,8 @@
                       :central/radial-offset]
              :opt-un [:central/direction-point]))
 
-(spec/def ::foot-plate (spec/keys :req-un [:two/points]))
-(spec/def :two/anchoring
-  (spec/keys :opt-un [::anchor :flexible/side ::segment :two/offset]))
-(spec/def :three/anchoring
-  (spec/keys :opt-un [::anchor :flexible/side ::segment :three/offset]))
-(spec/def ::named-secondary-positions
-  (spec/map-of ::alias
-               (spec/keys :opt-un [:three/anchoring :three/override
-                                   :three/translation :tweak/size])))
-(spec/def ::anchored-2d-list (spec/coll-of :two/anchoring))
-(spec/def :two/points ::anchored-2d-list)  ; Synonym for composition.
-(spec/def ::projecting-2d-list (spec/coll-of
-                                 (spec/and
-                                   :two/anchoring
-                                   (spec/keys :opt-un [:numeric/direction]))))
 (spec/def ::central-housing-interface (spec/coll-of :central/interface-node))
 (spec/def ::central-housing-normal-positions (spec/coll-of :central/fastener-node))
-(spec/def ::mcu-grip-anchors (spec/coll-of
-                               (spec/keys :req-un [::alias :intercardinal/side]
-                                          :opt-un [:flexible/offset])))
-(spec/def ::tweak-node (spec/or :leaf ::tweak-leaf, :branch ::tweak-branch))
-(spec/def ::tweak-list (spec/coll-of ::tweak-node :min-count 1))
-(spec/def :tweak/hull-around ::tweak-list)
-(spec/def ::arbitrary-shape-map (spec/map-of keyword? (spec/nilable ::tweak-list)))
-(spec/def ::tweak-branch (spec/keys :req-un [:tweak/hull-around]
-                                    :opt-un [::highlight :tweak/chunk-size
-                                             ::above-ground
-                                             ;; Additional keys expected in trees only:
-                                             ::positive ::at-ground ::body]))
-
 (spec/def ::cluster-style #{:standard :orthographic})
 (spec/def ::plate-installation-style #{:threads :inserts})
 (spec/def ::compass-angle-map
@@ -149,15 +118,3 @@
 (spec/def ::column-disposition
   (spec/keys ::opt-un [::rows-below-home ::rows-above-home]))
 (spec/def ::flexcoord (spec/or :absolute int? :extreme #{:first :last}))
-(spec/def ::tweak-leaf
-  (spec/and
-    (spec/keys :req-un [:three/anchoring] :opt-un [:tweak/sweep :tweak/size
-                                                   :three/intrinsic-rotation])
-    ;; Require a start to a sweep
-    (fn [{:keys [anchoring sweep]}] (if (some? sweep)
-                                        (some? (:segment anchoring))
-                                        true))
-    ;; Make sure the sweep ends after it starts.
-    (fn [{:keys [anchoring sweep]}] (< (get anchoring :segment 0)
-                                       (or sweep 5)))))
-(spec/def ::foot-plate-polygons (spec/coll-of ::foot-plate))

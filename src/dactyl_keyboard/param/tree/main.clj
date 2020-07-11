@@ -12,6 +12,8 @@
             [dmote-keycap.schema :as capschema]
             [dactyl-keyboard.param.base :as base]
             [dactyl-keyboard.param.schema.valid :as valid]
+            [dactyl-keyboard.param.schema.arb :as arb]
+            [dactyl-keyboard.param.schema.anch :as anch]
             [dactyl-keyboard.param.schema.parse :as parse]
             [dactyl-keyboard.param.stock :as stock]
             [dactyl-keyboard.param.tree.central :as central]
@@ -36,6 +38,7 @@
 (spec/def ::nested-key-configuration
   (spec/keys :opt-un [:nested/parameters :nested/clusters :nested/columns
                       :nested/rows :nested/rows]))
+
 
 (def raws
   "A flat version of the specification for a complete user configuration.
@@ -93,13 +96,23 @@
     "It’s all documented [here](options-nested.md)."]
    [:parameter [:secondaries]
     {:default {}
-     :parse-fn parse/named-secondary-positions
-     :validate [::valid/named-secondary-positions]}
+     :parse-fn (parse/map-of keyword
+                             (parse/map-like
+                               {:anchoring anch/parse-anchoring
+                                :override vec
+                                :translation vec
+                                :size parse/pad-to-3-tuple}))
+     :validate [(spec/map-of ::valid/alias
+                             (spec/keys :opt-un [::anch/anchoring
+                                                 :three/override
+                                                 :three/translation
+                                                 :tweak/size]))]}
     "A map where each item provides a name for a position in space. "
     "Such positions exist in relation to other named features of the keyboard "
-    "and can themselves be used as anchors, most typically as supplementary "
-    "targets for `tweaks` (see below).\n"
-    "\n"
+    "and their names can in turn be used as anchors, most typically as "
+    "supplementary targets for `tweaks` (see below). "
+    stock/anchoring-documentation
+    "\n\n"
     "An example:\n\n"
     "```secondaries:\n"
     "  s0:\n"
@@ -107,15 +120,12 @@
     "      anchor: f0\n"
     "      side: SE\n"
     "      segment: 2\n"
-    "      offset: [1, 0, 0]\n"
     "    override [null, null, 2]\n"
     "    translation: [0, 3, 0]\n"
     "    size: 4\n```\n"
     "\n"
     "This example gives the name `s0` to a point near some feature named "
-    "`f0`, which must be defined elsewhere. All parameters in the `anchoring` "
-    "map work like their equivalent for primary features like `mcu`, so that "
-    "`offset` is applied in the vector space of the anchor.\n"
+    "`f0`, which must be defined elsewhere.\n"
     "\n"
     "Populated coordinates in `override` replace corresponding coordinates "
     "given by the anchor, and `translation` finally shifts the position "
@@ -153,17 +163,10 @@
    [:parameter [:main-body :rear-housing :include]
     {:default false :parse-fn boolean}
     "If `true`, add a rear housing to the main body."]
-   [:section [:main-body :rear-housing :anchoring]
+   [:parameter [:main-body :rear-housing :anchoring]
+    anch/anchoring-metadata
     "Where to place the middle of the rear housing. "
     stock/anchoring-documentation]
-   [:parameter [:main-body :rear-housing :anchoring :anchor]
-    stock/anchor-metadata stock/anchor-documentation]
-   [:parameter [:main-body :rear-housing :anchoring :side]
-    stock/anchor-side-metadata stock/anchor-side-documentation]
-   [:parameter [:main-body :rear-housing :anchoring :segment]
-    stock/anchor-segment-metadata stock/anchor-segment-documentation]
-   [:parameter [:main-body :rear-housing :anchoring :offset]
-    stock/anchor-2d-vector-metadata stock/anchor-2d-offset-documentation]
    [:parameter [:main-body :rear-housing :size]
     {:default 1 :parse-fn parse/pad-to-3-tuple
      :validate [::tarmi-core/point-3d]}
@@ -249,12 +252,10 @@
    [:parameter [:main-body :back-plate :fasteners :bosses]
     {:default false :parse-fn boolean}
     "If `true`, cut nut bosses into the inside wall of the block."]
-   [:section [:main-body :back-plate :anchoring]
+   [:parameter [:main-body :back-plate :anchoring]
+    anch/anchoring-metadata
+    "Where to place the middle of the back plate. "
     stock/anchoring-documentation]
-   [:parameter [:main-body :back-plate :anchoring :anchor]
-    stock/anchor-metadata stock/anchor-documentation]
-   [:parameter [:main-body :back-plate :anchoring :offset]
-    stock/anchor-3d-vector-metadata stock/anchor-3d-offset-documentation]
    [:section [:main-body :bottom-plate]
     "A bottom plate can be added to close the case. This is useful mainly to "
     "simplify transportation.\n"
@@ -350,8 +351,8 @@
     stock/threaded-bolt-documentation]
    [:parameter [:main-body :bottom-plate :installation :fasteners :positions]
     {:default []
-     :parse-fn parse/anchored-2d-positions
-     :validate [::valid/anchored-2d-list]}
+     :parse-fn (parse/tuple-of anch/parse-anchoring)
+     :validate [(spec/coll-of anch/validate-anchoring)]}
     "A list of places where threaded fasteners will connect the bottom plate "
     "to the rest of the case."]
    [:section [:main-body :leds]
@@ -384,20 +385,6 @@
     "The distance between LEDs on the strip. You may want to apply a setting "
     "slightly shorter than the real distance, since the algorithm carving the "
     "holes does not account for wall curvature."]
-   [:section [:main-body :foot-plates]
-    "Optional flat surfaces at ground level for adding silicone rubber feet "
-    "or cork strips etc. to the bottom of the keyboard to increase friction "
-    "and/or improve feel, sound and ground clearance."]
-   [:parameter [:main-body :foot-plates :include]
-    {:default false :parse-fn boolean} "If `true`, include foot plates."]
-   [:parameter [:main-body :foot-plates :height]
-    {:default 4 :parse-fn num} "The height in mm of each mounting plate."]
-   [:parameter [:main-body :foot-plates :polygons]
-    {:default []
-     :parse-fn parse/anchored-polygons
-     :validate [::valid/foot-plate-polygons]}
-    "A list describing the horizontal shape, size and "
-    "position of each mounting plate as a polygon."]
    [:parameter [:central-housing]
     {:heading-template "Section %s"
      :default (base/extract-defaults central/raws)
@@ -414,8 +401,7 @@
            [:parameter [:parent-body]
             {:default :main :parse-fn keyword}]
            [:parameter [:cut]
-            {:default {} :parse-fn parse/tweak-grove
-             :validate [::valid/arbitrary-shape-map]}]]]
+            arb/parameter-metadata]]]
       {:heading-template "Special section %s"
        :default {}
        :parse-fn (parse/map-of keyword (base/parser-with-defaults custom-body))
@@ -423,7 +409,7 @@
                                (base/delegated-validation custom-body))]})
     "Bodies in addition to those predefined by the application.\n\n"
     "This feature is intended for dividing up a keyboard case into parts for "
-    "easier printing (see also `dfm`) or easier assembly. "
+    "easier printing and/or easier assembly. "
     "It is not intended for adding novel shapes, such as washable cup holders "
     "to fit into `ports` etc. "
     "Custom bodies can be combined with `tweaks` to add and separate shapes, "
@@ -483,21 +469,9 @@
            [:parameter [:alias]
             stock/alias-metadata]
            [:parameter [:body]
-            {:default :auto :parse-fn keyword :validate [::valid/body]}
-            "A code identifying the predefined [body](configuration.md) "
-            "that contains the screw, before the effect of any custom bodies."]
-           [:section [:anchoring]
-            stock/anchoring-documentation]
-           [:parameter [:anchoring :anchor]
-            stock/anchor-metadata]
-           [:parameter [:anchoring :side]
-            stock/anchor-side-metadata]
-           [:parameter [:anchoring :segment]
-            stock/anchor-segment-metadata]
-           [:parameter [:anchoring :offset]
-            stock/anchor-3d-vector-metadata]
-           [:parameter [:intrinsic-rotation]
-            stock/compass-incompatible-3d-angle-metadata]]
+            {:default :auto :parse-fn keyword :validate [::valid/body]}]
+           [:parameter [:anchoring]
+            anch/anchoring-metadata]]
           flange-type
           [[]  ;; This header will not be rendered and is therefore empty.
            [:parameter [:bolt-properties]
@@ -537,14 +511,13 @@
     "- `alias` (optional): A name for the position. Unlike the name for the "
     "flange as a whole, the alias can be used with `tweaks` to target the "
     "screw and build a boss or larger positive shape.\n"
-    "- `anchoring` (optional): Room for standard 3D anchoring parameters as "
-    "documented [here](configuration.md).\n"
-    "- `intrinsic-rotation` (optional): Rotation of the screw around the top "
-    "of its head."]
+    "- `body` (optional): A code identifying the predefined "
+    "[body](configuration.md) that contains the screw, before the effect "
+    "of any custom bodies.\n"
+    "- `anchoring` (optional): Room for standard anchoring parameters. "
+    stock/anchoring-documentation]
    [:parameter [:tweaks]
-    {:heading-template "Special section %s"
-     :default {} :parse-fn parse/tweak-grove
-     :validate [::valid/arbitrary-shape-map]}
+    arb/parameter-metadata
     "Additional shapes. This parameter is usually needed to bridge gaps "
     "between the walls of key clusters. The expected value here is a map of "
     "[arbitrary shapes](options-arbitrary-shapes.md).\n"
@@ -602,23 +575,13 @@
     "designs for commercial products from PJRC, SparkFun, the QMK team "
     "and others:\n\n"
     (cots/support-list cots/mcu-facts)]
-   [:parameter [:mcu :intrinsic-rotation]
-    stock/compass-incompatible-3d-angle-metadata
-    "A vector of 3 angles in radians. This parameter governs the rotation of "
-    "the PCBA around its anchor point in the front. "
+   [:parameter [:mcu :anchoring]
+    anch/anchoring-metadata
+    "Where to place the middle of the back plate. "
+    stock/anchoring-documentation " "
+    "The PCBA has its base point in the front and rotates around that point. "
     "By default, the PCBA appears lying flat, with the MCU side up and the "
     "connector end facing nominal north, away from the user."]
-   [:section [:mcu :anchoring]
-    "Where to place the MCU PCBA after intrinsic rotation. "
-    stock/anchoring-documentation]
-   [:parameter [:mcu :anchoring :anchor]
-    stock/anchor-metadata stock/anchor-documentation]
-   [:parameter [:mcu :anchoring :side]
-    stock/anchor-side-metadata stock/anchor-side-documentation]
-   [:parameter [:mcu :anchoring :segment]
-    stock/anchor-segment-metadata stock/anchor-segment-documentation]
-   [:parameter [:mcu :anchoring :offset]
-    stock/anchor-3d-vector-metadata stock/anchor-3d-offset-documentation]
    [:section [:mcu :support]
     "This section offers a couple of different, mutually compatible ways to "
     "hold an MCU PCBA in place. Without such support, the MCU will be "
@@ -669,7 +632,7 @@
    [:section [:mcu :support :shelf :sides]
     "By default, a shelf includes raised sides to hold on to the "
     "PCBA. This is most useful when the shelf is rotated, following the "
-    "MCU (cf. `intrinsic-rotation`), out of the x-y plane."]
+    "MCU, out of the xy plane."]
    [:parameter [:mcu :support :shelf :sides :lateral-thickness]
     {:default 1 :parse-fn num :validate [pos?]}
     "The thickness of material to each side of the MCU, in mm."]
@@ -796,8 +759,13 @@
     "the object that will occupy an anchor point for a grip when that point "
     "is targeted by a tweak."]
    [:parameter [:mcu :support :grip :anchors]
-    {:default [] :parse-fn parse/mcu-grip-anchors
-     :validate [::valid/mcu-grip-anchors]}
+    {:default []
+     :parse-fn (parse/tuple-of (parse/map-like {:side keyword
+                                                :offset vec
+                                                :alias keyword}))
+     :validate [(spec/coll-of
+                  (spec/keys :req-un [::valid/alias :intercardinal/side]
+                             :opt-un [:flexible/offset]))]}
     "A list of points in space positioned relative to the PCB’s corners.\n\n"
     "Each point must have an `alias`, which is a name you can use "
     "elsewhere to refer to that point, and a `side`, identifying one "
@@ -816,6 +784,7 @@
     "    side: SE\n"
     "    offset: [-1, -1]\n```"
     "\n"
+    "Other anchoring parameters are not available.\n\n"
     "Grip anchor points are all empty by default. "
     "They can be occupied, and connected, using `tweaks`."]
    [:parameter [:ports]
@@ -846,18 +815,12 @@
     "Preview mode. If `true`, this puts a model of the wrist rest in the same "
     "OpenSCAD file as the case. That model is simplified, intended for gauging "
     "distance, not for printing."]
-   [:section [:wrist-rest :anchoring]
+   [:parameter [:wrist-rest :anchoring]
+    anch/anchoring-metadata
+    "Where to place the wrist rest. "
     stock/anchoring-documentation " "
     "For wrist rests, the vertical component of the anchor’s position is "
-    "ignored."]
-   [:parameter [:wrist-rest :anchoring :anchor]
-    stock/anchor-metadata stock/anchor-documentation]
-   [:parameter [:wrist-rest :anchoring :side]
-    stock/anchor-side-metadata stock/anchor-side-documentation]
-   [:parameter [:wrist-rest :anchoring :segment]
-    stock/anchor-segment-metadata stock/anchor-segment-documentation]
-   [:parameter [:wrist-rest :anchoring :offset]
-    stock/anchor-2d-vector-metadata stock/anchor-2d-offset-documentation]
+    "ignored, including any vertical offset."]
    [:parameter [:wrist-rest :plinth-height]
     {:default 1 :parse-fn num}
     "The average height of the plastic plinth in mm, at its upper lip."]
@@ -979,8 +942,8 @@
     {:default 1 :parse-fn num}
     "The diameter of each sprue."]
    [:parameter [:wrist-rest :sprues :positions]
-    {:default [] :parse-fn parse/anchored-2d-positions
-     :validate [::valid/anchored-2d-list]}
+    {:default [] :parse-fn (parse/tuple-of anch/parse-anchoring)
+     :validate [(spec/coll-of anch/validate-anchoring)]}
     "The positions of all sprues. This is a list where each item needs an "
     "`anchor` naming a main point in the spline. You can add an optional "
     "two-dimensional `offset`."]
@@ -1002,8 +965,8 @@
     "default position of each threaded fastener connecting it to its "
     "bottom plate."]
    [:parameter [:wrist-rest :bottom-plate :fastener-positions]
-    {:default [] :parse-fn parse/anchored-2d-positions
-     :validate [::valid/anchored-2d-list]}
+    {:default [] :parse-fn (parse/tuple-of anch/parse-anchoring)
+     :validate [(spec/coll-of anch/validate-anchoring)]}
     "The positions of threaded fasteners used to attach the bottom plate to "
     "its wrist rest. The syntax of this parameter is precisely the same as "
     "for the case’s bottom-plate fasteners. Corners are ignored and the "

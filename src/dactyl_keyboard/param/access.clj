@@ -123,6 +123,18 @@
   [getopt cluster coord]
   (getopt :keys :derived (most-specific getopt [:key-style] cluster coord)))
 
+(defn salient-anchoring
+  "Strip a set of anchoring settings of some default values.
+  This can keep the anchoring map relatively simple and salient for debugging
+  purposes, while allowing easier application of default values for side and
+  segment codes when they are actually missing, as opposed to nil."
+  [anchoring]
+  (->> anchoring
+    (remove (comp nil? val))
+    (remove (comp (partial = [0 0 0]) val))
+    (remove (comp (partial = false) val))
+    (into {})))
+
 (defn compensator
   "Make a scad-tarmi error function to compensate for printing errors."
   [getopt]

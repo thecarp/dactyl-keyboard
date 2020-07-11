@@ -252,12 +252,16 @@
 
 
 (defn sprues
-  "Place the sprue module according to user configuration."
+  "Place the sprue module according to the user configuration."
   [getopt]
-  (let [base-placer (place/module-z0-2d-placer getopt "sprue_negative" false)]
-    (apply maybe/union
-      (map #(base-placer (assoc % :outline-key :sprue))
-           (getopt :wrist-rest :sprues :positions)))))
+  (apply maybe/union
+    (map (fn [anchoring]
+           (place/at-named getopt
+             (merge anchoring {:outline-key :sprue
+                               :preserve-orientation true  ; Override!
+                               ::place/n-dimensions 2})
+             (model/call-module "sprue_negative")))
+         (getopt :wrist-rest :sprues :positions))))
 
 (defn sprue-negative
   "A model of a sprue. This assumes that wrist-rest rotation is modest."
@@ -305,8 +309,10 @@
         pad-above (edge-elevation getopt (/ π 2))
         z4 (+ z3 pad-above)
         z5 (+ z4 (getopt :wrist-rest :mould-thickness))
-        absolute-ne
-          (place/offset-from-anchor getopt (getopt :wrist-rest :anchoring) 2)]
+        absolute-ne (place/at-named getopt
+                                    (merge (getopt :wrist-rest :anchoring)
+                                           {:preserve-orientation true
+                                            ::place/n-dimensions 2}))]
    {:resolution {:spline spline-res
                  :pad (get-resolution getopt :pad :surface :edge :resolution)}
     :spline {:base spline-base
@@ -336,21 +342,22 @@
         width (prop :blocks :width)
         depth (fn [block-key] (prop :blocks block-key :depth))
         height (fn [position] (* 2 (last position)))
-        to-3d #(misc/pad-to-3d % (+ (/ (last heights) 2) (/ width 4)))
+        z (+ (/ (last heights) 2) (/ width 4))
         nuts (fn [base] (mapv #(conj (subvec base 0 2) %) heights))
-        ofa #(place/offset-from-anchor getopt (prop :blocks % :anchoring) 2)
-        partner-side (to-3d (ofa :partner-side))
+        ofa #(place/at-named getopt (merge (prop :blocks % :anchoring)
+                                           {:preserve-orientation true
+                                            ::place/n-dimensions 2}))
+        partner-side (assoc (ofa :partner-side) 2 z)
         wrist-side
           ;; Find the position of the wrist-side block.
-          (to-3d
-            (case authority
-              :mutual (ofa :wrist-side)
-              :partner-side
-                (let [θ (prop :angle)
-                      d (+ (/ (prop :blocks :partner-side :depth) 2)
-                           (prop :blocks :distance)
-                           (/ (prop :blocks :wrist-side :depth) 2))]
-                  (mapv + partner-side [(* d (sin θ)), (* -1 d (cos θ))]))))
+          (case authority
+            :mutual (assoc (ofa :wrist-side) 2 z)
+            :partner-side
+              (let [θ (prop :angle)
+                    d (+ (/ (prop :blocks :partner-side :depth) 2)
+                         (prop :blocks :distance)
+                         (/ (prop :blocks :wrist-side :depth) 2))]
+                (mapv + partner-side [(* d (sin θ)), (* -1 d (cos θ)), 0])))
         angle
           (case authority
             :partner-side (prop :angle)  ; The fixed angle supplied by the user.
@@ -425,7 +432,7 @@
 (defn block-in-place
   "Use the placement module without side, segment or offset."
   [getopt mount-index block-key]
-  (place/wrist-block-place getopt mount-index block-key nil nil nil
+  (place/wrist-block-place getopt mount-index block-key nil nil
     (block-model getopt mount-index block-key)))
 
 (defn- partner-side-block

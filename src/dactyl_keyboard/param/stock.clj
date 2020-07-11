@@ -7,10 +7,7 @@
 ;;; validators and documentation) that are useful in more than one place.
 
 (ns dactyl-keyboard.param.stock
-  (:require [clojure.spec.alpha :as spec]
-            [scad-klupe.schema.iso :as iso]
-            [scad-tarmi.core :as tarmi]
-            [dactyl-keyboard.compass :as compass]
+  (:require [scad-klupe.schema.iso :as iso]
             [dactyl-keyboard.param.schema.parse :as parse]
             [dactyl-keyboard.param.schema.valid :as valid]))
 
@@ -24,41 +21,9 @@
   {:default ::placeholder :parse-fn keyword :validate [::valid/alias]})
 
 (def anchoring-documentation
-  (str "The concept of anchoring is explained [here](configuration.md)."))
-
-(def anchor-metadata
-  {:default :origin :parse-fn keyword :validate [::valid/anchor]})
-(def anchor-documentation
-  (str "A code identifying an anchor point. This can be the default value "
-       "(`origin`) or a name (built-in or alias) identifying a feature."))
-
-(def anchor-side-metadata
-  {:default nil, :parse-fn parse/any-compass-point
-   :validate [(spec/nilable compass/all-short)]})
-(def anchor-side-documentation
-  (str "A compass-point code for one side of the feature named in `anchor`. "
-       "The default is `null`, signifying the centre."))
-
-(def anchor-segment-metadata
-  {:default 0, :parse-fn num, :validate [integer? (complement neg?)]})
-(def anchor-segment-documentation
-  (str "An integer identifying one vertical segment of the feature "
-       "named in `anchor`. The default is `0`, signifying the topmost "
-       "part of the anchor."))
-
-(def anchor-2d-vector-metadata
-  {:default [0 0], :parse-fn vec, :validate [::tarmi/point-2d]})
-(def anchor-3d-vector-metadata
-  {:default [0 0 0], :parse-fn vec, :validate [::tarmi/point-3d]})
-(def compass-incompatible-3d-angle-metadata
-  (assoc anchor-3d-vector-metadata :parse-fn
-         (parse/tuple-of parse/compass-incompatible-angle)))
-(def anchor-2d-offset-documentation
-  "A two-dimensional offset in mm from the feature named in `anchor`.")
-(def anchor-3d-offset-documentation
-  (str "A three-dimensional offset in mm from the feature named in `anchor`. "
-       "This is applied in the anchor’s local frame of reference "
-       "and may therefore be subject to various rotations etc."))
+  (str "The concept of anchoring is explained "
+       "[here](options-anchoring.md), "
+       "along with the parameters available in this section."))
 
 ;; Screw/bolt metadata always includes a diameter and head type.
 (let [defaults {:m-diameter 6, :head-type :countersunk}]

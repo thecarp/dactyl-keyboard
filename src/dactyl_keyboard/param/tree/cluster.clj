@@ -5,8 +5,9 @@
 
 (ns dactyl-keyboard.param.tree.cluster
   (:require [clojure.spec.alpha :as spec]
-            [dactyl-keyboard.param.schema.valid :as valid]
+            [dactyl-keyboard.param.schema.anch :as anch]
             [dactyl-keyboard.param.schema.parse :as parse]
+            [dactyl-keyboard.param.schema.valid :as valid]
             [dactyl-keyboard.param.stock :as stock]))
 
 (def raws
@@ -72,15 +73,7 @@
                              (spec/coll-of ::valid/flexcoord :count 2))]}
     "A map of short names to specific keys by coordinate pair. "
     "These names can be used as anchors for other features."]
-   [:section [:anchoring]
-    "The position of the key cluster relative to something else. "
-     stock/anchoring-documentation]
-   [:parameter [:anchoring :anchor]
-     stock/anchor-metadata
-     stock/anchor-documentation]
-   [:parameter [:anchoring :side]
-     stock/anchor-side-metadata
-     stock/anchor-side-documentation]
-   [:parameter [:anchoring :offset]
-     stock/anchor-3d-vector-metadata
-     stock/anchor-3d-offset-documentation]])
+   [:parameter [:anchoring]
+    anch/anchoring-metadata
+    "Where to place the cluster. "
+    stock/anchoring-documentation]])

@@ -16,10 +16,6 @@ Each heading in this document represents a recognized configuration key in the m
     - Section <a href="#user-content-main-body-rear-housing">`rear-housing`</a>
         - Parameter <a href="#user-content-main-body-rear-housing-include">`include`</a>
         - Section <a href="#user-content-main-body-rear-housing-anchoring">`anchoring`</a>
-            - Parameter <a href="#user-content-main-body-rear-housing-anchoring-anchor">`anchor`</a>
-            - Parameter <a href="#user-content-main-body-rear-housing-anchoring-side">`side`</a>
-            - Parameter <a href="#user-content-main-body-rear-housing-anchoring-segment">`segment`</a>
-            - Parameter <a href="#user-content-main-body-rear-housing-anchoring-offset">`offset`</a>
         - Parameter <a href="#user-content-main-body-rear-housing-size">`size`</a>
         - Section <a href="#user-content-main-body-rear-housing-bevel">`bevel`</a>
             - Parameter <a href="#user-content-main-body-rear-housing-bevel-exterior">`exterior`</a>
@@ -44,8 +40,6 @@ Each heading in this document represents a recognized configuration key in the m
             - Parameter <a href="#user-content-main-body-back-plate-fasteners-distance">`distance`</a>
             - Parameter <a href="#user-content-main-body-back-plate-fasteners-bosses">`bosses`</a>
         - Section <a href="#user-content-main-body-back-plate-anchoring">`anchoring`</a>
-            - Parameter <a href="#user-content-main-body-back-plate-anchoring-anchor">`anchor`</a>
-            - Parameter <a href="#user-content-main-body-back-plate-anchoring-offset">`offset`</a>
     - Section <a href="#user-content-main-body-bottom-plate">`bottom-plate`</a>
         - Parameter <a href="#user-content-main-body-bottom-plate-include">`include`</a>
         - Parameter <a href="#user-content-main-body-bottom-plate-preview">`preview`</a>
@@ -72,10 +66,6 @@ Each heading in this document represents a recognized configuration key in the m
         - Parameter <a href="#user-content-main-body-leds-housing-size">`housing-size`</a>
         - Parameter <a href="#user-content-main-body-leds-emitter-diameter">`emitter-diameter`</a>
         - Parameter <a href="#user-content-main-body-leds-interval">`interval`</a>
-    - Section <a href="#user-content-main-body-foot-plates">`foot-plates`</a>
-        - Parameter <a href="#user-content-main-body-foot-plates-include">`include`</a>
-        - Parameter <a href="#user-content-main-body-foot-plates-height">`height`</a>
-        - Parameter <a href="#user-content-main-body-foot-plates-polygons">`polygons`</a>
 - Section <a href="#user-content-central-housing">`central-housing`</a>
 - Special section <a href="#user-content-custom-bodies">`custom-bodies`</a>
 - Special section <a href="#user-content-flanges">`flanges`</a>
@@ -85,12 +75,7 @@ Each heading in this document represents a recognized configuration key in the m
     - Parameter <a href="#user-content-mcu-preview">`preview`</a>
     - Parameter <a href="#user-content-mcu-body">`body`</a>
     - Parameter <a href="#user-content-mcu-type">`type`</a>
-    - Parameter <a href="#user-content-mcu-intrinsic-rotation">`intrinsic-rotation`</a>
     - Section <a href="#user-content-mcu-anchoring">`anchoring`</a>
-        - Parameter <a href="#user-content-mcu-anchoring-anchor">`anchor`</a>
-        - Parameter <a href="#user-content-mcu-anchoring-side">`side`</a>
-        - Parameter <a href="#user-content-mcu-anchoring-segment">`segment`</a>
-        - Parameter <a href="#user-content-mcu-anchoring-offset">`offset`</a>
     - Section <a href="#user-content-mcu-support">`support`</a>
         - Parameter <a href="#user-content-mcu-support-preview">`preview`</a>
         - Section <a href="#user-content-mcu-support-shelf">`shelf`</a>
@@ -128,10 +113,6 @@ Each heading in this document represents a recognized configuration key in the m
     - Parameter <a href="#user-content-wrist-rest-style">`style`</a>
     - Parameter <a href="#user-content-wrist-rest-preview">`preview`</a>
     - Section <a href="#user-content-wrist-rest-anchoring">`anchoring`</a>
-        - Parameter <a href="#user-content-wrist-rest-anchoring-anchor">`anchor`</a>
-        - Parameter <a href="#user-content-wrist-rest-anchoring-side">`side`</a>
-        - Parameter <a href="#user-content-wrist-rest-anchoring-segment">`segment`</a>
-        - Parameter <a href="#user-content-wrist-rest-anchoring-offset">`offset`</a>
     - Parameter <a href="#user-content-wrist-rest-plinth-height">`plinth-height`</a>
     - Section <a href="#user-content-wrist-rest-shape">`shape`</a>
         - Section <a href="#user-content-wrist-rest-shape-spline">`spline`</a>
@@ -209,7 +190,7 @@ This section contains a nested structure of parameters. Each level within contro
 
 ## Parameter <a id="secondaries">`secondaries`</a>
 
-A map where each item provides a name for a position in space. Such positions exist in relation to other named features of the keyboard and can themselves be used as anchors, most typically as supplementary targets for `tweaks` (see below).
+A map where each item provides a name for a position in space. Such positions exist in relation to other named features of the keyboard and their names can in turn be used as anchors, most typically as supplementary targets for `tweaks` (see below). The concept of anchoring is explained [here](options-anchoring.md), along with the parameters available in this section.
 
 An example:
 
@@ -219,13 +200,12 @@ An example:
       anchor: f0
       side: SE
       segment: 2
-      offset: [1, 0, 0]
     override [null, null, 2]
     translation: [0, 3, 0]
     size: 4
 ```
 
-This example gives the name `s0` to a point near some feature named `f0`, which must be defined elsewhere. All parameters in the `anchoring` map work like their equivalent for primary features like `mcu`, so that `offset` is applied in the vector space of the anchor.
+This example gives the name `s0` to a point near some feature named `f0`, which must be defined elsewhere.
 
 Populated coordinates in `override` replace corresponding coordinates given by the anchor, and `translation` finally shifts the position of the secondary feature in the global vector space.
 
@@ -255,23 +235,7 @@ If `true`, add a rear housing to the main body.
 
 #### Section <a id="main-body-rear-housing-anchoring">`anchoring`</a>
 
-Where to place the middle of the rear housing. The concept of anchoring is explained [here](configuration.md).
-
-##### Parameter <a id="main-body-rear-housing-anchoring-anchor">`anchor`</a>
-
-A code identifying an anchor point. This can be the default value (`origin`) or a name (built-in or alias) identifying a feature.
-
-##### Parameter <a id="main-body-rear-housing-anchoring-side">`side`</a>
-
-A compass-point code for one side of the feature named in `anchor`. The default is `null`, signifying the centre.
-
-##### Parameter <a id="main-body-rear-housing-anchoring-segment">`segment`</a>
-
-An integer identifying one vertical segment of the feature named in `anchor`. The default is `0`, signifying the topmost part of the anchor.
-
-##### Parameter <a id="main-body-rear-housing-anchoring-offset">`offset`</a>
-
-A two-dimensional offset in mm from the feature named in `anchor`.
+Where to place the middle of the rear housing. The concept of anchoring is explained [here](options-anchoring.md), along with the parameters available in this section.
 
 #### Parameter <a id="main-body-rear-housing-size">`size`</a>
 
@@ -387,15 +351,7 @@ If `true`, cut nut bosses into the inside wall of the block.
 
 #### Section <a id="main-body-back-plate-anchoring">`anchoring`</a>
 
-The concept of anchoring is explained [here](configuration.md).
-
-##### Parameter <a id="main-body-back-plate-anchoring-anchor">`anchor`</a>
-
-A code identifying an anchor point. This can be the default value (`origin`) or a name (built-in or alias) identifying a feature.
-
-##### Parameter <a id="main-body-back-plate-anchoring-offset">`offset`</a>
-
-A three-dimensional offset in mm from the feature named in `anchor`. This is applied in the anchor’s local frame of reference and may therefore be subject to various rotations etc.
+Where to place the middle of the back plate. The concept of anchoring is explained [here](options-anchoring.md), along with the parameters available in this section.
 
 ### Section <a id="main-body-bottom-plate">`bottom-plate`</a>
 
@@ -525,22 +481,6 @@ The diameter of a round hole for the light of an LED.
 
 The distance between LEDs on the strip. You may want to apply a setting slightly shorter than the real distance, since the algorithm carving the holes does not account for wall curvature.
 
-### Section <a id="main-body-foot-plates">`foot-plates`</a>
-
-Optional flat surfaces at ground level for adding silicone rubber feet or cork strips etc. to the bottom of the keyboard to increase friction and/or improve feel, sound and ground clearance.
-
-#### Parameter <a id="main-body-foot-plates-include">`include`</a>
-
-If `true`, include foot plates.
-
-#### Parameter <a id="main-body-foot-plates-height">`height`</a>
-
-The height in mm of each mounting plate.
-
-#### Parameter <a id="main-body-foot-plates-polygons">`polygons`</a>
-
-A list describing the horizontal shape, size and position of each mounting plate as a polygon.
-
 ## Section <a id="central-housing">`central-housing`</a>
 
 A major body separate from the main body, located in between and connecting the two halves of a reflected main body. The central housing is documented in detail [here](options-central.md).
@@ -549,7 +489,7 @@ A major body separate from the main body, located in between and connecting the 
 
 Bodies in addition to those predefined by the application.
 
-This feature is intended for dividing up a keyboard case into parts for easier printing (see also `dfm`) or easier assembly. It is not intended for adding novel shapes, such as washable cup holders to fit into `ports` etc. Custom bodies can be combined with `tweaks` to add and separate shapes, but complex novel shapes should typically be designed separately from this application (see `dmote-beam` for an example), or else added as features of the application.
+This feature is intended for dividing up a keyboard case into parts for easier printing and/or easier assembly. It is not intended for adding novel shapes, such as washable cup holders to fit into `ports` etc. Custom bodies can be combined with `tweaks` to add and separate shapes, but complex novel shapes should typically be designed separately from this application (see `dmote-beam` for an example), or else added as features of the application.
 
 The structure of the `custom-bodies` section is a map of new body names to maps of the following parameters:
 
@@ -593,8 +533,8 @@ The structure of the `flanges` section is a map of arbitrary names to maps of th
 Each item in the list of `positions`, in turn, has the following structure:
 
 - `alias` (optional): A name for the position. Unlike the name for the flange as a whole, the alias can be used with `tweaks` to target the screw and build a boss or larger positive shape.
-- `anchoring` (optional): Room for standard 3D anchoring parameters as documented [here](configuration.md).
-- `intrinsic-rotation` (optional): Rotation of the screw around the top of its head.
+- `body` (optional): A code identifying the predefined [body](configuration.md) that contains the screw, before the effect of any custom bodies.
+- `anchoring` (optional): Room for standard anchoring parameters. The concept of anchoring is explained [here](options-anchoring.md), along with the parameters available in this section.
 
 ## Special section <a id="tweaks">`tweaks`</a>
 
@@ -650,29 +590,9 @@ A code name for a form factor. The following values are supported, representing 
 * `teensy-s`: Teensy 2.0.
 * `teensy-xl`: Extra large Teensy, 3.5 or 3.6.
 
-### Parameter <a id="mcu-intrinsic-rotation">`intrinsic-rotation`</a>
-
-A vector of 3 angles in radians. This parameter governs the rotation of the PCBA around its anchor point in the front. By default, the PCBA appears lying flat, with the MCU side up and the connector end facing nominal north, away from the user.
-
 ### Section <a id="mcu-anchoring">`anchoring`</a>
 
-Where to place the MCU PCBA after intrinsic rotation. The concept of anchoring is explained [here](configuration.md).
-
-#### Parameter <a id="mcu-anchoring-anchor">`anchor`</a>
-
-A code identifying an anchor point. This can be the default value (`origin`) or a name (built-in or alias) identifying a feature.
-
-#### Parameter <a id="mcu-anchoring-side">`side`</a>
-
-A compass-point code for one side of the feature named in `anchor`. The default is `null`, signifying the centre.
-
-#### Parameter <a id="mcu-anchoring-segment">`segment`</a>
-
-An integer identifying one vertical segment of the feature named in `anchor`. The default is `0`, signifying the topmost part of the anchor.
-
-#### Parameter <a id="mcu-anchoring-offset">`offset`</a>
-
-A three-dimensional offset in mm from the feature named in `anchor`. This is applied in the anchor’s local frame of reference and may therefore be subject to various rotations etc.
+Where to place the middle of the back plate. The concept of anchoring is explained [here](options-anchoring.md), along with the parameters available in this section. The PCBA has its base point in the front and rotates around that point. By default, the PCBA appears lying flat, with the MCU side up and the connector end facing nominal north, away from the user.
 
 ### Section <a id="mcu-support">`support`</a>
 
@@ -712,7 +632,7 @@ A map of angles, in radians, indexed by cardinal compass points, whereby any and
 
 ##### Section <a id="mcu-support-shelf-sides">`sides`</a>
 
-By default, a shelf includes raised sides to hold on to the PCBA. This is most useful when the shelf is rotated, following the MCU (cf. `intrinsic-rotation`), out of the x-y plane.
+By default, a shelf includes raised sides to hold on to the PCBA. This is most useful when the shelf is rotated, following the MCU, out of the xy plane.
 
 ###### Parameter <a id="mcu-support-shelf-sides-lateral-thickness">`lateral-thickness`</a>
 
@@ -839,6 +759,8 @@ An example with two-dimensional offsets hugging one corner:
     side: SE
     offset: [-1, -1]
 ```
+Other anchoring parameters are not available.
+
 Grip anchor points are all empty by default. They can be occupied, and connected, using `tweaks`.
 
 ## Special section <a id="ports">`ports`</a>
@@ -866,23 +788,7 @@ Preview mode. If `true`, this puts a model of the wrist rest in the same OpenSCA
 
 ### Section <a id="wrist-rest-anchoring">`anchoring`</a>
 
-The concept of anchoring is explained [here](configuration.md). For wrist rests, the vertical component of the anchor’s position is ignored.
-
-#### Parameter <a id="wrist-rest-anchoring-anchor">`anchor`</a>
-
-A code identifying an anchor point. This can be the default value (`origin`) or a name (built-in or alias) identifying a feature.
-
-#### Parameter <a id="wrist-rest-anchoring-side">`side`</a>
-
-A compass-point code for one side of the feature named in `anchor`. The default is `null`, signifying the centre.
-
-#### Parameter <a id="wrist-rest-anchoring-segment">`segment`</a>
-
-An integer identifying one vertical segment of the feature named in `anchor`. The default is `0`, signifying the topmost part of the anchor.
-
-#### Parameter <a id="wrist-rest-anchoring-offset">`offset`</a>
-
-A two-dimensional offset in mm from the feature named in `anchor`.
+Where to place the wrist rest. The concept of anchoring is explained [here](options-anchoring.md), along with the parameters available in this section. For wrist rests, the vertical component of the anchor’s position is ignored, including any vertical offset.
 
 ### Parameter <a id="wrist-rest-plinth-height">`plinth-height`</a>
 

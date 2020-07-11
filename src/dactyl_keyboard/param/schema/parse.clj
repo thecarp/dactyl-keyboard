@@ -10,8 +10,7 @@
             [scad-tarmi.core :refer [π]]
             [scad-klupe.schema.iso]
             [dmote-keycap.schema :as capschema]
-            [dactyl-keyboard.compass :as compass]
-            [dactyl-keyboard.misc :refer [soft-merge]]))
+            [dactyl-keyboard.compass :as compass]))
 
 
 ;;;;;;;;;;;;;
@@ -104,34 +103,6 @@
       (catch ClassCastException _
         (compass-compatible-angle (keyword candidate))))))
 
-(def anchored-2d-position-map
-  {:anchor keyword
-   :side keyword  ; Which side (e.g. corner) of anchor to use.
-   :segment int   ; Which segment of anchor to use.
-   :offset vec})
-
-(def anchored-3d-position-map anchored-2d-position-map)
-
-(def named-secondary-positions
-  (map-of keyword
-    (map-like
-      {:anchoring (map-like anchored-3d-position-map)
-       :override vec
-       :translation vec
-       :size pad-to-3-tuple})))
-
-(def anchored-2d-positions
-  (tuple-of (map-like anchored-2d-position-map)))
-
-(def projecting-2d-positions
-  (tuple-of (map-like (assoc anchored-2d-position-map
-                        :direction compass-compatible-angle))))
-
-(def anchored-polygons
-  (tuple-of
-    (map-like
-      {:points anchored-2d-positions})))
-
 (def nameable-spline
   (tuple-of
     (map-like
@@ -181,91 +152,6 @@
        :direction-point keyword
        :lateral-offset num
        :radial-offset num})))
-
-(def mcu-grip-anchors
-  (tuple-of
-    (map-like
-      {:side keyword
-       :offset vec
-       :alias keyword})))
-
-(let [leaf-skeleton {:anchoring (map-like anchored-3d-position-map)
-                     :sweep int
-                     :size pad-to-3-tuple
-                     :intrinsic-rotation (tuple-of compass-incompatible-angle)}
-      branch-skeleton {:chunk-size int
-                       :highlight boolean}
-      top-extras {:positive boolean
-                  :at-ground boolean
-                  :above-ground boolean
-                  :body keyword}
-      tail-leafer (map-like leaf-skeleton)
-      destructure-leaf
-        (fn parse-leaf
-          ([anchor]
-           (parse-leaf anchor nil))
-          ([anchor side]
-           (parse-leaf anchor side nil nil))
-          ([anchor side segment]
-           (parse-leaf anchor side segment nil))
-          ([anchor side segment sweep]
-           (parse-leaf anchor side segment sweep {}))
-          ([anchor side segment sweep options]
-           {:pre [(map? options)]}
-           (reduce
-             (fn [coll [item path parser]]
-               (cond
-                 (map? item) (soft-merge coll item)
-                 (some? item) (assoc-in coll path (parser item))
-                 :else coll))
-             (merge {:anchoring {:anchor :origin}} options)
-             [[anchor [:anchoring :anchor] keyword]
-              [side [:anchoring :side] keyword]
-              [segment [:anchoring :segment] int]
-              [sweep [:sweep] int]])))
-      dispatch-fn
-        (fn [brancher leafer]
-          (fn dispatch [cnd]
-            (cond
-              (nil? cnd) nil
-              (and (map? cnd) (contains? cnd :hull-around)) (brancher cnd)
-              (map? cnd) (leafer (destructure-leaf cnd))
-              (string? (first cnd)) (leafer (apply destructure-leaf cnd))
-              :else (map dispatch cnd))))
-      tail-brancher (fn parse [candidate]
-                      ((map-like (merge branch-skeleton
-                                        {:hull-around
-                                         (dispatch-fn parse tail-leafer)}))
-                       candidate))]
-  (def tweak-grove
-    "Parse the tweak configuration.
-
-    In local nomenclature, the “tweaks” parameter is a grove of trees. Each
-    node beneath the name level of the grove is a tree that can have
-    some extra properties. Subordinate nodes cannot have these extra properties.
-
-    The grove is parsed using a pair of dispatchers, each with its own branch
-    and leaf parsers. The initial dispatcher replaces itself with a secondary
-    dispatcher each time it passes a branch node, and the secondary
-    dispatcher sustains itself by the trick of its parser being a function that
-    refers to itself and thereby passes itself along by recreating the
-    lower-lever dispatcher on each pass.
-
-    A candidate to the dispatcher can be a lazy sequence describing a single
-    point (a leaf), a lazy sequence of such sequences, or a map. If it is a
-    map, it may contain a similar nested structure, or a predigested leaf.
-
-    The basic leaf parser is permissive, having multiple arities where any
-    positional argument can be replaced by a map. However, if a short-form
-    (sequence) leaf starts with a map, the dispatcher will not identify it as a
-    leaf, because of ambiguity with respect to a node list. A more stateful
-    parser could handle that case."
-    (map-of keyword
-            (dispatch-fn
-              (map-like (merge branch-skeleton top-extras
-                               {:hull-around
-                                (dispatch-fn tail-brancher tail-leafer)}))
-              (map-like (merge leaf-skeleton top-extras))))))
 
 (def keycap-map
   "A parser for the options exposed by the dmote-keycap library.

@@ -35,7 +35,7 @@ key-clusters:
       # To match upstream STL more exactly, raise by the thickness of the
       # bottom plate. The Dactyl-ManuForm was not raised above the ground
       # plane to compensate for a bottom plate, but the DMOTE is.
-      offset: [1, 0, 12.9]
+      extrinsic-offset: [1, 0, 12.9]
     matrix-columns:
     - rows-above-home: 1
       rows-below-home: 1
@@ -62,7 +62,8 @@ key-clusters:
   thumb0:
     anchoring:
       anchor: m00
-      offset: [-2, -28, -6]
+      preserve-orientation: true
+      extrinsic-offset: [-2, -28, -6]
     matrix-columns:
     - rows-above-home: 0
     - rows-above-home: 0
@@ -72,7 +73,8 @@ key-clusters:
   thumb1:
     anchoring:
       anchor: thumb-tl
-      offset: [3.5, -26, -15]
+      preserve-orientation: true
+      extrinsic-offset: [3.5, -26, -15]
     matrix-columns:
     - rows-above-home: 1
     - rows-above-home: 1
@@ -271,23 +273,23 @@ main-body:
         - anchor: thumb-ml
           side: N
           segment: 3
-          offset: [2, 0]
+          intrinsic-offset: [2, 0, 0]
         - anchor: back0
           side: W
           segment: 3
-          offset: [1, 0]
+          intrinsic-offset: [1, 0, 0]
         - anchor: back3
           side: N
           segment: 3
-          offset: [0, -2]
+          intrinsic-offset: [0, -2, 0]
         - anchor: right0
           side: E
           segment: 3
-          offset: [-2, 0]
+          intrinsic-offset: [-2, 0, 0]
         - anchor: m02
           side: S
           segment: 3
-          offset: [-4, -6]
+          intrinsic-offset: [-4, -6, 0]
 tweaks:
   webbing:
     - chunk-size: 3
@@ -387,7 +389,7 @@ tweaks:
       - [thumb-tr, ESE, 0, 1]
   hole-through-big-port:
     - {positive: false,
-       anchoring: {anchor: big-port, side: S, offset: [0, 0, 5]},
+       anchoring: {anchor: big-port, side: S, intrinsic-offset: [0, 0, 5]},
        size: [10.78, 13, 5]}
   hole-through-small-port:
     - {positive: false,
@@ -396,10 +398,10 @@ tweaks:
 mcu:
   include: true
   type: promicro
-  intrinsic-rotation: [0, π/2, 0]
   anchoring:
     anchor: back-plane
-    offset: [-16, -17, 12]
+    intrinsic-offset: [-16, -17, 12]
+    intrinsic-rotation: [0, π/2, 0]
   support:
     shelf:
       include: true
@@ -421,7 +423,7 @@ ports:
       segment: 2
     anchoring:
       anchor: back-plane
-      offset: [-3, 5, -1]
+      intrinsic-offset: [-3, 5, -1]
     holder:
       include: true
       alias: big-holder
@@ -436,7 +438,7 @@ ports:
       segment: 2
     anchoring:
       anchor: back-plane
-      offset: [6, 5, -1]
+      intrinsic-offset: [6, 5, -1]
     holder:
       include: true
       alias: small-holder

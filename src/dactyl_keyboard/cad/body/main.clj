@@ -30,7 +30,10 @@
   [getopt]
   (let [prop (partial getopt :main-body :rear-housing)
         [_ _ z :as ext-size] (prop :size)
-        ext-pos (assoc (place/offset-from-anchor getopt (prop :anchoring) 2)
+        ext-pos (assoc (place/at-named getopt
+                         (merge (prop :anchoring)
+                                {:preserve-orientation true
+                                 ::place/n-dimensions 2}))
                        2 (/ z 2))
         int-pos (update ext-pos 2 #(- % (/ (prop :thickness :roof) 2)))
         ww (* 2 (prop :thickness :walls))
@@ -55,7 +58,7 @@
         w (prop :derived :mount-width)
         leeway (/ (- (prop :derived :size :exterior 1) w) 2)
         position (fn [y]
-                   (place/rhousing-place getopt :interior side 0 nil
+                   (place/rhousing-place getopt :interior side 0
                      [(+ (prop :fasteners (side compass/short-to-long) :offset)
                          (* (compass/delta-x (compass/reverse side)) (/ w 2)))
                       y
@@ -95,7 +98,7 @@
   Exposed for use in shaping a bottom plate under the rear housing and as a
   mask for features that should be contained inside the rear housing."
   [getopt]
-  (place/rhousing-place getopt :exterior nil nil nil
+  (place/rhousing-place getopt :exterior nil nil
     (misc/bevelled-cuboid
       (getopt :main-body :rear-housing :derived :size :exterior)
       (getopt :main-body :rear-housing :bevel :exterior))))
@@ -108,19 +111,19 @@
     (model/union
       (model/intersection
         ;; The mask.
-        (place/rhousing-place getopt :exterior nil nil
-          (prop :derived :position :mask)
-          (apply model/cube (prop :derived :size :mask)))
+        (model/translate (prop :derived :position :mask)
+          (place/rhousing-place getopt :exterior nil nil
+            (apply model/cube (prop :derived :size :mask))))
         ;; The main part of the housing:
         ;; An extra deep interior subtracted from an exterior.
         ;; Using the nominal interior model would usually leave four walls.
         (model/difference
           (rear-housing-exterior getopt)
-          (place/rhousing-place getopt :interior nil nil
-            (prop :derived :position :hollow)
-            (misc/bevelled-cuboid
-              (prop :derived :size :hollow)
-              (prop :bevel :interior)))))
+          (model/translate (prop :derived :position :hollow)
+            (place/rhousing-place getopt :interior nil nil
+              (misc/bevelled-cuboid
+                (prop :derived :size :hollow)
+                (prop :bevel :interior))))))
       (when (fast :bosses)
         (model/intersection
           (rear-housing-exterior getopt)

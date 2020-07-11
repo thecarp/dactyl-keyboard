@@ -63,6 +63,7 @@
     {:origin {::type ::origin}
      :rear-housing-exterior {::type ::rear-housing, ::layer :exterior}
      :rear-housing-interior {::type ::rear-housing, ::layer :interior}
+     :mcu-pcba {::type ::mcu-pcba}
      (getopt :mcu :support :lock :plate :alias) {::type ::mcu-lock-plate}}
 
     ;; Keys:

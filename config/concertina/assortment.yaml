@@ -13,7 +13,7 @@ custom-bodies:
     cut:
       shape:
         - [assortment1, E,
-           {anchoring: {offset: [100, 0, 0]},
+           {anchoring: {intrinsic-offset: [100, 0, 0]},
             size: [200, 200, 200]}]
   right-hand-bookend:
     include: true
@@ -21,7 +21,7 @@ custom-bodies:
     cut:
       shape:
         - [assortment1, W,
-           {anchoring: {offset: [-100, 0, 0]},
+           {anchoring: {intrinsic-offset: [-100, 0, 0]},
             size: [200, 200, 200]}]
 flanges:
   left-assortment-divider-flange:
@@ -36,22 +36,22 @@ flanges:
         anchor: assortment1
         side: NW
         segment: 0
-        offset: [-2, -14, 6]
-      intrinsic-rotation: [0, π/2, 0]
+        intrinsic-rotation: [0, π/-2, 0]
+        intrinsic-offset: [-2, -14, 6]
     - anchoring:
         anchor: assortment1
         side: SW
         segment: 2
-        offset: [-2, 15, -1.75]
-      intrinsic-rotation: [0, π/2, 0]
+        intrinsic-rotation: [0, π/-2, 0]
+        intrinsic-offset: [-2, 15, -1.75]
 ports:
   # Three slots follow for assortment drawers, with 3.5 mm between each.
   assortment1:
     include: true
     size: [162, 92, 25]
     anchoring:
-      offset: [0, -55, 108]
-    intrinsic-rotation: [0, 0, π]
+      intrinsic-rotation: [0, 0, π]
+      intrinsic-offset: [0, -55, 108]
     holder:
       include: true
       alias: assortment1-holder
@@ -60,8 +60,8 @@ ports:
     include: true
     size: [162, 92, 25]
     anchoring:
-      offset: [0, -55, 79.5]
-    intrinsic-rotation: [0, 0, π]
+      intrinsic-rotation: [0, 0, π]
+      intrinsic-offset: [0, -55, 79.5]
     holder:
       include: true
       alias: assortment2-holder
@@ -70,8 +70,8 @@ ports:
     include: true
     size: [162, 92, 25]
     anchoring:
-      offset: [0, -55, 51]
-    intrinsic-rotation: [0, 0, π]
+      intrinsic-rotation: [0, 0, π]
+      intrinsic-offset: [0, -55, 51]
     holder:
       include: true
       alias: assortment3-holder
@@ -83,34 +83,42 @@ tweaks:
   central-dividers:
   - at-ground: true
     hull-around:
-    - [assortment1, NE, {anchoring: {offset: [0.5, -1, 0]}, size: 1}]
-    - [assortment1, SE, {anchoring: {offset: [0.5, 0, 0]}, size: 1}]
+    - [assortment1, NE, {anchoring: {intrinsic-offset: [0.5, -1, 0]}, size: 1}]
+    - [assortment1, SE, {anchoring: {intrinsic-offset: [0.5, 0, 0]}, size: 1}]
   - at-ground: true
     hull-around:
-    - [assortment1, NW, {anchoring: {offset: [-0.5, -1, 0]}, size: 1}]
-    - [assortment1, SW, {anchoring: {offset: [-0.5, 0, 0]}, size: 1}]
+    - [assortment1, NW, {anchoring: {intrinsic-offset: [-0.5, -1, 0]}, size: 1}]
+    - [assortment1, SW, {anchoring: {intrinsic-offset: [-0.5, 0, 0]}, size: 1}]
   central-flanges:
   - hull-around:
-    - [assortment1, NW, 0, {anchoring: {offset: [0, -2, 0]}, size: 4}]
-    - [assortment1, NW, 0, {anchoring: {offset: [0, -17, 15]}, size: 4}]
-    - [assortment1, NW, 0, {anchoring: {offset: [0, -17, 0]}, size: 4}]
-    - [assortment1, NW, 0, {anchoring: {offset: [30, -2, 0]}, size: 4}]
+    - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [0, -2, 0]}, size: 4}]
+    - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [0, -17, 15]}, size: 4}]
+    - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [0, -17, 0]}, size: 4}]
+    - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [30, -2, 0]}, size: 4}]
   - hull-around:
-    - [assortment1, NE, 0, {anchoring: {offset: [0, -2, 0]}, size: 4}]
-    - [assortment1, NE, 0, {anchoring: {offset: [0, -17, 15]}, size: 4}]
-    - [assortment1, NE, 0, {anchoring: {offset: [0, -17, 0]}, size: 4}]
-    - [assortment1, NE, 0, {anchoring: {offset: [-30, -2, 0]}, size: 4}]
+    - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [0, -2, 0]}, size: 4}]
+    - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [0, -17, 15]}, size: 4}]
+    - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [0, -17, 0]}, size: 4}]
+    - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [-30, -2, 0]}, size: 4}]
   bosses-beneath-drawer-stack-front:
   - hull-around:
-    - [assortment3, NW, 2, {anchoring: {offset: [6, -5, -2]}, size: [12, 10, 4]}]
-    - [assortment3, NW, 2, {anchoring: {offset: [9, -5, -1]}, size: [18, 10, 2]}]
+    - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [6, -5, -2]},
+                            size: [12, 10, 4]}]
+    - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [9, -5, -1]},
+                            size: [18, 10, 2]}]
   - hull-around:
-    - [assortment3, NE, 2, {anchoring: {offset: [-6, -5, -2]}, size: [12, 10, 4]}]
-    - [assortment3, NE, 2, {anchoring: {offset: [-9, -5, -1]}, size: [18, 10, 2]}]
+    - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [-6, -5, -2]},
+                            size: [12, 10, 4]}]
+    - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [-9, -5, -1]},
+                            size: [18, 10, 2]}]
   bosses-beneath-drawer-stack-rear:
   - hull-around:
-    - [assortment3, SW, 2, {anchoring: {offset: [6, 9, -2]}, size: [12, 20, 4]}]
-    - [assortment3, SW, 2, {anchoring: {offset: [9, 9, -1]}, size: [18, 20, 2]}]
+    - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [6, 9, -2]},
+                            size: [12, 20, 4]}]
+    - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [9, 9, -1]},
+                            size: [18, 20, 2]}]
   - hull-around:
-    - [assortment3, SE, 2, {anchoring: {offset: [-6, 9, -2]}, size: [12, 20, 4]}]
-    - [assortment3, SE, 2, {anchoring: {offset: [-9, 9, -1]}, size: [18, 20, 2]}]
+    - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [-6, 9, -2]},
+                            size: [12, 20, 4]}]
+    - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [-9, 9, -1]},
+                            size: [18, 20, 2]}]

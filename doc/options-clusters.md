@@ -11,9 +11,6 @@ This specific document describes options for the general outline and position of
 - Parameter <a href="#user-content-style">`style`</a>
 - Parameter <a href="#user-content-aliases">`aliases`</a>
 - Section <a href="#user-content-anchoring">`anchoring`</a>
-    - Parameter <a href="#user-content-anchoring-anchor">`anchor`</a>
-    - Parameter <a href="#user-content-anchoring-side">`side`</a>
-    - Parameter <a href="#user-content-anchoring-offset">`offset`</a>
 
 ## Parameter <a id="matrix-columns">`matrix-columns`</a>
 
@@ -43,19 +40,7 @@ A map of short names to specific keys by coordinate pair. These names can be use
 
 ## Section <a id="anchoring">`anchoring`</a>
 
-The position of the key cluster relative to something else. The concept of anchoring is explained [here](configuration.md).
-
-### Parameter <a id="anchoring-anchor">`anchor`</a>
-
-A code identifying an anchor point. This can be the default value (`origin`) or a name (built-in or alias) identifying a feature.
-
-### Parameter <a id="anchoring-side">`side`</a>
-
-A compass-point code for one side of the feature named in `anchor`. The default is `null`, signifying the centre.
-
-### Parameter <a id="anchoring-offset">`offset`</a>
-
-A three-dimensional offset in mm from the feature named in `anchor`. This is applied in the anchor’s local frame of reference and may therefore be subject to various rotations etc.
+Where to place the cluster. The concept of anchoring is explained [here](options-anchoring.md), along with the parameters available in this section.
 
 ⸻
 

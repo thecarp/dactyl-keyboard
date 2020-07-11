@@ -23,8 +23,7 @@
   [getopt shape]
   (->>
     shape
-    (model/translate
-      (place/offset-from-anchor getopt (getopt :main-body :back-plate :anchoring) 3))
+    (place/at-named getopt (getopt :main-body :back-plate :anchoring))
     (model/translate [0 0 (/ (getopt :main-body :back-plate :beam-height) -2)])))
 
 (defn backplate-shape
@@ -128,8 +127,7 @@
   "Negative space for one port."
   [getopt id]
   (let [[[_ x] [_ y] z] (place/port-hole-size getopt id)]
-    (maybe/translate (place/port-hole-offset getopt {:anchor id})
-      (model/cube x y z))))
+    (model/cube x y z)))
 
 (defn- port-hole-flared
   "This comes with a flared front plate. This version is suitable for use as
@@ -139,12 +137,11 @@
   (let [[[_ x] [_ y] z] (place/port-hole-size getopt id)]
     (model/union
       (port-hole-base getopt id)
-      (maybe/translate (place/port-hole-offset getopt {:anchor id})
-        (model/translate [0 (/ y 2) 0]
-          (model/hull
-            (model/cube x misc/wafer z)
-            (model/translate [0 1 0]
-              (model/cube (inc x) misc/wafer (inc z)))))))))
+      (model/translate [0 (/ y 2) 0]
+        (model/hull
+          (model/cube x misc/wafer z)
+          (model/translate [0 1 0]
+            (model/cube (inc x) misc/wafer (inc z))))))))
 
 (defn port-holder
   "Positive space for one port. Take the ID of the port, not the holder."
@@ -167,15 +164,16 @@
   [getopt bodies positive]
   (apply maybe/union
     (map (fn [id]
-           (when (and (getopt :ports id :include)
-                      ((anch/resolve-body getopt
-                         (getopt :ports id :body)
-                         (getopt :ports id :anchoring :anchor))
-                       bodies)
-                      (or (not positive)
-                          (getopt :ports id :holder :include)))
-             (place/port-place getopt id
-               ((if positive port-holder port-hole-flared) getopt id))))
+           (let [port (partial getopt :ports id)]
+             (when (and (port :include)
+                        (or (not positive) (port :holder :include))
+                        ((anch/resolve-body getopt
+                           (port :body)
+                           (port :anchoring :anchor))
+                         bodies))
+               (let [subject-fn (if positive port-holder port-hole-flared)
+                     subject (subject-fn getopt id)]
+                 (place/at-named getopt {:anchor id} subject)))))
          (keys (getopt :ports)))))
 
 ;; Unions of the positive and negative spaces for holding all ports, in place.
@@ -224,27 +222,3 @@
          (place/flange-place getopt flange position-index 0
            (misc/merge-bolt {:negative true} bolt-properties)))
        (filter (partial flange-filter getopt) (filtered-flanges getopt))))
-
-
-;;;;;;;;;;;;;;;;;;;;
-;; Minor Features ;;
-;;;;;;;;;;;;;;;;;;;;
-
-(defn- foot-point
-  [getopt point-spec]
-  (place/offset-from-anchor getopt point-spec 2))
-
-(defn- foot-plate
-  [getopt polygon-spec]
-  (model/extrude-linear
-    {:height (getopt :main-body :foot-plates :height), :center false}
-    (model/polygon (map (partial foot-point getopt) (:points polygon-spec)))))
-
-(defn foot-plates
-  "Model plates from polygons.
-  Each vector specifying a point in a polygon must have an anchor (usually a
-  key alias) and a corner thereof identified by a direction tuple. These can
-  be followed by a two-dimensional offset for tweaking."
-  [getopt]
-  (apply maybe/union
-    (map (partial foot-plate getopt) (getopt :main-body :foot-plates :polygons))))

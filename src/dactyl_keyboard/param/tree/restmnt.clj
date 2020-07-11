@@ -5,6 +5,7 @@
 
 (ns dactyl-keyboard.param.tree.restmnt
   (:require [clojure.spec.alpha :as spec]
+            [dactyl-keyboard.param.schema.anch :as anch]
             [dactyl-keyboard.param.schema.parse :as parse]
             [dactyl-keyboard.param.schema.valid :as valid]
             [dactyl-keyboard.param.stock :as stock]))
@@ -64,34 +65,19 @@
    [:parameter [:blocks :partner-side :body]
     {:default :auto :parse-fn keyword :validate [::valid/body]}
     "A code identifying the [body](configuration.md) that houses the block."]
-   [:section [:blocks :partner-side :anchoring]
-    "Where to place the block."]
-   [:parameter [:blocks :partner-side :anchoring :anchor]
-    stock/anchor-metadata stock/anchor-documentation]
-   [:parameter [:blocks :partner-side :anchoring :side]
-    stock/anchor-side-metadata stock/anchor-side-documentation]
-   [:parameter [:blocks :partner-side :anchoring :segment]
-    stock/anchor-segment-metadata stock/anchor-segment-documentation]
-   [:parameter [:blocks :partner-side :anchoring :offset]
-    stock/anchor-2d-vector-metadata stock/anchor-2d-offset-documentation]
+   [:parameter [:blocks :partner-side :anchoring]
+    anch/anchoring-metadata
+    "Where on the ground to place the block. "
+    stock/anchoring-documentation]
    [:parameter [:blocks :partner-side :depth]
     {:default 1 :parse-fn num}
     "The thickness of the block in mm along the axis of the fastener(s)."]
    [:section [:blocks :wrist-side]
     "A block on the side of the wrist rest."]
-   [:section [:blocks :wrist-side :anchoring]
-    "Where to place the block. This entire section is ignored with "
-    "`partner-side` authority."]
-   [:parameter [:blocks :wrist-side :anchoring :anchor]
-    stock/anchor-metadata stock/anchor-documentation "\n\n"
-    "Whereas the partner-side mount is typically anchored to a key, the "
-    "wrist-side mount is typically anchored to a named point on the plinth."]
-   [:parameter [:blocks :wrist-side :anchoring :side]
-    stock/anchor-side-metadata stock/anchor-side-documentation]
-   [:parameter [:blocks :wrist-side :anchoring :segment]
-    stock/anchor-segment-metadata stock/anchor-segment-documentation]
-   [:parameter [:blocks :wrist-side :anchoring :offset]
-    stock/anchor-2d-vector-metadata stock/anchor-2d-offset-documentation]
+   [:parameter [:blocks :wrist-side :anchoring]
+    anch/anchoring-metadata
+    "Where on the ground to place the block, as for the partner side. "
+    "This entire section is ignored with `partner-side` authority."]
    [:parameter [:blocks :wrist-side :depth]
     {:default 1 :parse-fn num}
     "The thickness of the mount in mm along the axis of the fastener(s)."]

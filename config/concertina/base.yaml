@@ -31,7 +31,8 @@ key-clusters:
   main:
     anchoring:
       anchor: ca-ether
-      offset: [33, 8, 10]
+      preserve-orientation: true
+      extrinsic-offset: [33, 8, 10]
     matrix-columns:
     - rows-above-home: 1
       rows-below-home: 1
@@ -63,7 +64,8 @@ key-clusters:
   thumb0:
     anchoring:
       anchor: m0F
-      offset: [8.5, -29, 10]
+      preserve-orientation: true
+      extrinsic-offset: [8.5, -29, 10]
     matrix-columns:
     - rows-above-home: 1
     - rows-above-home: 1
@@ -419,15 +421,15 @@ main-body:
           include-threading: false
         positions:
         - anchor: ca-far-base
-          offset: [-6, -21]
+          extrinsic-offset: [-7, -21, 0]
         - anchor: m5L
           side: SE
           segment: 1
-          offset: [-3.5, 0]
+          extrinsic-offset: [-3.5, 0, 0]
         - anchor: m5M
           side: SE
           segment: 1
-          offset: [-3, -2.5]
+          extrinsic-offset: [-3, -2.5, 0]
 central-housing:
   include: true
   shape:
@@ -449,7 +451,7 @@ central-housing:
         alias: ca-near-lower-1
         offset: [5, 0, 0]
     - base:
-        offset: [35, -55, 44]
+        offset: [35, -55, 38]
       adapter:
         alias: ca-near-lower-2
         offset: [5, 0, 0]
@@ -458,11 +460,7 @@ central-housing:
         right-hand-alias: ci-near-wall-2
       adapter:
         alias: ca-near-lower-3
-        offset: [5, 0, 0]
-    - base:
-        offset: [35, -55, 58]
-      adapter:
-        alias: ca-near-upper-1
+        offset: [5, 0, -5]
     - base:
         offset: [0, -55, 90]
         right-hand-alias: ci-near-wall-4
@@ -564,7 +562,7 @@ central-housing:
         radial-offset: -10
       - starting-point: ci-near-wall-2
         lateral-offset: 5
-        radial-offset: -1
+        radial-offset: -5
       - starting-point: ci-near-wall-4
         lateral-offset: 5
         radial-offset: 3
@@ -590,17 +588,15 @@ central-housing:
       scale: [2.5, 1]
     fastener-positions:
     - anchor: origin
-      offset: [15, 36]
-      direction: north
+      intrinsic-offset: [15, 36, 0]
     - anchor: origin
-      offset: [15, -51]
-      direction: south
+      intrinsic-rotation: [0, 0, π]
+      intrinsic-offset: [15, -51, 0]
     - anchor: ci-near-base
-      offset: [-15, 4]
-      direction: south
+      intrinsic-rotation: [0, 0, π]
+      intrinsic-offset: [-15, 4, 0]
     - anchor: ci-far-base
-      offset: [-42, -4]
-      direction: north
+      intrinsic-offset: [-42, -4, 0]
 custom-bodies:
   # For ease of assembly, print the thumb cluster separately.
   thumb-cluster:
@@ -608,9 +604,10 @@ custom-bodies:
     parent-body: main
     cut:
       shape:
-        - [thumb-cluster-plate,
-           {anchoring: {offset: [0, 0, 22]},
-            intrinsic-rotation: [π/5, 0, 0],
+        - [t1C,
+           {anchoring: {preserve-orientation: true,
+                        intrinsic-rotation: [π/5, 0, 0],
+                        extrinsic-offset: [0, 0, 22]},
             size: [150, 150, 50]}]
 flanges:
   main-to-thumb-flange:
@@ -627,22 +624,25 @@ flanges:
         anchor: t0F
         side: S
         segment: 3
-        offset: [4, -6, -5]
-      intrinsic-rotation: [π, π/10, π/-10]
+        preserve-orientation: true
+        intrinsic-rotation: [π, π/10, π/-10]
+        intrinsic-offset: [4, -3, -7]
     - alias: f0B
       anchoring:
         anchor: t3L
         side: N
         segment: 3
-        offset: [0, 3, -3]
-      intrinsic-rotation: [π*-0.7, 0, 0]
+        preserve-orientation: true
+        intrinsic-rotation: [π*-0.7, π/-15, 0]
+        intrinsic-offset: [0, 4, 0]
     - alias: f0C
       anchoring:
         anchor: t3F
         side: SW
         segment: 3
-        offset: [7, -6, 0]
-      intrinsic-rotation: [π*1.00, π/-8, 0]
+        preserve-orientation: true
+        intrinsic-rotation: [π, π/-8, 0]
+        intrinsic-offset: [7, -6, -3]
 tweaks:
   near-wall:  # Up the south side of the main key cluster:
   - hull-around:
@@ -665,7 +665,6 @@ tweaks:
     - [sec-near-upper-1-1]
   - hull-around:
     - [ca-near-lower-3]
-    - [ca-near-upper-1]
     - [sec-near-upper-1]
     - [sec-near-upper-1-1]
   top-wall:  # The roof of the main key cluster.
@@ -861,7 +860,7 @@ tweaks:
   - chunk-size: 3
     hull-around:
     - [sec-near-upper-1]
-    - [ca-near-upper-1]
+    - [ca-near-lower-3]
     - [sec-near-upper-2a]
     - [ca-near-upper-2]
   - hull-around:
@@ -951,19 +950,19 @@ tweaks:
   - hull-around:  # Wide sides on the port holder for printing ease and strength.
     - [ext-usb-holder]
     - [ext-usb-holder,
-       {anchoring: {side: NW, segment: 1, offset: [-10, 0, 0]}}]
+       {anchoring: {side: NW, segment: 1, intrinsic-offset: [-10, 0, 0]}}]
     - [ext-usb-holder,
-       {anchoring: {side: NE, segment: 1, offset: [5, 0, 0]}}]
+       {anchoring: {side: NE, segment: 1, intrinsic-offset: [5, 0, 0]}}]
   - positive: false  # A dent in the interior wall, for DFM.
     hull-around:
     - [ext-usb-hole]
     - [ext-usb-hole,
-       {anchoring: {side: E, segment: 1, offset: [1, 0, 0]}}]
+       {anchoring: {side: E, segment: 1, intrinsic-offset: [1, 0, 0]}}]
   - positive: false  # A hole for USB pins and a locking flange.
     hull-around:
-    - [ext-usb-holder,
-       {anchoring: {side: S, segment: 1, offset: [3, 0, 2]},
-        size: [16, 2.01, 12]}]
+    - [ext-usb-hole,
+       {anchoring: {side: S, segment: 1, intrinsic-offset: [3, -2, 2]},
+        size: [16, 4.01, 12]}]
   bottom:
   # A thin strip along the east side of the main cluster.
   # This comes in three parts because hulling the entire strip would extend the
@@ -998,10 +997,10 @@ tweaks:
     - [ca-bottom-2]
 mcu:
   include: true
-  intrinsic-rotation: [π/-2, π/4, π]
   anchoring:
     anchor: ci-far-base
-    offset: [-22, -5, 70]
+    intrinsic-rotation: [π/-2, π/4, π]
+    intrinsic-offset: [-22, -5, 70]
   support:
     shelf:
       include: true
@@ -1020,15 +1019,12 @@ ports:
     type: usb-full-2b
     anchoring:
       anchor: ci-far-base
-      offset: [-22, 0, 25]
+      intrinsic-offset: [-22, 0, 25]
     holder:
       include: true
       alias: ext-usb-holder
       thickness: 2
 secondaries:
-  thumb-cluster-plate:
-    anchoring:
-      anchor: t1C
   m5L1:
     anchoring:
       anchor: m5L
@@ -1049,35 +1045,35 @@ secondaries:
   sec-near-roof:
     anchoring:
       anchor: ca-near-roof
-      offset: [0, -0.5, -1]
+      intrinsic-offset: [0, -0.5, -1]
     size: 2
   sec-near-upper-1:
     anchoring:
-      anchor: ca-near-upper-1
-      offset: [-2, 1, 6]
+      anchor: ca-near-lower-3
+      intrinsic-offset: [-2, 1, 6]
     size: 2
   sec-near-upper-1-1:
     anchoring:
       anchor: sec-near-upper-1
-      offset: [9, 0, 0]
+      intrinsic-offset: [9, 0, 0]
     size: 2
   sec-near-upper-2a:
     anchoring:
       anchor: ca-near-upper-2
-      offset: [10, 1, -6]
+      intrinsic-offset: [10, 1, -6]
     size: 2
   sec-near-upper-2b:
     anchoring:
       anchor: ca-near-upper-2
-      offset: [7, 1, 7]
+      intrinsic-offset: [7, 1, 7]
     size: 2
   sec-near-upper-2b-1:
     anchoring:
       anchor: sec-near-upper-2b
-      offset: [1, -12, 1]
+      intrinsic-offset: [1, -12, 1]
     size: 2
   sec-near-upper-2c:
     anchoring:
       anchor: ca-near-upper-2
-      offset: [2, 1, 10]
+      intrinsic-offset: [2, 1, 10]
     size: 2

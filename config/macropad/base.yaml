@@ -5,7 +5,7 @@ key-clusters:
   main:
     anchoring:
       anchor: origin
-      offset: [0, 0, 4.5]
+      intrinsic-offset: [0, 0, 4.5]
     matrix-columns:
     - rows-above-home: 3
     - rows-above-home: 3
@@ -54,10 +54,10 @@ secondaries:
     translation: [0, 0, -10]
 mcu:
   include: true
-  intrinsic-rotation: [0, π/2, π/-2]  # Stand on the long edge.
   anchoring:
     anchor: back-wall
-    offset: [0, -3.5, 0]
+    intrinsic-rotation: [0, π/2, π/-2]  # Stand on the long edge.
+    intrinsic-offset: [0, -3.5, 0]
   support:
     lock:
       include: true

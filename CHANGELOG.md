@@ -20,6 +20,8 @@ version 0.2.0, thus covering only a fraction of the project’s history.
         - Parameters named `corner` have been **renamed** to `side`. This is
           because they now take codes for cardinal compass points as well as
           actual corners.
+        - The single `offset` parameter has been split into intrinsic and
+          extrinsic parameters.
         - The parameter governing how to source the angle of fasteners for a
           wrist rest mount has been renamed from `anchoring` to `authority` to
           remove ambiguity.
@@ -106,10 +108,12 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       3.
     - The default `side` (previously `corner`) of a target anchor is now `nil`
       (YAML: `null` or omission), meaning the centre (no side).
-- Anchoring one feature to another no longer imposes a rotation as often.
-  Thus the MCU's `rotation` parameter has moved out of its `anchoring` map
-  (previously `position`), to a new name (`intrinsic-rotation`) and will be
-  needed more often.
+- Whether or not anchoring one feature to another imposes rotation is now more
+  consistent and more directly controllable.
+    - The MCU's `rotation` parameter has been removed in favour of richer
+      general anchoring options.
+    - 2D features that stick to the floor now get less special treatment and no
+      longer take 2D offset coordinates.
 - The default size of a tweak has changed from the size of a key-mount corner
   post to a nodule of 10⁻⁹ mm³, effectively a mere point. This matches the
   way that the rear and central housings, and some other features, are now
@@ -125,12 +129,16 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - Mounts for wrist rests no longer have peaked caps by default. Instead, tops
   are bevelled like the sides, and the body of the mount has its nominal size
   at its base instead of at its top only, to help with tweaking.
+- The `foot-plates` feature has been removed. Its functionality is now
+  relatively easy to replicate with `secondaries` and `tweaks`.
 - File names have changed where they correspond directly to bodies.
 
 ### Added
 - Documentation:
     - An execution guide, as a new document branched off from the introduction.
     - A general guide to concepts in the configuration layer.
+    - A guide to anchoring parameters.
+    - A guide to arbitrary shapes.
     - Tables of content in auto-generated documents.
     - Stock descriptions of recurring parameters.
 - Support for a number of different types of MCUs beyond the Pro Micro:
@@ -141,9 +149,20 @@ version 0.2.0, thus covering only a fraction of the project’s history.
     - Custom bodies.
     - Flanges: Arbitrarily positioned screws for connecting custom bodies to
       their parent bodies.
+- Improved anchoring.
+    - Homogeneous anchoring parameters, including new intrinsic and extrinsic
+      translation and rotation of all anchorable features.
+        - Full anchoring parameters for key clusters, wrist-rest mounts etc.
+        - The ability to preserve orientation in anchoring without working via
+          a secondary.
+    - Anchoring to the MCU PCBA.
+    - Anchoring to a wider array of the parts of a key mount, including
+      different sides of its wall, using cardinal and intercardinal compass
+      points, whereas before, only points intermediate between cardinals and
+      intercardinals could be used.
 - The `by-key` section of parameters has become more flexible.
-    - It is now possible to influence all keys on a row, without duplicating
-      settings for all columns in that row.
+  It is now possible to influence all keys on a row, without duplicating
+  settings for all columns in that row.
     - `sides` is now a selection criterion just like `clusters`, `columns` and
       `rows`, matching the general strengthening of the concept of sides in
       this version.
@@ -170,13 +189,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - Support for specifying sizes with less than 3-tuples.
 - Support for specifying angles with mathematical formulae using π.
 - A `size` property of `secondaries`, for terser `tweaks`.
-- The ability to anchor things to a wider array of the parts of a key mount,
-  including different sides of its wall, using cardinal and intercardinal
-  compass points, whereas before, only points intermediate between cardinals
-  and intercardinals could be used.
 - The ability to override specific coordinates for secondary named positions.
-- Full anchoring parameters for wrist-rest mounts.
-- A `side` parameter for anchoring key clusters.
 - A GNU Make target for the Dactyl-ManuForm.
 
 ### Fixed
@@ -217,7 +230,8 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       compass code moved out. This makes two `misc` modules.
     - `poly`, collecting helper functions for making polyhedra.
     - `tweak`, breaking tweak plating out of `body` and `bottom`.
-    - Split the `schema` module into separate modules for parsers and specs.
+    - Split the `schema` module into separate modules for parsers, specs
+      and reusable stock structures.
 - The parameter interpreter now bans `nil` only as a function of explicit
   validators, no longer categorically.
 - Removed functions from the derived user configuration.
@@ -239,9 +253,13 @@ configuration files. Salient points:
   confusion with the bolt of a lock.
 - To compensate for the changed default orientation of the MCU in an existing
   custom configuration, use the moved `intrinsic-rotation` setting for your MCU
-  support, with the approximate value `[0, 1.5708, 0]`, plus something for the
-  z axis if that used to be rotated by its anchor.
+  support, with the value `[0, π/2, 0]`.
 - Rename `corner` parameters to `side`.
+- Rename `anchoring` → `offset` to `intrinsic-offset`, unless you want to make
+  sure it happens in global vector space, in which case rename it to
+  `extrinsic-offset`.
+- For features that were not previously rotated with their anchors and should
+  not be, add `preserve-orientation` to `anchoring`.
 - Remove `connection` and add equivalent settings to the new `ports` map.
 
 ## [Version 0.5.1] - 2019-10-16

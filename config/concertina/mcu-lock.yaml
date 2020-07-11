@@ -13,7 +13,7 @@ mcu:
   anchoring:
     anchor: ci-far-base
     side: NNE
-    offset: [-18, -2, -3]
+    intrinsic-offset: [-18, -2, -3]
   support:
     shelf:
       include: false
@@ -30,9 +30,9 @@ mcu:
     anchor: mcu-plate
     side: SE
     segment: 2
-    offset: [-2, 8, 0]
+    intrinsic-offset: [-2, 8, 0]
   mcu-SW:
     anchor: mcu-plate
     side: SW
     segment: 2
-    offset: [2, 8, 0]
+    intrinsic-offset: [2, 8, 0]

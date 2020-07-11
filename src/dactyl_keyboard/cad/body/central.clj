@@ -334,10 +334,10 @@
   "Place an adapter between the housing polyhedron and a case wall."
   [getopt alias]
   {:pre [(keyword? alias)]}
-  (let [shape (model/cube wafer wafer wafer)]
-    (model/hull
-      (place/reckon-from-anchor getopt alias {:depth :outer, :subject shape})
-      (place/reckon-from-anchor getopt alias {:depth :inner, :subject shape}))))
+  (apply model/hull
+    (for [depth [:outer :inner]]
+      (place/at-named getopt {:anchor alias, :depth depth}
+        (model/cube wafer wafer wafer)))))
 
 (defn lip-body-right
   "A lip for an adapter."
@@ -378,4 +378,3 @@
   (maybe/union
     (adapter-fastener-receivers getopt)
     (adapter-right-fasteners getopt)))
-

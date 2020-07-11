@@ -34,10 +34,10 @@ tweaks:
       - [mcu-base-key, ENE, 0]
 mcu:
   type: promicro
-  intrinsic-rotation: [0, 0, 0]  # Lie flat.
-  anchoring:
+  anchoring:  # Override base configuration file.
     anchor: big-port
-    offset: [18, 0, -8]
+    intrinsic-rotation: [0, 0, 0]  # Lie flat.
+    intrinsic-offset: [18, 0, -8]  # Move in low beside big-port.
   support:
     shelf:
       include: false
@@ -47,29 +47,29 @@ mcu:
         # One group of anchors goes round the south-west corner.
         - alias: grip-west-corner-forward
           side: SW
-          offset: [-1, -0.5]
+          offset: [-1, -0.5, 0]
         - alias: grip-west-corner-backward
           side: SW
-          offset: [-1, -1]
+          offset: [-1, -1, 0]
         - alias: grip-west-center-outermost
           side: SW
-          offset: [4, -1]
+          offset: [4, -1, 0]
         - alias: grip-west-center-innermost
           side: SW
-          offset: [8, 0.5]
+          offset: [8, 0.5, 0]
         # A corresponding group goes round the south-east corner.
         - alias: grip-east-corner-forward
           side: SE
-          offset: [1, -0.5]
+          offset: [1, -0.5, 0]
         - alias: grip-east-corner-backward
           side: SE
-          offset: [1, -1]
+          offset: [1, -1, 0]
         - alias: grip-east-center-outermost
           side: SE
-          offset: [-4, -1]
+          offset: [-4, -1, 0]
         - alias: grip-east-center-innermost
           side: SE
-          offset: [-8, 0.5]
+          offset: [-8, 0.5, 0]
         # A pair of anchors above and further behind the PCB.
         # These serve as a bridge to the key webbing.
         - alias: grip-rear-west

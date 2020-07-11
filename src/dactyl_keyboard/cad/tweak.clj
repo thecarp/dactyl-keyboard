@@ -1,10 +1,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; The Dactyl-ManuForm Keyboard — Opposable Thumb Edition              ;;
-;; Tweak Plating                                                       ;;
+;; Arbitrary Shapes and Tweaks                                         ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; This module describes models for a general system of tweaks. Tweaks alter
-;;; the shape of the keyboard case by connecting named features.
+;;; This module describes models for a general system of arbitrary shapes.
+;;; Tweaks, being the main use case, alter the shape of the keyboard case
+;;; by connecting named features.
 
 (ns dactyl-keyboard.cad.tweak
   (:require [clojure.spec.alpha :as spec]
@@ -20,7 +21,7 @@
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.key.web :refer [web-post]]
             [dactyl-keyboard.cad.key :refer [single-plate]]
-            [dactyl-keyboard.param.schema.valid :as valid]
+            [dactyl-keyboard.param.schema.arb :as arb]
             [dactyl-keyboard.param.access :refer [resolve-anchor]]
             [dactyl-keyboard.param.proc.anch :as anch]))
 
@@ -31,8 +32,8 @@
 
 (defn- node-type [node]
   (cond
-    (spec/valid? ::valid/tweak-branch node) ::branch
-    (spec/valid? ::valid/tweak-leaf node) ::leaf
+    (spec/valid? ::arb/branch node) ::branch
+    (spec/valid? ::arb/leaf node) ::leaf
     :else (throw (ex-info "Unclassifiable tweak node."
                    {:node node}))))
 
@@ -62,8 +63,8 @@
 (defn- splay
   "Represent one leaf node as a list of one or more non-sweeping leaves."
   [{:keys [sweep] :as node}]
-  {:pre [(spec/valid? ::valid/tweak-leaf node)]
-   :post [(spec/valid? (spec/coll-of ::valid/tweak-leaf) %)]}
+  {:pre [(spec/valid? ::arb/leaf node)]
+   :post [(spec/valid? (spec/coll-of ::arb/leaf) %)]}
   (if sweep
     (mapv (partial single-step-node node) (segment-range node))
     [node]))
@@ -102,17 +103,14 @@
   for whether the model is already in place. Positioning depends both on the
   type of anchor and secondary parameters about the target detail upon it.
   Use the most specific dimensions available."
-  [getopt {:keys [anchoring intrinsic-rotation size]
-           :or {intrinsic-rotation [0 0 0]}
-           :as node}]
-  {:pre [(spec/valid? ::valid/tweak-leaf node)]}
-  (let [{:keys [anchor side segment offset]} anchoring
+  [getopt {:keys [anchoring size] :as node}]
+  {:pre [(spec/valid? ::arb/leaf node)]}
+  (let [{:keys [anchor side segment]} anchoring
         {::anch/keys [type primary] :as resolved} (resolve-anchor getopt anchor)
         shape (fn [& shapes]
                 "Prefer the tweak’s overriding size to any default shapes."
-                (maybe/rotate intrinsic-rotation
-                  (if size (apply model/cube size)
-                           (first (filter some? shapes)))))]
+                (if size (apply model/cube size)
+                         (first (filter some? shapes))))]
     (case type
       ::anch/key-mount
         [false
@@ -121,14 +119,15 @@
                            (single-plate getopt cluster coordinates))))]
       ::anch/central-gabel
         [true
+         ;; TODO: Break out the models used here to allow universal tweaking of
+         ;; shape and position.
          (central/tweak-post getopt anchor)]
       ::anch/central-adapter
         [true
          (central/tweak-post getopt anchor)]
       ::anch/rear-housing
-        [true
-         (place/rhousing-place getopt (::anch/layer resolved) side segment offset
-           (shape misc/nodule))]
+        [false
+         (shape misc/nodule)]
       ::anch/mcu-grip
         [false
          (shape (apply model/cube (getopt :mcu :support :grip :size)))]
@@ -136,50 +135,38 @@
       ;; else use the entire base of the plate.
       ::anch/mcu-lock-plate
         [false
-         (if side
-           (shape misc/nodule)
-           (shape (mcu/lock-plate-base getopt false)))]
+         (shape (if side misc/nodule (mcu/lock-plate-base getopt false)))]
       ::anch/wr-block
-        [true
-         (let [{:keys [mount-index block-key]} resolved]
-           (place/wrist-block-place getopt mount-index block-key
-                                    side segment offset
-             (if (or side segment offset)
-               (shape misc/nodule)
-               (shape (wrist/block-model getopt mount-index block-key)))))]
+        [false
+         (shape (if (or side segment)
+                  misc/nodule
+                  (let [{:keys [mount-index block-key]} resolved]
+                    (wrist/block-model getopt mount-index block-key))))]
       ::anch/wr-nut
         ;; Ignore side and segment as inapplicable to a nut.
-        [true
+        [false
          (let [{:keys [mount-index block-key fastener-index]} resolved]
-           (place/wrist-nut-place getopt mount-index block-key fastener-index
-                                  offset
-             (shape (wrist/nut getopt mount-index block-key fastener-index))))]
+           (shape (wrist/nut getopt mount-index block-key fastener-index)))]
       ::anch/port-hole
-        [true
-         (place/port-place getopt anchor
-           (if (or side segment offset)
-             (maybe/translate (place/port-hole-offset getopt anchoring)
-               ;; Use a nodule by default for tenting the ceiling slightly,
-               ;; as would be useful for DFM.
-               (shape misc/nodule))
-             (shape (auxf/port-hole-base getopt anchor))))]
+        [false
+         ;; With anchoring selectors, use a nodule by default for tenting the
+         ;; ceiling slightly, as would be useful for DFM. Else use the whole
+         ;; port, minus its flared face.
+         (shape (if (or side segment)
+                  misc/nodule (auxf/port-hole-base getopt anchor)))]
       ::anch/port-holder
-        [true
-         (place/port-place getopt primary
-           (if (or side segment offset)
-             (maybe/translate (place/port-holder-offset getopt
-                                (assoc anchoring :anchor primary))
-               (shape (auxf/port-tweak-post getopt primary)))
-             (shape (auxf/port-holder getopt primary))))]
+        [false
+         (shape (if (or side segment)
+                  (auxf/port-tweak-post getopt primary)
+                  (auxf/port-holder getopt primary)))]
       ::anch/flange-screw
-        [true
-         (let [{:keys [flange position-index]} resolved
+        [false
+         (let [{:keys [flange]} resolved
                {:keys [boss-radius boss-height]} (getopt :flanges :derived flange)]
-           (place/flange-place getopt flange position-index (or segment 0)
-             (shape (if segment
-                      (model/cylinder boss-radius misc/wafer)
-                      (model/translate [0 0 (/ boss-height -2)]
-                        (model/cylinder boss-radius boss-height))))))]
+           (shape (if segment
+                    (model/cylinder boss-radius misc/wafer)
+                    (model/translate [0 0 (/ boss-height -2)]
+                      (model/cylinder boss-radius boss-height)))))]
       ::anch/secondary
         [false
          (let [{:keys [size]} (getopt :secondaries anchor)]
@@ -187,25 +174,25 @@
       [false (shape misc/nodule)])))
 
 (defn- leaf-blade-3d
-  "One model at one vertical segment of one feature."
+  "One model, in place."
   [getopt {:keys [anchoring] :as node}]
-  {:pre [(spec/valid? ::valid/tweak-leaf node)]}
+  {:pre [(spec/valid? ::arb/leaf node)]}
   (let [[placed item] (pick-3d-shape getopt node)]
     (if placed
       item
-      (place/reckon-with-anchor getopt (assoc anchoring :subject item)))))
+      (place/at-named getopt (assoc anchoring :subject item)))))
 
 (defn- model-leaf-3d
   "(The hull of) one or more models of one type on one side, in place, in 3D."
   [getopt node]
-  {:pre [(spec/valid? ::valid/tweak-leaf node)]}
+  {:pre [(spec/valid? ::arb/leaf node)]}
   (apply maybe/hull (map (partial leaf-blade-3d getopt) (splay node))))
 
 (declare model-node-3d)
 
 (defn- model-branch-3d
   [getopt {:keys [at-ground hull-around chunk-size highlight] :as node}]
-  {:pre [(spec/valid? ::valid/tweak-branch node)]}
+  {:pre [(spec/valid? ::arb/branch node)]}
   (let [prefix (if highlight model/-# identity)
         shapes (map (partial model-node-3d getopt) hull-around)
         hull (if at-ground (partial body-plate-hull getopt
@@ -220,7 +207,7 @@
 (defn- model-node-3d
   "Screen a tweak node. If it’s relevant, represent it as a model."
   [getopt node]
-  {:pre [(spec/valid? ::valid/tweak-node node)]}
+  {:pre [(spec/valid? ::arb/node node)]}
   (case (node-type node)
     ::branch (model-branch-3d getopt node)
     ::leaf (model-leaf-3d getopt node)))
@@ -249,7 +236,7 @@
   Pick just one leaf in a branch node, and just one post in a leaf, on the
   assumption that they’re not all ringing the case."
   [getopt [leaf-picker segment-picker bottom] node]
-  {:pre [(spec/valid? ::valid/tweak-node node)]
+  {:pre [(spec/valid? ::arb/node node)]
    :post [(spec/valid? ::tarmi-core/point-2d %)]}
   (as-> node point
     (leaf-picker point)
@@ -257,7 +244,7 @@
     (segment-picker point)  ; A single- or no-segment leaf.
     (:anchoring point)
     (assoc point :bottom bottom)  ; Amended metadata for placement.
-    (place/reckon-with-anchor getopt point)
+    (place/at-named getopt point)
     (take 2 point)))  ; [x y] coordinates.
 
 (defn- maybe-polygon
@@ -265,7 +252,7 @@
   Tweaks so small that they amount to fewer than three vertices are ignored
   because they wouldn’t have any area."
   [getopt pickers nodes]
-  {:pre [(spec/valid? ::valid/tweak-list nodes)]}
+  {:pre [(spec/valid? ::arb/list nodes)]}
   (let [points (mapv (partial floor-pair getopt pickers) nodes)]
     (when (> (count points) 2)
       (model/polygon points))))
@@ -273,7 +260,7 @@
 (defn- maybe-floor-shadow
   "A sequence of polygons representing a tweak node."
   [getopt node]
-  {:pre [(spec/valid? ::valid/tweak-node node)]}
+  {:pre [(spec/valid? ::arb/node node)]}
   (for [leaf-picker [first last],
         segment-picker [first last],
         bottom [false true]]
@@ -288,7 +275,7 @@
   This is a semi-brute-force-approach to the problem that we cannot easily
   identify which vertices shape the outside of the case at z = 0."
   [getopt node]
-  {:pre [(spec/valid? ::valid/tweak-node node)]}
+  {:pre [(spec/valid? ::arb/node node)]}
   (apply maybe/union (distinct (maybe-floor-shadow getopt node))))
 
 (defn floor-polygons
