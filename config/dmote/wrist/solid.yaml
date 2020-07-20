@@ -6,27 +6,27 @@ secondaries:
       anchor: front3
       side: SSE
       segment: 3
-    translation: [-16, 0, -8]
+      extrinsic-offset: [-16, 0, -8]
   wrb-rest:
     anchoring:
       anchor: plinth-left
-    translation: [0, 0, -3]
+      extrinsic-offset: [0, 0, -3]
   wrb1-west:
     anchoring:
       anchor: wrb-case
   wrb1-top:
     anchoring:
       anchor: wrb1-west
-    translation: [15, 0, 3]
+      extrinsic-offset: [15, 0, 3]
     size: [8, 2, 8]
   wrb1-east:
     anchoring:
       anchor: wrb1-west
-    translation: [30, 0, 0]
+      extrinsic-offset: [30, 0, 0]
   wrb2-bottom:
     anchoring:
       anchor: wrb1-top
-    translation: [0, -15, -3]
+      extrinsic-offset: [0, -15, -3]
     size: [20, 1, 1]
   wrb2-top:
     anchoring:
@@ -35,7 +35,7 @@ secondaries:
   wrb3-bottom:
     anchoring:
       anchor: wrb2-bottom
-    translation: [0, -25, 0]
+      extrinsic-offset: [0, -25, 0]
     size: [20, 1, 1]
   wrb3-top:
     anchoring:
@@ -44,16 +44,16 @@ secondaries:
   wrb4-west:
     anchoring:
       anchor: wrb1-west
-    translation: [0, -55, 0]
+      extrinsic-offset: [0, -55, 0]
   wrb4-top:
     anchoring:
       anchor: wrb1-top
-    translation: [0, -55, 0]
+      extrinsic-offset: [0, -55, 0]
     size: [8, 12, 8]
   wrb4-east:
     anchoring:
       anchor: wrb1-east
-    translation: [0, -55, 0]
+      extrinsic-offset: [0, -55, 0]
 tweaks:
   wrist-rest-bridge-main-body:
     - chunk-size: 2

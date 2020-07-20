@@ -51,7 +51,7 @@ secondaries:
       anchor: upper-right
       side: NNE
       segment: 3
-    translation: [0, 0, -10]
+      extrinsic-offset: [0, 0, -10]
 mcu:
   include: true
   anchoring:

@@ -77,11 +77,6 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       than a corner of the rear housing, and in part by the extension of
       segments on the rear housing to include segment 2, referring to floor
       level beneath the walls.
-    - Moved the parameters that anchor each named secondary position to another
-      feature into a nested mapping called `anchoring`. An `offset` within this
-      mapping no longer gets exceptional treatment; it now occurs in the vector
-      space of the anchor. The old behaviour, i.e. translation in the
-      global vector space, has a new parameter (`translation`).
     - More direct and exact control of rear-housing size, thickness and
       bevels, using new parameters.
 - MCU supports have changed, gaining more power but losing some ease of use,

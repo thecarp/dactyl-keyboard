@@ -197,17 +197,11 @@ An example:
     anchoring:
       anchor: f0
       side: SE
-      segment: 2
     override [null, null, 2]
-    translation: [0, 3, 0]
     size: 4
 ```
 
-This example gives the name `s0` to a point near some feature named `f0`, which must be defined elsewhere.
-
-Populated coordinates in `override` replace corresponding coordinates given by the anchor, and `translation` finally shifts the position of the secondary feature in the global vector space.
-
-In the example, `s0` is a position 1 mm to the local right of the southeast corner of vertical segment 2 of `f0`, projected onto the global x-y plane at z = 2 (i.e. 2 mm above the floor), and then shifted 3 mm away from the user on that plane.
+This example gives the name `s0` to a point near some feature named `f0`. Populated coordinates in `override` replace corresponding coordinates given by the anchor, so in the example, `s0` is 2 mm above the floor and any distance down from the southeast corner of `f0` in a straight vertical line. In other words, the position of that corner of `f0` is projected onto the global xy plane at z = 2 to make `s0`.
 
 The `size` parameter is relevant only as a fallback for `tweaks` that target the position and do not specify a size in turn. If both are omitted, tweaks fall back still further, to a tiny point.
 

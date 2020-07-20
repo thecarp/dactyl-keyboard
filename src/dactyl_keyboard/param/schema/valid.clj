@@ -75,7 +75,6 @@
 (spec/def :two/offset ::tarmi/point-2d)
 (spec/def :three/offset ::tarmi/point-3d)
 (spec/def :three/override (spec/coll-of (spec/nilable number?) :count 3))
-(spec/def :three/translation ::tarmi/point-3d)
 (spec/def :flexible/offset ::tarmi/point-2-3d)
 
 

@@ -594,13 +594,12 @@
 (defmethod by-type ::anch/secondary
   [getopt {:keys [initial] ::anch/keys [primary]}]
   {:pre [(map? primary)]}
-  (let [base (at-named getopt (:anchoring primary))
-        ;; Apply the override by walking across the primary anchor’s position,
-        ;; picking coordinates from the override where not nil.
-        override (fn [i coord] (or (get (:override primary) i) coord))]
-    (->> initial
-      (flex/translate (:translation primary))
-      (flex/translate (map-indexed override base)))))
+  ;; Apply the override by walking across the primary anchor’s position,
+  ;; picking coordinates from the override where not nil.
+  (flex/translate
+    (map-indexed (fn [i coord] (or (get (:override primary) i) coord))
+                 (at-named getopt (:anchoring primary)))
+    initial))
 
 ;; Generalizations.
 

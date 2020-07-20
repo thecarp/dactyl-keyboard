@@ -151,8 +151,7 @@
                ;; Provide defaults absent in initial parser.
                ;; TODO: Add to parser without requiring a side or segment.
                ::primary (soft-merge {:anchoring {:anchor :origin}
-                                      :override [nil nil nil]
-                                      :translation [0 0 0]}
+                                      :override [nil nil nil]}
                                      properties)}})
       (getopt :secondaries))))
 
