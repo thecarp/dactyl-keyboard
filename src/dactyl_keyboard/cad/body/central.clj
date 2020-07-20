@@ -65,8 +65,8 @@
          (outline-back-to-3d base subject))))))
 
 ;; Predicates for sorting fasteners by the object they penetrate.
-(defn- adapter-side [{:keys [lateral-offset]}] (neg? lateral-offset))
-(defn- housing-side [{:keys [lateral-offset]}] (pos? lateral-offset))
+(defn- adapter-side [{:keys [axial-offset]}] (neg? axial-offset))
+(defn- housing-side [{:keys [axial-offset]}] (pos? axial-offset))
 (defn- any-side [_] true)
 
 ;; Predicates for filtering items in the interface for drawing different
@@ -103,7 +103,7 @@
   fastener. This design is a bit rough; more parameters would be needed to
   account for the possibility of wall surfaces angled on the x or y axes.
   Key-cluster wall thickness is not taken into account."
-  [getopt {:keys [lateral-offset]}]
+  [getopt {:keys [axial-offset]}]
   (let [rprop (partial getopt :central-housing :adapter :receivers)
         fprop (partial getopt :central-housing :adapter :fasteners)
         diameter (fprop :bolt-properties :m-diameter)
@@ -111,10 +111,10 @@
         width (+ diameter (* 2 (rprop :thickness :rim)))
         z-hole (- (iso/bolt-length (fprop :bolt-properties)) z-wall)
         z-bridge (min z-hole (rprop :thickness :bridge))
-        x-gabel (abs lateral-offset)
+        x-gabel (abs axial-offset)
         x-inner (+ x-gabel (rprop :width :inner))
         x-taper (+ x-inner (rprop :width :taper))
-        signed (fn [x] (* (- x) (math/sign lateral-offset)))]
+        signed (fn [x] (* (- x) (math/sign axial-offset)))]
     (loft
       ;; The furthermost taper sinks into a straight wall.
       [(model/translate [(signed x-taper) 0 (/ z-wall -2)]

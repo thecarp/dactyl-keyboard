@@ -245,7 +245,7 @@
     "a `base` point, not a point on the far side of the adapter.\n"
     "* `radial-offset`: A distance in mm from the starting point, along the "
     "interface.\n"
-    "* `lateral-offset`: A distance in mm from the starting point, along the "
+    "* `axial-offset`: A distance in mm from the starting point, along the "
     "axis of the central housing, which is the x axis.\n"
     "\n"
     "Both of the two offsets are numbers: Simple scalars. Each of them can "
@@ -275,7 +275,7 @@
     "```positions:\n"
     "  - starting-point: apex\n"
     "    radial-offset: 5\n"
-    "    lateral-offset: -4\n```"
+    "    axial-offset: -4\n```"
     "\n"
     "In addition to these mandatory properties, each fastener position can "
     "include a more advanced property: `direction-point`. This allows you to "
@@ -290,7 +290,7 @@
     "has a threaded hole to keep the fastener in place. Like the adapter lip, "
     "receivers extend from the inside wall, but receivers are anchored across "
     "the interface from their respective fasteners: A positive "
-    "`lateral-offset`, above, extends a receiver from the central housing "
+    "`axial-offset`, above, extends a receiver from the central housing "
     "into the adapter."]
    [:section [:adapter :receivers :thickness]
     "The thickness of material in various parts of each receiver."]

@@ -183,7 +183,7 @@ Each item in this list is a map with three mandatory keys:
 
 * `starting-point`: The name of a vertex on the interface. This must be a `base` point, not a point on the far side of the adapter.
 * `radial-offset`: A distance in mm from the starting point, along the interface.
-* `lateral-offset`: A distance in mm from the starting point, along the axis of the central housing, which is the x axis.
+* `axial-offset`: A distance in mm from the starting point, along the axis of the central housing, which is the x axis.
 
 Both of the two offsets are numbers: Simple scalars. Each of them can be either positive or negative, but not zero. Zero is not allowed because these numbers have side effects:
 
@@ -195,13 +195,13 @@ The following example map will start from a vertex named `apex` and proceed from
 ```positions:
   - starting-point: apex
     radial-offset: 5
-    lateral-offset: -4
+    axial-offset: -4
 ```
 In addition to these mandatory properties, each fastener position can include a more advanced property: `direction-point`. This allows you to name an arbitrary anchor point anywhere on the keyboard, overriding the side effect of `radial-offset` in choosing a neighbouring point on the interface. This feature may help resolve problems with sloping adapters or other obstacles, but consider it experimental. More detailed overrides for placement may be introduced in a future version, if they are needed.
 
 ### Section <a id="adapter-receivers">`receivers`</a>
 
-One receiver is created for each of the `fasteners`. Each of these has a threaded hole to keep the fastener in place. Like the adapter lip, receivers extend from the inside wall, but receivers are anchored across the interface from their respective fasteners: A positive `lateral-offset`, above, extends a receiver from the central housing into the adapter.
+One receiver is created for each of the `fasteners`. Each of these has a threaded hole to keep the fastener in place. Like the adapter lip, receivers extend from the inside wall, but receivers are anchored across the interface from their respective fasteners: A positive `axial-offset`, above, extends a receiver from the central housing into the adapter.
 
 #### Section <a id="adapter-receivers-thickness">`thickness`</a>
 

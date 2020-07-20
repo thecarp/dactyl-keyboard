@@ -47,50 +47,50 @@ central-housing:
         unthreaded-length: 2
       positions:
         - starting-point: point1
-          lateral-offset: -4
+          axial-offset: -4
           radial-offset: -4
         - starting-point: point1
-          lateral-offset: -4
+          axial-offset: -4
           radial-offset: 4
         - starting-point: point2
-          lateral-offset: -4
+          axial-offset: -4
           radial-offset: -4
         - starting-point: point2
-          lateral-offset: -4
+          axial-offset: -4
           radial-offset: 4
         - starting-point: point3
-          lateral-offset: -4
+          axial-offset: -4
           radial-offset: -4
         - starting-point: point3
-          lateral-offset: -4
+          axial-offset: -4
           radial-offset: 4
         - starting-point: point4
-          lateral-offset: -4
+          axial-offset: -4
           radial-offset: -4
         - starting-point: point4
-          lateral-offset: -4
+          axial-offset: -4
           radial-offset: 4
         - starting-point: point5
-          lateral-offset: -4
+          axial-offset: -4
           radial-offset: -4
         - starting-point: point5
-          lateral-offset: -4
+          axial-offset: -4
           radial-offset: 4
         - starting-point: point6
-          lateral-offset: -4
+          axial-offset: -4
           radial-offset: -4
         - starting-point: point6
-          lateral-offset: -4
+          axial-offset: -4
           radial-offset: 4
         - starting-point: point7
-          lateral-offset: -4
+          axial-offset: -4
           radial-offset: -4
         - starting-point: point7
-          lateral-offset: -4
+          axial-offset: -4
           radial-offset: 4
         - starting-point: point8
-          lateral-offset: -4
+          axial-offset: -4
           radial-offset: -4
         - starting-point: point8
-          lateral-offset: -4
+          axial-offset: -4
           radial-offset: 4

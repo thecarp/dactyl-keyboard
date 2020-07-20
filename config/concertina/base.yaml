@@ -547,22 +547,22 @@ central-housing:
         channel-length: 1
       positions:
       - starting-point: ci-near-base
-        lateral-offset: 5
+        axial-offset: 5
         radial-offset: 20
       - starting-point: ci-near-lower
-        lateral-offset: 5
+        axial-offset: 5
         radial-offset: -5
       - starting-point: ci-near-wall-4
-        lateral-offset: 5
+        axial-offset: 5
         radial-offset: 3
       - starting-point: ci-thumb-1
-        lateral-offset: 5
+        axial-offset: 5
         radial-offset: 9
       - starting-point: ci-far-roof
-        lateral-offset: 5
+        axial-offset: 5
         radial-offset: -5
       - starting-point: ci-far-wall
-        lateral-offset: 5
+        axial-offset: 5
         radial-offset: 5
     receivers:
       thickness:

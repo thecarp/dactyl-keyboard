@@ -64,7 +64,7 @@
 (spec/def :central/right-hand-alias ::alias)
 (spec/def :central/starting-point keyword?)
 (spec/def :central/direction-point keyword?)
-(spec/def :central/lateral-offset #(not (zero? %)))
+(spec/def :central/axial-offset #(not (zero? %)))
 (spec/def :central/radial-offset #(not (zero? %)))
 (spec/def :numeric/direction number?)
 (spec/def :intercardinal/side compass/intercardinals)
@@ -100,7 +100,7 @@
              :opt-un [:central/adapter ::at-ground ::above-ground]))
 (spec/def :central/fastener-node
   (spec/keys :req-un [:central/starting-point
-                      :central/lateral-offset
+                      :central/axial-offset
                       :central/radial-offset]
              :opt-un [:central/direction-point]))
 

@@ -265,7 +265,7 @@
   ;; This assumes the wall is planar, and will therefore work poorly with
   ;; complex central-housing adapters and wall tweaks. Custom offsets and
   ;; angles may need to be added to the parameter set.
-  [getopt {:keys [starting-point direction-point lateral-offset radial-offset]} subject]
+  [getopt {:keys [starting-point direction-point axial-offset radial-offset]} subject]
   (let [pred (fn [{::anch/keys [type]}] (= type ::anch/central-gabel))
         anchor (resolve-anchor getopt starting-point pred)
         starting-coord (vec3 (at-named getopt {:anchor starting-point}))
@@ -276,7 +276,7 @@
         multiplier (* (math/sign radial-offset) (/ radial-offset (math/mag nonlocal)))
         displacement (geom/scale (vec3 (repeat 3 multiplier)) nonlocal)
         angle (- (geom/heading-yz nonlocal) (if (neg? radial-offset) π 0))]
-    (flex/translate (mapv + starting-coord displacement [lateral-offset 0 0])
+    (flex/translate (mapv + starting-coord displacement [axial-offset 0 0])
       (flex/rotate [angle 0 0]
         subject))))
 

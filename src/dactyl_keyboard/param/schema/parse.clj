@@ -150,7 +150,7 @@
     (map-like
       {:starting-point keyword
        :direction-point keyword
-       :lateral-offset num
+       :axial-offset num
        :radial-offset num})))
 
 (def keycap-map
