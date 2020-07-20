@@ -253,8 +253,6 @@
         adapter (and main
                      (getopt :central-housing :adapter :include))]
     {:include-main main
-     :include-sections (and main
-                            (not (empty? (getopt :dfm :central-housing :sections))))
      :include-adapter adapter
      :include-lip (and adapter
                        (getopt :central-housing :adapter :lip :include))}))

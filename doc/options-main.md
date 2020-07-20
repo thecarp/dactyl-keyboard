@@ -156,8 +156,6 @@ Each heading in this document represents a recognized configuration key in the m
     - Section <a href="#user-content-dfm-keycaps">`keycaps`</a>
         - Parameter <a href="#user-content-dfm-keycaps-error-stem-positive">`error-stem-positive`</a>
         - Parameter <a href="#user-content-dfm-keycaps-error-stem-negative">`error-stem-negative`</a>
-    - Section <a href="#user-content-dfm-central-housing">`central-housing`</a>
-        - Parameter <a href="#user-content-dfm-central-housing-sections">`sections`</a>
     - Section <a href="#user-content-dfm-bottom-plate">`bottom-plate`</a>
         - Parameter <a href="#user-content-dfm-bottom-plate-fastener-plate-offset">`fastener-plate-offset`</a>
 - Section <a href="#user-content-mask">`mask`</a>
@@ -980,20 +978,6 @@ Error on the positive components of stems on keycaps, such as the entire stem on
 #### Parameter <a id="dfm-keycaps-error-stem-negative">`error-stem-negative`</a>
 
 Error on the negative components of stems on keycaps, such as the cross on an MX-compatible cap.
-
-### Section <a id="dfm-central-housing">`central-housing`</a>
-
-DFM for the central housing.
-
-#### Parameter <a id="dfm-central-housing-sections">`sections`</a>
-
-A series of coordinates in mm on the x axis. If a central housing is included and this parameter is populated, the program will produce additional model outputs where the central housing is sectioned off at the specified coordinates. Each piece is rendered standing on its plain crossection.
-
-The purpose of this parameter is to simplify the printing of a central housing piece by piece, with each piece standing on end to minimize the need for support. This is particularly useful when the central housing interface is irregular or the total length of the housing is greater than the vertical build volume of your printer.
-
-This feature provides no mechanism for joining the different sections after printing. In a thermoplastic, you should be able to join them by running a soldering iron along the interior seams between sections.
-
-Coordinates entered here are not reflected. When picking them out, consider that any bottom plates for the central housing, which are reflected, meet in the middle at x = 0. If you use `[0]` for this parameter, both plates and sections will meet on the same line, weakening the structure.
 
 ### Section <a id="dfm-bottom-plate">`bottom-plate`</a>
 

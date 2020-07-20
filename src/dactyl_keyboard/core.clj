@@ -232,9 +232,7 @@
     :model-precursor assembly/main-body-right
     :chiral (getopt :main-body :reflect)}
    (when (getopt :central-housing :derived :include-main)
-     {:name (str "body-central-housing"  ; With conditional suffix.
-              (when (getopt :central-housing :derived :include-sections)
-                "-full"))
+     {:name "body-central-housing"
       ::body :central-housing
       :modules (central-housing-modules getopt)
       :model-precursor assembly/central-housing})
@@ -307,36 +305,12 @@
           :model-precursor #(single-cap % key-style true)}]))
     (keys (getopt :keys :styles))))
 
-(defn get-dfm-subassemblies
-  "Collate model precursors for subassemblies.
-  This currently consists of central housing sections only."
-  ;; TODO: Subsume this into the more recent custom-body subsystem.
-  [getopt]
-  (when (getopt :central-housing :derived :include-sections)
-    (map-indexed
-      (fn [idx [left right]]
-        {:name (str "body-central-housing-section-" (inc idx))
-         :modules (central-housing-modules getopt)
-         :model-precursor
-           (fn [getopt]
-             (model/rotate [0 (/ π (if (zero? idx) 2 -2)) 0]
-               (model/intersection
-                 (model/translate [(+ left (/ (- right left) 2)) 0 0]
-                   (model/cube (- right left) 1000 1000))
-                 (assembly/central-housing getopt))))})
-      (->>
-        (getopt :dfm :central-housing :sections)
-        (concat [-1000 1000])  ; Add left- and right-hand-side bookends.
-        (sort)
-        (partition 2 1)))))
-
 (defn get-builtin-precursors
   "Add dynamic elements to static precursors."
   [getopt]
   (concat
     (get-static-precursors getopt)
-    (get-key-style-precursors getopt)
-    (get-dfm-subassemblies getopt)))
+    (get-key-style-precursors getopt)))
 
 (defn- finalize-asset
   "Define scad-app asset(s) from a single proto-asset.
