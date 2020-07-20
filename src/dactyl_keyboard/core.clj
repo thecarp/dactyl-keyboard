@@ -9,7 +9,6 @@
             [clojure.java.io :as io]
             [hawk.core :as hawk]
             [clj-yaml.core :as yaml]
-            [scad-clj.model :as model]
             [scad-app.core :refer [filter-by-name refine-asset
                                    refine-all build-all]]
             [scad-tarmi.core :refer [π]]

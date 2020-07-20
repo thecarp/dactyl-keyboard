@@ -492,38 +492,38 @@
   (fn [_ properties] (::anch/type properties)))
 
 (defmethod by-type ::anch/origin
-  [_ {:keys [initial]}]
-  initial)
+  [_ {:keys [subject]}]
+  subject)
 
 (defmethod by-type ::anch/central-gabel
-  [getopt {:keys [index initial side depth] :or {depth :outer}}]
-  (chousing-place getopt index :gabel side depth initial))
+  [getopt {:keys [index subject side depth] :or {depth :outer}}]
+  (chousing-place getopt index :gabel side depth subject))
 
 (defmethod by-type ::anch/central-adapter
-  [getopt {:keys [index initial side depth] :or {depth :outer}}]
-  (chousing-place getopt index :adapter side depth initial))
+  [getopt {:keys [index subject side depth] :or {depth :outer}}]
+  (chousing-place getopt index :adapter side depth subject))
 
 (defmethod by-type ::anch/rear-housing
-  [getopt {:keys [side segment initial] ::anch/keys [layer] :or {segment 3}}]
+  [getopt {:keys [side segment subject] ::anch/keys [layer] :or {segment 3}}]
   {:pre [(some? side)]}
-  (rhousing-place getopt layer side segment initial))
+  (rhousing-place getopt layer side segment subject))
 
 (defmethod by-type ::anch/wr-perimeter
-  [getopt {:keys [coordinates outline-key segment initial] :or {segment 3}}]
+  [getopt {:keys [coordinates outline-key segment subject] :or {segment 3}}]
   (flex/translate
     (wrist-segment-naive getopt coordinates outline-key segment)
-    initial))
+    subject))
 
 (defmethod by-type ::anch/wr-block
-  [getopt {:keys [mount-index block-key side segment initial]}]
-  (wrist-block-place getopt mount-index block-key side segment initial))
+  [getopt {:keys [mount-index block-key side segment subject]}]
+  (wrist-block-place getopt mount-index block-key side segment subject))
 
 (defmethod by-type ::anch/wr-nut
-  [getopt {:keys [mount-index block-key fastener-index initial]}]
-  (wrist-nut-place getopt mount-index block-key fastener-index initial))
+  [getopt {:keys [mount-index block-key fastener-index subject]}]
+  (wrist-nut-place getopt mount-index block-key fastener-index subject))
 
 (defmethod by-type ::anch/key-mount
-  [getopt {:keys [cluster coordinates side segment initial] :as opts}]
+  [getopt {:keys [cluster coordinates side segment subject] :as opts}]
   {:pre [(or (nil? side) (compass/all-short side))]}
   (cluster-place getopt cluster coordinates
     (if (some? side)
@@ -531,22 +531,22 @@
       (flex/translate
         (wall-corner-offset getopt cluster coordinates
           (merge opts {:side side} (when segment (:segment segment))))
-        initial)
+        subject)
       ;; Else no corner named.
       ;; The target feature is the middle of the key mounting plate.
-      initial)))
+      subject)))
 
 (defmethod by-type ::anch/mcu-pcba
-  [getopt {:keys [initial]}]  ; TODO: Support side & segment.
-  (at-named getopt (getopt :mcu :anchoring) initial))
+  [getopt {:keys [subject]}]  ; TODO: Support side & segment.
+  (at-named getopt (getopt :mcu :anchoring) subject))
 
 (defmethod by-type ::anch/mcu-lock-plate
-  [getopt {:keys [side segment initial] :or {segment 0}}]
+  [getopt {:keys [side segment subject] :or {segment 0}}]
   {:pre [(or (nil? side) (compass/noncardinals side))]}
   (at-named getopt {:anchor :mcu-pcba}
      (if side
        ;; One side of the lock plate.
-       ;; Typically, this means that “initial” is either a nodule object
+       ;; Typically, this means that “subject” is either a nodule object
        ;; for a tweak or else some coordinate being used as an anchor.
        (let [side (compass/convert-to-intercardinal side)]
          ;; Here, segment 0 describes the plane of the PCB,
@@ -562,44 +562,44 @@
                    (throw (ex-info "Invalid segment ID specified for lock plate."
                              {:configured-segment segment
                               :available-segments #{0 1 2}}))))
-           initial))
+           subject))
        ;; Else the midpoint of the plate.
-       ;; Typically, “initial” is the entire lock plate for a tweak.
-       initial)))
+       ;; Typically, “subject” is the entire lock plate for a tweak.
+       subject)))
 
 (defmethod by-type ::anch/mcu-grip
-  [getopt {:keys [side initial]}]
+  [getopt {:keys [side subject]}]
   {:pre [(compass/noncardinals side)]}
   (at-named getopt {:anchor :mcu-pcba}
     (flex/translate
       (getopt :mcu :derived :pcb (compass/convert-to-intercardinal side))
-      initial)))
+      subject)))
 
 (defmethod by-type ::anch/port-hole
-  [getopt {:keys [anchor initial] :as opts}]
+  [getopt {:keys [anchor subject] :as opts}]
   (port-place getopt anchor
     (flex/translate (port-hole-offset getopt opts)
-       initial)))
+       subject)))
 
 (defmethod by-type ::anch/port-holder
-  [getopt {:keys [initial] ::anch/keys [primary] :as opts}]
+  [getopt {:keys [subject] ::anch/keys [primary] :as opts}]
   (port-place getopt primary
     (flex/translate (port-holder-offset getopt (assoc opts :anchor primary))
-       initial)))
+       subject)))
 
 (defmethod by-type ::anch/flange-screw
-  [getopt {:keys [flange position-index segment initial]}]
-  (flange-place getopt flange position-index (or segment 0) initial))
+  [getopt {:keys [flange position-index segment subject]}]
+  (flange-place getopt flange position-index (or segment 0) subject))
 
 (defmethod by-type ::anch/secondary
-  [getopt {:keys [initial] ::anch/keys [primary]}]
+  [getopt {:keys [subject] ::anch/keys [primary]}]
   {:pre [(map? primary)]}
   ;; Apply the override by walking across the primary anchor’s position,
   ;; picking coordinates from the override where not nil.
   (flex/translate
     (map-indexed (fn [i coord] (or (get (:override primary) i) coord))
                  (at-named getopt (:anchoring primary)))
-    initial))
+    subject))
 
 ;; Generalizations.
 
@@ -653,7 +653,7 @@
        (flex/translate
          (limit-dimensions opts
            (at-named getopt
-             (dissoc-generics opts :subject :initial :preserve-orientation)))
+             (dissoc-generics opts :subject :preserve-orientation)))
          (intrinsics opts subject))
        ;; Else allow rotation of the subject itself (even a shape) along with the
        ;; target feature, by passing it to by-type for target-specific treatment.
@@ -665,7 +665,7 @@
          ;; Add registered anchor properties, including type.
          (merge o (resolve-anchor getopt anchor))
          ;; Add initial subject.
-         (assoc o :initial (intrinsics opts subject))
+         (assoc o :subject (intrinsics opts subject))
          (by-type getopt o)))))
   ([getopt opts subject]  ; Convenience resembling scad-clj operations.
    (at-named getopt (assoc opts :subject subject))))

@@ -66,7 +66,7 @@
         (fn [coord side]  ; Placer.
           (place/by-type getopt
             {::anch/type ::anch/key-mount, :cluster cluster, :coordinates coord
-             :side side, :initial (web-post getopt cluster coord side)})))
+             :side side, :subject (web-post getopt cluster coord side)})))
       (matrix/coordinate-pairs
         (getopt :key-clusters :derived :by-cluster cluster :column-range)
         (getopt :key-clusters :derived :by-cluster cluster :row-range)))))
