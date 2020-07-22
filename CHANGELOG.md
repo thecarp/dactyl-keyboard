@@ -88,11 +88,11 @@ version 0.2.0, thus covering only a fraction of the project’s history.
           of accompanying changes to the configurations.
     - The MCU support style parameter was **removed**.
         - Instead of `lock` and `stop` existing as mutually exclusive styles,
-          with a single grip and the requirement of a key mount as the anchor
-          of that grip for a stop, any MCU can now be supported by any number
-          of `grip` anchors: Named points in space around the MCU, connected
-          using `tweaks`. These grips can be freely combined with a lock.
-          See the Dactyl-ManuForm base file for an example of how to use grips.
+          with the requirement of a key mount as the anchor for a stop, `stop`
+          has been removed, named points on or in space around the MCU can now
+          be connected using `tweaks`, and such a grip can be freely combined
+          with a lock. See the Dactyl-ManuForm’s `mcu-gripper.yaml` for an
+          example of how to use tweaks to replace a stop.
     - `mcu` → `support` → `height-factor` was moved to
       `mcu` → `support` → `lock` → `width-factor`.
     - `mcu` → `support` → `lateral-spacing` was moved to
@@ -211,12 +211,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       branched into a package of several modules as a result. A new `assembly`
       module within `body` took the composition functions from `core`.
     - `compass`, gathering code from `generics` and `matrix` with refactoring
-      to improve the compass metaphor for feature placement. For example, the
-      new MCU grip anchors are created with a corner such as `SW`, and this
-      maps to a keyword (`:SW`), not to a tuple of cardinal-direction keywords
-      (`[:south :west]`). Corner keywords are translated to tuples at need.
-      Note that the new direction keywords are not yet namespaced to the
-      compass module.
+      to improve the compass metaphor for feature placement.
     - `cots`, gathering information on commercial off-the-shelf goods.
     - `mask`, taking the above-ground mask function out of the main body
       module, and the bottom-plate masks too.

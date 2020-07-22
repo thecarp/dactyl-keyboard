@@ -63,8 +63,6 @@ mcu:
         overshoot: 1
         mount-length: 7
         mount-thickness: 6
-    grip:
-      size: [1, 1, 4]
 resolution:
   include: true
 dfm:

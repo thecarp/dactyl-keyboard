@@ -584,7 +584,8 @@
     "through the case *and* held there firmly enough that the force of the "
     "user’s interaction will neither damage nor displace the board.\n\n"
     "Despite the importance of support in most use cases, no MCU support is "
-    "included by default."]
+    "included by default. Instead of using the features offered in this "
+    "section, consider using `tweaks` anchored to the PCBA instead."]
    [:parameter [:mcu :support :preview]
     {:default false :parse-fn boolean}
     "If `true`, render a visualization of the support in place. This applies "
@@ -633,7 +634,7 @@
     "The thickness of material in the outermost part on each side, in mm."]
    [:parameter [:mcu :support :shelf :sides :overhang-width]
     {:default 0 :parse-fn num :validate [#(not (neg? %))]}
-    "The extent to which each grip extends out across the PCBA, in mm."]
+    "The extent to which each side extends out across the PCBA, in mm."]
    [:parameter [:mcu :support :shelf :sides :offsets]
     {:default [0 0]
      :parse-fn (fn [candidate]
@@ -736,49 +737,6 @@
     {:default 1 :parse-fn num}
     "The thickness of the mount. This should have some rough correspondence "
     "to the threaded portion of your fastener, which should not have a shank."]
-   [:section [:mcu :support :grip]
-    "The case can extend to hold the MCU firmly in place.\n\n"
-    "Space is reserved for the MCU PCB. This space will cut into each grip "
-    "that intersects the PCB, as determined by the center of each post (set "
-    "with `anchors` in this section) and its `size`. These intersections "
-    "create notches in the grips, which is how they hold onto the PCB. The "
-    "deeper the notch, the more flexible the case has to be to allow assembly."]
-   [:parameter [:mcu :support :grip :size]
-    {:default 1 :parse-fn parse/pad-to-3-tuple
-     :validate [::tarmi-core/point-3d]}
-    "The three dimensions of a grip post, in mm.\n\n"
-    "Like the `size` of a secondary, this parameter determines the size of "
-    "the object that will occupy an anchor point for a grip when that point "
-    "is targeted by a tweak."]
-   [:parameter [:mcu :support :grip :anchors]
-    {:default []
-     :parse-fn (parse/tuple-of (parse/map-like {:side keyword
-                                                :offset vec
-                                                :alias keyword}))
-     :validate [(spec/coll-of
-                  (spec/keys :req-un [::valid/alias :intercardinal/side]
-                             :opt-un [:flexible/offset]))]}
-    "A list of points in space positioned relative to the PCB’s corners.\n\n"
-    "Each point must have an `alias`, which is a name you can use "
-    "elsewhere to refer to that point, and a `side`, identifying one "
-    "side of the PCB, e.g. `SE` for the south-east corner.\n\n"
-    "Each point may also have an `offset` from the stated side. These "
-    "offsets must be given in mm, either as a 2-tuple like `[1, 2]` for a "
-    "two-dimensional offset in the plane of the PCB, or as a 3-tuple "
-    "like `[1, 2, 3]` for a three-dimensional offset that can put the point "
-    "above or below the PCB.\n\n"
-    "An example with two-dimensional offsets hugging one corner:\n\n"
-    "```anchors\n"
-    "  - alias: corner-side\n"
-    "    side: SE\n"
-    "    offset: [1, 1]\n"
-    "  - alias: corner-back\n"
-    "    side: SE\n"
-    "    offset: [-1, -1]\n```"
-    "\n"
-    "Other anchoring parameters are not available.\n\n"
-    "Grip anchor points are all empty by default. "
-    "They can be occupied, and connected, using `tweaks`."]
    [:parameter [:ports]
     {:heading-template "Special section %s"
      :default {}

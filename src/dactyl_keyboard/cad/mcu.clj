@@ -250,7 +250,9 @@
 
 
 (defn- at-pcba [getopt subject]
-  (place/at-named getopt {:anchor :mcu-pcba} subject))
+  (place/at-named getopt {:anchor :mcu-pcba}
+    ;; Align against the far side of the PCBA.
+    (maybe/translate [0 (/ (getopt :mcu :derived :pcb :length) 2) 0] subject)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;

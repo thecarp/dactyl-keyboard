@@ -5,30 +5,11 @@
 tweaks:
   hole-through-small-port: null  # Disabled; replaced by gripper.
   mcu-grip:
-    - chunk-size: 2
-      hull-around:
-      - [grip-west-corner-forward]
-      - [grip-west-corner-backward]
-      - [grip-west-center-outermost]
-    - chunk-size: 2
-      hull-around:
-      - [grip-east-corner-forward]
-      - [grip-east-corner-backward]
-      - [grip-east-center-outermost]
-    - hull-around:
-      - [grip-west-center-outermost]
-      - [grip-west-center-innermost]
-      - [grip-east-center-innermost]
-      - [grip-east-center-outermost]
-  grip-to-web:
-    - hull-around:
-      - [grip-west-center-outermost]
-      - [grip-east-center-outermost]
-      - [grip-rear-west]
-      - [grip-rear-east]
-    - hull-around:
-      - [grip-rear-west]
-      - [grip-rear-east]
+    - hull-around:  # A bar at the rear end of the MCU PCBA.
+      - [mcu-grip-base]
+      - [mcu-grip-plate]
+    - hull-around:  # A thick support beam descending from the key cluster.
+      - [mcu-grip-base]
       - [back0, ESE, 0]
       - [back1, WSW, 0]
       - [mcu-base-key, ENE, 0]
@@ -41,43 +22,18 @@ mcu:
   support:
     shelf:
       include: false
-    grip:
-      size: [2, 2, 5]
-      anchors:
-        # One group of anchors goes round the south-west corner.
-        - alias: grip-west-corner-forward
-          side: SW
-          offset: [-1, -0.5, 0]
-        - alias: grip-west-corner-backward
-          side: SW
-          offset: [-1, -1, 0]
-        - alias: grip-west-center-outermost
-          side: SW
-          offset: [4, -1, 0]
-        - alias: grip-west-center-innermost
-          side: SW
-          offset: [8, 0.5, 0]
-        # A corresponding group goes round the south-east corner.
-        - alias: grip-east-corner-forward
-          side: SE
-          offset: [1, -0.5, 0]
-        - alias: grip-east-corner-backward
-          side: SE
-          offset: [1, -1, 0]
-        - alias: grip-east-center-outermost
-          side: SE
-          offset: [-4, -1, 0]
-        - alias: grip-east-center-innermost
-          side: SE
-          offset: [-8, 0.5, 0]
-        # A pair of anchors above and further behind the PCB.
-        # These serve as a bridge to the key webbing.
-        - alias: grip-rear-west
-          side: SW
-          offset: [10, -5, 5]
-        - alias: grip-rear-east
-          side: SE
-          offset: [-10, -5, 5]
 ports:
   small-port:
     include: false  # Obviated by direct exposure of MCU connector.
+secondaries:
+  mcu-grip-base:
+    anchoring:
+      anchor: mcu-pcba
+      side: S
+      intrinsic-offset: [0, -2, 2]
+    size: [5, 4, 7]
+  mcu-grip-plate:
+    anchoring:
+      anchor: mcu-pcba
+      side: S
+    size: [20, 2, 3]

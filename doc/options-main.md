@@ -104,9 +104,6 @@ Each heading in this document represents a recognized configuration key in the m
                 - Parameter <a href="#user-content-mcu-support-lock-bolt-overshoot">`overshoot`</a>
                 - Parameter <a href="#user-content-mcu-support-lock-bolt-mount-length">`mount-length`</a>
                 - Parameter <a href="#user-content-mcu-support-lock-bolt-mount-thickness">`mount-thickness`</a>
-        - Section <a href="#user-content-mcu-support-grip">`grip`</a>
-            - Parameter <a href="#user-content-mcu-support-grip-size">`size`</a>
-            - Parameter <a href="#user-content-mcu-support-grip-anchors">`anchors`</a>
 - Special section <a href="#user-content-ports">`ports`</a>
 - Section <a href="#user-content-wrist-rest">`wrist-rest`</a>
     - Parameter <a href="#user-content-wrist-rest-include">`include`</a>
@@ -592,7 +589,7 @@ This section offers a couple of different, mutually compatible ways to hold an M
 
 Support is especially important if connector(s) on the PCBA will be exposed to animals, such as people. Take care that the user can plug in a USB cable, which requires a receptable to be both reachable through the case *and* held there firmly enough that the force of the user’s interaction will neither damage nor displace the board.
 
-Despite the importance of support in most use cases, no MCU support is included by default.
+Despite the importance of support in most use cases, no MCU support is included by default. Instead of using the features offered in this section, consider using `tweaks` anchored to the PCBA instead.
 
 #### Parameter <a id="mcu-support-preview">`preview`</a>
 
@@ -636,7 +633,7 @@ The thickness of material in the outermost part on each side, in mm.
 
 ###### Parameter <a id="mcu-support-shelf-sides-overhang-width">`overhang-width`</a>
 
-The extent to which each grip extends out across the PCBA, in mm.
+The extent to which each side extends out across the PCBA, in mm.
 
 ###### Parameter <a id="mcu-support-shelf-sides-offsets">`offsets`</a>
 
@@ -720,40 +717,6 @@ The length of the base containing a threaded channel used to secure the bolt ove
 ###### Parameter <a id="mcu-support-lock-bolt-mount-thickness">`mount-thickness`</a>
 
 The thickness of the mount. This should have some rough correspondence to the threaded portion of your fastener, which should not have a shank.
-
-#### Section <a id="mcu-support-grip">`grip`</a>
-
-The case can extend to hold the MCU firmly in place.
-
-Space is reserved for the MCU PCB. This space will cut into each grip that intersects the PCB, as determined by the center of each post (set with `anchors` in this section) and its `size`. These intersections create notches in the grips, which is how they hold onto the PCB. The deeper the notch, the more flexible the case has to be to allow assembly.
-
-##### Parameter <a id="mcu-support-grip-size">`size`</a>
-
-The three dimensions of a grip post, in mm.
-
-Like the `size` of a secondary, this parameter determines the size of the object that will occupy an anchor point for a grip when that point is targeted by a tweak.
-
-##### Parameter <a id="mcu-support-grip-anchors">`anchors`</a>
-
-A list of points in space positioned relative to the PCB’s corners.
-
-Each point must have an `alias`, which is a name you can use elsewhere to refer to that point, and a `side`, identifying one side of the PCB, e.g. `SE` for the south-east corner.
-
-Each point may also have an `offset` from the stated side. These offsets must be given in mm, either as a 2-tuple like `[1, 2]` for a two-dimensional offset in the plane of the PCB, or as a 3-tuple like `[1, 2, 3]` for a three-dimensional offset that can put the point above or below the PCB.
-
-An example with two-dimensional offsets hugging one corner:
-
-```anchors
-  - alias: corner-side
-    side: SE
-    offset: [1, 1]
-  - alias: corner-back
-    side: SE
-    offset: [-1, -1]
-```
-Other anchoring parameters are not available.
-
-Grip anchor points are all empty by default. They can be occupied, and connected, using `tweaks`.
 
 ## Special section <a id="ports">`ports`</a>
 

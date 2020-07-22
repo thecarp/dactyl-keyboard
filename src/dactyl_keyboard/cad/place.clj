@@ -537,8 +537,14 @@
       subject)))
 
 (defmethod by-type ::anch/mcu-pcba
-  [getopt {:keys [subject]}]  ; TODO: Support side & segment.
-  (at-named getopt (getopt :mcu :anchoring) subject))
+  [getopt {:keys [side segment subject]}]
+  (let [size (misc/map-to-3d-vec (getopt :mcu :derived :pcb))]
+    (at-named getopt (getopt :mcu :anchoring)
+      ;; MCU anchoring parameters pertain to the connector end of the PCBA.
+      ;; For meaningful treatment of sides, pull the subject back from there.
+      (flex/translate (mapv - (misc/walled-corner-xyz side (or segment 1) size 0)
+                              [0 (/ (getopt :mcu :derived :pcb :length) 2) 0])
+                      subject))))
 
 (defmethod by-type ::anch/mcu-lock-plate
   [getopt {:keys [side segment subject] :or {segment 0}}]

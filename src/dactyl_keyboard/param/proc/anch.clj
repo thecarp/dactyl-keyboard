@@ -89,15 +89,6 @@
       central-point-pair
       (getopt :central-housing :derived :interface))
 
-    ;; MCU grips:
-    ;; Collect the names of MCU grip anchors. Expand 2D offsets to 3D.
-    (mapmap
-      (fn [{:keys [side offset alias] :or {offset [0 0]}}]
-        {alias {::type ::mcu-grip,
-                :side side,
-                :offset (subvec (vec (conj offset 0)) 0 3)}})
-      (getopt :mcu :support :grip :anchors))
-
     ;; Wrist rests:
     ;; First, collect naïve coordinates of named main points. These
     ;; coordinates will require mapping onto the splined outline later. This

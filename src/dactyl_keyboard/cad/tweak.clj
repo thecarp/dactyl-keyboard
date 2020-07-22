@@ -128,9 +128,12 @@
       ::anch/rear-housing
         [false
          (shape misc/nodule)]
-      ::anch/mcu-grip
+      ::anch/mcu-pcba
         [false
-         (shape (apply model/cube (getopt :mcu :support :grip :size)))]
+         (shape (if (or side segment)
+                  misc/nodule
+                  (apply model/cube
+                         (misc/map-to-3d-vec (getopt :mcu :derived :pcb)))))]
       ;; If a side of the MCU plate is specifed, put a nodule there,
       ;; else use the entire base of the plate.
       ::anch/mcu-lock-plate
