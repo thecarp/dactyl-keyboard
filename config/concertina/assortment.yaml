@@ -32,18 +32,106 @@ flanges:
       total-length: 8
       channel-length: 4
     positions:
+    # Mounting screws in the loft of the central housing:
     - anchoring:
         anchor: assortment1
         side: NW
         segment: 0
         intrinsic-rotation: [0, π/-2, 0]
-        intrinsic-offset: [-2, -14, 6]
+        intrinsic-offset: [-2, -12, 6]
+    - anchoring:
+        anchor: assortment1
+        side: SW
+        segment: 0
+        intrinsic-rotation: [0, π/-2, 0]
+        intrinsic-offset: [-2, 10, 6]
+    - anchoring:
+        anchor: assortment1
+        side: NE
+        segment: 0
+        intrinsic-rotation: [0, π/2, 0]
+        intrinsic-offset: [2, -12, 6]
+    - anchoring:
+        anchor: assortment1
+        side: SE
+        segment: 0
+        intrinsic-rotation: [0, π/2, 0]
+        intrinsic-offset: [2, 10, 6]
+    # One screw beneath each of the four lower corners of each assortment port,
+    # right-hand-side.
     - anchoring:
         anchor: assortment1
         side: SW
         segment: 2
         intrinsic-rotation: [0, π/-2, 0]
-        intrinsic-offset: [-2, 15, -1.75]
+        intrinsic-offset: [-2, 12, -1.75]
+    - anchoring:
+        anchor: assortment1
+        side: NW
+        segment: 2
+        intrinsic-rotation: [0, π/-2, 0]
+        intrinsic-offset: [-2, -6, -1.75]
+    - anchoring:
+        anchor: assortment2
+        side: SW
+        segment: 2
+        intrinsic-rotation: [0, π/-2, 0]
+        intrinsic-offset: [-2, 12, -1.75]
+    - anchoring:
+        anchor: assortment2
+        side: NW
+        segment: 2
+        intrinsic-rotation: [0, π/-2, 0]
+        intrinsic-offset: [-2, -6, -1.75]
+    - anchoring:
+        anchor: assortment3
+        side: SW
+        segment: 2
+        intrinsic-rotation: [0, π/-2, 0]
+        intrinsic-offset: [-2, 12, -1.75]
+    - anchoring:
+        anchor: assortment3
+        side: NW
+        segment: 2
+        intrinsic-rotation: [0, π/-2, 0]
+        intrinsic-offset: [-2, -6, -1.75]
+    # The same on the left.
+    - anchoring:
+        anchor: assortment1
+        side: SE
+        segment: 2
+        intrinsic-rotation: [0, π/2, 0]
+        intrinsic-offset: [2, 12, -1.75]
+    - anchoring:
+        anchor: assortment1
+        side: NE
+        segment: 2
+        intrinsic-rotation: [0, π/2, 0]
+        intrinsic-offset: [2, -6, -1.75]
+    - anchoring:
+        anchor: assortment2
+        side: SE
+        segment: 2
+        intrinsic-rotation: [0, π/2, 0]
+        intrinsic-offset: [2, 12, -1.75]
+    - anchoring:
+        anchor: assortment2
+        side: NE
+        segment: 2
+        intrinsic-rotation: [0, π/2, 0]
+        intrinsic-offset: [2, -6, -1.75]
+    - anchoring:
+        anchor: assortment3
+        side: SE
+        segment: 2
+        intrinsic-rotation: [0, π/2, 0]
+        intrinsic-offset: [2, 12, -1.75]
+    - anchoring:
+        anchor: assortment3
+        side: NE
+        segment: 2
+        intrinsic-rotation: [0, π/2, 0]
+        intrinsic-offset: [2, -6, -1.75]
 ports:
   # Three slots follow for assortment drawers, with 3.5 mm between each.
   assortment1:
@@ -92,33 +180,122 @@ tweaks:
   central-flanges:
   - hull-around:
     - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [0, -2, 0]}, size: 4}]
-    - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [0, -17, 15]}, size: 4}]
-    - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [0, -17, 0]}, size: 4}]
+    - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [0, -15, 7.5]}, size: [4, 1, 15]}]
     - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [30, -2, 0]}, size: 4}]
   - hull-around:
     - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [0, -2, 0]}, size: 4}]
-    - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [0, -17, 15]}, size: 4}]
-    - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [0, -17, 0]}, size: 4}]
+    - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [0, -15, 7.5]}, size: [4, 1, 15]}]
     - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [-30, -2, 0]}, size: 4}]
-  bosses-beneath-drawer-stack-front:
   - hull-around:
-    - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [6, -5, -2]},
-                            size: [12, 10, 4]}]
-    - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [9, -5, -1]},
-                            size: [18, 10, 2]}]
+    - [assortment1, SW, 0, {anchoring: {intrinsic-offset: [0, 0, 0]}, size: 4}]
+    - [assortment1, SW, 0, {anchoring: {intrinsic-offset: [0, 13, 7.5]}, size: [4, 1, 15]}]
+    - [assortment1, SW, 0, {anchoring: {intrinsic-offset: [30, 0, 0]}, size: 4}]
   - hull-around:
-    - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [-6, -5, -2]},
-                            size: [12, 10, 4]}]
-    - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [-9, -5, -1]},
-                            size: [18, 10, 2]}]
-  bosses-beneath-drawer-stack-rear:
+    - [assortment1, SE, 0, {anchoring: {intrinsic-offset: [0, 0, 0]}, size: 4}]
+    - [assortment1, SE, 0, {anchoring: {intrinsic-offset: [0, 13, 7.5]}, size: [4, 1, 15]}]
+    - [assortment1, SE, 0, {anchoring: {intrinsic-offset: [-30, 0, 0]}, size: 4}]
+  # Holes for cylindrical magnets. Actual radius 5 mm, height 2.5 mm.
+  # These magnets are intended to hold in assortment drawers.
+  inner-magnet-pockets:
+    # Right-hand side:
+    - positive: false
+      hull-around:
+      - [assortment1, SW, 2,
+         {anchoring: {intrinsic-offset: [5, 4, -1.75]}, size: [10, 10.5, 2.6]}]
+      - [assortment1, SW, 2,
+         {anchoring: {intrinsic-offset: [12, 4, -1.75]}, size: [1, 1, 2.6]}]
+    - positive: false
+      hull-around:
+      - [assortment2, SW, 2,
+         {anchoring: {intrinsic-offset: [5, 4, -1.75]}, size: [10, 10.5, 2.6]}]
+      - [assortment2, SW, 2,
+         {anchoring: {intrinsic-offset: [12, 4, -1.75]}, size: [1, 1, 2.6]}]
+    - positive: false
+      hull-around:
+      - [assortment3, SW, 2,
+         {anchoring: {intrinsic-offset: [5, 4, -1.75]}, size: [10, 10.5, 2.6]}]
+      - [assortment3, SW, 2,
+         {anchoring: {intrinsic-offset: [12, 4, -1.75]}, size: [1, 1, 2.6]}]
+    # Left-hand side:
+    - positive: false
+      hull-around:
+      - [assortment1, SE, 2,
+         {anchoring: {intrinsic-offset: [-5, 4, -1.75]}, size: [10, 10.5, 2.6]}]
+      - [assortment1, SE, 2,
+         {anchoring: {intrinsic-offset: [-12, 4, -1.75]}, size: [1, 1, 2.6]}]
+    - positive: false
+      hull-around:
+      - [assortment2, SE, 2,
+         {anchoring: {intrinsic-offset: [-5, 4, -1.75]}, size: [10, 10.5, 2.6]}]
+      - [assortment2, SE, 2,
+         {anchoring: {intrinsic-offset: [-12, 4, -1.75]}, size: [1, 1, 2.6]}]
+    - positive: false
+      hull-around:
+      - [assortment3, SE, 2,
+         {anchoring: {intrinsic-offset: [-5, 4, -1.75]}, size: [10, 10.5, 2.6]}]
+      - [assortment3, SE, 2,
+         {anchoring: {intrinsic-offset: [-12, 4, -1.75]}, size: [1, 1, 2.6]}]
+  # The same sort of pockets but at the front of each drawer, to keep it steady while open.
+  outer-magnet-pockets:
+    # Right-hand side:
+    - positive: false
+      hull-around:
+      - [assortment1, NW, 2,
+         {anchoring: {intrinsic-offset: [5, -15, -1.75]}, size: [10, 10.5, 2.6]}]
+      - [assortment1, NW, 2,
+         {anchoring: {intrinsic-offset: [12, -15, -1.75]}, size: [1, 1, 2.6]}]
+    - positive: false
+      hull-around:
+      - [assortment2, NW, 2,
+         {anchoring: {intrinsic-offset: [5, -15, -1.75]}, size: [10, 10.5, 2.6]}]
+      - [assortment2, NW, 2,
+         {anchoring: {intrinsic-offset: [12, -15, -1.75]}, size: [1, 1, 2.6]}]
+    - positive: false
+      hull-around:
+      - [assortment3, NW, 2,
+         {anchoring: {intrinsic-offset: [5, -15, -1.75]}, size: [10, 10.5, 2.6]}]
+      - [assortment3, NW, 2,
+         {anchoring: {intrinsic-offset: [12, -15, -1.75]}, size: [1, 1, 2.6]}]
+    # Left-hand side:
+    - positive: false
+      hull-around:
+      - [assortment1, NE, 2,
+         {anchoring: {intrinsic-offset: [-5, -15, -1.75]}, size: [10, 10.5, 2.6]}]
+      - [assortment1, NE, 2,
+         {anchoring: {intrinsic-offset: [-12, -15, -1.75]}, size: [1, 1, 2.6]}]
+    - positive: false
+      hull-around:
+      - [assortment2, NE, 2,
+         {anchoring: {intrinsic-offset: [-5, -15, -1.75]}, size: [10, 10.5, 2.6]}]
+      - [assortment2, NE, 2,
+         {anchoring: {intrinsic-offset: [-12, -15, -1.75]}, size: [1, 1, 2.6]}]
+    - positive: false
+      hull-around:
+      - [assortment3, NE, 2,
+         {anchoring: {intrinsic-offset: [-5, -15, -1.75]}, size: [10, 10.5, 2.6]}]
+      - [assortment3, NE, 2,
+         {anchoring: {intrinsic-offset: [-12, -15, -1.75]}, size: [1, 1, 2.6]}]
+  # Extra shapes beneath the lowest assortment port contain the last sets of
+  # flange screws and magnets.
+  outer-bosses-beneath-drawer-stack:
   - hull-around:
-    - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [6, 9, -2]},
-                            size: [12, 20, 4]}]
-    - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [9, 9, -1]},
-                            size: [18, 20, 2]}]
+    - [assortment3, NW, 2,
+       {anchoring: {intrinsic-offset: [6, -11, -2]}, size: [12, 22, 4]}]
+    - [assortment3, NW, 2,
+       {anchoring: {intrinsic-offset: [9, -11, -1]}, size: [18, 22, 2]}]
   - hull-around:
-    - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [-6, 9, -2]},
-                            size: [12, 20, 4]}]
-    - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [-9, 9, -1]},
-                            size: [18, 20, 2]}]
+    - [assortment3, NE, 2,
+       {anchoring: {intrinsic-offset: [-6, -11, -2]}, size: [12, 22, 4]}]
+    - [assortment3, NE, 2,
+       {anchoring: {intrinsic-offset: [-9, -11, -1]}, size: [18, 22, 2]}]
+  inner-bosses-beneath-drawer-stack:
+  - hull-around:
+    - [assortment3, SW, 2,
+       {anchoring: {intrinsic-offset: [6, 8, -2]}, size: [12, 18, 4]}]
+    - [assortment3, SW, 2,
+       {anchoring: {intrinsic-offset: [9, 8, -1]}, size: [18, 18, 2]}]
+  - hull-around:
+    - [assortment3, SE, 2,
+       {anchoring: {intrinsic-offset: [-6, 8, -2]}, size: [12, 18, 4]}]
+    - [assortment3, SE, 2,
+       {anchoring: {intrinsic-offset: [-9, 8, -1]}, size: [18, 18, 2]}]

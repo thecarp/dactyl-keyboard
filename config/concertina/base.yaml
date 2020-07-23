@@ -324,7 +324,6 @@ by-key:
               parameters:
                 wall:
                   extent: 0
-                  to-ground: true
             south:
               parameters:
                 wall:
@@ -576,16 +575,30 @@ central-housing:
       include: true
       scale: [2.5, 1]
     fastener-positions:
+    # With the assortment mod, these go inside the centermost piece of the housing.
     - anchor: origin
-      intrinsic-offset: [15, 36, 0]
+      intrinsic-offset: [13, 36, 0]
+    - anchor: origin
+      intrinsic-offset: [72, 36, 0]
     - anchor: origin
       intrinsic-rotation: [0, 0, π]
-      intrinsic-offset: [15, -51, 0]
+      intrinsic-offset: [13, -51, 0]
+    - anchor: origin
+      intrinsic-rotation: [0, 0, π]
+      intrinsic-offset: [72, -51, 0]
+    # These go in the “bookend” pieces (custom bodies for assortment).
+    # Of particular concern here is the need to support the external USB port
+    # on both sides.
+    - anchor: origin
+      intrinsic-offset: [95, 36, 0]
+    - anchor: origin
+      intrinsic-rotation: [0, 0, π]
+      intrinsic-offset: [90, -51, 0]
     - anchor: ci-near-base
       intrinsic-rotation: [0, 0, π]
-      intrinsic-offset: [-15, 4, 0]
+      intrinsic-offset: [-10, 4, 0]
     - anchor: ci-far-base
-      intrinsic-offset: [-42, -4, 0]
+      intrinsic-offset: [-7, -4, 0]
 custom-bodies:
   # For ease of assembly, print the thumb cluster separately.
   thumb-cluster:
