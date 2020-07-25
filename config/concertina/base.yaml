@@ -451,11 +451,12 @@ central-housing:
         offset: [5, 0, -5]
     - base:
         offset: [0, -55, 90]
-        right-hand-alias: ci-near-wall-4
+        right-hand-alias: ci-near-upper-1
       adapter:
         alias: ca-near-upper-1
     - base:
         offset: [0, -55, 110]
+        right-hand-alias: ci-near-upper-2
       adapter:
         alias: ca-near-upper-2
     # The top, all the same height, with a couple of extra points just for
@@ -463,7 +464,7 @@ central-housing:
     # bowled main key cluster.
     - base:
         offset: [0, -40, 125]
-        right-hand-alias: ci-thumb-1
+        right-hand-alias: ci-near-roof
       adapter:
         alias: ca-near-roof
     - base:
@@ -551,10 +552,10 @@ central-housing:
       - starting-point: ci-near-lower
         axial-offset: 5
         radial-offset: -5
-      - starting-point: ci-near-wall-4
+      - starting-point: ci-near-upper-1
         axial-offset: 5
         radial-offset: 3
-      - starting-point: ci-thumb-1
+      - starting-point: ci-near-roof
         axial-offset: 5
         radial-offset: 9
       - starting-point: ci-far-roof
@@ -743,7 +744,7 @@ tweaks:
     - [t3F, SSW, 1]
     - [f0C, null, 0, 3]
   # Extensions from the bosses of flange screws into the main body, to cover
-  # holes left by sinking these flanges screws and their channels far into the
+  # holes left by sinking these flange screws and their channels far into the
   # body.
   flange-bosses-lower:
   - hull-around:
@@ -886,6 +887,18 @@ tweaks:
     - [sec-near-upper-1c]
     - [ca-near-upper-1]
     - [ca-near-upper-2]
+  # Cleaning up the interior of the central housing immediately beneath the
+  # west edge of the thumb cluster, by removing cluster walls penetrating the
+  # interior.
+  thumb-to-housing-negatives:
+  - positive: false
+    hull-around:
+    - [ca-near-upper-1, null, 1, {anchoring: {intrinsic-offset: [5, 0, 0]}}]
+    - [ci-near-upper-1, null, 1]
+    - [ca-near-upper-2, null, 1, {anchoring: {intrinsic-offset: [5, 0, 0]}}]
+    - [ci-near-upper-2, null, 1]
+    - [ca-near-roof, null, 1, {anchoring: {intrinsic-offset: [5, 0, 0]}}]
+    - [ci-near-roof, null, 1]
   gap-fill:  # Miscellaneous triangular fillers.
   - hull-around:
     - [m1L, NNW, 0, 1]
@@ -978,34 +991,34 @@ tweaks:
   # A thin strip along the east side of the main cluster.
   # This comes in three parts because hulling the entire strip would extend the
   # bottom plate outside the case.
-  # Notice there is some redundancy with case wall generated from settings by
-  # key. Apart from expanding the bottom plate, the extra material also
-  # strengthens the outside edge of the main body and helps support
-  # bottom-plate fasteners.
+  # Notice there is some redundancy with the case wall generated
+  # from settings by key. Apart from expanding the bottom plate, the
+  # extra material also strengthens the outside edge of the main
+  # body and helps support bottom-plate fasteners.
   - at-ground: true
     hull-around:
-    - [ca-bottom-1]
-    - [ci-near-base]
-    - [ca-near-base]
+    - [ca-bottom-1, null, 0]
+    - [ci-near-base, null, 0]
+    - [ca-near-base, null, 0]
     - [m5F, SSE, 0, 2]
     - [m5F, ESE, 0]
     - [m5F, ENE, 0]
   - at-ground: true
     hull-around:
-    - [ca-bottom-1]
+    - [ca-bottom-1, null, 0]
     - [m5F, ENE, 0]
     - [m5M, ESE, 0]
     - [m5M, ENE, 0]
-    - [ca-bottom-2]
+    - [ca-bottom-2, null, 0]
   - at-ground: true
     hull-around:
     - [m5M, ENE, 0]
     - [m5L, ESE, 0]
     - [m5L, ENE, 0]
     - [m5L1]
-    - [ca-far-base]
-    - [ci-far-base]
-    - [ca-bottom-2]
+    - [ca-far-base, null, 0]
+    - [ci-far-base, null, 0]
+    - [ca-bottom-2, null, 0]
 mcu:
   include: true
   anchoring:

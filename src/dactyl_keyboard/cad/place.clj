@@ -220,13 +220,18 @@
   Pick the most useful precomputed 3D vertex, favouring actual vertices on
   the body of the central housing over more ethereral vertices that are not
   part of the body but correspond to its outer shell."
-  [getopt index part side depth subject]
-  {:pre [(nat-int? index), (keyword? part), (keyword? depth),
+  [getopt index part side segment subject]
+  {:pre [(nat-int? index), (keyword? part), (integer? segment),
          (#{:gabel :adapter} part)]}
+  (when-not (#{0 1} segment)
+    (throw (ex-info "Invalid segment ID specified for central housing."
+              {:configured-segment segment
+               :available-segments #{0 1}})))
   (let [points (getopt :central-housing :derived :interface index :points)
+        depth-key (case segment 0 :outer, 1 :inner)
         coord (or  ; Pick the first of a number of candidates.
-               (get-in points [:above-ground part side depth])  ; Gabel.
-               (get-in points [:above-ground part depth])  ; Adapter.
+               (get-in points [:above-ground part side depth-key])  ; Gabel.
+               (get-in points [:above-ground part depth-key])  ; Adapter.
                (get-in points [:ethereal part]))]  ; Fallback even for at-ground.
     (flex/translate coord subject)))
 
@@ -496,12 +501,12 @@
   subject)
 
 (defmethod by-type ::anch/central-gabel
-  [getopt {:keys [index subject side depth] :or {depth :outer}}]
-  (chousing-place getopt index :gabel side depth subject))
+  [getopt {:keys [index subject side segment] :or {segment 0}}]
+  (chousing-place getopt index :gabel side segment subject))
 
 (defmethod by-type ::anch/central-adapter
-  [getopt {:keys [index subject side depth] :or {depth :outer}}]
-  (chousing-place getopt index :adapter side depth subject))
+  [getopt {:keys [index subject side segment] :or {segment 0}}]
+  (chousing-place getopt index :adapter side segment subject))
 
 (defmethod by-type ::anch/rear-housing
   [getopt {:keys [side segment subject] ::anch/keys [layer] :or {segment 3}}]

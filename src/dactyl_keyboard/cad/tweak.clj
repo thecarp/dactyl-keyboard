@@ -14,7 +14,6 @@
             [scad-tarmi.maybe :as maybe]
             [dactyl-keyboard.cad.auxf :as auxf]
             [dactyl-keyboard.cad.body :refer [body-plate-hull]]
-            [dactyl-keyboard.cad.body.central :as central]
             [dactyl-keyboard.cad.body.wrist :as wrist]
             [dactyl-keyboard.cad.mcu :as mcu]
             [dactyl-keyboard.cad.misc :as misc]
@@ -98,92 +97,83 @@
 ;; 3D ;;
 ;;;;;;;;
 
-(defn- pick-3d-shape
-  "Pick the model for a tweak. Return a tuple of that model and an indicator
-  for whether the model is already in place. Positioning depends both on the
-  type of anchor and secondary parameters about the target detail upon it.
-  Use the most specific dimensions available."
-  [getopt {:keys [anchoring size] :as node}]
-  {:pre [(spec/valid? ::arb/leaf node)]}
-  (let [{:keys [anchor side segment]} anchoring
-        {::anch/keys [type primary] :as resolved} (resolve-anchor getopt anchor)
-        shape (fn [& shapes]
-                "Prefer the tweak’s overriding size to any default shapes."
-                (if size (apply model/cube size)
-                         (first (filter some? shapes))))]
+(defn- central-housing-line
+  "Combine two points on the central housing into one line."
+  [getopt anchor]
+  (model/hull
+    misc/nodule
+    (model/translate
+      (mapv - (place/at-named getopt {:anchor anchor, :segment 1})
+              (place/at-named getopt {:anchor anchor, :segment 0}))
+      misc/nodule)))
+
+(defn- anchor-specific-shape
+  "Find a 3D model associated with an anchor, or a part thereof."
+  [getopt {:keys [anchor side segment]}]
+  (let [{::anch/keys [type primary] :as resolved} (resolve-anchor getopt anchor)]
     (case type
       ::anch/key-mount
-        [false
-         (let [{:keys [cluster coordinates]} resolved]
-           (shape (if side (web-post getopt cluster coordinates side)
-                           (single-plate getopt cluster coordinates))))]
+        (let [{:keys [cluster coordinates]} resolved]
+          (if side (web-post getopt cluster coordinates side)
+                   (single-plate getopt cluster coordinates)))
       ::anch/central-gabel
-        [true
-         ;; TODO: Break out the models used here to allow universal tweaking of
-         ;; shape and position.
-         (central/tweak-post getopt anchor)]
+        (when-not segment (central-housing-line getopt anchor))
       ::anch/central-adapter
-        [true
-         (central/tweak-post getopt anchor)]
-      ::anch/rear-housing
-        [false
-         (shape misc/nodule)]
+        (when-not segment (central-housing-line getopt anchor))
       ::anch/mcu-pcba
-        [false
-         (shape (if (or side segment)
-                  misc/nodule
-                  (apply model/cube
-                         (misc/map-to-3d-vec (getopt :mcu :derived :pcb)))))]
+        (when-not (or side segment)
+          (apply model/cube
+                 (misc/map-to-3d-vec (getopt :mcu :derived :pcb))))
       ;; If a side of the MCU plate is specifed, put a nodule there,
       ;; else use the entire base of the plate.
       ::anch/mcu-lock-plate
-        [false
-         (shape (if side misc/nodule (mcu/lock-plate-base getopt false)))]
+        (when-not side (mcu/lock-plate-base getopt false))
       ::anch/wr-block
-        [false
-         (shape (if (or side segment)
-                  misc/nodule
-                  (let [{:keys [mount-index block-key]} resolved]
-                    (wrist/block-model getopt mount-index block-key))))]
+        (when-not (or side segment)
+          (let [{:keys [mount-index block-key]} resolved]
+            (wrist/block-model getopt mount-index block-key)))
       ::anch/wr-nut
         ;; Ignore side and segment as inapplicable to a nut.
-        [false
-         (let [{:keys [mount-index block-key fastener-index]} resolved]
-           (shape (wrist/nut getopt mount-index block-key fastener-index)))]
+        (let [{:keys [mount-index block-key fastener-index]} resolved]
+          (wrist/nut getopt mount-index block-key fastener-index))
       ::anch/port-hole
-        [false
-         ;; With anchoring selectors, use a nodule by default for tenting the
-         ;; ceiling slightly, as would be useful for DFM. Else use the whole
-         ;; port, minus its flared face.
-         (shape (if (or side segment)
-                  misc/nodule (auxf/port-hole-base getopt anchor)))]
+        ;; With anchoring selectors, use a nodule by default for tenting the
+        ;; ceiling slightly, as would be useful for DFM. Else use the whole
+        ;; port, minus its flared face.
+        (when-not (or side segment) (auxf/port-hole-base getopt anchor))
       ::anch/port-holder
-        [false
-         (shape (if (or side segment)
-                  (auxf/port-tweak-post getopt primary)
-                  (auxf/port-holder getopt primary)))]
+        (if (or side segment)
+          (auxf/port-tweak-post getopt primary)
+          (auxf/port-holder getopt primary))
       ::anch/flange-screw
-        [false
-         (let [{:keys [flange]} resolved
-               {:keys [boss-radius boss-height]} (getopt :flanges :derived flange)]
-           (shape (if segment
-                    (model/cylinder boss-radius misc/wafer)
-                    (model/translate [0 0 (/ boss-height -2)]
-                      (model/cylinder boss-radius boss-height)))))]
+        (let [{:keys [flange]} resolved
+              {:keys [boss-radius boss-height]} (getopt :flanges :derived flange)]
+          (if segment
+            (model/cylinder boss-radius misc/wafer)
+            (model/translate [0 0 (/ boss-height -2)]
+              (model/cylinder boss-radius boss-height))))
       ::anch/secondary
-        [false
-         (let [{:keys [size]} (getopt :secondaries anchor)]
-           (shape (when size (apply model/cube size)) misc/nodule))]
-      [false (shape misc/nodule)])))
+        (let [{:keys [size]} (getopt :secondaries anchor)]
+          (when size (apply model/cube size)))
+      ;; Other types of anchors are never associated with a shape.
+      nil)))
+
+(defn- pick-3d-shape
+  "Pick the model for a tweak.
+  Use the most specific dimensions available. In decreasing order of
+  preference, that is a size requested for the individual tweak, a size
+  associated with the anchor, or a nodule."
+  [getopt {:keys [anchoring size] :as node}]
+  {:pre [(spec/valid? ::arb/leaf node)]}
+  (first (filter some? [(when size (apply model/cube size))
+                        (anchor-specific-shape getopt anchoring)
+                        misc/nodule])))
 
 (defn- leaf-blade-3d
   "One model, in place."
   [getopt {:keys [anchoring] :as node}]
   {:pre [(spec/valid? ::arb/leaf node)]}
-  (let [[placed item] (pick-3d-shape getopt node)]
-    (if placed
-      item
-      (place/at-named getopt (assoc anchoring :subject item)))))
+  (place/at-named getopt anchoring (pick-3d-shape getopt node)))
 
 (defn- model-leaf-3d
   "(The hull of) one or more models of one type on one side, in place, in 3D."

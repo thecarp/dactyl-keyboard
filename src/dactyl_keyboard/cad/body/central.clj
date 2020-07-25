@@ -328,15 +328,6 @@
   [getopt]
   (fastener-feature getopt housing-side single-receiver))
 
-(defn tweak-post
-  "Place an adapter between the housing polyhedron and a case wall."
-  [getopt alias]
-  {:pre [(keyword? alias)]}
-  (apply model/hull
-    (for [depth [:outer :inner]]
-      (place/at-named getopt {:anchor alias, :depth depth}
-        (model/cube wafer wafer wafer)))))
-
 (defn lip-body-right
   "A lip for an adapter."
   [getopt]

@@ -41,21 +41,23 @@ couple of other things to target a specific piece of the anchor:
 
 * A `side` code. This is a compass point identifying a part of the anchor’s
   periphery.
-* A `segment` code. This is a numeric ID for a vertical segment of the anchor.
+* A `segment` code. This is a numeric ID for a vertical or depth-like segment
+  of the anchor.
 
 These parameters are interpreted with respect to the specific anchor. Their
 significance therefore varies with the anchor. For example, when you anchor to
-`origin`, both `side` and `segment` are totally ignored, because `origin` is
-not a feature, just a point in space without horizontal or vertical extent.
+`origin`, both `side` and `segment` are ignored because `origin` is not a
+feature, just a point in space without horizontal or vertical extent.
 
 Differences between all the different kinds of anchors will be documented here
-in future. Broadly, they are of the following types:
+in future. Broadly, they are:
 
-* The availability and interpretation of different compass codes and vertical
-  segment codes.
-* The effect of omitting such specifiers entirely.
-* The default shape of a case tweak.
-* The ability to override that shape.
+* The availability and interpretation of different compass and vertical segment
+  codes, including default values for when such codes are omitted from a
+  configuration or, equivalently, set to `null`.
+* Default shape, with and without compass and vertical segment codes. In
+  several cases, not supplying such identifiers produces a shape similar to the
+  entire anchor.
 
 ## Orientation with an anchor
 
