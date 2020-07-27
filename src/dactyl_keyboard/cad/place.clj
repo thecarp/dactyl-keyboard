@@ -552,31 +552,18 @@
                       subject))))
 
 (defmethod by-type ::anch/mcu-lock-plate
-  [getopt {:keys [side segment subject] :or {segment 0}}]
+  [getopt {:keys [side segment subject]}]
   {:pre [(or (nil? side) (compass/noncardinals side))]}
-  (at-named getopt {:anchor :mcu-pcba}
-     (if side
-       ;; One side of the lock plate.
-       ;; Typically, this means that “subject” is either a nodule object
-       ;; for a tweak or else some coordinate being used as an anchor.
-       (let [side (compass/convert-to-intercardinal side)]
-         ;; Here, segment 0 describes the plane of the PCB,
-         ;; segment 1 the transition to the base of the lock plate,
-         ;; and segment 2 the bottom of the lock plate.
-         (flex/translate
-           (conj (subvec (getopt :mcu :derived :plate side) 0 2)
-                 (case segment
-                   0 0
-                   1 (getopt :mcu :derived :plate :transition)
-                   2 (- (getopt :mcu :derived :plate :transition)
-                        (getopt :mcu :support :lock :plate :base-thickness))
-                   (throw (ex-info "Invalid segment ID specified for lock plate."
-                             {:configured-segment segment
-                              :available-segments #{0 1 2}}))))
-           subject))
-       ;; Else the midpoint of the plate.
-       ;; Typically, “subject” is the entire lock plate for a tweak.
-       subject)))
+  (let [size (misc/map-to-3d-vec (getopt :mcu :derived :plate))]
+    (at-named getopt {:anchor :mcu-pcba}
+      (flex/translate (mapv + (misc/walled-corner-xyz side (or segment 1) size 0)
+                              [0
+                               (/ (- (getopt :mcu :derived :plate :length)
+                                     (getopt :mcu :derived :pcb :length))
+                                  -2)
+                               (- (getopt :mcu :derived :plate :transition)
+                                  (/ (getopt :mcu :derived :plate :thickness) 2))])
+                      subject))))
 
 (defmethod by-type ::anch/mcu-grip
   [getopt {:keys [side subject]}]

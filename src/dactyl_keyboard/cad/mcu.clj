@@ -163,8 +163,8 @@
         transition (getopt :mcu :derived :plate :transition)
         full-z (- plate-z transition)
         main-z (if include-clearance full-z plate-z)]
-   (model/translate [0 (/ plate-y -2) (+ (- full-z) (/ main-z 2))]
-     (model/cube plate-x plate-y main-z))))
+    (model/translate [0 0 (+ (- full-z) (/ main-z 2))]
+      (model/cube plate-x plate-y main-z))))
 
 (defn- lock-fixture-positive
   "Parts of the lock-style MCU support that integrate with the case.
@@ -180,7 +180,8 @@
         socket-z-offset (+ (/ pcb-z 2) (* 3/4 usb-z) (/ thickness 2))
         socket-x (+ usb-x (* 2 thickness))]
     (model/union
-      (lock-plate-base getopt true)
+      (model/translate [0 (/ (prop :plate :length) -2) 0]
+        (lock-plate-base getopt true))
       ;; The socket:
       (model/hull
         ;; Purposely ignore connector overshoot in placing the socket.
