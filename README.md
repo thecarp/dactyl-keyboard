@@ -4,6 +4,7 @@ This, the DMOTE, is an application for designing a keyboard that suits you. By
 editing text files of parameters, you can change:
 
 - Switch type: ALPS or MX.
+- Microcontroller type: Lots of options.
 - Size and shape.
     - Row and column curvature and tilt (tenting).
     - Exceptions at any level, down to the position of individual keys.
@@ -42,7 +43,7 @@ Like its parent, the DMOTE project is based on Matthew Farrell’s
 [`scad-clj`](https://github.com/farrellm/scad-clj). A second small family of
 general CAD libraries for `scad-clj` have grown up around the DMOTE project.
 
-* [`scad-app`](https://github.com/veikman/scap-app): A simple way to turn
+* [`scad-app`](https://github.com/veikman/scad-app): A simple way to turn
   `scad-clj` specifications into applications, stripping out some boilerplate.
   See also [`cad-template`](https://github.com/veikman/cad-template), which is
   all boilerplate for starting new CAD projects that are ready to render.
