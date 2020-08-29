@@ -124,7 +124,7 @@ by-key:
               parameters:
                 layout:
                   translation:
-                    early: [0, 0, -1]
+                    early: [0.2, 0.15, -1]
             last:
               parameters:
                 key-style: minimal-tall
@@ -423,7 +423,7 @@ main-body:
 central-housing:
   include: true
   shape:
-    width: 200
+    width: 180
     thickness: 2
     interface:
     # The near side, ascending:
@@ -578,14 +578,14 @@ central-housing:
     - anchor: origin
       intrinsic-rotation: [0, 0, π]
       intrinsic-offset: [72, -51, 0]
-    # These go in the “bookend” pieces (custom bodies for assortment).
+    # These go in the “bookend” pieces, custom bodies for the assortment mod.
     # Of particular concern here is the need to support the external USB port
     # on both sides.
     - anchor: origin
-      intrinsic-offset: [95, 36, 0]
+      intrinsic-offset: [92, 36, 0]
     - anchor: origin
       intrinsic-rotation: [0, 0, π]
-      intrinsic-offset: [90, -51, 0]
+      intrinsic-offset: [92, -51, 0]
     - anchor: ci-near-base
       intrinsic-rotation: [0, 0, π]
       intrinsic-offset: [-10, 4, 0]
@@ -1021,14 +1021,14 @@ tweaks:
   - hull-around:  # Wide sides on the port holder for printing ease and strength.
     - [ext-usb-holder]
     - [ext-usb-holder,
-       {anchoring: {side: NW, segment: 1, intrinsic-offset: [-10, 0, 0]}}]
+       {anchoring: {side: NW, segment: 1, intrinsic-offset: [-13, 0, 0]}}]
     - [ext-usb-holder,
        {anchoring: {side: NE, segment: 1, intrinsic-offset: [5, 0, 0]}}]
   - positive: false  # A dent in the interior wall, for DFM.
     hull-around:
     - [ext-usb-hole]
     - [ext-usb-hole,
-       {anchoring: {side: E, segment: 1, intrinsic-offset: [1, 0, 0]}}]
+       {anchoring: {side: E, segment: 1, intrinsic-offset: [2, 0, 0]}}]
   - positive: false  # A hole for USB pins and a locking flange.
     hull-around:
     - [ext-usb-hole,
@@ -1071,26 +1071,27 @@ mcu:
   anchoring:
     anchor: ci-far-base
     intrinsic-rotation: [π/-2, π/4, π]
-    intrinsic-offset: [-22, -5, 70]
+    intrinsic-offset: [-19, -3.5, 70]
   support:
     shelf:
       include: true
       extra-space: [1, 0, 1]
       bevel:
         east: 0.7
+        south: 1
         west: 0.7
       sides:
         lateral-thickness: 5
         overhang-thickness: 1.5
         overhang-width: 0.5
-        offsets: [10, 10]
+        offsets: [-10, -10]
 ports:
   ext-usb-hole:
     include: true
     type: usb-full-2b
     anchoring:
       anchor: ci-far-base
-      intrinsic-offset: [-22, 0, 25]
+      intrinsic-offset: [-21, 0, 25]
     holder:
       include: true
       alias: ext-usb-holder
