@@ -1,4 +1,6 @@
-# Configuration fragment for a flat key cluster.
+# Configuration fragment for flattening each key cluster.
+# As written, this will only be effective where no more specific corresponding
+# settings are made, which is improbable.
 
 by-key:
   parameters:

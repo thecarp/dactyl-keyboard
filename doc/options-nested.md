@@ -1,6 +1,6 @@
 <!--This document was generated and is intended for rendering to HTML on GitHub. Edit the source files, not this file.-->
 
-# Nestable configuration options
+# Nestable key configuration options
 
 This document describes all those settings which can be made at any level of specificity, from the entire keyboard down to one side of one key. These settings all go under `by-key` in a YAML file, as indicated [here](options-main.md).
 
@@ -8,12 +8,12 @@ This document describes all those settings which can be made at any level of spe
 
 The `by-key` section contains a map of up to five items:
 
-- `parameters`, where you put actual settings for the entire keyboard. Sections described in this document all pertain to this map.
+- `parameters`, where you put your settings. Sections described in this document all pertain to this map.
 - `clusters`, starting a nested map for specific clusters only, keyed by their names.
-- `columns` and/or `rows`, each starting a nested map for specific columns or rows only, keyed either by their indices (ordinal integers) or by the special words `first` or `last`. Due to a peculiarity of the YAML parser, **numeric indices must appear in quotation marks** as in the example below.
+- `columns` and/or `rows`, each starting a nested map for specific columns or rows only, keyed either by their indices (ordinal integers) or by the special words `first` or `last`. Due to a peculiarity of YAML (and JSON), **numeric indices must appear in quotation marks** as in the example below.
 - `sides`, starting a nested map for specific sides only, keyed by the long-form cardinal points of the compass, i.e. the words `north`, `east`, `south` or `west`.
 
-Each of the nested maps have the same structure as this root-level map. Greater specificity is accomplished by nesting a series of these maps.
+Each of the nested maps have the same structure as this root-level map. Specificity is accomplished by nesting a series of these maps, so that a nested set of `parameters` comes to refer to an intersection of more than one selection criterion.
 
 ### Example
 
@@ -35,9 +35,15 @@ In the following example, the parameter `key-style` is set three times: Once at 
                 key-style: svelte
 ```
 
-In this example, `key-style` will have the value `plump` for all keys except two. It will have the value `svelte` for the key closest to the user (first row) and the key three steps above the home row (row 3), both in the second column from the left (column 1) of key cluster `C`.
+In this example, `key-style` will have the value `plump` for all keys except two. It will have the value `svelte` for the key closest to the user (first row) and the key three steps above the home row (row 3), both in the second column from the left (i.e. column 1) of key cluster `C`.
 
-Key cluster `C` and the two key styles must be defined elsewhere. Also, if the keyboard uses reflection, notice that the descriptions given in the previous paragraph must be mirrored for the left-hand side of the keyboard.
+Key cluster `C` and the two key styles must be defined elsewhere. Also, if the keyboard uses reflection, notice that the descriptions given in the previous paragraph would be incorrect for the left-hand side of the keyboard, because that side would be mirrored.
+
+### Comparison to anchoring
+
+The `by-key` section can place any key anywhere. However, please don’t. Look first to the `key-clusters` section, which is intended to define the most basic shape and position of each cluster. `key-clusters` allows for standard [anchoring](options-anchoring.md), while `by-key` does not.
+
+Please use `key-clusters` to translate and rotate each cluster. More concretely, prefer `key-clusters` over `translation` and over base `pitch`, `roll` and `yaw` at a global or cluster level of `by-key`. Doing so is easier, because standard anchoring allows you to describe rotation on all three axes together, while keeping values in `by-key` smaller and neatly unentangled.
 
 ### Unique selection criteria
 
@@ -164,7 +170,7 @@ Tait-Bryan pitch, meaning the rotation of keys around the x axis.
 
 #### Parameter <a id="layout-pitch-base">`base`</a>
 
-An angle in radians. Set at cluster level, this controls the general front-to-back incline of the key cluster.
+An angle in radians, controlling a uniform front-to-back incline.
 
 #### Parameter <a id="layout-pitch-intrinsic">`intrinsic`</a>
 
@@ -180,7 +186,7 @@ Tait-Bryan roll, meaning the rotation of keys around the y axis.
 
 #### Parameter <a id="layout-roll-base">`base`</a>
 
-An angle in radians. This is the “tenting” angle. Applied to your main cluster on a split keyboard, it controls the overall left-to-right tilt of each half.
+An angle in radians, controlling a uniform right-to-left incline, also known as tenting.
 
 #### Parameter <a id="layout-roll-intrinsic">`intrinsic`</a>
 
@@ -196,7 +202,7 @@ Tait-Bryan yaw, meaning the rotation of keys around the z axis.
 
 #### Parameter <a id="layout-yaw-base">`base`</a>
 
-An angle in radians. Applied to your main key cluster, this serves the purpose of allowing the user to keep their wrists straight even if the two halves of the keyboard are closer together than the user’s shoulders.
+An angle in radians, corresponding to the way your hand naturally describes an arc as you rotate your arm horizontally at the elbow. Yawing columns of keys can allow the user to keep their wrists straight even on a keyboard shorter than the width of the user’s own shoulders.
 
 #### Parameter <a id="layout-yaw-intrinsic">`intrinsic`</a>
 

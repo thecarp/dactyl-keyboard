@@ -14,6 +14,7 @@ key-clusters:
   main:
     anchoring:
       anchor: origin
+      intrinsic-rotation: [0.5, 0.2, 0.03]
       extrinsic-offset: [0, 0, 19.5]
     matrix-columns:
     - rows-above-home: 1
@@ -43,6 +44,7 @@ key-clusters:
   thumb0:
     anchoring:
       anchor: front1
+      intrinsic-rotation: [-0.2, -1.45, 0.9]
       extrinsic-offset: [-8, -16, 29]
       preserve-orientation: true
     matrix-columns:
@@ -58,6 +60,7 @@ key-clusters:
   thumb1:
     anchoring:
       anchor: t4
+      intrinsic-rotation: [-0.4, -1.2, 0.8]
       extrinsic-offset: [-12, 5, -17.5]
       preserve-orientation: true
     matrix-columns:
@@ -92,29 +95,25 @@ by-key:
               row: 0
               column: 0
           pitch:
-            base: 0.5
             progressive: 0.3
             intrinsic: -0.1
           roll:
-            base: 0.2
             progressive: 0.06
-          yaw:
-            base: 0.03
       columns:
         "0":
           parameters:
             key-style: minimal-tall
             layout:
               pitch:
-                base: 0.34
+                base: -0.15
                 progressive: 0.6
                 intrinsic: 0
               roll:
-                intrinsic: 0.3
+                intrinsic: 0.25
               yaw:
-                base: -0.04
+                base: -0.06
               translation:
-                mid: [0.5, -10, 4]
+                mid: [0, -10, 2.5]
           rows:
             "0":
               parameters:
@@ -139,7 +138,7 @@ by-key:
           parameters:
             layout:
               pitch:
-                base: 0.6
+                base: 0.1
                 progressive: 0.4
               translation:
                 mid: [0, -1, 0]
@@ -211,7 +210,7 @@ by-key:
           parameters:
             layout:
               pitch:
-                base: 0.4
+                base: -0.1
                 progressive: 0.35
               translation:
                 mid: [0, -2, 0]
@@ -243,12 +242,12 @@ by-key:
           parameters:
             layout:
               pitch:
-                base: 0.6
+                base: 0.08
                 progressive: 0.5
               yaw:
-                base: 0.1
+                base: 0.07
               translation:
-                late: [0.6, -5, 5.5]
+                late: [0, -2, 5.5]
           rows:
             last:
               parameters:
@@ -267,12 +266,12 @@ by-key:
           parameters:
             layout:
               pitch:
-                base: 0.6
+                base: 0.08
                 progressive: 0.5
               yaw:
-                base: 0.12
+                base: 0.1
               translation:
-                late: [1, -6, 5.5]
+                late: [1, -4, 6]
           rows:
             last:
               parameters:
@@ -302,13 +301,9 @@ by-key:
               column: 0.5
               row: 1
           roll:
-            base: -1.45
             progressive: 0.3
           pitch:
-            base: -0.2
             progressive: 0.25
-          yaw:
-            base: 0.9
       columns:
         first:
           parameters:
@@ -376,13 +371,8 @@ by-key:
     thumb1:
       parameters:
         layout:
-          roll:
-            base: -1.2
           pitch:
-            base: -0.4
             progressive: 0.8
-          yaw:
-            base: 0.8
       columns:
         first:
           rows:
@@ -394,9 +384,6 @@ by-key:
     aux0:
       parameters:
         key-style: minimal-tall
-        layout:
-          pitch:
-            base: 0
       columns:
         last:
           parameters:
