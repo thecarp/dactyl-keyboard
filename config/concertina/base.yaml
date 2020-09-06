@@ -63,7 +63,7 @@ key-clusters:
       anchor: m0F
       preserve-orientation: true
       intrinsic-rotation: [0.55, 0, 0.15]
-      extrinsic-offset: [10, -29, 10]
+      extrinsic-offset: [9.5, -29, 10]
     matrix-columns:
     - rows-above-home: 1
     - rows-above-home: 1
@@ -316,8 +316,8 @@ by-key:
             south:
               parameters:
                 wall:
-                  parallel: 5
-                  perpendicular: -4
+                  parallel: 3
+                  perpendicular: -2.4
     thumb0:
       parameters:
         layout:
@@ -409,7 +409,7 @@ main-body:
           include-threading: false
         positions:
         - anchor: ca-near-base
-          extrinsic-offset: [-2, 7, 0]
+          extrinsic-offset: [0.5, 8.2, 0]
         - anchor: m5M
           side: SE
           segment: 1
@@ -419,7 +419,7 @@ main-body:
           segment: 1
           extrinsic-offset: [-3.25, 0.5, 0]
         - anchor: ca-far-base
-          extrinsic-offset: [-3, -10, 0]
+          extrinsic-offset: [1, -9, 0]
 central-housing:
   include: true
   shape:
@@ -433,13 +433,12 @@ central-housing:
         right-hand-alias: ci-near-base
       adapter:
         alias: ca-near-base
-        offset: [7, 0, 0]
+        offset: [4, 0, 0]
     - base:
         offset: [45, -55, 15]
-        right-hand-alias: ci-near-lower-1
       adapter:
         alias: ca-near-lower-1
-        offset: [7, 0, 0]
+        offset: [4, 0, 0]
     - base:
         offset: [45, -55, 20]
       adapter:
@@ -495,24 +494,34 @@ central-housing:
     - base:
         offset: [45, 40, 110]
       adapter:
-        alias: ca-far-wall-3
+        alias: ca-far-wall-5
     - base:
         offset: [45, 40, 60]
       adapter:
-        alias: ca-far-wall-2
+        alias: ca-far-wall-4
     - base:
         offset: [45, 40, 55]
         right-hand-alias: ci-far-wall
       adapter:
-        alias: ca-far-wall-1
+        alias: ca-far-wall-3
         offset: [7, 0, 0]
+    - base:
+        offset: [45, 40, 28]
+      adapter:
+        alias: ca-far-wall-2
+        offset: [7, 0, 0]
+    - base:
+        offset: [45, 40, 23]
+      adapter:
+        alias: ca-far-wall-1
+        offset: [2, 0, 0]
     - above-ground: true
       base:
         offset: [45, 40, -10]
         right-hand-alias: ci-far-base
       adapter:
-        offset: [7, 0, 0]
         alias: ca-far-base
+        offset: [2, 0, 0]
     # Finally, there’s an “ethereal” point that does not appear in the body or
     # the plate but is useful for anchoring key clusters.
     - at-ground: false
@@ -537,9 +546,6 @@ central-housing:
         include-threading: false
         channel-length: 1
       positions:
-      - starting-point: ci-near-lower-1
-        axial-offset: 5
-        radial-offset: -2
       - starting-point: ci-near-lower-3
         axial-offset: 8
         radial-offset: 8
@@ -554,7 +560,7 @@ central-housing:
         radial-offset: -6
       - starting-point: ci-far-wall
         axial-offset: 5
-        radial-offset: 15
+        radial-offset: 14
     receivers:
       thickness:
         rim: 1.5
@@ -620,7 +626,7 @@ flanges:
         segment: 3
         preserve-orientation: true
         intrinsic-rotation: [π*-0.72, π/-15, 0]
-        intrinsic-offset: [0, 3, -1]
+        intrinsic-offset: [0, 4, 0]
   main-to-thumb-flange-long:  # In front of the thumb cluster.
     bolt-properties:
       m-diameter: 3
@@ -682,7 +688,7 @@ tweaks:
   - chunk-size: 3
     hull-around:
     - [m1L, NNW, 1, 2]
-    - [ca-far-wall-3]
+    - [ca-far-wall-5]
     - [m0L, NW]
     - [ca-far-roof]
     - [m0L, NW]
@@ -757,6 +763,8 @@ tweaks:
     - [t0F, SSW, 1, 2]
     - [t1F, SSW, 0, 2]
     - [f0A, null, 0, 3]
+    - [sec-near-upper-1b-1]
+    - [sec-near-upper-1b]
   - hull-around:
     - [t2L, NNE, 0, 2]
     - [t3L, NNW, 1]
@@ -809,13 +817,13 @@ tweaks:
     - [t0L, WSW, 0, 2]
     - [sec-near-roof]
     - [t0L, WNW, 1]
-    - [t0L, NNW, 1]
+    - [t0L, NNW, 0, 1]
   - chunk-size: 3
     hull-around:
-    - [t0L, NNW, 1]
-    - [t1L, NNW, 1]
+    - [t0L, NNW, 0, 1]
+    - [t1L, NNW, 0, 1]
     - [t1L, NNW, 2]
-    - [t2L, NNW, 1]
+    - [t2L, NNW, 0, 1]
     - [t2L, NNW, 2]
   - chunk-size: 3
     hull-around:
@@ -977,12 +985,16 @@ tweaks:
   # the side of m3L.
   - chunk-size: 3
     hull-around:
+    # Start with a brace against the central-housing interface.
+    - [ca-bottom-2]
+    - [ca-far-base, {anchoring: {extrinsic-offset: [-1, -1, 12]}, size: 2}]
+    # Continue up the wall.
     - [m5L, NE]
     - [m5L1]
     - [m5L, NW]
-    - [m5L2]
+    - [m5L1b]
     - [m4L, NE]
-    - [m5L2]
+    - [m5L1b]
     - [m4L, NW]
     - hull-around:
       - [m3L, SE]
@@ -990,7 +1002,7 @@ tweaks:
       - [m3L, NNE, 0, 1]
   # Down the far side of the central-housing adapter.
   - hull-around:
-    - [ca-far-wall-3]
+    - [ca-far-wall-5]
     - [m1L, NNW, 2]
     - [m1L, NNE, 2]
     - [m2L, NNW, 1]
@@ -1000,20 +1012,23 @@ tweaks:
     - [m1L, NNE, 2]
     - [sec-far]
     - [m2L, NNW, 1]
-    - [ca-far-wall-2]
+    - [ca-far-wall-4]
     - [m2L, NNE, 1]
   - chunk-size: 3
     hull-around:
-    - [ca-far-wall-2]
+    - [ca-far-wall-4]
     - [m2L, NNE, 1]
-    - [ca-far-wall-1]
+    - [ca-far-wall-3]
     - [m3L, NNW, 1]
     - [m3L, NNE, 1]
-  - hull-around:
+  - chunk-size: 3
+    hull-around:
+    - [ca-far-wall-3]
     - [m3L, NNE, 1]
+    - [ca-far-wall-2]
+    - [m5L1b]
     - [ca-far-wall-1]
     - [m5L1]
-    - [m5L2]
     - [ca-far-base]
   # Tweaks for fitting an external USB port and printing the central housing
   # standing on end.
@@ -1065,7 +1080,7 @@ tweaks:
     - [m5L1]
     - [ca-far-base, null, 0]
     - [ci-far-base, null, 0]
-    - [ca-bottom-2, null, 0]
+    - [ca-bottom-2]
 mcu:
   include: true
   anchoring:
@@ -1106,16 +1121,14 @@ secondaries:
   m5L1:
     anchoring:
       anchor: m5L
-      side: NNE
+      side: NE
       segment: 0
-      extrinsic-offset: [5, 24, 0]
+      extrinsic-offset: [3, 23, -1]
     size: 2
-  m5L2:
+  m5L1b:
     anchoring:
-      anchor: m5L
-      side: NNW
-      segment: 0
-      extrinsic-offset: [10, 23, 2]
+      anchor: m5L1
+      extrinsic-offset: [0, 0, 19]
     size: 2
   # A set of anchors to make the wall between the thumb cluster and the
   # central-housing adapter thick enough, despite making an acute angle against
@@ -1225,6 +1238,6 @@ secondaries:
     size: 2
   sec-far:
     anchoring:
-      anchor: ca-far-wall-2
+      anchor: ca-far-wall-4
       intrinsic-offset: [-1, -1, 20]
     size: 2
