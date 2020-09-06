@@ -1,4 +1,5 @@
-# Configuration fragment for assortment drawers.
+# Configuration fragment for assortment drawer ports in the Concertina.
+#
 # This fragment adds a set of three large cuboid holes in the front of the
 # central housing. They’re about the right size for drawers to hold stationery.
 # The drawers themselves are not modeled by the DMOTE application.
@@ -133,7 +134,7 @@ flanges:
         intrinsic-rotation: [0, π/2, 0]
         intrinsic-offset: [2, -6, -2]
 ports:
-  # Three slots follow for assortment drawers, with 3.5 mm between each.
+  # Three slots follow for assortment drawers, with 4 mm between each.
   assortment1:
     include: true
     size: [162, 92, 25]
@@ -194,65 +195,6 @@ tweaks:
     - [assortment1, SE, 0, {anchoring: {intrinsic-offset: [0, 0, 0]}, size: 4}]
     - [assortment1, SE, 0, {anchoring: {intrinsic-offset: [0, 13, 7.5]}, size: [4, 1, 15]}]
     - [assortment1, SE, 0, {anchoring: {intrinsic-offset: [-30, 0, 0]}, size: 4}]
-  # Holes for magnets to hold assortment drawers in place.
-  # Settings here are for cylindrical magnets of actual radius 5 mm, height 2.5
-  # mm, printer nozzle 0.5 mm, with an extra 0.01 mm offset (“-1.76”) to
-  # provoke Cura into printing a full-width wall above each pocket.
-  inner-magnet-pockets:
-    # Right-hand side:
-    - positive: false
-      hull-around:
-      - [assortment1, SW, 2, {anchoring: {intrinsic-offset: [5, 4, -1.76]}, size: [10, 10.5, 2.5]}]
-      - [assortment1, SW, 2, {anchoring: {intrinsic-offset: [12, 4, -1.76]}, size: [1, 1, 2.5]}]
-    - positive: false
-      hull-around:
-      - [assortment2, SW, 2, {anchoring: {intrinsic-offset: [5, 4, -1.76]}, size: [10, 10.5, 2.5]}]
-      - [assortment2, SW, 2, {anchoring: {intrinsic-offset: [12, 4, -1.76]}, size: [1, 1, 2.5]}]
-    - positive: false
-      hull-around:
-      - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [5, 4, -1.76]}, size: [10, 10.5, 2.5]}]
-      - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [12, 4, -1.76]}, size: [1, 1, 2.5]}]
-    # Left-hand side:
-    - positive: false
-      hull-around:
-      - [assortment1, SE, 2, {anchoring: {intrinsic-offset: [-5, 4, -1.76]}, size: [10, 10.5, 2.5]}]
-      - [assortment1, SE, 2, {anchoring: {intrinsic-offset: [-12, 4, -1.76]}, size: [1, 1, 2.5]}]
-    - positive: false
-      hull-around:
-      - [assortment2, SE, 2, {anchoring: {intrinsic-offset: [-5, 4, -1.76]}, size: [10, 10.5, 2.5]}]
-      - [assortment2, SE, 2, {anchoring: {intrinsic-offset: [-12, 4, -1.76]}, size: [1, 1, 2.5]}]
-    - positive: false
-      hull-around:
-      - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [-5, 4, -1.76]}, size: [10, 10.5, 2.5]}]
-      - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [-12, 4, -1.76]}, size: [1, 1, 2.5]}]
-  # The same sort of pockets but at the front of each drawer, to keep it steady while open.
-  outer-magnet-pockets:
-    # Right-hand side:
-    - positive: false
-      hull-around:
-      - [assortment1, NW, 2, {anchoring: {intrinsic-offset: [5, -15, -1.76]}, size: [10, 10.5, 2.5]}]
-      - [assortment1, NW, 2, {anchoring: {intrinsic-offset: [12, -15, -1.76]}, size: [1, 1, 2.5]}]
-    - positive: false
-      hull-around:
-      - [assortment2, NW, 2, {anchoring: {intrinsic-offset: [5, -15, -1.76]}, size: [10, 10.5, 2.5]}]
-      - [assortment2, NW, 2, {anchoring: {intrinsic-offset: [12, -15, -1.76]}, size: [1, 1, 2.5]}]
-    - positive: false
-      hull-around:
-      - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [5, -15, -1.76]}, size: [10, 10.5, 2.5]}]
-      - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [12, -15, -1.76]}, size: [1, 1, 2.5]}]
-    # Left-hand side:
-    - positive: false
-      hull-around:
-      - [assortment1, NE, 2, {anchoring: {intrinsic-offset: [-5, -15, -1.76]}, size: [10, 10.5, 2.5]}]
-      - [assortment1, NE, 2, {anchoring: {intrinsic-offset: [-12, -15, -1.76]}, size: [1, 1, 2.5]}]
-    - positive: false
-      hull-around:
-      - [assortment2, NE, 2, {anchoring: {intrinsic-offset: [-5, -15, -1.76]}, size: [10, 10.5, 2.5]}]
-      - [assortment2, NE, 2, {anchoring: {intrinsic-offset: [-12, -15, -1.76]}, size: [1, 1, 2.5]}]
-    - positive: false
-      hull-around:
-      - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [-5, -15, -1.76]}, size: [10, 10.5, 2.5]}]
-      - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [-12, -15, -1.76]}, size: [1, 1, 2.5]}]
   # Extra shapes beneath the lowest assortment port contain the last sets of
   # flange screws and magnets.
   outer-bosses-beneath-drawer-stack:

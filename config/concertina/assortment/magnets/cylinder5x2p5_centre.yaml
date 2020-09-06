@@ -1,0 +1,63 @@
+# Configuration fragment for magnet pockets, which are holes for magnets to
+# hold assortment drawers in place in a Concertina.
+#
+# Settings here are for cylindrical magnets of actual radius 5 mm, height 2.5
+# mm. The magnets are simply centred in each 4 mm shelf, which is suitable for
+# small printer nozzles.
+
+tweaks:
+  inner-magnet-pockets:
+    # Right-hand side:
+    - positive: false
+      hull-around:
+      - [assortment1, SW, 2, {anchoring: {intrinsic-offset: [5, 4, -2]}, size: [10, 10.5, 2.5]}]
+      - [assortment1, SW, 2, {anchoring: {intrinsic-offset: [12, 4, -2]}, size: [1, 1, 2.5]}]
+    - positive: false
+      hull-around:
+      - [assortment2, SW, 2, {anchoring: {intrinsic-offset: [5, 4, -2]}, size: [10, 10.5, 2.5]}]
+      - [assortment2, SW, 2, {anchoring: {intrinsic-offset: [12, 4, -2]}, size: [1, 1, 2.5]}]
+    - positive: false
+      hull-around:
+      - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [5, 4, -2]}, size: [10, 10.5, 2.5]}]
+      - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [12, 4, -2]}, size: [1, 1, 2.5]}]
+    # Left-hand side:
+    - positive: false
+      hull-around:
+      - [assortment1, SE, 2, {anchoring: {intrinsic-offset: [-5, 4, -2]}, size: [10, 10.5, 2.5]}]
+      - [assortment1, SE, 2, {anchoring: {intrinsic-offset: [-12, 4, -2]}, size: [1, 1, 2.5]}]
+    - positive: false
+      hull-around:
+      - [assortment2, SE, 2, {anchoring: {intrinsic-offset: [-5, 4, -2]}, size: [10, 10.5, 2.5]}]
+      - [assortment2, SE, 2, {anchoring: {intrinsic-offset: [-12, 4, -2]}, size: [1, 1, 2.5]}]
+    - positive: false
+      hull-around:
+      - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [-5, 4, -2]}, size: [10, 10.5, 2.5]}]
+      - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [-12, 4, -2]}, size: [1, 1, 2.5]}]
+  # The same sort of pockets but at the front of each drawer, to keep it steady while open.
+  outer-magnet-pockets:
+    # Right-hand side:
+    - positive: false
+      hull-around:
+      - [assortment1, NW, 2, {anchoring: {intrinsic-offset: [5, -15, -2]}, size: [10, 10.5, 2.5]}]
+      - [assortment1, NW, 2, {anchoring: {intrinsic-offset: [12, -15, -2]}, size: [1, 1, 2.5]}]
+    - positive: false
+      hull-around:
+      - [assortment2, NW, 2, {anchoring: {intrinsic-offset: [5, -15, -2]}, size: [10, 10.5, 2.5]}]
+      - [assortment2, NW, 2, {anchoring: {intrinsic-offset: [12, -15, -2]}, size: [1, 1, 2.5]}]
+    - positive: false
+      hull-around:
+      - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [5, -15, -2]}, size: [10, 10.5, 2.5]}]
+      - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [12, -15, -2]}, size: [1, 1, 2.5]}]
+    # Left-hand side:
+    - positive: false
+      hull-around:
+      - [assortment1, NE, 2, {anchoring: {intrinsic-offset: [-5, -15, -2]}, size: [10, 10.5, 2.5]}]
+      - [assortment1, NE, 2, {anchoring: {intrinsic-offset: [-12, -15, -2]}, size: [1, 1, 2.5]}]
+    - positive: false
+      hull-around:
+      - [assortment2, NE, 2, {anchoring: {intrinsic-offset: [-5, -15, -2]}, size: [10, 10.5, 2.5]}]
+      - [assortment2, NE, 2, {anchoring: {intrinsic-offset: [-12, -15, -2]}, size: [1, 1, 2.5]}]
+    - positive: false
+      hull-around:
+      - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [-5, -15, -2]}, size: [10, 10.5, 2.5]}]
+      - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [-12, -15, -2]}, size: [1, 1, 2.5]}]
