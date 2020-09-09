@@ -1,22 +1,19 @@
 # Configuration fragment for MX-style switches only.
+#
 # This illustrates the need to override the default style as well as those
-# non-default styles that are defined in dmote/base.yaml, duplicating some of
-# the information from their previous definitions while adding “mx”.
+# non-default styles that are defined in dmote/base.yaml.
+#
+# Skirt lengths are added to prevent collisions. This is needed because
+# MX-style switches have a deeper base than ALPS-style switches, bringer the
+# outer edges of long skirts into contact.
 
 keys:
   styles:
     default:
-      style: maquette
       switch-type: mx
-      skirt-length: 4.6
-      top-size: [12.7, 12.7, 3.3]
     minimal-short:
-      style: minimal
       switch-type: mx
-      top-size: [9, 9, 1.6]
-      skirt-thickness: 2.4
+      skirt-length: 3.5
     minimal-tall:
-      style: minimal
       switch-type: mx
-      top-size: [9, 9, 3]
-      skirt-thickness: 2.4
+      skirt-length: 3.5
