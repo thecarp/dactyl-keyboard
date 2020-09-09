@@ -4,6 +4,9 @@ This log follows the conventions of
 version 0.2.0, thus covering only a fraction of the project’s history.
 
 ## [Unreleased]
+Nothing yet.
+
+## [Version 0.6.0] - 2020-09-09
 ### Changed
 - Moved and replaced some parameters:
     - The `case` section of parameters was **renamed** to `main-body` to
@@ -500,7 +503,8 @@ configuration files. Salient points:
 - Removed a dependency on `unicode-math`. The requisite version of the library
   had not been deployed to Clojars and its use was cosmetic.
 
-[Unreleased]: https://github.com/veikman/dactyl-keyboard/compare/dmote-v0.5.1...HEAD
+[Unreleased]: https://github.com/veikman/dactyl-keyboard/compare/dmote-v0.6.0...HEAD
+[Version 0.6.0]: https://github.com/veikman/dactyl-keyboard/compare/dmote-v0.5.1...dmote-v0.6.0
 [Version 0.5.1]: https://github.com/veikman/dactyl-keyboard/compare/dmote-v0.5.0...dmote-v0.5.1
 [Version 0.5.0]: https://github.com/veikman/dactyl-keyboard/compare/dmote-v0.4.0...dmote-v0.5.0
 [Version 0.4.0]: https://github.com/veikman/dactyl-keyboard/compare/dmote-v0.3.0...dmote-v0.4.0
