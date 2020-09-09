@@ -1,17 +1,12 @@
 # Configuration fragment for the base of a Concertina.
 #
-# A work in progress. Prototyping stage.
-#
 # This resembles the DMOTE but the hands are vertically oriented, and for this
-# reason, the keyboard is joined by a central housing rather than fully split.
-# The interface between the central housing and the key clusters is designed to
-# make wiring easier than it is on the DMOTE.
+# reason, the keyboard is joined by a central housing, not split.
+# In this base file, the central housing is largely empty.
 #
 # This version uses only printable dmote-keycap caps and ALPS-style switches.
 # The keys are arranged so tightly in places that other types of caps and
 # switches should be expected to require adjustment of the keyboard design.
-#
-# In this base version, the central housing is largely empty.
 
 keys:
   styles:
@@ -1006,11 +1001,11 @@ tweaks:
     - [m1L, NNW, 2]
     - [m1L, NNE, 2]
     - [m2L, NNW, 1]
-    - [sec-far]
+    - [sec-far-wall-4]
   - chunk-size: 3
     hull-around:
     - [m1L, NNE, 2]
-    - [sec-far]
+    - [sec-far-wall-4]
     - [m2L, NNW, 1]
     - [ca-far-wall-4]
     - [m2L, NNE, 1]
@@ -1018,14 +1013,14 @@ tweaks:
     hull-around:
     - [ca-far-wall-4]
     - [m2L, NNE, 1]
-    - [ca-far-wall-3]
+    - [sec-far-wall-3]
     - [m3L, NNW, 1]
     - [m3L, NNE, 1]
   - chunk-size: 3
     hull-around:
-    - [ca-far-wall-3]
+    - [sec-far-wall-3]
     - [m3L, NNE, 1]
-    - [ca-far-wall-2]
+    - [sec-far-wall-2]
     - [m5L1b]
     - [ca-far-wall-1]
     - [m5L1]
@@ -1236,7 +1231,17 @@ secondaries:
       anchor: ca-near-upper-1
       intrinsic-offset: [2, 1, 10]
     size: 2
-  sec-far:
+  sec-far-wall-2:
+    anchoring:
+      anchor: ca-far-wall-2
+      intrinsic-offset: [-1, -1, 1]
+    size: 2
+  sec-far-wall-3:
+    anchoring:
+      anchor: ca-far-wall-3
+      intrinsic-offset: [-1, -1, -1]
+    size: 2
+  sec-far-wall-4:
     anchoring:
       anchor: ca-far-wall-4
       intrinsic-offset: [-1, -1, 20]

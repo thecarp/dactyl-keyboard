@@ -29,6 +29,7 @@ flanges:
     bolt-properties:
       m-diameter: 3
       head-type: countersunk
+      point-type: cone
       include-threading: true
       total-length: 8
       channel-length: 4
