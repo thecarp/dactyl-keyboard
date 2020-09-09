@@ -5,7 +5,7 @@
 # Similarity is checked by placing Short’s “right-4x5.stl” file
 # in the things/scad/ folder and then injecting it into a DMOTE output:
 #
-# $ echo '%import("right-4x5.stl");' >> things/scad/right-hand-case-main.scad
+# $ echo '%import("right-4x5.stl");' >> things/scad/right-hand-body-main.scad
 #
 # In that Linux-style shell command, $ represents your prompt.
 #
@@ -62,7 +62,7 @@ key-clusters:
       anchor: m00
       preserve-orientation: true
       intrinsic-rotation: [0.1745, -0.4014, 0.1745]
-      extrinsic-offset: [-2, -28, -6]
+      extrinsic-offset: [-1.8, -28.3, -5.9]
     matrix-columns:
     - rows-above-home: 0
     - rows-above-home: 0
@@ -159,7 +159,7 @@ by-key:
           parameters:
             layout:
               translation:
-                late: [1, -4.5, -2.2]
+                early: [-0.7, -5.2, -2.2]
     thumb1:
       parameters:
         layout:
@@ -184,14 +184,18 @@ by-key:
                   pitch:
                     intrinsic: -0.26
                   translation:
-                    early: [0, -1, 1.7]
+                    early: [0.2, -0.8, 1.7]
             last:
               parameters:
                 layout:
                   pitch:
-                    intrinsic: -0.05
+                    intrinsic: -0.07
+                  roll:
+                    intrinsic: -0.02
+                  yaw:
+                    intrinsic: -0.03
                   translation:
-                    early: [0, 1, 5.2]
+                    early: [0.1, 0.3, 5.4]
           sides:
             west:
               parameters:
@@ -203,18 +207,29 @@ by-key:
               parameters:
                 layout:
                   pitch:
-                    intrinsic: -0.1
+                    intrinsic: -0.14
+                  roll:
+                    intrinsic: -0.02
                   yaw:
-                    intrinsic: -0.06
+                    intrinsic: -0.08
                   translation:
-                    early: [1.5, 0, 2.7]
+                    early: [1.6, 0.6, 3.15]
             last:
               parameters:
                 layout:
+                  pitch:
+                    intrinsic: -0.02
+                  roll:
+                    intrinsic: -0.02
                   yaw:
-                    intrinsic: -0.2
+                    intrinsic: -0.20
                   translation:
-                    early: [0.6, 8, 4.5]
+                    early: [0.5, 6.5, 5.2]
+          sides:
+            north:
+              parameters:
+                wall:
+                  parallel: 6
       sides:
         east:
           parameters:
@@ -251,23 +266,22 @@ main-body:
         - anchor: thumb-ml
           side: N
           segment: 3
-          intrinsic-offset: [2, 0, 0]
+          intrinsic-offset: [0, 0, 0]
         - anchor: back0
           side: W
           segment: 3
-          intrinsic-offset: [1, 0, 0]
+          intrinsic-offset: [0, 2, 0]
         - anchor: back3
           side: N
           segment: 3
-          intrinsic-offset: [0, -2, 0]
         - anchor: right0
           side: E
           segment: 3
-          intrinsic-offset: [-2, 0, 0]
+          intrinsic-offset: [1, 0, 0]
         - anchor: m02
           side: S
           segment: 3
-          intrinsic-offset: [-4, -6, 0]
+          intrinsic-offset: [2, -4, 0]
 tweaks:
   webbing:
     - chunk-size: 3
