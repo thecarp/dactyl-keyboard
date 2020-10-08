@@ -113,8 +113,14 @@ along with slicer settings that give you thinner walls and less infill. This
 should give you a more yielding threaded hole, decreasing the risk of a
 delaminating crack, but increasing the risk of threads deforming over time.
 
-In any case you may want to use `foot-plates` to provide additional support for
-the anchor points.
+If your design includes a central housing, two bottom plates meet beneath it.
+If you would prefer to join these two plates as a single plate, a simple way
+to do so on Linux is by concatening the full contents of each OpenSCAD file
+into a third:
+
+```shell-script
+cat things/scad/*-hand-bottom-plate-case.scad > things/scad/comboplate.scad
+```
 
 ### Wrist rests
 
