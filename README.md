@@ -35,6 +35,8 @@ There’s a small family of accessory projects:
   Smooth organic topography for height maps you can use as wrist rests,
   including the example bundled in the [resource folder](resources/heightmap)
   of this project.
+* [`dmote-drawer`](https://github.com/veikman/dmote-drawer):
+  Assortment drawers for the Concertina, a bundled keyboard design.
 * [`dmote-beam`](https://github.com/veikman/dmote-beam):
   Configurable clips for stabilizing a split keyboard by holding a
   connecting rod between the two halves.
