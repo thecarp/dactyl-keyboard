@@ -1,8 +1,26 @@
-# Introduction to the DMOTE
+# Introduction to the DMOTE application
 
-Here’s how to use this code repository to build a keyboard case.
-For a still-more general introduction to the larger project, see
-[this](https://viktor.eikman.se/article/the-dmote/).
+The DMOTE application is a CAD application. It grew out of a single keyboard
+design (the DMOTE keyboard) and now comes bundled with several different
+designs and room for your own innovation.
+
+## Scope
+
+This file, and all other documentation in this Git repository, concerns the
+DMOTE application as such, not its individual bundled designs or any firmware.
+Concrete build guides and other peripheral documents can be found elsewhere:
+
+* A less technical, more [general introduction](https://viktor.eikman.se/article/the-dmote/).
+* A guide to [planning for wiring](https://viktor.eikman.se/article/3d-keyboard-wiring/) in 3D.
+* Build guides:
+    * The [Dactyl](https://github.com/adereth/dactyl-keyboard/tree/master/guide),
+      which is currently not bundled with the DMOTE application.
+    * The [Dactyl-ManuForm](https://github.com/tshort/dactyl-keyboard).
+    * The [Concertina](https://viktor.eikman.se/article/concertina-v060-build-guide/).
+
+As for microcontroller firmware, QMK works great and has good documentation. In
+that project, the DMOTE is filed as a version of the Dactyl-ManuForm
+[here](https://github.com/qmk/qmk_firmware/tree/master/keyboards/handwired/dactyl_manuform/dmote).
 
 ## From code to print
 
@@ -18,6 +36,8 @@ steer a 3D printer.
 OpenSCAD can represent the model visually, but there is no step in this process
 where you point and click with a mouse to change the design. The shape of the
 keyboard is determined by your written parameters to the Clojure application.
+It’s programmatic CAD, without the drafting-table skeuomorph of construction
+lines.
 
 Roughly, the build chain looks like this:
 
@@ -77,11 +97,7 @@ not remove or break existing features. There are already several `include` and
 styles in the code base. Add yours instead of simply repurposing functions,
 and test to make sure you have not damaged other styles.
 
-## Printing tips
-
-For printing prototypes and any printing with PLA-like materials that stiffen
-quickly, build support from the base plate only. This simplifies the process
-of removing the supports.
+## General printing tips
 
 ### Accuracy
 
@@ -94,18 +110,17 @@ For accuracy problems in general, and especially for problems with threaded
 holes, consider tweaking the DFM settings [documented here](options-main.md),
 particularly the `error-general` parameter.
 
-You may prefer tapping threads yourself. Each of the `bolt-properties`
-parameters to the application can take a value for `include-threading`. If you
-set this to `false`, a hole cut for that bolt will be a plain cylinder with the
-inner diameter (a.k.a. minor diameter) of standard ISO threading. If you have
-enough plastic in the perimeter of that hole, you can drill it to clean up the
-print and then tap it.
+You may prefer tapping threads yourself to work around problems with accuracy.
+Each of the `bolt-properties` parameters to the application can take a value
+for `include-threading`. If you set this to `false`, a hole cut for that bolt
+will be a plain cylinder with the inner diameter (a.k.a. minor diameter) of
+standard ISO threading. If you have enough plastic in the perimeter of that
+hole, you can drill it to clean up the print and then tap it.
 
 ### Bottom plates
 
 If you are using threaded fasteners to connect bottom plates directly to the
-case (the `threads` style), please note that common FDM printers usually won’t
-print threaded holes smaller than M3 with useful accuracy. M4 is a safer bet.
+case (the `threads` style), please see the advice on accuracy, above.
 
 If you are having trouble with the fit and neither DFM settings nor larger
 fasteners are helping, consider a greater `thickness` for the anchor points,
@@ -127,15 +142,3 @@ cat things/scad/*-hand-bottom-plate-case.scad > things/scad/comboplate.scad
 If you are including wrist rests, consider printing the plinths without a
 bottom plate and with sparse or gradual infill. This makes it easy to pour
 plaster or some other dense material into the plinths to add mass.
-
-## After printing
-
-Instructions specific to the DMOTE have yet to be written for hand-wiring the
-switches with diodes and installing embedded microcontrollers. To get started
-with that stuff, please refer to the original instructions for the
-Dactyl-ManuForm or the Dactyl, or contact the maintainer of the fork you
-are printing.
-
-As for microcontroller firmware, QMK works great. In that project, the DMOTE
-is filed as a version of the Dactyl-ManuForm
-[here](https://github.com/qmk/qmk_firmware/tree/master/keyboards/handwired/dactyl_manuform/dmote).
