@@ -4,7 +4,13 @@ This log follows the conventions of
 version 0.2.0, thus covering only a fraction of the project’s history.
 
 ## [Unreleased]
-Nothing yet.
+### Changed
+- Disabled responsiveness to predicted resting key clearance by default.
+  This can be re-enabled with a new parameter (`use-key-travel`).
+
+### New
+- Added a nominal clearance parameter to make it easier to design for multiple
+  different types of switches.
 
 ## [Version 0.6.0] - 2020-09-09
 ### Changed

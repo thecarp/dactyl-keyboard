@@ -72,9 +72,10 @@
         flat-distance (* space (- index neutral))
         key-prop (key-properties getopt cluster coord)
         {:keys [switch-type skirt-length]} key-prop
-        radius (+ (measure/resting-clearance switch-type skirt-length)
-                  (/ (/ space 2)
-                     (Math/sin (/ angle-factor 2))))
+        radius (+ (if (most :layout :clearance :use-key-style)
+                    (measure/resting-clearance switch-type skirt-length)
+                    (most :layout :clearance :nominal))
+                  (/ (/ space 2) (Math/sin (/ angle-factor 2))))
         ortho-x (- (* delta-r (+ -1 (- (* radius (Math/sin angle-factor))))))
         ortho-z (* radius (- 1 (Math/cos angle-product)))]
    (if (zero? angle-factor)

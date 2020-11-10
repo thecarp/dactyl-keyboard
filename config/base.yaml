@@ -1,5 +1,5 @@
 # Bundled non-neutral basic model build parameters.
-# These should be pretty safe to use with any variant and are easy to override.
+# These should be pretty safe to use with any keyboard design and are easy to override.
 
 keys:
   styles:
@@ -10,6 +10,9 @@ keys:
       top-size: [12.7, 12.7, 3.3]
 by-key:
   parameters:
+    layout:
+      clearance:
+        nominal: 5  # Rough sum of typical switch travel and cap height.
     channel:
       height: 20
       top-width: 10

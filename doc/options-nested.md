@@ -119,6 +119,9 @@ Here follows the complete order of resolution in an extended example, for a `wal
         - Parameter <a href="#user-content-layout-translation-early">`early`</a>
         - Parameter <a href="#user-content-layout-translation-mid">`mid`</a>
         - Parameter <a href="#user-content-layout-translation-late">`late`</a>
+    - Section <a href="#user-content-layout-clearance">`clearance`</a>
+        - Parameter <a href="#user-content-layout-clearance-use-key-style">`use-key-style`</a>
+        - Parameter <a href="#user-content-layout-clearance-nominal">`nominal`</a>
 - Parameter <a href="#user-content-key-style">`key-style`</a>
 - Section <a href="#user-content-channel">`channel`</a>
     - Parameter <a href="#user-content-channel-height">`height`</a>
@@ -223,6 +226,18 @@ This happens after columns are styled but before base pitch and roll. As such it
 #### Parameter <a id="layout-translation-late">`late`</a>
 
 “Late” translation is the last step in key placement and therefore interacts very little with other steps.
+
+### Section <a id="layout-clearance">`clearance`</a>
+
+The height of each key above its mounting plate can be included when calculating the effective radius of key cluster curvature for a layout.
+
+#### Parameter <a id="layout-clearance-use-key-style">`use-key-style`</a>
+
+If `true`, predict clearance based on `key-style`, including switch travel. Ironically, this is most practical when the keyboard design is closely tied to the key style. Depending on how other features of the design are anchored, clearance based on key style can introduce knock-on effects that make it difficult to adapt the design to other styles.
+
+#### Parameter <a id="layout-clearance-nominal">`nominal`</a>
+
+Nominal clearance in mm. This is only used without `use-key-style`.
 
 ## Parameter <a id="key-style">`key-style`</a>
 

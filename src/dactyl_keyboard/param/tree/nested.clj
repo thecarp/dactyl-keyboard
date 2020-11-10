@@ -253,6 +253,19 @@
     {:default :default :parse-fn keyword}
     "The name of a key style defined in the [global](options-main.md) `keys` "
     "section. The default setting is the name `default`."]
+   [:section [:layout :clearance]
+    "The height of each key above its mounting plate can be included when "
+    "calculating the effective radius of key cluster curvature for a layout."]
+   [:parameter [:layout :clearance :use-key-style]
+    {:default false :parse-fn boolean}
+    "If `true`, predict clearance based on `key-style`, including switch "
+    "travel. Ironically, this is most practical when the keyboard design "
+    "is closely tied to the key style. Depending on how other features of the "
+    "design are anchored, clearance based on key style can introduce knock-on "
+    "effects that make it difficult to adapt the design to other styles."]
+   [:parameter [:layout :clearance :nominal]
+    {:default 0 :parse-fn num}
+    "Nominal clearance in mm. This is only used without `use-key-style`."]
    [:section [:channel]
     "Above each switch mount, there is a channel of negative space for the "
     "user’s finger and the keycap to move inside. This is only useful in those "
