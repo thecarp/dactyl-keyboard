@@ -229,11 +229,11 @@ This happens after columns are styled but before base pitch and roll. As such it
 
 ### Section <a id="layout-clearance">`clearance`</a>
 
-The height of each key above its mounting plate can be included when calculating the effective radius of key cluster curvature for a layout.
+The height of each key above its mounting plate can be included when calculating the effective radius of key cluster curvature for a layout. This height is defined as the distance between the lower edge of a keycap and the top of the mounting plate, when the switch is at rest. Clearance is defined this way because caps are presumed to be widest at the lower edge and therefore most likely to collide at this height.
 
 #### Parameter <a id="layout-clearance-use-key-style">`use-key-style`</a>
 
-If `true`, predict clearance based on `key-style`, including switch travel. Ironically, this is most practical when the keyboard design is closely tied to the key style. Depending on how other features of the design are anchored, clearance based on key style can introduce knock-on effects that make it difficult to adapt the design to other styles.
+If `true`, predict clearance based on `key-style`, including switch travel and configured keycap skirt length. Ironically, this is most practical when the keyboard design is closely tied to the key style. Depending on how other features of the design are anchored, clearance based on key style can introduce knock-on effects that make it difficult to adapt the design to other switches.
 
 #### Parameter <a id="layout-clearance-nominal">`nominal`</a>
 

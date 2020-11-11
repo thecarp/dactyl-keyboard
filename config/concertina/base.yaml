@@ -85,6 +85,8 @@ by-key:
           column: -0.2
       pitch:
         intrinsic: -0.1
+      clearance:
+        nominal: 6
   clusters:
     main:
       parameters:
