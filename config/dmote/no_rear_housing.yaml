@@ -1,0 +1,90 @@
+# Configuration fragment for removing the rear housing of a DMOTE.
+
+# This fragment is crude. It removes the MCU and 6P6C ports entirely, because
+# without a rear housing, there is no longer an obvious place for them. Though
+# it moves screw anchors for the bottom plate, it leaves the bottom plate
+# itself in a slightly flawed state.
+
+# The purpose of the file is not to provide a working keyboard, but to answer a
+# frequently asked question about the DMOTE application:
+# Which settings get rid of the rear housing and close the case?
+
+by-key:
+  # Extend the north wall of most of the main key cluster to the ground.
+  clusters:
+    main:
+      sides:
+        north:
+          parameters:
+            wall:
+              extent: 3
+              to-ground: true
+      columns:
+        "4":
+          sides:
+            north:
+              parameters:
+                wall:
+                  extent: 0
+                  to-ground: false
+        "5":
+          sides:
+            north:
+              parameters:
+                wall:
+                  extent: 0
+                  to-ground: false
+main-body:
+  rear-housing:
+    include: false
+  bottom-plate:
+    installation:
+      fasteners:
+        positions:
+        # Move two fasteners that ordinarily anchor to the rear housing.
+        - anchor: back0
+          side: NW
+          segment: 3
+          intrinsic-offset: [3, -3, 0]
+        - anchor: back3
+          side: NW
+          segment: 3
+          intrinsic-offset: [-2, -3, 0]
+        # The remaining positions are not changed from base.yaml.
+        - anchor: a1
+          side: NE
+          intrinsic-offset: [-3, -3, 0]
+        - anchor: front5
+          side: SE
+          intrinsic-offset: [-3, -1, 0]
+        - anchor: t4
+          side: S
+          intrinsic-offset: [-1, 2, 0]
+        - anchor: t1
+          side: N
+          intrinsic-offset: [2, -1, 0]
+tweaks:
+  # Tweaks directly involving the rear housing are disabled.
+  rear-housing-sides: null
+  rear-housing-near-edge: null
+  rear-housing-to-main-gap: null
+  connector-housing: null
+  # A new tweak is added to bridge the rear key cluster gap directly.
+  rear-gap:
+    - hull-around:
+      - [back3, NE]
+      - [back3, NNE, 1]
+      - [back3, ENE, 1]
+      - [a0, NW, 1]
+      - [back3, NNE, 2, 3]
+      - [back3, ENE, 2, 3]
+    - at-ground: true
+      hull-around:
+      - [a0, NW, 1]
+      - [back3, NNE, 3]
+      - [back3, ENE, 2, 3]
+mcu:
+  include: false
+ports:
+  reflection-port:
+    include: false

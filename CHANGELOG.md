@@ -15,7 +15,8 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 
 ### New
 - Added a nominal clearance parameter to make it easier to design for multiple
-  different types of switches.
+  different types of switches and keycaps.
+- Added a configuration fragment for removing the rear housing of the DMOTE.
 
 ## [Version 0.6.0] - 2020-09-09
 ### Changed
