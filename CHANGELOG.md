@@ -7,6 +7,11 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 ### Changed
 - Disabled responsiveness to predicted resting key clearance by default.
   This can be re-enabled with a new parameter (`use-key-travel`).
+- Bundled designs:
+    - Stopped including threading on bolts in most models, for faster renders
+      and reduced sensitivity to printer accuracy.
+    - Slightly thicker bottom plate on DMOTE.
+    - M3 screws instead of M4 in `config/base.yaml`.
 
 ### New
 - Added a nominal clearance parameter to make it easier to design for multiple

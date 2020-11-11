@@ -436,6 +436,7 @@ main-body:
         m-diameter: 6
         head-type: socket
         total-length: 8.5
+        include-threading: false
       bosses: true
       west:
         include: true
@@ -449,13 +450,14 @@ main-body:
       bolt-properties:
         m-diameter: 6
         head-type: socket
+        include-threading: false
       distance: 30
     anchoring:
       anchor: back1
       intrinsic-offset: [0, 0, 0]
   bottom-plate:
     include: true
-    thickness: 0.8
+    thickness: 1
     installation:
       dome-caps: true
       fasteners:
@@ -468,10 +470,10 @@ main-body:
           intrinsic-offset: [-2, -5, 0]
         - anchor: a1
           side: NE
-          intrinsic-offset: [-3.5, -3.5, 0]
+          intrinsic-offset: [-3, -3, 0]
         - anchor: front5
           side: SE
-          intrinsic-offset: [-4, 0, 0]
+          intrinsic-offset: [-3, -1, 0]
         - anchor: t4
           side: S
           intrinsic-offset: [-1, 2, 0]

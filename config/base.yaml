@@ -12,7 +12,7 @@ by-key:
   parameters:
     layout:
       clearance:
-        nominal: 5  # Rough sum of typical switch travel and cap height.
+        nominal: 8  # Approximate DSA cap height above plate.
     channel:
       height: 20
       top-width: 10
@@ -33,29 +33,32 @@ main-body:
       bolt-properties:
         m-diameter: 4
         head-type: countersunk
+        include-threading: false
   bottom-plate:
     installation:
       thickness: 2.5
       fasteners:
         bolt-properties:
-          m-diameter: 4
+          m-diameter: 3
           head-type: countersunk
           point-type: cone  # Design for manufacturing: Easy printing.
           total-length: 8.5
+          include-threading: false
 central-housing:
   adapter:
     fasteners:
       bolt-properties:
-        m-diameter: 4
+        m-diameter: 3
         head-type: countersunk
         total-length: 8.5
+        include-threading: false
 mcu:
   type: promicro
   support:
     lock:
       width-factor: 0.45
       fastener-properties:
-        m-diameter: 4
+        m-diameter: 3
         head-type: countersunk
       plate:
         clearance: 0.9
