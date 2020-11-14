@@ -1,4 +1,4 @@
-(ns dactyl-keyboard.general-misc-test
+(ns dactyl-keyboard.misc-test
   (:require [clojure.test :refer [deftest testing is]]
             [flatland.ordered.map :refer [ordered-map]]
             [dactyl-keyboard.misc :refer [soft-merge]]))

@@ -1,4 +1,4 @@
-(ns dactyl-keyboard.cad-misc-test
+(ns dactyl-keyboard.cad.misc-test
   (:require [clojure.test :refer [deftest testing is]]
             [dactyl-keyboard.cad.misc
              :refer [shallow-wrap walled-corner-xyz bevelled-corner-xyz]]))

@@ -1,4 +1,4 @@
-(ns dactyl-keyboard.cad-tweak-test
+(ns dactyl-keyboard.cad.tweak-test
   (:require [clojure.test :refer [deftest testing is]]
             [dactyl-keyboard.fixture :refer [unit-testing-accessor]]
             [dactyl-keyboard.param.proc.anch :as anch]

@@ -1,7 +1,7 @@
 ;;; Unit tests for the poly module.
 ;;; This is mostly notes on how thi.ng.geom works.
 
-(ns dactyl-keyboard.poly-test
+(ns dactyl-keyboard.cad.poly-test
   (:require [clojure.test :refer [deftest testing is]]
             [clojure.string :as string]
             [dactyl-keyboard.cad.poly :as poly]

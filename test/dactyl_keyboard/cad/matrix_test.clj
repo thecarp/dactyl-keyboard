@@ -1,4 +1,4 @@
-(ns dactyl-keyboard.matrix-test
+(ns dactyl-keyboard.cad.matrix-test
   (:require [clojure.test :refer [deftest testing is]]
             [dactyl-keyboard.cad.matrix :as matrix]))
 
