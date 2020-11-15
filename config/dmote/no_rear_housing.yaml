@@ -14,7 +14,12 @@ by-key:
   clusters:
     main:
       sides:
-        north:
+        NNE:
+          parameters:
+            wall:
+              extent: 3
+              to-ground: true
+        NNW:
           parameters:
             wall:
               extent: 3
@@ -22,14 +27,24 @@ by-key:
       columns:
         "4":
           sides:
-            north:
+            NNE:
+              parameters:
+                wall:
+                  extent: 0
+                  to-ground: false
+            NNW:
               parameters:
                 wall:
                   extent: 0
                   to-ground: false
         "5":
           sides:
-            north:
+            NNE:
+              parameters:
+                wall:
+                  extent: 0
+                  to-ground: false
+            NNW:
               parameters:
                 wall:
                   extent: 0

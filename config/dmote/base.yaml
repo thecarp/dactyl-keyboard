@@ -1,15 +1,8 @@
 # Configuration fragment for the base of a 62-key DMOTE.
 
-keys:
-  styles:
-    minimal-short:  # A printable minimal key with a thin top.
-      style: minimal
-      top-size: [9, 9, 1.6]
-      skirt-thickness: 2.4
-    minimal-tall:  # Similar but with a thicker plate above the stem.
-      style: minimal
-      top-size: [9, 9, 3]
-      skirt-thickness: 2.4
+# This is a “no surprises” configuration. Build requirements are fairly simple,
+# but ergonomy is not optimal.
+
 key-clusters:
   main:
     anchoring:
@@ -45,7 +38,7 @@ key-clusters:
     anchoring:
       anchor: front1
       intrinsic-rotation: [-0.2, -1.45, 0.9]
-      extrinsic-offset: [-8, -16, 29]
+      extrinsic-offset: [-8, -17, 29]
       preserve-orientation: true
     matrix-columns:
     - rows-above-home: 1
@@ -93,7 +86,7 @@ by-key:
               column: 2
             separation:
               row: 0
-              column: 0
+              column: 0.5
           pitch:
             progressive: 0.3
             intrinsic: -0.1
@@ -102,7 +95,6 @@ by-key:
       columns:
         "0":
           parameters:
-            key-style: minimal-tall
             layout:
               pitch:
                 base: -0.15
@@ -111,25 +103,29 @@ by-key:
               roll:
                 intrinsic: 0.25
               yaw:
-                base: -0.06
+                base: -0.03
               translation:
-                mid: [0, -10, 2.5]
+                mid: [-1, -10, 1.5]
           rows:
             "0":
               parameters:
-                key-style: minimal-short
                 layout:
                   translation:
                     early: [0, 0, -1]
             first:
               sides:
-                west:
+                WSW:
                   parameters:
                     wall:
                       extent: 1
                       to-ground: false
           sides:
-            west:
+            WNW:
+              parameters:
+                wall:
+                  extent: 2
+                  to-ground: true
+            WSW:
               parameters:
                 wall:
                   extent: 2
@@ -137,9 +133,16 @@ by-key:
         "1":
           parameters:
             layout:
+              matrix:
+                separation:
+                  row: 0.5
               pitch:
                 base: 0.1
                 progressive: 0.4
+              roll:
+                intrinsic: 0.05
+              yaw:
+                base: -0.03
               translation:
                 mid: [0, -1, 0]
           rows:
@@ -151,7 +154,7 @@ by-key:
                   yaw:
                     intrinsic: -0.03
                   translation:
-                    early: [-1, -5.2, 8]
+                    early: [-1, -4, 8]
                 channel:
                   top-width: 15
             "-1":
@@ -161,18 +164,11 @@ by-key:
                     intrinsic: -0.2
                   translation:
                     early: [0, -0.6, 2]
-            "0":
-              parameters:
-                key-style: minimal-short
-                layout:
-                  translation:
-                    early: [1, 0, 0]
             "1":
               parameters:
-                key-style: minimal-tall
                 layout:
                   translation:
-                    early: [1, -1, 0]
+                    early: [0, -1, 0]
         "2":
           parameters:
             layout:
@@ -189,7 +185,11 @@ by-key:
                   translation:
                     early: [0, -14, 7]
               sides:
-                east:
+                ENE:
+                  parameters:
+                    wall:
+                      extent: 3
+                ESE:
                   parameters:
                     wall:
                       extent: 3
@@ -202,7 +202,6 @@ by-key:
                     early: [0, -3, 2.5]
             last:
               parameters:
-                key-style: minimal-tall
                 layout:
                   translation:
                     early: [0, -1, 0]
@@ -232,12 +231,20 @@ by-key:
                   translation:
                     early: [0, 4, 1]
           sides:
-            south:
+            SSE:
               parameters:
                 wall:
                   extent: 2
                   to-ground: true
-                  perpendicular: -12
+                  segments:
+                    "2": [0, 0, -12]
+            SSW:
+              parameters:
+                wall:
+                  extent: 2
+                  to-ground: true
+                  segments:
+                    "2": [0, 0, -12]
         "4":
           parameters:
             layout:
@@ -257,7 +264,12 @@ by-key:
                   translation:
                     mid: [0, 3.5, 2]
           sides:
-            south:
+            SSE:
+              parameters:
+                wall:
+                  extent: 2
+                  to-ground: true
+            SSW:
               parameters:
                 wall:
                   extent: 2
@@ -281,12 +293,22 @@ by-key:
                   translation:
                     mid: [0, 3.5, 2]
           sides:
-            east:
+            ENE:
               parameters:
                 wall:
                   extent: 1
                   to-ground: true
-            south:
+            ESE:
+              parameters:
+                wall:
+                  extent: 2
+                  to-ground: true
+            SSE:
+              parameters:
+                wall:
+                  extent: 2
+                  to-ground: true
+            SSW:
               parameters:
                 wall:
                   extent: 2
@@ -299,7 +321,7 @@ by-key:
               column: 1
             separation:
               column: 0.5
-              row: 1
+              row: 0.5
           roll:
             progressive: 0.3
           pitch:
@@ -326,21 +348,38 @@ by-key:
                   translation:
                     early: [0, 1, 5]
           sides:
-            north:
+            NNE:
               parameters:
                 wall:
                   extent: 3
-                  perpendicular: -6
-            south:
+                  segments:
+                    "2": [0, 0, -6]
+            SSE:
               parameters:
                 wall:
-                  extent: 1
-                  parallel: -2
+                  extent: 2
+                  segments:
+                    "2": [0, -2, -8]
+            SSW:
+              parameters:
+                wall:
+                  extent: 2
+                  segments:
+                    "2": [0, -2, -8]
+            NNW:
+              parameters:
+                wall:
+                  extent: 3
+                  segments:
+                    "2": [0, 0, -6]
         last:
           parameters:
             layout:
               translation:
                 mid: [0, -7, 0]
+            wall:
+              segments:
+                "2": [0, 0, -11]
           rows:
             first:
               parameters:
@@ -359,15 +398,14 @@ by-key:
                   yaw:
                     intrinsic: -0.1
           sides:
-            north:
-              parameters:
-                wall:
-                  perpendicular: -11
-            east:
+            ENE:
               parameters:
                 wall:
                   extent: 3
-                  perpendicular: -11
+            ESE:
+              parameters:
+                wall:
+                  extent: 3
     thumb1:
       parameters:
         layout:
@@ -382,21 +420,34 @@ by-key:
                   translation:
                     early: [-0.3, -1, -2]
     aux0:
-      parameters:
-        key-style: minimal-tall
-      columns:
-        last:
-          parameters:
-            layout:
-              translation:
-                early: [-1, 0, 0]
       sides:
-        north:
+        NNE:
           parameters:
             wall:
               extent: 1
               to-ground: true
-        east:
+        ENE:
+          parameters:
+            wall:
+              extent: 1
+              to-ground: true
+        ESE:
+          parameters:
+            wall:
+              extent: 1
+              to-ground: true
+        WSW:
+          parameters:
+            wall:
+              segments:
+                "0": [0, 2, 0]
+        WNW:
+          parameters:
+            wall:
+              segments:
+                "0": [0, 2, 0]
+                "1": [1, 0, -1]
+        NNW:
           parameters:
             wall:
               extent: 1
@@ -427,8 +478,8 @@ main-body:
     anchoring:
       anchor: back2
       side: NW
-      extrinsic-offset: [0, 10, 0]
-    size: [80, 18, 53.7]
+      extrinsic-offset: [-2, 10, 0]
+    size: [78, 18, 53.7]
     bevel:
       interior: 6
     fasteners:
@@ -514,10 +565,6 @@ tweaks:
         - [t4, ESE, 0, 1]
         - [t4, SSE, 0, 1]
       - [t4, SSE, 2, 3]
-      - hull-around:
-        - [t4, WSW, 0, 1]
-        - [t4, SSW, 0, 1]
-      - [t4, SSW, 2, 3]
     # West side:
     - chunk-size: 2
       hull-around:
@@ -669,15 +716,15 @@ tweaks:
     # Plating over the main-aux cluster gap.
     - chunk-size: 3
       hull-around:
-      - [back3, ENE, 0, 1]
-      - [a0, WNW, 0, 1]
+      - [back3, ENE, 0]
+      - [a0, WNW, 0]
       - [back3, ESE, 0]
-      - [a0, WSW, 0, 1]
+      - [a0, WSW, 0]
       - [back4, NNW, 0, 1]
     # More plating over the main-aux cluster gap.
     - chunk-size: 3
       hull-around:
-      - [back3, ENE, 1]
+      - [back3, ENE, 0]
       - [a0, WNW, 0]
       - [back3, ESE, 0]
       - [a0, WSW, 0]
@@ -718,7 +765,7 @@ tweaks:
       - [rear-housing-exterior, ESE, 1]
       - [rear-housing-exterior, SSE, 1]
       - [rear-housing-interior, ESE, 1]
-      - [a0, NNW, 1]
+      - [a0, WNW, 0, 1]
       - [back3, ENE, 0]
     # Bottom-only plating to compensate for the aux cluster breaking up the
     # ground-level profile of the main cluster:

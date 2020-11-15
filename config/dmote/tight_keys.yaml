@@ -1,0 +1,78 @@
+# Configuration fragment for tightly placed keys on a DMOTE.
+
+# This fragment replaces 16 of the 62 keycaps with smaller ones, and moves the
+# mounting plates closer together. This improves keyboard ergonomy, mainly by
+# reducing index-finger travel.
+
+# In version 0.6.0 of the DMOTE application, these tighter keys were part of
+# the basic DMOTE configuration. They were moved here for version 0.7.0 because
+# users were surprised to find that standard keycaps would not fit.
+
+# The necessary small keycaps are outputs of the application and are designed
+# to be easily printable.
+
+keys:
+  styles:
+    minimal-short:  # Thin top.
+      style: minimal
+      top-size: [9, 9, 1.6]
+      skirt-thickness: 2.4
+    minimal-tall:  # Thicker top.
+      style: minimal
+      top-size: [9, 9, 3]
+      skirt-thickness: 2.4
+by-key:
+  clusters:
+    main:
+      columns:
+        "0":
+          parameters:
+            key-style: minimal-tall
+            layout:
+              matrix:
+                separation:
+                  row: 0
+              translation:
+                mid: [-1, -10, 2.9]  # Override, slightly higher z.
+              clearance:
+                use-key-style: true
+          rows:
+            "0":
+              parameters:
+                key-style: minimal-short
+        "1":
+          parameters:
+            layout:
+              clearance:
+                use-key-style: true
+          rows:
+            first:
+              parameters:
+                layout:
+                  translation:
+                    mid: [0, -2, 0]
+            "0":
+              parameters:
+                key-style: minimal-short
+            "1":
+              parameters:
+                key-style: minimal-tall
+        "2":
+          rows:
+            last:
+              parameters:
+                key-style: minimal-tall
+        "5":
+          parameters:
+            layout:
+              translation:
+                early: [-1, 1, 0]
+    aux0:
+      parameters:
+        key-style: minimal-tall
+      columns:
+        last:
+          parameters:
+            layout:
+              translation:
+                early: [-1, 0, 0]

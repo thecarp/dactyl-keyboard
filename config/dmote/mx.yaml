@@ -1,10 +1,11 @@
 # Configuration fragment for MX-style switches only.
 #
 # This illustrates the need to override the default style as well as those
-# non-default styles that are defined in dmote/base.yaml.
+# non-default styles that are defined in dmote/tight_keys.yaml, if you’re using
+# that file.
 #
 # Skirt lengths are added to prevent collisions. This is needed because
-# MX-style switches have a deeper base than ALPS-style switches, bringer the
+# MX-style switches have a deeper base than ALPS-style switches, bringing the
 # outer edges of long skirts into contact.
 
 keys:
