@@ -25,14 +25,24 @@
    :west  :W})
 
 (let [short (into {} (map-indexed
-                       (fn [i d] [d (/ (* i τ) n-divisions)])
+                       (fn [i d] [d (- (/ (* i τ) n-divisions))])
                        directions))]
   (def radians
-    "A map of compass points, including long and short names, to radians.
+    "A map of compass points, including long and short names, to angles in
+    radians, for counterclockwise rotation, as seen from above.
     This represents a somewhat literal interpretation of the compass metaphor
     and is not the only interpretation used in the application."
     (merge short
            (into {} (map (fn [[k v]] [k (v short)]) long-to-short)))))
+
+(def matrices
+  "2x2 matrices for rotating cleanly in the cardinal directions.
+  This is for use where the radians computed above are too lossy as a result of
+  floating-point arithmetic, for e.g. unit testing purposes."
+  {:N [[1 0] [0 1]]
+   :E [[0 1] [-1 0]]
+   :S [[-1 0] [0 -1]]
+   :W [[0 -1] [1 0]]})
 
 (defn- select-length [n] (set (filter #(= (count (name %)) n) directions)))
 
@@ -121,6 +131,20 @@
 (def keyword-to-tuple (merge intercardinal-to-tuple intermediate-to-tuple))
 
 (def tuples (set (vals intermediate-to-tuple))) ; All 2-tuples of cardinals.
+
+(let [n-quadrants 4  ; These are τ/4-radian fields, not coordinate quadrants.
+      overflow (dec n-quadrants)
+      quadrant-size (/ n-divisions n-quadrants)
+      left-bound (dec n-divisions)]
+  (defn northern-modulus
+    "Shift any direction into its equivalent for the first cardinal.
+    Any cardinal direction becomes north; any other direction becomes something
+    closer to north than to other cardinals."
+    [starting-direction]
+    (let [m (mod (.indexOf directions starting-direction) quadrant-size)]
+      ;; Treat e.g. ENE (index 3) as NNW (index 15) on a 16-wind compass.
+      ;; Otherwise use the modulus as is.
+      (get directions (if (= m overflow) left-bound m)))))
 
 (defn- turn
   "Retrieve a direction keyword for turning clockwise."

@@ -2,6 +2,7 @@
 
 (ns dactyl-keyboard.compass-test
   (:require [clojure.test :refer [deftest testing is]]
+            [clojure.core.matrix :refer [mmul]]
             [scad-tarmi.core :refer [π]]
             [dactyl-keyboard.compass :as compass]))
 
@@ -17,7 +18,33 @@
     (is (zero? (compass/radians :N)))
     (is (zero? (compass/radians :north)))
     (is (zero? (:N compass/radians)))
-    (is (= (:S compass/radians) π))))
+    (is (= (:S compass/radians) (- π)))))
+
+(deftest keyword-to-matrix
+  (testing "rotation by matrix"
+    (let [m* (fn [side] (mmul (side compass/matrices) [3 50]))]
+      (is (= (m* :N) [3.0 50.0]))
+      (is (= (m* :E) [50.0 -3.0]))
+      (is (= (m* :S) [-3.0 -50.0]))
+      (is (= (m* :W) [-50.0 3.0])))))
+
+(deftest modulus
+  (testing "north quadrant"
+    (is (= (compass/northern-modulus :N) :N))
+    (is (= (compass/northern-modulus :NNW) :NNW))
+    (is (= (compass/northern-modulus :NNE) :NNE)))
+  (testing "intercardinal corner case"
+    (is (= (compass/northern-modulus :NE) :NE)))
+  (testing "east quadrant"
+    (is (= (compass/northern-modulus :ENE) :NNW))
+    (is (= (compass/northern-modulus :E) :N))
+    (is (= (compass/northern-modulus :ESE) :NNE))
+    (is (= (compass/northern-modulus :SE) :NE)))
+  (testing "west quadrant"
+    (is (= (compass/northern-modulus :WSW) :NNW))
+    (is (= (compass/northern-modulus :W) :N))
+    (is (= (compass/northern-modulus :WNW) :NNE))
+    (is (= (compass/northern-modulus :NW) :NE))))
 
 (deftest turning
   (testing "reversal"

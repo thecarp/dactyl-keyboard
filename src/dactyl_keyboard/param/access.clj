@@ -76,7 +76,7 @@
       (value-at path))))
 
 (let [a :dactyl-keyboard.cad.key/any
-      side-ids (conj (set (keys compass/long-to-short)) a)]
+      side-ids (conj compass/all-short a)]
   (defn most-specific
     "Find the most specific setting applicable to a given key."
     ([getopt end-path cluster coord]
@@ -98,7 +98,7 @@
        (when (nil? value)
          (throw
            ;; nil is not a valid setting for any key-specific parmeters.
-           ;; Getting nil therefore applies that built-in defaults have
+           ;; Getting nil therefore implies that built-in defaults have
            ;; been disabled by the user.
            (ex-info "Unset key-specific configuration"
              {:end-of-path end-path

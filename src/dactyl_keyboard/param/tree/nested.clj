@@ -4,7 +4,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns dactyl-keyboard.param.tree.nested
-  (:require [scad-tarmi.core :as tarmi-core]
+  (:require [clojure.spec.alpha :as spec]
+            [scad-tarmi.core :as tarmi-core]
             [dactyl-keyboard.param.schema.parse :as parse]))
 
 (def raws
@@ -28,9 +29,10 @@
     "or by the special words `first` or `last`. Due to a peculiarity of "
     "YAML (and JSON), **numeric indices must appear in quotation marks** "
     "as in the example below.\n"
-    "- `sides`, starting a nested map for specific sides only, "
-    "keyed by the long-form cardinal points of the compass, i.e. the words "
-    "`north`, `east`, `south` or `west`.\n"
+    "- `sides`, starting a nested map for short-form cardinal points of the "
+    "compass, e.g. `NNE` for the north by northeast corner. Sides are only "
+    "relevant for details of the wall surrounding a key mount at the edge "
+    "of a cluster.\n"
     "\n"
     "Each of the nested maps have the same structure as this root-level map. "
     "Specificity is accomplished by nesting a series of these maps, so that "
@@ -43,7 +45,8 @@
     "Once at the root level and twice with enough selection criteria to limit "
     "the effect to two individual keys.\n"
     "\n"
-    "```by-key:\n"
+    "```\n"
+    "by-key:\n"
     "  parameters:\n"
     "    key-style: plump\n"
     "  clusters:\n"
@@ -297,12 +300,7 @@
     "\n"
     "The `wall` section determines the shape of the case wall, specifically "
     "the skirt around each key mount along the edges of the board. These "
-    "skirts are made up of convex hulls wrapping sets of corner posts.\n"
-    "\n"
-    "There is one corner post at each actual corner of every key mount "
-    "(segment 0). "
-    "More posts are displaced from it, going down the sides. Their placement "
-    "is affected by the way the key mounts are rotated etc.\n"]
+    "skirts are made up of convex hulls wrapping sets of corner posts."]
    [:parameter [:wall :thickness]
     {:default [1 1 1] :parse-fn parse/pad-to-3-tuple
      :validate [::tarmi-core/point-3d]}
@@ -323,26 +321,111 @@
    [:parameter [:wall :extent]
     {:default 0 :parse-fn num :validate [(set (range 4))]}
     "A segment ID describing how far away from the key mount to extend its "
-    "wall. Note that even if this is set low, you can still use `tweaks` to "
-    "target other segments."]
+    "wall. Note that even if this is set lower than the number of segments "
+    "you’ve defined, you can still use `tweaks` to target other segments."]
    [:parameter [:wall :to-ground]
     {:default false :parse-fn boolean}
     "If `true`, draw one extra, vertical section of wall between the segment "
-    "identified in `extent` and the ground beneath the key."]
-   [:parameter [:wall :bevel]
-    {:default 0 :parse-fn num}
-    "A distance in mm, describing where to place some vertical segments.\n"
+    "identified by `extent` and the ground beneath it."]
+   [:parameter [:wall :segments]
+    {:default {0 [0 0 0]}
+     :parse-fn (parse/map-of parse/integer (parse/tuple-of num))
+     :validate [(spec/map-of integer? ::tarmi-core/point-3d)]}
+    "A map of segment IDs to xyz-coordinates in mm.\n"
     "\n"
-    "The `bevel` is applied at the top of a wall, making up the difference "
-    "between wall segments 0 and 1. It is applied again at the bottom, making "
-    "up the difference between segments 2 and 3. It affects all "
-    "coordinates. The mathematical operation by which it is applied to the z "
-    "coordinate is determined by the sign of `perpendicular`."]
-   [:parameter [:wall :parallel]
-    {:default 0 :parse-fn num}
-    "A distance in mm. Wall segments 2 and 3 extend this far "
-    "away from the corners of their key mount, on its plane."]
-   [:parameter [:wall :perpendicular]
-    {:default 0 :parse-fn num}
-    "A distance in mm. Wall segments 2 and 3 extend this far "
-    "away from the corners of their key mount, along its normal."]])
+    "This map is indexed by wall segment IDs, which are non-negative "
+    "integers. As with column IDs under `columns`, they must be entered in "
+    "YAML as strings.\n"
+    "\n"
+    "The values of the map are three-dimensional offsets. "
+    "Any offset given for segment 0 is relative to a switch mounting plate. "
+    "The default value for segment 0 is `[0, 0, 0]`, which means that walls "
+    "will start to build out from the corner of each mounting plate.\n"
+    "\n"
+    "Segments other than 0, starting with segment 1, are offset relative to "
+    "the preceding segment and have no default value built into the "
+    "application.\n"
+    "\n"
+    "Offsets are *cumulative*. Segments form a chain, each one positioned "
+    "relative to the one before, as the building blocks of each wall.\n"
+    "\n"
+    "Consider this example:\n"
+    "\n"
+    "```\n"
+    "by-key:\n"
+    "  parameters:\n"
+    "    wall:\n"
+    "      extent: 2\n"
+    "      segments:\n"
+    "        "1": [0, 1, -0.5]\n"
+    "        "2": [0, 0, -4]\n"
+    "  sides\n"
+    "    SSE:\n"
+    "      parameters:\n"
+    "        wall:\n"
+    "          segments:\n"
+    "            "2": [0, 0, -10]\n```"
+    "\n\n"
+    "With this configuration, walls will be built connecting segments 0, 1 "
+    "and 2 on the edge of each key cluster. For the sake of illustration, "
+    "Let’s say there’s only one cluster of keys: A, B, and C, in one row. "
+    "Imagine their corners radiating numbered wall segments.\n"
+    "\n"
+    "```\n"
+    "  2–––2–2–––2–2–––2\n"
+    " /1–––1–1–––1–1–––1\\\n"
+    "210–––0–0–––0–0–––012\n"
+    "||| A     B     C |||\n"
+    "210–––0–0–––0–0–––012\n"
+    " \\1–––1–1–––1–1–––1/\n"
+    "  2–––2–2–––2–2–––2\n```"
+    "\n\n"
+    "A more detailed ASCII diagram of the B key names the sides from which "
+    "its wall segments radiate:\n"
+    "\n"
+    "```\n"
+    "–2–––––2–\n"
+    "–1–––––1–\n"
+    "–0–––––0–\n"
+    "NNW   NNE\n"
+    "\n"
+    "   B\n"
+    "\n"
+    "SSW   SSE\n"
+    "–0–––––0–\n"
+    "–1–––––1–\n"
+    "–2–––––2–\n```"
+    "\n\n"
+    "To understand the effect of the example configuration, it is simplest to "
+    "begin thinking about the `NNE` side of the B key in this image. `NNE` "
+    "here does not mean “facing 22½° east of nominal north from the middle of "
+    "the mounting plate”. It means “facing nominal north from the `NE` corner”. "
+    "Segment 0 on the `NNE` side of the B key is positioned precisely at the "
+    "`NE` corner because the example configuration leaves segment 0 at its "
+    "default offset: `[0, 0, 0]`.\n"
+    "\n"
+    "In the vector space of key B, segment 1 is located at `[0, 1, -0.5]` away "
+    "from segment 0. This is 1 mm to the north and ½ mm closer to the ground: "
+    "A minor bevel.\n"
+    "\n"
+    "In the vector space of key B, segment 2 is located at `[0, 1, -4.5]` "
+    "away from segment 0. "
+    "Its `-4` on the z-axis is added to the offset for segment 1, placing it "
+    "directly below segment 1 rather than radiating on the xy-plane alone.\n"
+    "\n"
+    "For other sides of the B key, segment coordinates stated in the "
+    "configuration are flipped and rotated. For example, segment 1 of the "
+    "`SSE` corner is `[0, -1, -4.5]` away from segment 0 on the same corner. "
+    "Segment 2 of the `SSW` corner has a side-specific override noted in the "
+    "example configuration, dipping an extra 6 mm to `[0, -1, -10.5]` away "
+    "from segment 0 on the `SSW` corner.\n"
+    "\n"
+    "The key idea here is that offsets are expressed in the vector space "
+    "local to the key’s nominal *northeast quadrant*. They are used as given "
+    "only for the `NNE` and `NE` sides of the key. Even then, they are later "
+    "subjected to all the same transformations as the mounting plate itself.\n"
+    "\n"
+    "Offsets are *automatically adapted* to each side to make it easy to "
+    "specify something like a bevel with a single value in the configuration, "
+    "without having to state explicitly that the bevel should sweep around "
+    "the key cluster, “turning” as the wall turns."]])

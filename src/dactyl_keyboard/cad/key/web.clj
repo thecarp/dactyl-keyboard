@@ -50,11 +50,8 @@
   "The shape of a corner of a switch mount."
   [getopt cluster coord side]
   {:pre [(compass/all-short side)]}
-  (->> side
-    compass/convert-to-cardinal
-    compass/short-to-long
-    (most-specific getopt [:wall :thickness] cluster coord)
-    (apply model/cube)))
+  (apply model/cube
+    (most-specific getopt [:wall :thickness] cluster coord side)))
 
 (defn cluster [getopt cluster]
   "A union of shapes covering the interstices between points in a matrix.

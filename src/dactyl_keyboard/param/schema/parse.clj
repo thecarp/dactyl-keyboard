@@ -38,18 +38,23 @@
             [(key-parser key) (value-parser value)])]
     (fn [candidate] (into {} (map parse-item candidate)))))
 
-(defn keyword-or-integer
-  "A parser that takes a number as an integer or a string as a keyword.
-  This works around a peculiar facet of clj-yaml, wherein integer keys to
-  maps are parsed as keywords."
-  [candidate]
+(defn integer-fn
+  "Work around a facet of clj-yaml, wherein integer keys to maps are parsed as
+  keywords, probably because JS objects can only have string keys."
+  [non-number-fallback candidate]
   (try
     (int candidate)  ; Input like “1”.
     (catch ClassCastException _
       (try
         (Integer/parseInt (name candidate))  ; Input like “:1” (clj-yaml key).
         (catch java.lang.NumberFormatException _
-          (keyword candidate))))))           ; Input like “:first” or “"first"”.
+          (non-number-fallback candidate))))))
+
+;; Preserve any non-integer as is, for the validator to judge.
+(def integer (partial integer-fn identity))
+
+;; Parse non-integer strings as keywords.
+(def keyword-or-integer (partial integer-fn keyword))
 
 (defn pad-to-3-tuple
   "Pad a single number, or a vector of 1–3 numbers, to a vector of 3 numbers."

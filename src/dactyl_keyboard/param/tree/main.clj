@@ -33,11 +33,10 @@
 (spec/def :nested/rows (spec/map-of ::valid/flexcoord ::nested-key-configuration))
 (spec/def :nested/columns (spec/map-of ::valid/flexcoord ::nested-key-configuration))
 (spec/def :nested/clusters (spec/map-of ::valid/key-cluster ::nested-key-configuration))
-(spec/def :nested/sides (spec/map-of (set (keys compass/long-to-short))
-                                     ::nested-key-configuration))
+(spec/def :nested/sides (spec/map-of compass/all-short ::nested-key-configuration))
 (spec/def ::nested-key-configuration
   (spec/keys :opt-un [:nested/parameters :nested/clusters :nested/columns
-                      :nested/rows :nested/rows]))
+                      :nested/rows :nested/rows :nested/sides]))
 
 
 (def raws

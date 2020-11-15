@@ -5,6 +5,12 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 
 ## [Unreleased]
 ### Changed
+- Replaced the way that key-cluster walls are measured. Instead of separate
+  settings for `bevel`, `parallel` and `perpendicular`, there is now only
+  one setting, called `segments`, with more power.
+- Continued migration from long-form names for the points of the compass,
+  like `north`, to short-form names, like `N`. The shorter names are now
+  used for nested configuration by key.
 - Disabled responsiveness to predicted resting key clearance by default.
   This can be re-enabled with a new parameter (`use-key-travel`).
 - Bundled designs:
@@ -17,6 +23,19 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - Added a nominal clearance parameter to make it easier to design for multiple
   different types of switches and keycaps.
 - Added a configuration fragment for removing the rear housing of the DMOTE.
+
+### Migration guide
+Here is an example of adaptation from the old wall-building syntax to the new:
+
+```
+-      parallel: 4
+-      perpendicular: -16
++      segments:
++        "2": [0, 4, -16]
+```
+
+That is an excerpt from `config/macropad/base.yaml` and will perfectly preserve
+the shape of the wall.
 
 ## [Version 0.6.0] - 2020-09-09
 ### Changed

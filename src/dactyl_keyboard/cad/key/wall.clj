@@ -70,9 +70,9 @@
 ;;;;;;;;;;;;;;;;;;
 
 (defn- property
-  [getopt parameter cluster [coord [short-direction _]]]
-  (most-specific getopt [:wall parameter]
-    cluster coord (short-direction compass/short-to-long)))
+  [getopt parameter cluster [coord side-tuple]]
+  (let [side (compass/tuple-to-intermediate side-tuple)]
+    (most-specific getopt [:wall parameter] cluster coord side)))
 
 (defn- edge-post
   "Place an individual wall post."

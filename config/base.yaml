@@ -18,8 +18,10 @@ by-key:
       top-width: 10
     wall:
       thickness: 2
-      bevel: 1
-      perpendicular: -8
+      segments:
+        "1": [0,  1, -1]  # Top bevel.
+        "2": [0,  0, -8]  # Perpendicular wall.
+        "3": [0, -1, -1]  # Bottom bevel.
 main-body:
   rear-housing:
     thickness:
