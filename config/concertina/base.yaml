@@ -161,12 +161,18 @@ by-key:
                   translation:
                     early: [0, -1, 0]
           sides:
-            north:
+            NNE:
               parameters:
                 wall:
                   extent: 2
-                  parallel: 4
-                  perpendicular: -8
+                  segments:
+                    "2": [0, 4, -8]
+            NNW:
+              parameters:
+                wall:
+                  extent: 2
+                  segments:
+                    "2": [0, 4, -8]
         "2":
           parameters:
             layout:
@@ -210,26 +216,50 @@ by-key:
               parameters:
                 key-style: minimal-tall
           sides:
-            north:
+            NNE:
               parameters:
                 wall:
                   extent: 1
-                  parallel: 1
-                  perpendicular: -1
-            east:
+                  segments:
+                    "2": [0, 1, -1]
+            ENE:
               parameters:
                 wall:
                   extent: 0
-                  perpendicular: -8
-            south:
+                  segments:
+                    "2": [0, 0, -8]
+            ESE:
+              parameters:
+                wall:
+                  extent: 0
+                  segments:
+                    "2": [0, 0, -8]
+            SSE:
               parameters:
                 wall:
                   extent: 1
-                  perpendicular: -8
-            west:
+                  segments:
+                    "2": [0, 0, -8]
+            SSW:
               parameters:
                 wall:
                   extent: 1
+                  segments:
+                    "2": [0, 0, -8]
+            WSW:
+              parameters:
+                wall:
+                  extent: 1
+            WNW:
+              parameters:
+                wall:
+                  extent: 1
+            NNW:
+              parameters:
+                wall:
+                  extent: 1
+                  segments:
+                    "2": [0, 1, -1]
         "3":
           parameters:
             layout:
@@ -256,16 +286,26 @@ by-key:
                   translation:
                     early: [0, 4, 1]
           sides:
-            north:
+            NNE:
               parameters:
                 wall:
                   extent: 1
-            south:
+            SSE:
               parameters:
                 wall:
                   extent: 0
-                  parallel: 5
-                  perpendicular: -8
+                  segments:
+                    "2": [0, 5, -8]
+            SSW:
+              parameters:
+                wall:
+                  extent: 0
+                  segments:
+                    "2": [0, 5, -8]
+            NNW:
+              parameters:
+                wall:
+                  extent: 1
         "4":
           parameters:
             layout:
@@ -277,16 +317,26 @@ by-key:
               translation:
                 mid: [0.6, -2, 7]
           sides:
-            north:
+            NNE:
               parameters:
                 wall:
-                  parallel: 2
-                  perpendicular: -10
-            south:
+                  segments:
+                    "2": [0, 2, -10]
+            SSE:
               parameters:
                 wall:
-                  parallel: 4
-                  perpendicular: -4
+                  segments:
+                    "2": [0, 4, -4]
+            SSW:
+              parameters:
+                wall:
+                  segments:
+                    "2": [0, 4, -4]
+            NNW:
+              parameters:
+                wall:
+                  segments:
+                    "2": [0, 2, -10]
         "5":
           parameters:
             layout:
@@ -310,11 +360,16 @@ by-key:
               parameters:
                 key-style: minimal-tall
           sides:
-            south:
+            SSE:
               parameters:
                 wall:
-                  parallel: 3
-                  perpendicular: -2.4
+                  segments:
+                    "2": [0, 3, -2.4]
+            SSW:
+              parameters:
+                wall:
+                  segments:
+                    "2": [0, 3, -2.4]
     thumb0:
       parameters:
         layout:
@@ -339,17 +394,31 @@ by-key:
                   pitch:
                     intrinsic: -0.25
               sides:
-                west:
+                WSW:
                   parameters:
                     wall:
                       extent: 1
-                      perpendicular: -6
+                      segments:
+                        "2": [0, 0, -6]
+                WNW:
+                  parameters:
+                    wall:
+                      extent: 1
+                      segments:
+                        "2": [0, 0, -6]
           sides:
-            west:
+            WSW:
               parameters:
                 wall:
                   extent: 2
-                  perpendicular: -6
+                  segments:
+                    "2": [0, 0, -6]
+            WNW:
+              parameters:
+                wall:
+                  extent: 2
+                  segments:
+                    "2": [0, 0, -6]
         "1":
           parameters:
             layout:
@@ -358,12 +427,18 @@ by-key:
               translation:
                 mid: [0, 5, 1]
           sides:
-            south:
+            SSE:
               parameters:
                 wall:
                   extent: 2
-                  parallel: -3
-                  perpendicular: -24
+                  segments:
+                    "2": [0, -3, -24]
+            SSW:
+              parameters:
+                wall:
+                  extent: 2
+                  segments:
+                    "2": [0, -3, -24]
         "2":
           parameters:
             layout:
@@ -372,26 +447,52 @@ by-key:
               translation:
                 mid: [0, 9, 0]
           sides:
-            north:
+            NNE:
               parameters:
                 wall:
                   extent: 2
-                  perpendicular: -13
-            south:
+                  segments:
+                    "2": [0, 0, -13]
+            SSE:
               parameters:
                 wall:
-                  perpendicular: -19
+                  segments:
+                    "2": [0, 0, -19]
+            SSW:
+              parameters:
+                wall:
+                  segments:
+                    "2": [0, 0, -19]
+            NNW:
+              parameters:
+                wall:
+                  extent: 2
+                  segments:
+                    "2": [0, 0, -13]
         last:
           sides:
-            north:
+            NNE:
               parameters:
                 wall:
-                  perpendicular: -6
-            east:
+                  segments:
+                    "2": [0, 0, -6]
+            ENE:
               parameters:
                 wall:
                   extent: 3
-                  perpendicular: -6
+                  segments:
+                    "2": [0, 0, -6]
+            ESE:
+              parameters:
+                wall:
+                  extent: 3
+                  segments:
+                    "2": [0, 0, -6]
+            NNW:
+              parameters:
+                wall:
+                  segments:
+                    "2": [0, 0, -6]
 main-body:
   reflect: true
   bottom-plate:
@@ -620,10 +721,10 @@ flanges:
       anchoring:
         anchor: t3L
         side: N
-        segment: 3
+        segment: 2
         preserve-orientation: true
         intrinsic-rotation: [π*-0.72, π/-15, 0]
-        intrinsic-offset: [0, 4, 0]
+        intrinsic-offset: [0, 2, 0]
   main-to-thumb-flange-long:  # In front of the thumb cluster.
     bolt-properties:
       m-diameter: 3
