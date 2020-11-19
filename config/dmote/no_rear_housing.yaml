@@ -1,6 +1,6 @@
 # Configuration fragment for removing the rear housing of a DMOTE.
 
-# This fragment is crude. It removes the MCU and 6P6C ports entirely, because
+# This fragment is crude. It removes the MCU and 4P4C ports entirely, because
 # without a rear housing, there is no longer an obvious place for them. Though
 # it moves screw anchors for the bottom plate, it leaves the bottom plate
 # itself in a slightly flawed state.

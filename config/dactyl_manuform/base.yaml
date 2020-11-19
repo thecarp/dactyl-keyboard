@@ -85,15 +85,22 @@ key-clusters:
       thumb-bl: [0, 1]
 by-key:
   parameters:
+    plate:
+      use-key-style: false
+      size: [15.5, 14, 4]
     layout:
       matrix:
         separation:
-          column: 1.5
+          column: 1.3
           row: 1.2
     wall:
-      thickness: [3, 3, 4]
-      parallel: 5
-      perpendicular: -15
+      extent: 2
+      to-ground: true
+      thickness: [2.1, 2.1, 4]
+      segments:
+        "0": [0, 0, 0]
+        "1": [0, 2, -1]
+        "2": [0, 5, -14]
   clusters:
     main:
       parameters:
@@ -102,64 +109,127 @@ by-key:
             neutral:
               column: 3
           pitch:
-            progressive: 0.25
+            progressive: 0.27
           roll:
             progressive: 0.09
       columns:
         first:
           sides:
-            west:
+            # Wider left-side wall to fit MCU.
+            WNW:
               parameters:
                 wall:
-                  extent: 2
-                  to-ground: true
-                  parallel: 8
-                  perpendicular: -9
+                  extent: 3
+                  segments:
+                    "1": [0, 8.5, -7]
+                    "2": [0, 1, -3]
+                    "3": [0, -2, -10]
+            WSW:
+              parameters:
+                wall:
+                  extent: 3
+                  segments:
+                    "1": [0, 8.5, -7]
+                    "2": [0, 1, -3]
+                    "3": [0, -2, -10]
+            # No internal wall against thumb clusters.
+            SSE:
+              parameters:
+                wall:
+                  extent: 0
+                  to-ground: false
+            SSW:
+              parameters:
+                wall:
+                  extent: 0
+                  to-ground: false
+        "1":
+          sides:
+            SSE:
+              parameters:
+                wall:
+                  extent: 0
+                  to-ground: false
+            SSW:
+              parameters:
+                wall:
+                  extent: 0
+                  to-ground: false
         "2":
           parameters:
             layout:
               translation:
                 mid: [0, 2.82, -4.5]
-        "3":
+            wall:
+              extent: 0
+              to-ground: false
           sides:
-            east:
-              parameters:
-                wall:
-                  extent: 1
-                  to-ground: false
-            south:
+            NNE:
               parameters:
                 wall:
                   extent: 2
                   to-ground: true
+            NNW:
+              parameters:
+                wall:
+                  extent: 2
+                  to-ground: true
+        "3":
+          sides:
+            ENE:
+              parameters:
+                wall:
+                  extent: 0
+                  to-ground: false
+            ESE:
+              parameters:
+                wall:
+                  extent: 0
+                  to-ground: false
+            SSE:
+              parameters:
+                wall:
+                  segments:
+                    "2": [3, 5, -14]
         "4":
           parameters:
             layout:
               translation:
                 mid: [-0.3, -12, 5.64]
-            wall:
-              extent: 2
-              to-ground: true
-      sides:
-        north:
-          parameters:
-            wall:
-              extent: 2
-              to-ground: true
-        east:
-          parameters:
-            wall:
-              extent: 2
-              to-ground: true
+          sides:
+            SSW:
+              parameters:
+                wall:
+                  segments:
+                    "2": [-7, 5, -14]
     thumb0:
       parameters:
         key-style: big
+        plate:
+          use-key-style: true
+        wall:
+          extent: 0
+          to-ground: false
+          thickness: [0.1, 0.1, 4]
       columns:
         last:
           parameters:
             layout:
               translation:
                 early: [-0.7, -5.2, -2.2]
+          sides:
+            ESE:
+              parameters:
+                wall:
+                  thickness: [2.1, 2.1, 4]
+                  segments:
+                    "0": [-1, -1, 0]
+            SSE:
+              parameters:
+                wall:
+                  thickness: [2.1, 2.1, 4]
+                  segments:
+                    "0": [-1, -1, 0]
     thumb1:
       parameters:
         layout:
@@ -169,14 +239,9 @@ by-key:
             separation:
               column: 1
         wall:
-          extent: 2
-          to-ground: true
+          thickness: [2.1, 2.1, 4]
       columns:
         first:
-          parameters:
-            wall:
-              parallel: 2
-              perpendicular: -6
           rows:
             first:
               parameters:
@@ -197,10 +262,16 @@ by-key:
                   translation:
                     early: [0.1, 0.3, 5.4]
           sides:
-            west:
+            SSW:
               parameters:
                 wall:
-                  perpendicular: -4
+                  segments:
+                    "2": [0, 3, -8]
+            NNW:
+              parameters:
+                wall:
+                  segments:
+                    "2": [0, 3, -8]
         last:
           rows:
             first:
@@ -224,14 +295,14 @@ by-key:
                   yaw:
                     intrinsic: -0.20
                   translation:
-                    early: [0.5, 6.5, 5.2]
-          sides:
-            north:
-              parameters:
-                wall:
-                  parallel: 6
+                    early: [0.5, 7.5, 5.2]
       sides:
-        east:
+        ENE:
+          parameters:
+            wall:
+              extent: 0
+              to-ground: false
+        ESE:
           parameters:
             wall:
               extent: 0
@@ -241,7 +312,7 @@ secondaries:
     anchoring:
       anchor: back0
       side: NNE
-      segment: 3
+      segment: 2
     override: [null, null, 3]
 main-body:
   reflect: true
@@ -265,22 +336,22 @@ main-body:
         positions:
         - anchor: thumb-ml
           side: N
-          segment: 3
+          segment: 2
           intrinsic-offset: [0, 0, 0]
         - anchor: back0
           side: W
-          segment: 3
-          intrinsic-offset: [0, 2, 0]
+          segment: 2
+          intrinsic-offset: [-3, 2, 0]
         - anchor: back3
           side: N
-          segment: 3
+          segment: 2
         - anchor: right0
           side: E
-          segment: 3
-          intrinsic-offset: [1, 0, 0]
+          segment: 2
+          intrinsic-offset: [-1, 0, 0]
         - anchor: m02
           side: S
-          segment: 3
+          segment: 2
           intrinsic-offset: [2, -4, 0]
 tweaks:
   webbing:
@@ -317,39 +388,38 @@ tweaks:
         - [m02, SSE, 0]
         - [m03, WSW, 0]
   near-low-corner:
-    - chunk-size: 2
-      at-ground: true
+    - chunk-size: 3
       hull-around:
+      - [m03, NE]
+      - [m04, SW]
+      - [m03, SE]
+      - [m04, SSW, 0, 2]
+      - [m03, SSE, 0, 2]
+    - at-ground: true
+      hull-around:
+      - [m04, SSW, 2]
       - [m03, SSE, 2]
-      - [m03, ESE, 2]
-      - [m03, E, 2]
-    - hull-around:
-      - [m03, SSE, 1, 2]
-      - [m03, ESE, 1, 2]
-    - hull-around:
-      - [m03, ESE, 1, 2]
-      - [m03, E, 1, 2]
   to-floor:
     - at-ground: true
       hull-around:
-      - [m00, WSW, 2, 3]
-      - [thumb-ml, NNE, 2, 3]
+      - [m00, WSW, 3]
+      - [thumb-ml, NNE, 2]
     - at-ground: true
       hull-around:
-      - [thumb-ml, NNW, 2, 3]
-      - [thumb-bl, NNE, 2, 3]
+      - [thumb-ml, NNW, 2]
+      - [thumb-bl, NNE, 2]
     - at-ground: true
       hull-around:
-      - [m03, SSW, 2, 3]
-      - [thumb-tr, SSE, 2, 3]
+      - [m03, SSW, 2]
+      - [thumb-tr, SSE, 2]
     - at-ground: true
       hull-around:
-      - [thumb-tr, SSE, 2, 3]
-      - [thumb-mr, SSE, 2, 3]
+      - [thumb-tr, SSE, 2]
+      - [thumb-mr, SSE, 2]
     - at-ground: true
       hull-around:
-      - [thumb-mr, SSW, 2, 3]
-      - [thumb-br, SSE, 2, 3]
+      - [thumb-mr, SSW, 2]
+      - [thumb-br, SSE, 2]
   bottom-plate-only:
     - at-ground: true
       above-ground: false
@@ -372,13 +442,15 @@ tweaks:
       - [m00, WSW, 0, 1]
       - [m00, WSW, 2, 3]
       - [thumb-tl, WNW, 0]
-      - [thumb-ml, NNE, 0, 3]
+      - [thumb-ml, NNE, 2]
+      - [thumb-ml, NNE, 0, 1]
     - chunk-size: 2
       hull-around:
-      - [thumb-mr, SSE, 0, 3]
-      - [thumb-tr, SSE, 0, 3]
-      - [m03, SSW, 0, 3]
-      - [thumb-tr, ESE, 0, 1]
+      - [thumb-mr, SSE, 0, 2]
+      - hull-around:
+        - [thumb-tr, SSE, 0, 2]
+        - [thumb-tr, ESE, 0, 1]
+      - [m03, SSW, 0, 2]
   hole-through-big-port:
     - {positive: false,
        anchoring: {anchor: big-port, side: S, intrinsic-offset: [0, 0, 5]},
@@ -392,7 +464,7 @@ mcu:
   type: promicro
   anchoring:
     anchor: back-plane
-    intrinsic-offset: [-16, -17, 12]
+    intrinsic-offset: [-20, -16, 12]
     intrinsic-rotation: [0, π/2, 0]
   support:
     shelf:
@@ -415,7 +487,7 @@ ports:
       segment: 2
     anchoring:
       anchor: back-plane
-      intrinsic-offset: [-3, 5, -1]
+      intrinsic-offset: [-2, 5, -1]
     holder:
       include: true
       alias: big-holder
@@ -430,7 +502,7 @@ ports:
       segment: 2
     anchoring:
       anchor: back-plane
-      intrinsic-offset: [6, 5, -1]
+      intrinsic-offset: [9, 5, -1]
     holder:
       include: true
       alias: small-holder

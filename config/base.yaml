@@ -10,6 +10,8 @@ keys:
       top-size: [12.7, 12.7, 3.3]
 by-key:
   parameters:
+    plate:
+      use-key-style: true
     layout:
       clearance:
         nominal: 8  # Approximate DSA cap height above plate.

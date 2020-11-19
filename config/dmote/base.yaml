@@ -479,7 +479,7 @@ main-body:
       anchor: back2
       side: NW
       extrinsic-offset: [-2, 10, 0]
-    size: [78, 18, 53.7]
+    size: [78, 18, 55]
     bevel:
       interior: 6
     fasteners:
@@ -713,15 +713,13 @@ tweaks:
       - [m1, ESE, 0]
       - [back4, WNW, 0]
       - [back4, WSW, 0]
+    # Filling out the a0 mounting plate.
+    - hull-around:
+      - [a0, NE]
+      - [a0, SE]
+      - [a0, SW]
+      - [a0, NW]
     # Plating over the main-aux cluster gap.
-    - chunk-size: 3
-      hull-around:
-      - [back3, ENE, 0]
-      - [a0, WNW, 0]
-      - [back3, ESE, 0]
-      - [a0, WSW, 0]
-      - [back4, NNW, 0, 1]
-    # More plating over the main-aux cluster gap.
     - chunk-size: 3
       hull-around:
       - [back3, ENE, 0]
@@ -765,8 +763,7 @@ tweaks:
       - [rear-housing-exterior, ESE, 1]
       - [rear-housing-exterior, SSE, 1]
       - [rear-housing-interior, ESE, 1]
-      - [a0, WNW, 0, 1]
-      - [back3, ENE, 0]
+      - [a0, WNW, 1]
     # Bottom-only plating to compensate for the aux cluster breaking up the
     # ground-level profile of the main cluster:
     - at-ground: true
@@ -826,19 +823,26 @@ tweaks:
       - hull-around:
         - [rear-housing-exterior, S, 1]
         - [rear-housing-interior, S, 1]
-      - [back2, NW, 0]
-      - [back2, NE, 0]
+      - [back2, NW]
+      - [back2, NE]
     - hull-around:
       - hull-around:
         - [rear-housing-exterior, S, 1]
         - [rear-housing-interior, S, 1]
-      - [back2, NW, 0]
-      - [back2, NE, 0]
-      - [back3, NW, 0]
-      - [back3, NE, 0]
+      - [back2, NW]
+      - [back2, NE]
+      - [back3, NW]
+      - [back3, NE]
       - hull-around:
         - [rear-housing-exterior, SSE, 1]
         - [rear-housing-interior, SSE, 1]
+    - hull-around:
+      - [rear-housing-exterior, SSE, 0, 1]
+      - [rear-housing-exterior, SSE, 0, 1]
+      - [rear-housing-exterior, ESE, 0, 1]
+      - [rear-housing-exterior, ESE, 0, 1]
+      - [back3, NE]
+      - [a0, WNW, 0, 1]
   connector-housing:
     # A slightly pyramidal ceiling to the port, as DFM.
     - positive: false
@@ -857,7 +861,6 @@ tweaks:
       - [reflection-port-holder,
          {anchoring: {side: NW, segment: 2, intrinsic-offset: [0, 0, -10]}}]
       - [rear-housing-exterior, SE, 0]
-      - [back3, NE]
 mcu:
   include: true
   # Stand on the long edge, folded into the rear housing.
