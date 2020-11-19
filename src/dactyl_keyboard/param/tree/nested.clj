@@ -169,6 +169,10 @@
     "- No cluster, no column, row -1, no side.\n"
     "- No cluster, no column, no row, west side.\n"
     "- No cluster, no column, no row, no side.\n"]
+   [:parameter [:key-style]
+    {:default :default :parse-fn keyword}
+    "The name of a key style defined in the [global](options-main.md) `keys` "
+    "section. The default setting is the name `default`."]
    [:section [:layout]
     "Settings for how to place keys."]
    [:section [:layout :matrix]
@@ -252,10 +256,6 @@
     {:default [0 0 0] :parse-fn vec :validate [::tarmi-core/point-3d]}
     "“Late” translation is the last step in key placement and therefore "
     "interacts very little with other steps."]
-   [:parameter [:key-style]
-    {:default :default :parse-fn keyword}
-    "The name of a key style defined in the [global](options-main.md) `keys` "
-    "section. The default setting is the name `default`."]
    [:section [:layout :clearance]
     "The height of each key above its mounting plate can be included when "
     "calculating the effective radius of key cluster curvature for a layout. "
@@ -291,6 +291,26 @@
     {:default 0 :parse-fn num}
     "The width in mm of extra negative space around the edges of a keycap, on "
     "all sides. This is applied before the `error-general` DFM compensator."]
+   [:section [:plate]
+    "The properties of the flat mounting plate through which each switch is "
+    "inserted."]
+   [:parameter [:plate :use-key-style]
+    {:default false :parse-fn boolean}
+    "If `true`, base the size and position of the plate on `key-style`."]
+   [:parameter [:plate :size]
+    {:default [1 1 1] :parse-fn vec :validate [::tarmi-core/point-3d]}
+    "Three measurements in mm. If `use-key-style` is `false`, this is the "
+    "size of the mounting plate."]
+   [:parameter [:plate :position]
+    {:default [0 0 0] :parse-fn vec :validate [::tarmi-core/point-3d]}
+    "A three-dimensional offset in mm. If `use-key-style` is `false`, the "
+    "mounting plate is automatically lowered underneath "
+    "the centre of the switch. This offset is applied at the same time.\n"
+    "\n"
+    "This parameter is intended for adapting the mounting plate as such to "
+    "exotic human interfaces. To adjust the position of the entire key for "
+    "other purposes, use the `translation` settings for `layout`, in this "
+    "document."]
    [:section [:wall]
     "Properties of a wall built around the edge of the cluster.\n"
     "\n"

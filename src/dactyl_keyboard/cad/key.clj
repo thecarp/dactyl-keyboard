@@ -18,6 +18,29 @@
                                                   compensator]]))
 
 
+;;;;;;;;;;;;;;
+;; Internal ;;
+;;;;;;;;;;;;;;
+
+(defn adaptive-plate
+  "The shape of a key mounting plate based on the style of the key."
+  [getopt cluster coord]
+  (let [most #(most-specific getopt % cluster coord)
+        style-data (getopt :keys :derived (most [:key-style]))
+        [x y] (map measure/key-length (get style-data :unit-size [1 1]))
+        z (most [:wall :thickness 2])]
+    (model/translate [0 0 (/ z -2)]
+      (model/cube x y z))))
+
+(defn custom-plate
+  "The shape of a key mounting plate not based on the style of the key."
+  [getopt cluster coord]
+  (let [most #(most-specific getopt [:plate %] cluster coord)
+        [x y z] (most :size)]
+    (model/translate (mapv + [0 0 (/ z -2)] (most :position))
+      (model/cube x y z))))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Core Definitions — All Switches ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -232,12 +255,9 @@
 (defn single-plate
   "The shape of a key mounting plate."
   [getopt cluster coord]
-  (let [most #(most-specific getopt % cluster coord)
-        style-data (getopt :keys :derived (most [:key-style]))
-        [x y] (map measure/key-length (get style-data :unit-size [1 1]))
-        z (most [:wall :thickness 2])]
-    (model/translate [0 0 (/ z -2)]
-      (model/cube x y z))))
+  (if (most-specific getopt [:plate :use-key-style] cluster coord)
+    (adaptive-plate getopt cluster coord)
+    (custom-plate getopt cluster coord)))
 
 (defn cluster-plates [getopt cluster]
   (apply model/union

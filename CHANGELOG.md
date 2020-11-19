@@ -22,6 +22,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 ### New
 - Added a nominal clearance parameter to make it easier to design for multiple
   different types of switches and keycaps.
+- Added support for custom key mounting plate size.
 - Added a configuration fragment for removing the rear housing of the DMOTE.
 
 ### Migration guide

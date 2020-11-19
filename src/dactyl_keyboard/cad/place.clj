@@ -39,22 +39,30 @@
 
 ;; Key mounts.
 
+(defn- adaptive-corner-offset
+  "Locate the corner of a switch mount based on its key style."
+  [most {:keys [unit-size] :or {unit-size [1 1]}} [dx dy]]
+  (let [[subject-x subject-y] (map measure/key-length unit-size)]
+    [(* 1/2 dx subject-x) (* 1/2 dy subject-y) (/ (most :wall :thickness 2) -2)]))
+
+(defn- custom-corner-offset
+  "Locate the corner of a switch mount based on explicit plate properties."
+  [most [dx dy]]
+  (let [[sx sy sz] (most :plate :size)]
+    (mapv + [(* 1/2 dx sx) (* 1/2 dy sy) (/ sz -2)] (most :plate :position))))
+
 (defn- mount-corner-offset
   "Produce a mm coordinate offset for a corner of a switch mount.
   This is not to be confused with offsets for walls, which build out from mount
   corners."
   [getopt cluster coord side]
   {:pre [(or (nil? side) (side compass/all-short))]}
-  (let [directions (get compass/keyword-to-tuple side (if side [side] []))
-        most #(most-specific getopt %& cluster coord
+  (let [most #(most-specific getopt %& cluster coord
                              (or side :dactyl-keyboard.cad.key/any))
-        style-data (getopt :keys :derived (most :key-style))
-        [subject-x subject-y] (map measure/key-length
-                                   (get style-data :unit-size [1 1]))
-        [wall-x wall-y wall-z] (map #(/ % 2) (most :wall :thickness))]
-    [(* (apply compass/delta-x directions) (- (/ subject-x 2) wall-x))
-     (* (apply compass/delta-y directions) (- (/ subject-y 2) wall-y))
-     (- wall-z)]))
+        factors (misc/grid-factors side)]
+    (if (most :plate :use-key-style)
+      (adaptive-corner-offset most (getopt :keys :derived (most :key-style)) factors)
+      (custom-corner-offset most factors))))
 
 (defn- curver
   "Given an angle for progressive curvature, apply it. Else lay keys out flat."

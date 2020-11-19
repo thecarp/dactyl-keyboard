@@ -97,6 +97,7 @@ Here follows the complete order of resolution in an extended example, for a `wal
 
 
 ## Table of contents
+- Parameter <a href="#user-content-key-style">`key-style`</a>
 - Section <a href="#user-content-layout">`layout`</a>
     - Section <a href="#user-content-layout-matrix">`matrix`</a>
         - Section <a href="#user-content-layout-matrix-neutral">`neutral`</a>
@@ -123,16 +124,23 @@ Here follows the complete order of resolution in an extended example, for a `wal
     - Section <a href="#user-content-layout-clearance">`clearance`</a>
         - Parameter <a href="#user-content-layout-clearance-use-key-style">`use-key-style`</a>
         - Parameter <a href="#user-content-layout-clearance-nominal">`nominal`</a>
-- Parameter <a href="#user-content-key-style">`key-style`</a>
 - Section <a href="#user-content-channel">`channel`</a>
     - Parameter <a href="#user-content-channel-height">`height`</a>
     - Parameter <a href="#user-content-channel-top-width">`top-width`</a>
     - Parameter <a href="#user-content-channel-margin">`margin`</a>
+- Section <a href="#user-content-plate">`plate`</a>
+    - Parameter <a href="#user-content-plate-use-key-style">`use-key-style`</a>
+    - Parameter <a href="#user-content-plate-size">`size`</a>
+    - Parameter <a href="#user-content-plate-position">`position`</a>
 - Section <a href="#user-content-wall">`wall`</a>
     - Parameter <a href="#user-content-wall-thickness">`thickness`</a>
     - Parameter <a href="#user-content-wall-extent">`extent`</a>
     - Parameter <a href="#user-content-wall-to-ground">`to-ground`</a>
     - Parameter <a href="#user-content-wall-segments">`segments`</a>
+
+## Parameter <a id="key-style">`key-style`</a>
+
+The name of a key style defined in the [global](options-main.md) `keys` section. The default setting is the name `default`.
 
 ## Section <a id="layout">`layout`</a>
 
@@ -238,10 +246,6 @@ If `true`, predict clearance based on `key-style`, including switch travel and c
 
 Nominal clearance in mm. This is only used without `use-key-style`.
 
-## Parameter <a id="key-style">`key-style`</a>
-
-The name of a key style defined in the [global](options-main.md) `keys` section. The default setting is the name `default`.
-
 ## Section <a id="channel">`channel`</a>
 
 Above each switch mount, there is a channel of negative space for the user’s finger and the keycap to move inside. This is only useful in those cases where nearby walls or webbing between mounts on the keyboard would otherwise obstruct movement.
@@ -257,6 +261,24 @@ The width in mm of the negative space at its top. Its width at the bottom is def
 ### Parameter <a id="channel-margin">`margin`</a>
 
 The width in mm of extra negative space around the edges of a keycap, on all sides. This is applied before the `error-general` DFM compensator.
+
+## Section <a id="plate">`plate`</a>
+
+The properties of the flat mounting plate through which each switch is inserted.
+
+### Parameter <a id="plate-use-key-style">`use-key-style`</a>
+
+If `true`, base the size and position of the plate on `key-style`.
+
+### Parameter <a id="plate-size">`size`</a>
+
+Three measurements in mm. If `use-key-style` is `false`, this is the size of the mounting plate.
+
+### Parameter <a id="plate-position">`position`</a>
+
+A three-dimensional offset in mm. If `use-key-style` is `false`, the mounting plate is automatically lowered underneath the centre of the switch. This offset is applied at the same time.
+
+This parameter is intended for adapting the mounting plate as such to exotic human interfaces. To adjust the position of the entire key for other purposes, use the `translation` settings for `layout`, in this document.
 
 ## Section <a id="wall">`wall`</a>
 

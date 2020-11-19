@@ -53,9 +53,10 @@
   (apply model/cube
     (most-specific getopt [:wall :thickness] cluster coord side)))
 
-(defn cluster [getopt cluster]
+(defn cluster
   "A union of shapes covering the interstices between points in a matrix.
   The matrix models a cluster of keys."
+  [getopt cluster]
   (apply model/union
     (mapcat
       (partial bridge
