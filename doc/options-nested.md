@@ -11,7 +11,7 @@ The `by-key` section contains a map of up to five items:
 - `parameters`, where you put your settings. Sections described in this document all pertain to this map.
 - `clusters`, starting a nested map for specific clusters only, keyed by their names.
 - `columns` and/or `rows`, each starting a nested map for specific columns or rows only, keyed either by their indices (ordinal integers) or by the special words `first` or `last`. Due to a peculiarity of YAML (and JSON), **numeric indices must appear in quotation marks** as in the example below.
-- `sides`, starting a nested map for short-form cardinal points of the compass, e.g. `NNE` for the north by northeast corner. Sides are only relevant for details of the wall surrounding a key mount at the edge of a cluster.
+- `sides`, starting a nested map for points of the compass, such as `NNE` for the north by northeast corner. Sides are only relevant for the periphery of a key, including details of the wall surrounding a key mount at the edge of a cluster, and the webbing between keys.
 
 Each of the nested maps have the same structure as this root-level map. Specificity is accomplished by nesting a series of these maps, so that a nested set of `parameters` comes to refer to an intersection of more than one selection criterion.
 

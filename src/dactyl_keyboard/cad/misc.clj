@@ -97,7 +97,7 @@
    (*xy 1 direction offset))
   ([coefficient direction offset]
    {:pre [(number? coefficient)
-          (or (nil? direction) (direction compass/all-short))
+          (or (nil? direction) (direction compass/all))
           (spec/valid? ::tarmi/point-2-3d offset)]}
    (let [[dx dy] (grid-factors direction)]
      (-> offset
@@ -155,7 +155,7 @@
   corners of which are bevelled."
   [direction size bevel-inset]
   {:pre [(spec/valid? ::tarmi/point-2-3d size)
-         (or (nil? direction) (direction compass/all-short))]
+         (or (nil? direction) (direction compass/all))]
    :post [(spec/valid? ::tarmi/point-2-3d %)]}
   (if direction
     (case (compass/classify direction)
@@ -170,7 +170,7 @@
   edge of the top bevel, 2 is the middle, 3 the bottom."
   [direction segment size bevel-inset]
   {:pre [(spec/valid? ::tarmi/point-3d size)
-         (or (nil? direction) (direction compass/all-short))
+         (or (nil? direction) (direction compass/all))
          (or (nil? segment) (integer? segment))]
    :post [(spec/valid? ::tarmi/point-3d %)]}
   (let [z (last size)

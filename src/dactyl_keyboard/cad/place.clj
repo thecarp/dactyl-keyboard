@@ -56,7 +56,7 @@
   This is not to be confused with offsets for walls, which build out from mount
   corners."
   [getopt cluster coord side]
-  {:pre [(or (nil? side) (side compass/all-short))]}
+  {:pre [(or (nil? side) (side compass/all))]}
   (let [most #(most-specific getopt %& cluster coord
                              (or side :dactyl-keyboard.cad.key/any))
         factors (misc/grid-factors side)]
@@ -165,7 +165,7 @@
   walling and therefore finds the base of full walls."
   [getopt cluster coordinates
    {:keys [side segment vertex] :or {vertex false} :as keyopts}]
-  {:pre [(or (nil? side) (compass/all-short side))]}
+  {:pre [(or (nil? side) (compass/all side))]}
   (mapv +
     (mount-corner-offset getopt cluster coordinates side)
     (wall-segment-offset getopt cluster coordinates side (or segment 0))
@@ -281,7 +281,7 @@
   "Place in relation to the exterior of the rear housing of the main body."
   [getopt layer side segment obj]
   {:pre [(#{:interior :exterior} layer)
-         (or (nil? side) (side compass/all-short))]}
+         (or (nil? side) (side compass/all))]}
   (let [prop (partial getopt :main-body :rear-housing)]
     (flex/translate
       (mapv +
@@ -518,7 +518,7 @@
 
 (defmethod by-type ::anch/key-mount
   [getopt {:keys [cluster coordinates side segment subject] :as opts}]
-  {:pre [(or (nil? side) (compass/all-short side))]}
+  {:pre [(or (nil? side) (compass/all side))]}
   (cluster-place getopt cluster coordinates
     (if (some? side)
       ;; Corner named. By default, the target feature is the outermost wall.

@@ -76,7 +76,7 @@
       (value-at path))))
 
 (let [a :dactyl-keyboard.cad.key/any
-      side-ids (conj compass/all-short a)]
+      side-ids (conj compass/all a)]
   (defn most-specific
     "Find the most specific setting applicable to a given key."
     ([getopt end-path cluster coord]

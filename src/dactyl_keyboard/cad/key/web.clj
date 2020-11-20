@@ -49,7 +49,7 @@
 (defn web-post
   "The shape of a corner of a switch mount."
   [getopt cluster coord side]
-  {:pre [(compass/all-short side)]}
+  {:pre [(compass/all side)]}
   (apply model/cube
     (most-specific getopt [:wall :thickness] cluster coord side)))
 

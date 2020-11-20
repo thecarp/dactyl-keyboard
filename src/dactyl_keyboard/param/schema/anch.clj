@@ -18,7 +18,7 @@
 (def anchor-side-metadata
   {:default nil
    :parse-fn parse/optional-keyword
-   :validate [(spec/nilable compass/all-short)]})
+   :validate [(spec/nilable compass/all)]})
 (def anchor-segment-metadata
   {:default nil
    :parse-fn (fn [candidate] (when (some? candidate) (int candidate)))

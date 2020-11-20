@@ -44,7 +44,7 @@
   (testing "string"
     (is (= (parse/compass-compatible-angle "N") 0.0))
     (is (= (parse/compass-compatible-angle "NE") (/ π -4)))
-    (is (= (parse/compass-compatible-angle "west") (* -1.5 π)))
+    (is (= (parse/compass-compatible-angle "W") (* -1.5 π)))
     (is (= (parse/compass-compatible-angle "π * 3") (* 3 π))))
   (testing "keyword"
     (is (= (parse/compass-compatible-angle :N) 0.0))

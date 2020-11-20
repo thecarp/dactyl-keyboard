@@ -75,7 +75,7 @@
     "Which vertical segment of the port itself to place at its anchor. "
     "The default value here is 0, meaning the ceiling of the port."]
    [:parameter [:alignment :side]
-    {:default :N, :parse-fn keyword, :validate [compass/all-short]}
+    {:default :N, :parse-fn keyword, :validate [compass/all]}
     "Which wall or corner of the port itself to place at its anchor. "
     "The default value here is `N` (nominal north), which is the open face "
     "of the port."]

@@ -31,10 +31,10 @@ identify the sides and corners of features.
 To understand these terms, imagine having (the right-hand side of) the keyboard
 in front of you, as you would use it, while you face true north.
 
-“North” in configuration thus refers to the direction away from the user: the
-far side. “South” is the direction toward the user: the near side.
+Nominal north in configuration thus refers to the direction away from the user:
+the far side. South is the direction toward the user: the near side.
 
-“West” and “east” vary on each half of a split keyboard because the left-hand
+West and east vary on each half of a split keyboard because the left-hand
 side is a mirror image of the right-hand side. The right-hand side is primary
 for the purposes of nomenclature. On either half, the west is inward, toward
 the space between the two halves of the keyboard. The east is outward, away
@@ -42,11 +42,11 @@ from the other half of the keyboard. If you are not building a split keyboard,
 think of your case as you would the right-hand side: The west is on your left
 and the east is on your right.
 
-In Euclidean space, the x axis goes from west to east, the y axis from south to
-north, and the z axis from earth to sky. However, there is one caveat to this:
-When features are rotated, the compass needle doesn’t move. Where the
-distinction can be made, the compass metaphor describes the local vector space,
-which is not always the global vector space.
+In Euclidean space, the x axis goes from west to east and the y axis from south
+to north. However, there is one caveat to this: When features are rotated, the
+compass needle doesn’t move. Where the distinction can be made, the compass
+metaphor describes the local vector space, which is not always the global
+vector space.
 
 ### The anchor metaphor
 
