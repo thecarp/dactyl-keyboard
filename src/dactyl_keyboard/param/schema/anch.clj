@@ -17,7 +17,7 @@
   {:default :origin :parse-fn keyword :validate [::valid/anchor]})
 (def anchor-side-metadata
   {:default nil
-   :parse-fn parse/any-compass-point
+   :parse-fn parse/optional-keyword
    :validate [(spec/nilable compass/all-short)]})
 (def anchor-segment-metadata
   {:default nil

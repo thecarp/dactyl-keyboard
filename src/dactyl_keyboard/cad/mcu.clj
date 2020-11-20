@@ -115,12 +115,12 @@
         {:keys [N E S W] :or {N 0, E 0, S 0, W 0}}
         (getopt :mcu :support :shelf :bevel)
         t0 (getopt :mcu :support :shelf :thickness)
-        t1 (getopt :mcu :support :shelf :sides :lateral-thickness)
-        t2 (getopt :mcu :support :shelf :sides :overhang-thickness)
+        t1 (getopt :mcu :support :shelf :rim :lateral-thickness)
+        t2 (getopt :mcu :support :shelf :rim :overhang-thickness)
         xₜ (+ xₚ (* 2 t1))  ; Total width of the shelf with its sides.
         [X Y Z] [(* 3 xₜ) (* 3 yₚ) 60]  ; Blown up for intersections.
-        xₒ (+ t1 (getopt :mcu :support :shelf :sides :overhang-width))
-        [off0 off1] (getopt :mcu :support :shelf :sides :offsets)
+        xₒ (+ t1 (getopt :mcu :support :shelf :rim :overhang-width))
+        [off0 off1] (getopt :mcu :support :shelf :rim :offsets)
         tr (fn [p a s] (model/translate p (maybe/rotate a s)))
         tc (fn [p d] (model/translate p (apply model/cube d)))
         side (fn [x-op y-offset]

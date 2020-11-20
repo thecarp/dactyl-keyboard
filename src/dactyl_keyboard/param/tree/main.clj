@@ -617,25 +617,25 @@
    [:parameter [:mcu :support :shelf :bevel]
     {:default {} :parse-fn parse/compass-angle-map
      :validate [::valid/compass-angle-map]}
-    "A map of angles, in radians, indexed by cardinal compass points, whereby "
+    "A map of cardinal compass points to angles in radians, whereby "
     "any and all sides of the shelf are turned away from the MCU PCBA. "
     "This feature is intended mainly for manufacturability, to reduce the "
     "need for supports in printing, but it can also add strength or help "
     "connect to other features."]
-   [:section [:mcu :support :shelf :sides]
-    "By default, a shelf includes raised sides to hold on to the "
+   [:section [:mcu :support :shelf :rim]
+    "By default, a shelf includes raised edges to hold on to the "
     "PCBA. This is most useful when the shelf is rotated, following the "
-    "MCU, out of the xy plane."]
-   [:parameter [:mcu :support :shelf :sides :lateral-thickness]
+    "MCU, out of the xy-plane."]
+   [:parameter [:mcu :support :shelf :rim :lateral-thickness]
     {:default 1 :parse-fn num :validate [pos?]}
     "The thickness of material to each side of the MCU, in mm."]
-   [:parameter [:mcu :support :shelf :sides :overhang-thickness]
+   [:parameter [:mcu :support :shelf :rim :overhang-thickness]
     {:default 1 :parse-fn num :validate [pos?]}
     "The thickness of material in the outermost part on each side, in mm."]
-   [:parameter [:mcu :support :shelf :sides :overhang-width]
+   [:parameter [:mcu :support :shelf :rim :overhang-width]
     {:default 0 :parse-fn num :validate [#(not (neg? %))]}
     "The extent to which each side extends out across the PCBA, in mm."]
-   [:parameter [:mcu :support :shelf :sides :offsets]
+   [:parameter [:mcu :support :shelf :rim :offsets]
     {:default [0 0]
      :parse-fn (fn [candidate]
                  (if (number? candidate) [candidate candidate] (vec candidate)))

@@ -85,13 +85,13 @@
           ((case op "/" / *) π (if n (Float/parseFloat n) 1))
           (throw e))))))
 
-(defn any-compass-point
+(defn optional-keyword
   "Convert to a short keyword for a compass point, even from a long string.
   Also accept nil."
   [candidate]
-  (when (some? candidate) (compass/convert-to-any-short (keyword candidate))))
+  (when (some? candidate) (keyword candidate)))
 
-(def compass-angle-map (map-of any-compass-point compass-incompatible-angle))
+(def compass-angle-map (map-of keyword compass-incompatible-angle))
 
 (defn compass-compatible-angle
   "A parser that takes an identifier of an angle, including via the compass.

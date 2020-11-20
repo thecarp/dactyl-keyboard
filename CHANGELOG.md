@@ -8,16 +8,22 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - Replaced the way that key-cluster walls are measured. Instead of separate
   settings for `bevel`, `parallel` and `perpendicular`, there is now only
   one setting, called `segments`, with more power.
-- Continued migration from long-form names for the points of the compass,
+- Completed migration from long-form names for the points of the compass,
   like `north`, to short-form names, like `N`.
     - The shorter names are now used for nested configuration by key.
     - The shorter names are used for fasteners through the rear housing,
       under a new section (`sides`).
+    - The longer names, previously optional for MCU shelf sides, are no
+      longer permitted there.
 - Disabled responsiveness to predicted resting key clearance by default.
   This can be re-enabled with a new parameter (`use-key-travel`).
-- Made the `central-housing` → `adapter` → `receivers` → `thickness` → `bridge`
-  parameter a section, with its function inherited by `tangential` in that
-  new section.
+- Moved and replaced some (other) parameters:
+    - Made the `central-housing` → `adapter` → `receivers` → `thickness` →
+      `bridge` parameter a section, with its function inherited by `tangential`
+      in that new section.
+    - Renamed MCU shelf `sides` to `rim` to prevent confusion with the
+      adjacent `bevel` section of parameters, which is indexed by sides
+      (compass points).
 - Bundled designs:
     - Stopped including threading on bolts in most models, for faster renders
       and reduced sensitivity to printer accuracy.

@@ -1195,10 +1195,10 @@ mcu:
       include: true
       extra-space: [1, 0, 3]
       bevel:
-        east: 0.6
-        south: 1
-        west: 0.6
-      sides:
+        E: 0.6
+        S: 1
+        W: 0.6
+      rim:
         lateral-thickness: 5
         overhang-thickness: 1.5
         overhang-width: 0.5

@@ -84,11 +84,11 @@ Each heading in this document represents a recognized configuration key in the m
             - Parameter <a href="#user-content-mcu-support-shelf-extra-space">`extra-space`</a>
             - Parameter <a href="#user-content-mcu-support-shelf-thickness">`thickness`</a>
             - Parameter <a href="#user-content-mcu-support-shelf-bevel">`bevel`</a>
-            - Section <a href="#user-content-mcu-support-shelf-sides">`sides`</a>
-                - Parameter <a href="#user-content-mcu-support-shelf-sides-lateral-thickness">`lateral-thickness`</a>
-                - Parameter <a href="#user-content-mcu-support-shelf-sides-overhang-thickness">`overhang-thickness`</a>
-                - Parameter <a href="#user-content-mcu-support-shelf-sides-overhang-width">`overhang-width`</a>
-                - Parameter <a href="#user-content-mcu-support-shelf-sides-offsets">`offsets`</a>
+            - Section <a href="#user-content-mcu-support-shelf-rim">`rim`</a>
+                - Parameter <a href="#user-content-mcu-support-shelf-rim-lateral-thickness">`lateral-thickness`</a>
+                - Parameter <a href="#user-content-mcu-support-shelf-rim-overhang-thickness">`overhang-thickness`</a>
+                - Parameter <a href="#user-content-mcu-support-shelf-rim-overhang-width">`overhang-width`</a>
+                - Parameter <a href="#user-content-mcu-support-shelf-rim-offsets">`offsets`</a>
         - Section <a href="#user-content-mcu-support-lock">`lock`</a>
             - Parameter <a href="#user-content-mcu-support-lock-include">`include`</a>
             - Parameter <a href="#user-content-mcu-support-lock-width-factor">`width-factor`</a>
@@ -622,25 +622,25 @@ The thickness of material in the shelf, below or behind the PCBA, in mm.
 
 ##### Parameter <a id="mcu-support-shelf-bevel">`bevel`</a>
 
-A map of angles, in radians, indexed by cardinal compass points, whereby any and all sides of the shelf are turned away from the MCU PCBA. This feature is intended mainly for manufacturability, to reduce the need for supports in printing, but it can also add strength or help connect to other features.
+A map of cardinal compass points to angles in radians, whereby any and all sides of the shelf are turned away from the MCU PCBA. This feature is intended mainly for manufacturability, to reduce the need for supports in printing, but it can also add strength or help connect to other features.
 
-##### Section <a id="mcu-support-shelf-sides">`sides`</a>
+##### Section <a id="mcu-support-shelf-rim">`rim`</a>
 
-By default, a shelf includes raised sides to hold on to the PCBA. This is most useful when the shelf is rotated, following the MCU, out of the xy plane.
+By default, a shelf includes raised edges to hold on to the PCBA. This is most useful when the shelf is rotated, following the MCU, out of the xy-plane.
 
-###### Parameter <a id="mcu-support-shelf-sides-lateral-thickness">`lateral-thickness`</a>
+###### Parameter <a id="mcu-support-shelf-rim-lateral-thickness">`lateral-thickness`</a>
 
 The thickness of material to each side of the MCU, in mm.
 
-###### Parameter <a id="mcu-support-shelf-sides-overhang-thickness">`overhang-thickness`</a>
+###### Parameter <a id="mcu-support-shelf-rim-overhang-thickness">`overhang-thickness`</a>
 
 The thickness of material in the outermost part on each side, in mm.
 
-###### Parameter <a id="mcu-support-shelf-sides-overhang-width">`overhang-width`</a>
+###### Parameter <a id="mcu-support-shelf-rim-overhang-width">`overhang-width`</a>
 
 The extent to which each side extends out across the PCBA, in mm.
 
-###### Parameter <a id="mcu-support-shelf-sides-offsets">`offsets`</a>
+###### Parameter <a id="mcu-support-shelf-rim-offsets">`offsets`</a>
 
 One or two lengthwise offsets in mm. When these are left at zero, the sides of the shelf will appear in full. A negative or positive offset shortens the corresponding side, towards or away from the connector side of the PCBA.
 
