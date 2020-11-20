@@ -9,8 +9,10 @@ version 0.2.0, thus covering only a fraction of the project’s history.
   settings for `bevel`, `parallel` and `perpendicular`, there is now only
   one setting, called `segments`, with more power.
 - Continued migration from long-form names for the points of the compass,
-  like `north`, to short-form names, like `N`. The shorter names are now
-  used for nested configuration by key.
+  like `north`, to short-form names, like `N`.
+    - The shorter names are now used for nested configuration by key.
+    - The shorter names are used for fasteners through the rear housing,
+      under a new section (`sides`).
 - Disabled responsiveness to predicted resting key clearance by default.
   This can be re-enabled with a new parameter (`use-key-travel`).
 - Made the `central-housing` → `adapter` → `receivers` → `thickness` → `bridge`

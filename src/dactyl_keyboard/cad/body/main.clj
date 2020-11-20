@@ -59,7 +59,7 @@
         leeway (/ (- (prop :derived :size :exterior 1) w) 2)
         position (fn [y]
                    (place/rhousing-place getopt :interior side 0
-                     [(+ (prop :fasteners (side compass/short-to-long) :offset)
+                     [(+ (prop :fasteners :sides side :offset)
                          (* (compass/delta-x (compass/reverse side)) (/ w 2)))
                       y
                       (/ (threaded/datum d :hex-nut-height) -2)]))]
@@ -68,10 +68,11 @@
 
 (defn- rhousing-mount-pair
   [getopt function]
-  (let [prop (partial getopt :main-body :rear-housing :fasteners)]
-    (maybe/union
-      (when (prop :west :include) (function getopt :W))
-      (when (prop :east :include) (function getopt :E)))))
+  (apply maybe/union
+    (map
+      (partial function getopt)
+      (filter #(getopt :main-body :rear-housing :fasteners :sides % :include)
+              [:W :E]))))
 
 (defn- rhousing-mount-positive
   [getopt side]

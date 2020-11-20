@@ -197,21 +197,22 @@
     "fastener. Space permitting, these bosses will have some play on the "
     "north-south axis, to permit adjustment of the angle of the keyboard "
     "halves under a stabilizer."]
-   [:section [:main-body :rear-housing :fasteners :west]
-    "A fastener on the inward-facing end of the rear housing."]
-   [:parameter [:main-body :rear-housing :fasteners :west :include]
+   [:section [:main-body :rear-housing :fasteners :sides]
+    "Analogous but independent parameters for the west and east sides."]
+   [:section [:main-body :rear-housing :fasteners :sides :W]
+    "The west: A fastener on the inward-facing end of the rear housing."]
+   [:parameter [:main-body :rear-housing :fasteners :sides :W :include]
     {:default false :parse-fn boolean}
     "If `true`, include this fastener."]
-   [:parameter [:main-body :rear-housing :fasteners :west :offset]
+   [:parameter [:main-body :rear-housing :fasteners :sides :W :offset]
     {:default 0 :parse-fn num}
     "A one-dimensional offset in mm from the inward edge of the rear "
     "housing to the fastener. You probably want a negative number if any."]
-   [:section [:main-body :rear-housing :fasteners :east]
-    "A fastener on the outward-facing end of the rear housing. All parameters "
-    "are analogous to those for `west`."]
-   [:parameter [:main-body :rear-housing :fasteners :east :include]
+   [:section [:main-body :rear-housing :fasteners :sides :E]
+    "The east: A fastener on the outward-facing end of the rear housing."]
+   [:parameter [:main-body :rear-housing :fasteners :sides :E :include]
     {:default false :parse-fn boolean}]
-   [:parameter [:main-body :rear-housing :fasteners :east :offset]
+   [:parameter [:main-body :rear-housing :fasteners :sides :E :offset]
     {:default 0 :parse-fn num}]
    [:section [:main-body :back-plate]
     "Given that independent movement of each half of a split keyboard is not "

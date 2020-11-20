@@ -489,12 +489,13 @@ main-body:
         total-length: 8.5
         include-threading: false
       bosses: true
-      west:
-        include: true
-        offset: 0
-      east:
-        include: true
-        offset: -13
+      sides:
+        W:
+          include: true
+          offset: 0
+        E:
+          include: true
+          offset: -11
   back-plate:
     beam-height: 20
     fasteners:

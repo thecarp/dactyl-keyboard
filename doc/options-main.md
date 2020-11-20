@@ -26,12 +26,13 @@ Each heading in this document represents a recognized configuration key in the m
         - Section <a href="#user-content-main-body-rear-housing-fasteners">`fasteners`</a>
             - Parameter <a href="#user-content-main-body-rear-housing-fasteners-bolt-properties">`bolt-properties`</a>
             - Parameter <a href="#user-content-main-body-rear-housing-fasteners-bosses">`bosses`</a>
-            - Section <a href="#user-content-main-body-rear-housing-fasteners-west">`west`</a>
-                - Parameter <a href="#user-content-main-body-rear-housing-fasteners-west-include">`include`</a>
-                - Parameter <a href="#user-content-main-body-rear-housing-fasteners-west-offset">`offset`</a>
-            - Section <a href="#user-content-main-body-rear-housing-fasteners-east">`east`</a>
-                - Parameter <a href="#user-content-main-body-rear-housing-fasteners-east-include">`include`</a>
-                - Parameter <a href="#user-content-main-body-rear-housing-fasteners-east-offset">`offset`</a>
+            - Section <a href="#user-content-main-body-rear-housing-fasteners-sides">`sides`</a>
+                - Section <a href="#user-content-main-body-rear-housing-fasteners-sides-W">`W`</a>
+                    - Parameter <a href="#user-content-main-body-rear-housing-fasteners-sides-W-include">`include`</a>
+                    - Parameter <a href="#user-content-main-body-rear-housing-fasteners-sides-W-offset">`offset`</a>
+                - Section <a href="#user-content-main-body-rear-housing-fasteners-sides-E">`E`</a>
+                    - Parameter <a href="#user-content-main-body-rear-housing-fasteners-sides-E-include">`include`</a>
+                    - Parameter <a href="#user-content-main-body-rear-housing-fasteners-sides-E-offset">`offset`</a>
     - Section <a href="#user-content-main-body-back-plate">`back-plate`</a>
         - Parameter <a href="#user-content-main-body-back-plate-include">`include`</a>
         - Parameter <a href="#user-content-main-body-back-plate-beam-height">`beam-height`</a>
@@ -276,27 +277,31 @@ Default values provided by the application are bare minima. More usefully, the a
 
 If `true`, add nut bosses to the ceiling of the rear housing for each fastener. Space permitting, these bosses will have some play on the north-south axis, to permit adjustment of the angle of the keyboard halves under a stabilizer.
 
-##### Section <a id="main-body-rear-housing-fasteners-west">`west`</a>
+##### Section <a id="main-body-rear-housing-fasteners-sides">`sides`</a>
 
-A fastener on the inward-facing end of the rear housing.
+Analogous but independent parameters for the west and east sides.
 
-###### Parameter <a id="main-body-rear-housing-fasteners-west-include">`include`</a>
+###### Section <a id="main-body-rear-housing-fasteners-sides-W">`W`</a>
+
+The west: A fastener on the inward-facing end of the rear housing.
+
+###### Parameter <a id="main-body-rear-housing-fasteners-sides-W-include">`include`</a> at level 7
 
 If `true`, include this fastener.
 
-###### Parameter <a id="main-body-rear-housing-fasteners-west-offset">`offset`</a>
+###### Parameter <a id="main-body-rear-housing-fasteners-sides-W-offset">`offset`</a> at level 7
 
 A one-dimensional offset in mm from the inward edge of the rear housing to the fastener. You probably want a negative number if any.
 
-##### Section <a id="main-body-rear-housing-fasteners-east">`east`</a>
+###### Section <a id="main-body-rear-housing-fasteners-sides-E">`E`</a>
 
-A fastener on the outward-facing end of the rear housing. All parameters are analogous to those for `west`.
+The east: A fastener on the outward-facing end of the rear housing.
 
-###### Parameter <a id="main-body-rear-housing-fasteners-east-include">`include`</a>
+###### Parameter <a id="main-body-rear-housing-fasteners-sides-E-include">`include`</a> at level 7
 
 
 
-###### Parameter <a id="main-body-rear-housing-fasteners-east-offset">`offset`</a>
+###### Parameter <a id="main-body-rear-housing-fasteners-sides-E-offset">`offset`</a> at level 7
 
 
 
