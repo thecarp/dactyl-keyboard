@@ -13,6 +13,9 @@ version 0.2.0, thus covering only a fraction of the project’s history.
   used for nested configuration by key.
 - Disabled responsiveness to predicted resting key clearance by default.
   This can be re-enabled with a new parameter (`use-key-travel`).
+- Made the `central-housing` → `adapter` → `receivers` → `thickness` → `bridge`
+  parameter a section, with its function inherited by `tangential` in that
+  new section.
 - Bundled designs:
     - Stopped including threading on bolts in most models, for faster renders
       and reduced sensitivity to printer accuracy.
@@ -23,7 +26,10 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - Added a nominal clearance parameter to make it easier to design for multiple
   different types of switches and keycaps.
 - Added support for custom key mounting plate size.
-- Added a configuration fragment for removing the rear housing of the DMOTE.
+- Added a parameter for central-housing interface fastener-receiver radial
+  thickness.
+- Bundled designs:
+    - Added a configuration fragment for removing the rear housing of the DMOTE.
 
 ### Migration guide
 Here is an example of adaptation from the old wall-building syntax to the new:
@@ -35,8 +41,8 @@ Here is an example of adaptation from the old wall-building syntax to the new:
 +        "2": [0, 4, -16]
 ```
 
-That is an excerpt from `config/macropad/base.yaml` and will perfectly preserve
-the shape of the wall.
+That is an excerpt from `config/macropad/base.yaml`, preserving the shape of
+the wall.
 
 ## [Version 0.6.0] - 2020-09-09
 ### Changed

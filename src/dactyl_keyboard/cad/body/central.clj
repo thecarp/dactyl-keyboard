@@ -109,8 +109,9 @@
         diameter (fprop :bolt-properties :m-diameter)
         z-wall (getopt :central-housing :shape :thickness)
         width (+ diameter (* 2 (rprop :thickness :rim)))
-        z-hole (- (iso/bolt-length (fprop :bolt-properties)) z-wall)
-        z-bridge (min z-hole (rprop :thickness :bridge))
+        depth (- (iso/bolt-length (fprop :bolt-properties)) z-wall)
+        radial (rprop :thickness :bridge :radial)
+        tangential (min depth (rprop :thickness :bridge :tangential))
         x-gabel (abs axial-offset)
         x-inner (+ x-gabel (rprop :width :inner))
         x-taper (+ x-inner (rprop :width :taper))
@@ -118,23 +119,23 @@
     (loft
       ;; The furthermost taper sinks into a straight wall.
       [(model/translate [(signed x-taper) 0 (/ z-wall -2)]
-         (model/cube wafer (dec diameter) wafer))
+         (model/cube wafer radial wafer))
        ;; The thicker base of the anchor.
-       (model/translate [(signed x-inner) 0 (- (+ z-wall (/ z-bridge 2)))]
+       (model/translate [(signed x-inner) 0 (- (+ z-wall (/ tangential 2)))]
          (model/union
-           (model/cube wafer (inc diameter) z-bridge)
-           (model/cube wafer diameter (inc z-bridge))))
-       (model/translate [(signed x-gabel) 0 (- (+ z-wall (/ z-bridge 2)))]
+           (model/cube wafer (inc radial) tangential)
+           (model/cube wafer radial (inc tangential))))
+       (model/translate [(signed x-gabel) 0 (- (+ z-wall (/ tangential 2)))]
          (model/union
-           (model/cube wafer (inc diameter) z-bridge)
+           (model/cube wafer (inc radial) tangential)
            (model/translate [0 0 -1]
-             (model/cube wafer diameter z-bridge))))
+             (model/cube wafer radial tangential))))
        ;; Finally the bridge extending past the base.
-       (model/translate [0 0 (- (+ z-wall (/ z-hole 2)))]
+       (model/translate [0 0 (- (+ z-wall (/ depth 2)))]
          (model/hull  ; Soft edges, more material in the middle.
-           (model/cylinder (/ (inc diameter) 2) z-hole)
-           (model/translate [0 0 (/ z-hole 8)]
-             (model/cylinder (/ width 2) (/ z-hole 3)))))])))
+           (model/cylinder (/ (inc diameter) 2) depth)
+           (model/translate [0 0 (/ depth 8)]
+             (model/cylinder (/ width 2) (/ depth 3)))))])))
 
 (defn- get-offsets
   "Get raw offsets for each point on the interface."

@@ -29,7 +29,9 @@ When present, a central housing naturally determines the position of each other 
     - Section <a href="#user-content-adapter-receivers">`receivers`</a>
         - Section <a href="#user-content-adapter-receivers-thickness">`thickness`</a>
             - Parameter <a href="#user-content-adapter-receivers-thickness-rim">`rim`</a>
-            - Parameter <a href="#user-content-adapter-receivers-thickness-bridge">`bridge`</a>
+            - Section <a href="#user-content-adapter-receivers-thickness-bridge">`bridge`</a>
+                - Parameter <a href="#user-content-adapter-receivers-thickness-bridge-radial">`radial`</a>
+                - Parameter <a href="#user-content-adapter-receivers-thickness-bridge-tangential">`tangential`</a>
         - Section <a href="#user-content-adapter-receivers-width">`width`</a>
             - Parameter <a href="#user-content-adapter-receivers-width-inner">`inner`</a>
             - Parameter <a href="#user-content-adapter-receivers-width-taper">`taper`</a>
@@ -211,9 +213,17 @@ The thickness of material in various parts of each receiver.
 
 The maximum thickness of the loop of each receiver where it grabs the fastener, in mm.
 
-##### Parameter <a id="adapter-receivers-thickness-bridge">`bridge`</a>
+##### Section <a id="adapter-receivers-thickness-bridge">`bridge`</a>
 
-The thickness of each receiver where it extends across the interface, in the plane of the housing wall, in mm.
+The part between the hole and the tapering end, where the receiver extends axially across the interface.
+
+###### Parameter <a id="adapter-receivers-thickness-bridge-radial">`radial`</a>
+
+The thickness of each receiver in the plane of the housing wall, in mm.
+
+###### Parameter <a id="adapter-receivers-thickness-bridge-tangential">`tangential`</a>
+
+The thickness of each receiver out from the housing wall, in mm. This is bounded by the depth of the screw hole.
 
 #### Section <a id="adapter-receivers-width">`width`</a>
 

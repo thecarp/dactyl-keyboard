@@ -298,10 +298,16 @@
     {:default 1 :parse-fn num}
     "The maximum thickness of the loop of each receiver where it grabs the "
     "fastener, in mm."]
-   [:parameter [:adapter :receivers :thickness :bridge]
+   [:section [:adapter :receivers :thickness :bridge]
+    "The part between the hole and the tapering end, where the receiver "
+    "extends axially across the interface."]
+   [:parameter [:adapter :receivers :thickness :bridge :radial]
     {:default 1 :parse-fn num}
-    "The thickness of each receiver where it extends across "
-    "the interface, in the plane of the housing wall, in mm."]
+    "The thickness of each receiver in the plane of the housing wall, in mm."]
+   [:parameter [:adapter :receivers :thickness :bridge :tangential]
+    {:default 1 :parse-fn num}
+    "The thickness of each receiver out from the housing wall, in mm. "
+    "This is bounded by the depth of the screw hole."]
    [:section [:adapter :receivers :width]
     "This section is analogous to lip `width`. The “outer” width of "
     "each receiver is a function of its fastener’s lateral offset and cannot "

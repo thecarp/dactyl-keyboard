@@ -662,9 +662,11 @@ central-housing:
     receivers:
       thickness:
         rim: 1.5
-        bridge: 3.5
+        bridge:
+          radial: 4
+          tangential: 3.5
       width:
-        inner: 4
+        inner: 4.5
         taper: 5
   bottom-plate:
     projections:
