@@ -75,7 +75,7 @@
     and leaf parsers. The initial dispatcher replaces itself with a secondary
     dispatcher each time it passes a branch node, and the secondary dispatcher
     sustains itself by the trick of its parser being a function that refers to
-    itself and thereby passes itself along by recreating the lower-lever
+    itself and thereby passes itself along by recreating the lower-level
     dispatcher on each pass.
 
     A candidate to the dispatcher can be a lazy sequence describing a single
@@ -130,5 +130,5 @@
 ;; Composite ;;
 ;;;;;;;;;;;;;;;
 
-(def parameter-metadata {:heading-template "Special section %s"
-                         :default {} :parse-fn parse-grove :validate [::map]})
+(def parameter-metadata {:freely-keyed true, :default {},
+                         :parse-fn parse-grove, :validate [::map]})

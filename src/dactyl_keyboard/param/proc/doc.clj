@@ -7,7 +7,6 @@
 
 (ns dactyl-keyboard.param.proc.doc
   (:require [clojure.string :as string]
-            [clojure.spec.alpha :as spec]
             [dactyl-keyboard.param.base :as base]))
 
 
@@ -15,10 +14,23 @@
 ;; Internal ;;
 ;;;;;;;;;;;;;;
 
-(defn- default-doc-heading
-  "Produce a default heading template for documents."
-  [is-param]
-  (if is-param "Parameter %s" "Section %s"))
+(defn- heading-style
+  [level text]
+  (if (< level 7)  ; Markdown only supports up to h6 tags.
+    (str (string/join "" (repeat level "#")) " " text)
+    (str "###### " text " at level " level)))
+
+(defn- compose-heading
+  "Produce and fill a heading template for documents."
+  [{:keys [heading-template freely-keyed leaf] :or {freely-keyed false}} content]
+  {:post (string? %)}
+  (format
+    (cond
+      heading-template heading-template
+      freely-keyed "Freely keyed section %s"
+      leaf "Parameter %s"
+      :else "Section %s")
+    content))
 
 (defn- slugify
   "Represent a section or parameter as a unique string for HTML anchors.
@@ -40,42 +52,29 @@
   site, or GitHub repents, this will break."
   [path]
   (format "<a href=\"#user-content-%s\">`%s`</a>"
-     (slugify path) (name (last path))))
+    (slugify path) (name (last path))))
 
 (defn- print-markdown-toc
   "Print an indented list as a table of contents. Descend recursively."
   [node level]
-  (doseq [[key {:keys [path metadata] :as value}] node]
-    (let [is-param (spec/valid? ::base/parameter-spec value)]
-      (when (not (= key :metadata))
-        (println
-          (str (string/join "" (repeat level "    ")) "-")
-          (format (get value :heading-template (default-doc-heading is-param))
-                  (link-to-anchor (if is-param path (:path metadata))))))
-      (if (not is-param)
+  (doseq [[key {::base/keys [metadata] :as value}] node]
+    (when-not (= key ::base/metadata)
+      (let [{:keys [path]} metadata]
+        (println (str (string/join "" (repeat level "    ")) "-")
+                 (compose-heading metadata (link-to-anchor path)))
         (print-markdown-toc value (inc level))))))
 
 (defn- print-markdown-fragment
   "Print a description of a node in the settings structure using Markdown."
   [node level]
-  (let [heading-style
-          (fn [text]
-            (if (< level 7)  ; Markdown only supports up to h6 tags.
-              (str (string/join "" (repeat level "#")) " " text)
-              (str "###### " text " at level " level)))]
-    (doseq [[key {:keys [path help metadata] :as value}] node]
-      (let [is-param (spec/valid? ::base/parameter-spec value)]
-        (when (not (= key :metadata))
-          (println)
-          (println
-            (heading-style
-              (format
-                (get value :heading-template (default-doc-heading is-param))
-                (target-anchor (if is-param path (:path metadata))))))
-          (println)
-          (println (or (if is-param help (:help metadata)) "Undocumented.")))
-        (if (not is-param)
-          (print-markdown-fragment value (inc level)))))))
+  (doseq [[key {::base/keys [metadata] :as value}] node]
+    (let [{:keys [help leaf path]} metadata]
+      (when-not (= key ::base/metadata)
+        (println)
+        (println
+          (heading-style level (compose-heading metadata (target-anchor path))))
+        (when-not (zero? (count help)) (println) (println help))
+        (when-not leaf (print-markdown-fragment value (inc level)))))))
 
 
 ;;;;;;;;;;;;;;;

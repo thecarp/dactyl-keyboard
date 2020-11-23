@@ -20,7 +20,7 @@
     "and position of any individual cluster of keys. One set of such "
     "options will exist for each entry in `key-clusters`, a section "
     "documented [here](options-main.md)."]
-   [:parameter [:matrix-columns]
+   [[:matrix-columns]
     {:default [{}]
      :parse-fn vec
      :validate [(spec/coll-of ::valid/column-disposition)]}
@@ -57,7 +57,7 @@
     "on. On the left-hand side of a keyboard with `main-body` → `reflect`, "
     "main-body key clusters are mirrored so that `[0, 0]` will be G instead "
     "of H in QWERTY, `[1, 0]` will be F instead of J, and so on."]
-   [:parameter [:style]
+   [[:style]
     {:default :standard :parse-fn keyword :validate [::valid/cluster-style]}
     "Cluster layout style. One of:\n\n"
     "- `standard`: Both columns and rows have the same type of curvature "
@@ -65,7 +65,7 @@
     "- `orthographic`: Rows are curved somewhat differently. This creates "
     "more space between columns and may prevent key mounts from fusing "
     "together if you have a broad matrix."]
-   [:parameter [:aliases]
+   [[:aliases]
     {:default {}
      :parse-fn (parse/map-of keyword
                               (parse/tuple-of parse/keyword-or-integer))
@@ -73,7 +73,7 @@
                              (spec/coll-of ::valid/flexcoord :count 2))]}
     "A map of short names to specific keys by coordinate pair. "
     "These names can be used as anchors for other features."]
-   [:parameter [:anchoring]
+   [[:anchoring]
     anch/anchoring-metadata
     "Where to place the cluster. "
     stock/anchoring-documentation]])

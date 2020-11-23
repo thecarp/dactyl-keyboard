@@ -22,14 +22,14 @@
     "When present, a central housing naturally determines the position of each "
     "other part of the keyboard: Key clusters on each side of the "
     "main body should be anchored to points on the central housing."]
-   [:parameter [:include]
+   [[:include]
     {:default false :parse-fn boolean}
     "If this and `main-body` → `reflect` are both true, add a central housing."]
-   [:parameter [:preview]
+   [[:preview]
     {:default false :parse-fn boolean}
     "If `true`, include the central housing when rendering each half of the "
     "main body of the keyboard."]
-   [:section [:shape]
+   [[:shape]
     "The shape of the central housing determines, in part, how it connects "
     "to the rest of the keyboard, including the general shape of an optional "
     "adapter. "
@@ -45,13 +45,13 @@
     "The adapters are the gables on either side of a particular house, "
     "up against which two others house are built: The two mirrored halves of "
     "the main body."]
-   [:parameter [:shape :width]
+   [[:shape :width]
     {:default 1 :parse-fn num}
     "The approximate extent of the housing itself, on the x axis, in mm."]
-   [:parameter [:shape :thickness]
+   [[:shape :thickness]
     {:default 1 :parse-fn num}
     "The thickness of the housing and its adapter (if any), in mm."]
-   [:parameter [:shape :interface]
+   [[:shape :interface]
     {:default [] :parse-fn parse/central-housing-interface
      :validate [::valid/central-housing-interface]}
     "The `interface` setting is essentially a list of points: "
@@ -184,57 +184,57 @@
     "interface. They are intended as anchors for key clusters and tweaks, "
     "where their responsiveness to width alone comes in handy as you work out "
     "the precise shape of the housing."]
-   [:section [:adapter]
+   [[:adapter]
     "The central housing can connect to key clusters through an adapter: "
     "A part that is shaped like the central housing and extends the "
     "rest of the case to meet the central housing at an interface.\n\n"
     "Using `tweaks`, points on the adapter should be connected to key "
     "cluster walls to close the case around the adapter but leave the adapter "
     "itself open."]
-   [:parameter [:adapter :include]
+   [[:adapter :include]
     {:default false :parse-fn boolean}
     "If this is `true`, add an adapter for the central housing."]
-   [:parameter [:adapter :width]
+   [[:adapter :width]
     {:default 1 :parse-fn num}
     "The approximate width of the adapter on each side of the central housing, "
     "along its axis (the x axis). Individual points on the adapter can be "
     "offset from this width using the `interface` list."]
-   [:section [:adapter :lip]
+   [[:adapter :lip]
     "To stabilize the connection between the central housing and the adapter, "
     "the interface between them can include an interior lip."]
-   [:parameter [:adapter :lip :include]
+   [[:adapter :lip :include]
     {:default false :parse-fn boolean}
     "If `true`, attach a lip to the central housing."]
-   [:parameter [:adapter :lip :thickness]
+   [[:adapter :lip :thickness]
     {:default 1 :parse-fn num}
     "The thickness of the lip at each point along it, in mm."]
-   [:section [:adapter :lip :width]
+   [[:adapter :lip :width]
     "The lip extends in both directions from the edge of the central housing: "
     "Both into the adapter (the “outer” part) and into the housing itself "
     "(the “inner” part), where it grows out of the inner wall with an optional "
     "taper. The total width of the lip is the sum of all these sections."]
-   [:parameter [:adapter :lip :width :outer]
+   [[:adapter :lip :width :outer]
     {:default 1 :parse-fn num}
     "The distance the lip protrudes outside the central housing and thence "
     "into the adapter, in mm."]
-   [:parameter [:adapter :lip :width :inner]
+   [[:adapter :lip :width :inner]
     {:default 1 :parse-fn num}
     "The width of the lip inside the central housing, before it starts to "
     "taper, in mm."]
-   [:parameter [:adapter :lip :width :taper]
+   [[:adapter :lip :width :taper]
     {:default 0 :parse-fn num}
     "The width of a taper from the inner portion of the lip to the inner "
     "wall of the central housing, in mm.\n\n"
     "The default value, zero, produces a right-angled transition. The higher "
     "the value, the more gentle the transition becomes."]
-   [:section [:adapter :fasteners]
+   [[:adapter :fasteners]
     "To connect the central housing and the adapter, threaded fasteners "
     "can be driven through the wall of either, into receivers extending "
     "from the other."]
-   [:parameter [:adapter :fasteners :bolt-properties]
+   [[:adapter :fasteners :bolt-properties]
     stock/implicit-threaded-bolt-metadata
     stock/threaded-bolt-documentation]
-   [:parameter [:adapter :fasteners :positions]
+   [[:adapter :fasteners :positions]
     {:default []
      :parse-fn parse/central-housing-normal-positions
      :validate [::valid/central-housing-normal-positions]}
@@ -285,59 +285,59 @@
     "This feature may help resolve problems with sloping adapters or other "
     "obstacles, but consider it experimental. More detailed overrides for "
     "placement may be introduced in a future version, if they are needed."]
-   [:section [:adapter :receivers]
+   [[:adapter :receivers]
     "One receiver is created for each of the `fasteners`. Each of these "
     "has a threaded hole to keep the fastener in place. Like the adapter lip, "
     "receivers extend from the inside wall, but receivers are anchored across "
     "the interface from their respective fasteners: A positive "
     "`axial-offset`, above, extends a receiver from the central housing "
     "into the adapter."]
-   [:section [:adapter :receivers :thickness]
+   [[:adapter :receivers :thickness]
     "The thickness of material in various parts of each receiver."]
-   [:parameter [:adapter :receivers :thickness :rim]
+   [[:adapter :receivers :thickness :rim]
     {:default 1 :parse-fn num}
     "The maximum thickness of the loop of each receiver where it grabs the "
     "fastener, in mm."]
-   [:section [:adapter :receivers :thickness :bridge]
+   [[:adapter :receivers :thickness :bridge]
     "The part between the hole and the tapering end, where the receiver "
     "extends axially across the interface."]
-   [:parameter [:adapter :receivers :thickness :bridge :radial]
+   [[:adapter :receivers :thickness :bridge :radial]
     {:default 1 :parse-fn num}
     "The thickness of each receiver in the plane of the housing wall, in mm."]
-   [:parameter [:adapter :receivers :thickness :bridge :tangential]
+   [[:adapter :receivers :thickness :bridge :tangential]
     {:default 1 :parse-fn num}
     "The thickness of each receiver out from the housing wall, in mm. "
     "This is bounded by the depth of the screw hole."]
-   [:section [:adapter :receivers :width]
+   [[:adapter :receivers :width]
     "This section is analogous to lip `width`. The “outer” width of "
     "each receiver is a function of its fastener’s lateral offset and cannot "
     "be configured here."]
-   [:parameter [:adapter :receivers :width :inner]
+   [[:adapter :receivers :width :inner]
     {:default 1 :parse-fn num}
     "The width of the receiver at its base, before it starts to taper, in mm."]
-   [:parameter [:adapter :receivers :width :taper]
+   [[:adapter :receivers :width :taper]
     {:default 0 :parse-fn num}
     "The width of a taper, as with the lip."]
-   [:section [:bottom-plate]
+   [[:bottom-plate]
     "Any bottom plating for the case will extend to the midpoint of the "
     "central housing, on the assumption that bottom-plating anchors will "
     "be used to attach it there."]
-   [:section [:bottom-plate :projections]
+   [[:bottom-plate :projections]
     "To facilitate printing a central housing standing on its edge, or to add "
     "strength, you can extend bottom-plating anchors onto the nearest wall, "
     "via a convex hull of each anchor and its projection. The result is an "
     "internal chamfer resembling a primitive fillet."]
-   [:parameter [:bottom-plate :projections :include]
+   [[:bottom-plate :projections :include]
     {:default false :parse-fn boolean}
     "If `true`, extend each bottom-plating anchor."]
-   [:parameter [:bottom-plate :projections :scale]
+   [[:bottom-plate :projections :scale]
     {:default [1 1] :parse-fn vec :validate [::tarmi-core/point-2d]}
     "The scale of each projection, as a 2-tuple of horizontal and vertical "
     "factors. The horizontal factor controls the width of the projection and "
     "the vertical factor its height. The length of the projection is fixed "
     "at the distance between the center of the anchor and the outermost "
     "part of its shell."]
-   [:parameter [:bottom-plate :fastener-positions]
+   [[:bottom-plate :fastener-positions]
     {:default []
      :parse-fn (parse/tuple-of anch/parse-anchoring)
      :validate [(spec/coll-of anch/validate-anchoring)]}

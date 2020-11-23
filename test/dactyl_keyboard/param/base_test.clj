@@ -5,60 +5,71 @@
             [dactyl-keyboard.param.base :as base]
             [dactyl-keyboard.param.schema.parse :as parse]))
 
+;; Shortcut.
+(def m ::base/metadata)
+
+;; Intermediate metadata templates.
+(def leaf {:leaf true, :path [::placeholder], :help "No help."})
+(def branch (assoc leaf :leaf false))
+
 (deftest test-parameter-spec
   (testing "empty"
-    (is (= (spec/valid? ::base/parameter-spec {}) true)))
+    (is (= (spec/valid? ::base/raw {}) true)))
   (testing "default only"
-    (is (= (spec/valid? ::base/parameter-spec {:default 1}) true)))
+    (is (= (spec/valid? ::base/raw {:default 1}) true)))
+  (testing "type error"
+    (is (= (spec/valid? ::base/raw {:freely-keyed "true"}) false)))
   (testing "non-reserved keyword"
-    (is (= (spec/valid? ::base/parameter-spec {:a 1}) false)))
-  (testing "nested"
-    (is (= (spec/valid? ::base/parameter-spec {:k {:default 1}}) false))))
+    (is (= (spec/valid? ::base/raw {:k 1}) true))))
 
 (deftest test-parse-leaf
   (testing "simple"
-    (is (= (base/parse-leaf {:parse-fn int} 2) 2)))
+    (is (= (base/parse-leaf {m {:leaf true :parse-fn int}} 2) 2)))
   (testing "default where nil"
-    (is (= (base/parse-leaf {:default 3} nil) 3)))
+    (is (= (base/parse-leaf {m {:leaf true :default 3}} nil) 3)))
   (testing "parsing as keyword"
-    (is (= (base/parse-leaf {:parse-fn keyword} "s") :s))))
+    (is (= (base/parse-leaf {m {:leaf true :parse-fn keyword}} "s") :s))))
 
 (deftest test-validate-leaf
   (testing "validation, no validator available"
-    (is (= (base/validate-leaf {:validate []} 1) nil))
-    (is (= (base/validate-leaf {} 1) nil))
-    (is (= (base/validate-leaf {} nil) nil)))
+    (is (= (base/validate-leaf {m {:leaf true :validate []}} 1) nil))
+    (is (= (base/validate-leaf {m {:leaf true}} 1) nil))
+    (is (= (base/validate-leaf {m {:leaf true}} nil) nil)))
   (testing "validation, negative for error"
-    (is (= (base/validate-leaf {:validate [(partial = 1)]} 1) nil)))
+    (is (= (base/validate-leaf {m {:leaf true :validate [(partial = 1)]}} 1) nil)))
   (testing "validation, positive for error"
     (is (thrown-with-msg? clojure.lang.ExceptionInfo #"Value out of range"
-          (base/validate-leaf {:validate [(partial = 1)]} 2)))))
+          (base/validate-leaf {m {:leaf true :validate [(partial = 1)]}} 2)))))
 
 (deftest test-parse-branch
   (testing "type error"
     (is (thrown-with-msg? clojure.lang.ExceptionInfo #"Non-mapping section"
-          (base/parse-branch base/inclusive-or {:k {:default 2}} [:k 1])))))
+          (base/parse-inclusively {:k {:leaf true :default 2}} [:k 1])))))
 
 (deftest test-parse-node
   (testing "simple"
-    (is (= (base/parse-node base/inclusive-or
-             {:k {:default 2}}
+    (is (= (base/parse-inclusively
+             {:k {m (assoc leaf :default 2)}}
+             {:k 1})
+           {:k 1}))
+    (is (= (base/parse-inclusively
+             {:k {m (assoc leaf :default 2)}}
              {:k 1}
-             :k)
-           {:k 1})))
+             :k)  ; Hit the leaf directly.
+           1)))   ; Get just the value of the leaf.
   (testing "default value in absence of candidate"
-    (is (= (base/parse-node base/inclusive-or
-             {:k {:default 2}}
-             {}
-             :k)
+    (is (= (base/parse-inclusively
+             {:k {m (assoc leaf :default 2)}}
+             {})
            {:k 2}))))
 
 (deftest test-consume-branch
   (testing "nested asymmetric master with empty input"
     (is (= (base/consume-branch
-             {:k0 {:k0a {:default 1}
-                   :k0b {:default 2}}
-              :k1 {:default 3}}
+             {:k0 {m branch
+                   :k0a {m (assoc leaf :default 1)}
+                   :k0b {m (assoc leaf :default 2)}}
+              :k1 {m (assoc leaf :default 3)}}
              {})
            {:k0 {:k0a 1
                  :k0b 2}
@@ -66,26 +77,23 @@
   (testing "nested and ordered"
     (let [om ordered-map]
       (is (= (base/consume-branch
-               (om :k0 (om :k0a (om :default 1)
-                           :k0b (om :default 2)))
+               (om :k0 (om m branch
+                           :k0a {m (assoc leaf :default 1)}
+                           :k0b {m (assoc leaf :default 2)}))
                (om :k0 (om :k0b 3)))
              (om :k0 (om :k0a 1
                          :k0b 3)))))))
 
 (deftest test-closures
   (let [om ordered-map
-        raws
-          [["Configuration."]
-           [:section [:a]
-            "A."]
-           [:parameter [:a :b]
-            {:default 1}
-            "B."]]
+        raws [["Configuration."]
+              [[:a] "A."]  ; A section.
+              [[:a :b] {:default 1} "B."]]  ; A parameter.
         inflated (base/inflate raws)]
     (testing "inflation"
       (is (= inflated
-             (om :a (om :metadata {:path [:a], :help "A."}
-                        :b {:default 1, :path [:a :b], :help "B."})))))
+             (om :a {m {:leaf false, :path [:a], :help "A."}
+                     :b {m {:leaf true, :default 1, :path [:a :b], :help "B."}}}))))
     (testing "parsing with defaults and no input"
       (is (= ((base/parser-with-defaults raws)
               {})
@@ -99,9 +107,9 @@
   (let [om ordered-map
         sub-raws
           [["Subordinate configuration."]
-           [:section [:b]
+           [[:b]
             "Subordinate A."]
-           [:parameter [:b :p]
+           [[:b :p]
             {:default 0
              :validate [number?]}
             "Subordinate P."]]
@@ -110,7 +118,7 @@
         sub-validator (base/delegated-validation sub-raws)
         sup-raws
           [["Superordinate configuration."]
-           [:parameter [:x]
+           [[:x]
             {:default sub-defaults
              :parse-fn sub-parser
              :validate [sub-validator]}
@@ -118,11 +126,12 @@
         inflated (base/inflate sup-raws)]
     (testing "inflation of nested structure"
       (is (= inflated
-             (om :x {:path [:x]
-                     :default {:b {:p 0}},
-                     :parse-fn sub-parser,
-                     :validate [sub-validator]
-                     :help "Superordinate P."}))))
+             (om :x {m {:leaf true
+                        :path [:x]
+                        :default {:b {:p 0}},
+                        :parse-fn sub-parser,
+                        :validate [sub-validator]
+                        :help "Superordinate P."}}))))
     (testing "parsing nested structure with defaults and no input"
       (is (= ((base/parser-with-defaults sup-raws)
               {})
@@ -142,47 +151,45 @@
 
 (deftest test-collection-delegation
   (let [om ordered-map
-        sub-raws
-          [["Subordinate configuration."]
-           [:section [:s]
-            "Section."]
-           [:parameter [:s :p0]
-            {:default -1
-             :validate [number?]}
-            "Parameter."]
-           [:parameter [:s :p1]
-            {:default [:v]
-             :validate [(spec/coll-of keyword?)]}
-            "Parameter."]]
+        sub-raws [["Subordinate configuration."]
+                  [[:s]
+                   "Section."]
+                  [[:s :p0]
+                   {:default -1, :validate [number?]}
+                   "Parameter."]
+                  [[:s :p1]
+                   {:default [:v], :validate [(spec/coll-of keyword?)]}
+                   "Parameter."]]
         sub-parser (parse/tuple-of (base/parser-with-defaults sub-raws))
         alt-parser (parse/tuple-of (base/parser-wo-defaults sub-raws))
         sub-validator (spec/coll-of (base/delegated-validation sub-raws))
-        sup-raws
-          [["Superordinate configuration."]
-           [:parameter [:x]
-            {:default []
-             :parse-fn sub-parser
-             :validate [sub-validator]}
-            "X."]
-           [:parameter [:y]
-            {:default []
-             :parse-fn alt-parser
-             :validate [sub-validator]}
-            "Y."]]
+        sup-raws [["Superordinate configuration."]
+                  [[:x]
+                   {:default []
+                    :parse-fn sub-parser
+                    :validate [sub-validator]}
+                   "X."]
+                  [[:y]
+                   {:default []
+                    :parse-fn alt-parser
+                    :validate [sub-validator]}
+                   "Y."]]
         inflated (base/inflate sup-raws)
         consume (partial base/consume-branch inflated)]
-    (testing "inflation of nested list structure"
-      (is (= inflated
-             (om :x {:path [:x]
-                     :default [],
-                     :parse-fn sub-parser
-                     :validate [sub-validator]
-                     :help "X."}
-                 :y {:path [:y]
-                     :default [],
-                     :parse-fn alt-parser
-                     :validate [sub-validator]
-                     :help "Y."}))))
+    (testing "inflation of nested list structure")
+    (is (= inflated
+           (om :x {m {:leaf true
+                      :path [:x]
+                      :default [],
+                      :parse-fn sub-parser
+                      :validate [sub-validator]
+                      :help "X."}}
+               :y {m {:leaf true
+                      :path [:y]
+                      :default [],
+                      :parse-fn alt-parser
+                      :validate [sub-validator]
+                      :help "Y."}})))
     (testing "parsing nested list item with simple parameter"
       (is (= (consume {:x [{:s {:p0 1}}]})
              {:x [{:s {:p0 1, :p1 [:v]}}]

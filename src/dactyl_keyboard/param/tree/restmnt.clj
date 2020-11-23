@@ -22,20 +22,20 @@
     "of wrist rest, a parameter documented [here](options-main.md). "
     "Each block in the pair is part of a different body: One is part of the "
     "wrist rest, and the other a “partner” body."]
-   [:section [:fasteners]
+   [[:fasteners]
     "Threaded fasteners in the mount."]
-   [:parameter [:fasteners :amount]
+   [[:fasteners :amount]
     {:default 1 :parse-fn int}
     "The number of vertically stacked screws in the mount. 1 by default."]
-   [:parameter [:fasteners :bolt-properties]
+   [[:fasteners :bolt-properties]
     stock/implicit-threaded-bolt-metadata
     stock/threaded-bolt-documentation]
-   [:parameter [:fasteners :heights]
+   [[:fasteners :heights]
     {:default [] :parse-fn vec :validate [(spec/coll-of number?)]}
     "A list of heights in mm, above the ground level. "
     "Each number describes the level of a set of fasteners: The centre of one "
     "threaded rod and any nuts etc. attaching it."]
-   [:parameter [:authority]
+   [[:authority]
     {:default :partner-side
      :parse-fn keyword
      :validate [::valid/wrist-position-style]}
@@ -47,50 +47,50 @@
     "- `mutual`: The `angle` and `distance` parameters are ignored. Each "
     "block is anchored independently. The angle and distance between the "
     "blocks determines the angle of the fasteners."]
-   [:parameter [:angle]
+   [[:angle]
     {:default 0 :parse-fn parse/compass-compatible-angle}
     "The angle in radians of the mount, on the xy plane, counter-clockwise "
     "from the y axis. This parameter is only used with `partner-side` anchoring."]
-   [:section [:blocks]
+   [[:blocks]
     "Blocks for anchoring threaded fasteners."]
-   [:parameter [:blocks :distance]
+   [[:blocks :distance]
     {:default 0 :parse-fn num}
     "The distance in mm between the two posts in a mount. "
     "This parameter is only used with `partner-side` authority."]
-   [:parameter [:blocks :width]
+   [[:blocks :width]
     {:default 1 :parse-fn num}
     "The width in mm of each block that will hold a fastener."]
-   [:section [:blocks :partner-side]
+   [[:blocks :partner-side]
     "A block on the side of the partner body is mandatory."]
-   [:parameter [:blocks :partner-side :body]
+   [[:blocks :partner-side :body]
     {:default :auto :parse-fn keyword :validate [::valid/body]}
     "A code identifying the [body](configuration.md) that houses the block."]
-   [:parameter [:blocks :partner-side :anchoring]
+   [[:blocks :partner-side :anchoring]
     anch/anchoring-metadata
     "Where on the ground to place the block. "
     stock/anchoring-documentation]
-   [:parameter [:blocks :partner-side :depth]
+   [[:blocks :partner-side :depth]
     {:default 1 :parse-fn num}
     "The thickness of the block in mm along the axis of the fastener(s)."]
-   [:section [:blocks :wrist-side]
+   [[:blocks :wrist-side]
     "A block on the side of the wrist rest."]
-   [:parameter [:blocks :wrist-side :anchoring]
+   [[:blocks :wrist-side :anchoring]
     anch/anchoring-metadata
     "Where on the ground to place the block, as for the partner side. "
     "This entire section is ignored with `partner-side` authority."]
-   [:parameter [:blocks :wrist-side :depth]
+   [[:blocks :wrist-side :depth]
     {:default 1 :parse-fn num}
     "The thickness of the mount in mm along the axis of the fastener(s)."]
-   [:section [:aliases]
+   [[:aliases]
     "Short names for different parts of the mount, for use elsewhere in "
     "the application."]
-   [:parameter [:aliases :blocks]
+   [[:aliases :blocks]
     {:default {}
      :parse-fn (parse/map-of keyword keyword)
      :validate [(spec/map-of ::valid/alias ::valid/wrist-block)]}
     "A map of short names to specific blocks as such, i.e. `partner-side` or "
     "`wrist-side`."]
-   [:parameter [:aliases :nuts]
+   [[:aliases :nuts]
     {:default {}
      :parse-fn (parse/map-of keyword (parse/tuple-of parse/keyword-or-integer))
      :validate [(spec/map-of ::valid/alias

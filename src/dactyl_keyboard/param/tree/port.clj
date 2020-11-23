@@ -42,23 +42,23 @@
     "\n"
     "Notice ports attached directly to microcontroller "
     "boards are treated in the `mcu` section, not here."]
-   [:parameter [:include]
+   [[:include]
     {:default false :parse-fn boolean :validate [::valid/include]}
     "If `true`, include the port. The main use of this option is for "
     "disabling ports defined in other configuration files. "
     "The default value is `false` for consistency with other inclusion "
     "parameters."]
-   [:parameter [:body]
+   [[:body]
     {:default :auto :parse-fn keyword :validate [::valid/body]}
     "A code identifying the [body](configuration.md) in which the port is cut."]
-   [:parameter [:type]
+   [[:type]
     {:default :custom :parse-fn keyword
      :validate [(set (conj (keys cots/port-facts) :custom))]}
     "A code identifying a common type of port. "
     "The following values are recognized.\n\n"
     "* `custom`, meaning that `size` (below) will take effect.\n"
     (cots/support-list cots/port-facts)]
-   [:parameter [:size]
+   [[:size]
     {:default 1 :parse-fn parse/pad-to-3-tuple
      :validate [::tarmi-core/point-3d]}
     "An `[x, y, z]` vector specifying the size of the port in mm. "
@@ -68,31 +68,31 @@
     "shape, get as close as possible with `tweaks`, then make your own "
     "adapter and/or widen the socket with a soldering iron or similar "
     "tools to fit a more complex object."]
-   [:section [:alignment]
+   [[:alignment]
     "How the port lines itself up at its position."]
-   [:parameter [:alignment :segment]
+   [[:alignment :segment]
     {:default 0, :validate [#{0 1 2}]}
     "Which vertical segment of the port itself to place at its anchor. "
     "The default value here is 0, meaning the ceiling of the port."]
-   [:parameter [:alignment :side]
+   [[:alignment :side]
     {:default :N, :parse-fn keyword, :validate [compass/all]}
     "Which wall or corner of the port itself to place at its anchor. "
     "The default value here is `N` (nominal north), which is the open face "
     "of the port."]
-   [:parameter [:anchoring]
+   [[:anchoring]
     anch/anchoring-metadata
     "Where to place the port. "
     stock/anchoring-documentation]
-   [:section [:holder]
+   [[:holder]
     "A map describing a positive addition to the case on five "
     "sides of the port: Every side but the front."]
-   [:parameter [:holder :include]
+   [[:holder :include]
     {:default false :parse-fn boolean :validate [::valid/include]}
     "If `true`, build a wall around the port."]
-   [:parameter [:holder :alias]
+   [[:holder :alias]
     stock/alias-metadata
     "A name for the holder, to allow anchoring other features to it."]
-   [:parameter [:holder :thickness]
+   [[:holder :thickness]
     {:default 1 :parse-fn num :validate [::valid/thickness]}
     "A number specifying the thickness of the holder’s wall on each side, "
     "in mm."]])

@@ -46,14 +46,14 @@
     "Each heading in this document represents a recognized configuration key "
     "in the main body of a YAML file for a DMOTE variant. Other documents "
     "cover special sections of this one in more detail."]
-   [:section [:keys]
+   [[:keys]
     "Keys, that is keycaps and electrical switches, are not the main focus of "
     "this application, but they influence the shape of the case."]
-   [:parameter [:keys :preview]
+   [[:keys :preview]
     {:default false :parse-fn boolean}
     "If `true`, include models of the keycaps in place on the keyboard. This "
     "is intended for illustration as you work on a design, not for printing."]
-   [:parameter [:keys :styles]
+   [[:keys :styles]
     {:default {:default {}} :parse-fn parse/keycap-map
      :validate [(spec/map-of keyword? ::capschema/keycap-parameters)]}
     "Here you name all the styles of keys on the keyboard and describe each "
@@ -71,8 +71,8 @@
     "\n"
     "In options by key, documented [here](options-nested.md), you specify "
     "which style of key is used for each position on the keyboard."]
-   [:parameter [:key-clusters]
-    {:heading-template "Special section %s"
+   [[:key-clusters]
+    {:freely-keyed true
      :default {:main {:matrix-columns [{:rows-below-home 0}]
                       :aliases {}}}
      :parse-fn (parse/map-of keyword
@@ -83,7 +83,7 @@
     "This section describes the general size, shape and position of "
     "the clusters of keys on the keyboard, each in its own subsection. "
     "It is documented in detail [here](options-clusters.md)."]
-   [:parameter [:by-key]
+   [[:by-key]
     {:heading-template "Special section %s"
      :default {:parameters (base/extract-defaults nested/raws)}
      :parse-fn (parse/nested-key-fn (base/parser-wo-defaults nested/raws) 5)
@@ -93,7 +93,7 @@
     "Each level within controls a smaller part of the keyboard, "
     "eventually reaching the level of specific sides of individual keys. "
     "It’s all documented [here](options-nested.md)."]
-   [:parameter [:secondaries]
+   [[:secondaries]
     {:default {}
      :parse-fn (parse/map-of keyword
                              (parse/map-like
@@ -132,13 +132,13 @@
     "omitted, tweaks fall back still further, to a tiny point.\n"
     "\n"
     "All of these properties are optional."]
-   [:section [:main-body]
+   [[:main-body]
     "The main body of the keyboard is the main output of this application. "
     "It may be the only body. "
     "Much of this part of the case is generated from the `wall` parameters "
     "described [here](options-nested.md). "
     "This section deals with lesser features of the main body."]
-   [:parameter [:main-body :reflect]
+   [[:main-body :reflect]
     {:default false :parse-fn boolean}
     "If `true`, mirror the main body, producing one version for the right hand "
     "and another for the left. The two halves will be almost identical: "
@@ -148,73 +148,73 @@
     "halves are typically connected by a signalling cable, by a rigid "
     "`central-housing`, or by one or more rods anchored to "
     "some feature such as `rear-housing` or `back-plate`."]
-   [:section [:main-body :rear-housing]
+   [[:main-body :rear-housing]
     "The furthest row of a key cluster can be extended into a rear housing "
     "for the MCU and various other features."]
-   [:parameter [:main-body :rear-housing :include]
+   [[:main-body :rear-housing :include]
     {:default false :parse-fn boolean}
     "If `true`, add a rear housing to the main body."]
-   [:parameter [:main-body :rear-housing :anchoring]
+   [[:main-body :rear-housing :anchoring]
     anch/anchoring-metadata
     "Where to place the middle of the rear housing. "
     stock/anchoring-documentation]
-   [:parameter [:main-body :rear-housing :size]
+   [[:main-body :rear-housing :size]
     {:default 1 :parse-fn parse/pad-to-3-tuple
      :validate [::tarmi-core/point-3d]}
     "The exterior measurements of the rear housing, in mm."]
-   [:section [:main-body :rear-housing :bevel]
+   [[:main-body :rear-housing :bevel]
     "The rear housing can be bevelled."]
-   [:parameter [:main-body :rear-housing :bevel :exterior]
+   [[:main-body :rear-housing :bevel :exterior]
     {:default 0 :parse-fn num}
     "Insets from the specified `size` in mm for the exterior of the housing."]
-   [:parameter [:main-body :rear-housing :bevel :interior]
+   [[:main-body :rear-housing :bevel :interior]
     {:default 0 :parse-fn num}
     "Insets from the specified `size`, minus thickness, in mm, for the "
     "interior of the housing.\n\n"
     "This is separate from the exterior bevel parameter because it can help "
     "with DFM. A higher setting here can reduce the need for internal print "
     "supports."]
-   [:section [:main-body :rear-housing :thickness]
+   [[:main-body :rear-housing :thickness]
     "The thickness of the rear housing does not influence its external "
     "dimensions. It grows inward."]
-   [:parameter [:main-body :rear-housing :thickness :walls]
+   [[:main-body :rear-housing :thickness :walls]
     {:default 1 :parse-fn num}
     "The horizontal thickness in mm of the walls."]
-   [:parameter [:main-body :rear-housing :thickness :roof]
+   [[:main-body :rear-housing :thickness :roof]
     {:default 1 :parse-fn num}
     "The vertical thickness in mm of the flat top, inside the insets for "
     "bevels."]
-   [:section [:main-body :rear-housing :fasteners]
+   [[:main-body :rear-housing :fasteners]
     "Threaded bolts can run through the roof of the rear housing, making it a "
     "hardpoint for attachments like a stabilizer to connect the two halves of "
     "a split keyboard."]
-   [:parameter [:main-body :rear-housing :fasteners :bolt-properties]
+   [[:main-body :rear-housing :fasteners :bolt-properties]
     stock/implicit-threaded-bolt-metadata
     stock/threaded-bolt-documentation]
-   [:parameter [:main-body :rear-housing :fasteners :bosses]
+   [[:main-body :rear-housing :fasteners :bosses]
     {:default false :parse-fn boolean}
     "If `true`, add nut bosses to the ceiling of the rear housing for each "
     "fastener. Space permitting, these bosses will have some play on the "
     "north-south axis, to permit adjustment of the angle of the keyboard "
     "halves under a stabilizer."]
-   [:section [:main-body :rear-housing :fasteners :sides]
+   [[:main-body :rear-housing :fasteners :sides]
     "Analogous but independent parameters for the west and east sides."]
-   [:section [:main-body :rear-housing :fasteners :sides :W]
+   [[:main-body :rear-housing :fasteners :sides :W]
     "The west: A fastener on the inward-facing end of the rear housing."]
-   [:parameter [:main-body :rear-housing :fasteners :sides :W :include]
+   [[:main-body :rear-housing :fasteners :sides :W :include]
     {:default false :parse-fn boolean}
     "If `true`, include this fastener."]
-   [:parameter [:main-body :rear-housing :fasteners :sides :W :offset]
+   [[:main-body :rear-housing :fasteners :sides :W :offset]
     {:default 0 :parse-fn num}
     "A one-dimensional offset in mm from the inward edge of the rear "
     "housing to the fastener. You probably want a negative number if any."]
-   [:section [:main-body :rear-housing :fasteners :sides :E]
+   [[:main-body :rear-housing :fasteners :sides :E]
     "The east: A fastener on the outward-facing end of the rear housing."]
-   [:parameter [:main-body :rear-housing :fasteners :sides :E :include]
+   [[:main-body :rear-housing :fasteners :sides :E :include]
     {:default false :parse-fn boolean}]
-   [:parameter [:main-body :rear-housing :fasteners :sides :E :offset]
+   [[:main-body :rear-housing :fasteners :sides :E :offset]
     {:default 0 :parse-fn num}]
-   [:section [:main-body :back-plate]
+   [[:main-body :back-plate]
     "Given that independent movement of each half of a split keyboard is not "
     "useful, each half can include a mounting plate for a stabilizing rod. "
     "That is a straight piece of wood, aluminium, rigid plastic etc. to "
@@ -224,31 +224,31 @@
     "provides no interior space for an MCU etc. It is solid, with holes "
     "for threaded fasteners including the option of nut bosses. "
     "Its footprint is not part of a `bottom-plate`."]
-   [:parameter [:main-body :back-plate :include]
+   [[:main-body :back-plate :include]
     {:default false :parse-fn boolean}
     "If `true`, include a back plate block. This is not contingent upon "
     "`reflect`."]
-   [:parameter [:main-body :back-plate :beam-height]
+   [[:main-body :back-plate :beam-height]
     {:default 1 :parse-fn num}
     "The nominal vertical extent of the back plate in mm. "
     "Because the plate is bottom-hulled to the floor, the effect "
     "of this setting is on the area of the plate above its holes."]
-   [:section [:main-body :back-plate :fasteners]
+   [[:main-body :back-plate :fasteners]
     "Two threaded bolts run through the back plate."]
-   [:parameter [:main-body :back-plate :fasteners :bolt-properties]
+   [[:main-body :back-plate :fasteners :bolt-properties]
     stock/implicit-threaded-bolt-metadata
     stock/threaded-bolt-documentation]
-   [:parameter [:main-body :back-plate :fasteners :distance]
+   [[:main-body :back-plate :fasteners :distance]
     {:default 1 :parse-fn num}
     "The horizontal distance between the bolts."]
-   [:parameter [:main-body :back-plate :fasteners :bosses]
+   [[:main-body :back-plate :fasteners :bosses]
     {:default false :parse-fn boolean}
     "If `true`, cut nut bosses into the inside wall of the block."]
-   [:parameter [:main-body :back-plate :anchoring]
+   [[:main-body :back-plate :anchoring]
     anch/anchoring-metadata
     "Where to place the middle of the back plate. "
     stock/anchoring-documentation]
-   [:section [:main-body :bottom-plate]
+   [[:main-body :bottom-plate]
     "A bottom plate can be added to close the case. This is useful mainly to "
     "simplify transportation.\n"
     "\n"
@@ -275,19 +275,19 @@
     "be inadequate. If you require a more exact match, do a projection of the "
     "case without a bottom plate, save it as DXF/SVG etc. and post-process "
     "that file to fill the interior gap."]
-   [:parameter [:main-body :bottom-plate :include]
+   [[:main-body :bottom-plate :include]
     {:default false :parse-fn boolean}
     "If `true`, include a bottom plate for the case."]
-   [:parameter [:main-body :bottom-plate :preview]
+   [[:main-body :bottom-plate :preview]
     {:default false :parse-fn boolean}
     "Preview mode. If `true`, put a model of the plate in the same file as "
     "the case it closes. Not for printing."]
-   [:parameter [:main-body :bottom-plate :combine]
+   [[:main-body :bottom-plate :combine]
     {:default false :parse-fn boolean}
     "If `true`, combine wrist rests for the case and the bottom plate into a "
     "single model, when both are enabled. This is typically used with the "
     "`solid` style of wrest rest."]
-   [:parameter [:main-body :bottom-plate :thickness]
+   [[:main-body :bottom-plate :thickness]
     {:default 1 :parse-fn num}
     "The thickness (i.e. height) in mm of all bottom plates you choose to "
     "include. This covers plates for the case and for the wrist rest.\n"
@@ -295,16 +295,16 @@
     "The case will not be raised to compensate for this. Instead, the height "
     "of the bottom plate will be removed from the bottom of the main model so "
     "that it does not extend to z = 0."]
-   [:section [:main-body :bottom-plate :installation]
+   [[:main-body :bottom-plate :installation]
     "How your bottom plate is attached to the rest of your case."]
-   [:parameter [:main-body :bottom-plate :installation :style]
+   [[:main-body :bottom-plate :installation :style]
     {:default :threads :parse-fn keyword
      :validate [::valid/plate-installation-style]}
     "The general means of installation. This parameter has been reduced to a "
     "placeholder: The only available style is `threads`, signifying the use "
     "of threaded fasteners connecting the bottom plate to anchors in "
     "the body of the keyboard."]
-   [:parameter [:main-body :bottom-plate :installation :dome-caps]
+   [[:main-body :bottom-plate :installation :dome-caps]
     {:default false :parse-fn boolean}
     "If `true`, terminate each anchor with a hemispherical tip. This is "
     "an aesthetic feature, primarily intended for externally visible anchors "
@@ -312,55 +312,55 @@
     "If all of your anchors are completely internal to the case, and/or you "
     "intend to tap the screw holes after printing, dome caps are wasteful at "
     "best and counterproductive at worst."]
-   [:parameter [:main-body :bottom-plate :installation :thickness]
+   [[:main-body :bottom-plate :installation :thickness]
     {:default 1 :parse-fn num}
     "The thickness in mm of each wall of the anchor points for threaded "
     "fasteners."]
-   [:section [:main-body :bottom-plate :installation :inserts]
+   [[:main-body :bottom-plate :installation :inserts]
     "You can use heat-set inserts in the anchor points.\n\n"
     "It is assumed that, as in Tom Short’s Dactyl-ManuForm, the inserts are "
     "largely cylindrical."]
-   [:parameter [:main-body :bottom-plate :installation :inserts :include]
+   [[:main-body :bottom-plate :installation :inserts :include]
     {:default false :parse-fn boolean}
     "If `true`, make space for inserts."]
-   [:parameter [:main-body :bottom-plate :installation :inserts :length]
+   [[:main-body :bottom-plate :installation :inserts :length]
     {:default 1 :parse-fn num}
     "The length in mm of each insert."]
-   [:section [:main-body :bottom-plate :installation :inserts :diameter]
+   [[:main-body :bottom-plate :installation :inserts :diameter]
     "Inserts may vary in diameter across their length."]
-   [:parameter [:main-body :bottom-plate :installation :inserts :diameter :top]
+   [[:main-body :bottom-plate :installation :inserts :diameter :top]
     {:default 1 :parse-fn num}
     "Top diameter in mm."]
-   [:parameter [:main-body :bottom-plate :installation :inserts :diameter :bottom]
+   [[:main-body :bottom-plate :installation :inserts :diameter :bottom]
     {:default 1 :parse-fn num}
     "Bottom diameter in mm. This needs to be at least as large as the top "
     "diameter since the mounts for the inserts only open from the bottom."]
-   [:section [:main-body :bottom-plate :installation :fasteners]
+   [[:main-body :bottom-plate :installation :fasteners]
     "The type and positions of the threaded fasteners used to secure each "
     "bottom plate."]
-   [:parameter [:main-body :bottom-plate :installation :fasteners :bolt-properties]
+   [[:main-body :bottom-plate :installation :fasteners :bolt-properties]
     stock/implicit-threaded-bolt-metadata
     stock/threaded-bolt-documentation]
-   [:parameter [:main-body :bottom-plate :installation :fasteners :positions]
+   [[:main-body :bottom-plate :installation :fasteners :positions]
     {:default []
      :parse-fn (parse/tuple-of anch/parse-anchoring)
      :validate [(spec/coll-of anch/validate-anchoring)]}
     "A list of places where threaded fasteners will connect the bottom plate "
     "to the rest of the case."]
-   [:section [:main-body :leds]
+   [[:main-body :leds]
     "Support for light-emitting diodes in the case walls."]
-   [:parameter [:main-body :leds :include]
+   [[:main-body :leds :include]
     {:default false :parse-fn boolean}
     "If `true`, cut slots for LEDs out of the case wall, facing "
     "the space between the two halves."]
-   [:section [:main-body :leds :position]
+   [[:main-body :leds :position]
     "Where to attach the LED strip."]
-   [:parameter [:main-body :leds :position :cluster]
+   [[:main-body :leds :position :cluster]
     {:default :main :parse-fn keyword :validate [::valid/key-cluster]}
     "The key cluster at which to anchor the strip."]
-   [:parameter [:main-body :leds :amount]
+   [[:main-body :leds :amount]
     {:default 1 :parse-fn int} "The number of LEDs."]
-   [:parameter [:main-body :leds :housing-size]
+   [[:main-body :leds :housing-size]
     {:default 1 :parse-fn num}
     "The length of the side on a square profile used to create negative space "
     "for the housings on a LED strip. This assumes the housings are squarish, "
@@ -369,15 +369,15 @@
     "The negative space is not supposed to penetrate the wall, just make it "
     "easier to hold the LED strip in place with tape, and direct its light. "
     "With that in mind, feel free to exaggerate by 10%."]
-   [:parameter [:main-body :leds :emitter-diameter]
+   [[:main-body :leds :emitter-diameter]
     {:default 1 :parse-fn num}
     "The diameter of a round hole for the light of an LED."]
-   [:parameter [:main-body :leds :interval]
+   [[:main-body :leds :interval]
     {:default 1 :parse-fn num}
     "The distance between LEDs on the strip. You may want to apply a setting "
     "slightly shorter than the real distance, since the algorithm carving the "
     "holes does not account for wall curvature."]
-   [:parameter [:central-housing]
+   [[:central-housing]
     {:heading-template "Section %s"
      :default (base/extract-defaults central/raws)
      :parse-fn (base/parser-with-defaults central/raws)
@@ -385,16 +385,16 @@
     "A major body separate from the main body, located in between and "
     "connecting the two halves of a reflected main body. "
     "The central housing is documented in detail [here](options-central.md)."]
-   [:parameter [:custom-bodies]
+   [[:custom-bodies]
     (let [custom-body
           [[]  ;; This header will not be rendered and is therefore empty.
-           [:parameter [:include]
+           [[:include]
             {:default false :parse-fn boolean}]
-           [:parameter [:parent-body]
+           [[:parent-body]
             {:default :main :parse-fn keyword}]
-           [:parameter [:cut]
+           [[:cut]
             arb/parameter-metadata]]]
-      {:heading-template "Special section %s"
+      {:freely-keyed true
        :default {}
        :parse-fn (parse/map-of keyword (base/parser-with-defaults custom-body))
        :validate [(spec/map-of ::valid/custom-body
@@ -455,28 +455,28 @@
     "\n"
     "If its parent body is governed by `reflect`, the custom body will also "
     "be reflected, appearing in left- and right-hand versions."]
-   [:parameter [:flanges]
+   [[:flanges]
     (let [flange-position
           [[]  ;; This header will not be rendered and is therefore empty.
-           [:parameter [:alias]
+           [[:alias]
             stock/alias-metadata]
-           [:parameter [:body]
+           [[:body]
             {:default :auto :parse-fn keyword :validate [::valid/body]}]
-           [:parameter [:anchoring]
+           [[:anchoring]
             anch/anchoring-metadata]]
           flange-type
           [[]  ;; This header will not be rendered and is therefore empty.
-           [:parameter [:bolt-properties]
+           [[:bolt-properties]
             stock/implicit-threaded-bolt-metadata]
-           [:parameter [:boss-diameter-factor]
+           [[:boss-diameter-factor]
             {:default 1 :parse-fn num}]
-           [:parameter [:positions]
+           [[:positions]
             {:default []
              :parse-fn (parse/tuple-of
                          (base/parser-with-defaults flange-position))
              :validate [(spec/coll-of
                           (base/delegated-validation flange-position))]}]]]
-      {:heading-template "Special section %s"
+      {:freely-keyed true
        :default {}
        :parse-fn (parse/map-of keyword (base/parser-with-defaults flange-type))
        :validate [(spec/map-of ::valid/original
@@ -508,7 +508,7 @@
     "of any custom bodies.\n"
     "- `anchoring` (optional): Room for standard anchoring parameters. "
     stock/anchoring-documentation]
-   [:parameter [:tweaks]
+   [[:tweaks]
     arb/parameter-metadata
     "Additional shapes. This parameter is usually needed to bridge gaps "
     "between the walls of key clusters. The expected value here is a map of "
@@ -536,7 +536,7 @@
     "refer to a custom body, because the shape of a custom body is always "
     "fully determined by its parent body and its cut. Tweaks are not "
     "applied to custom bodies as such."]
-   [:section [:mcu]
+   [[:mcu]
     "MCU is short for ”micro-controller unit”. You need at least one of "
     "these, it’s assumed to be mounted on a PCB, and you typically want some "
     "support for it inside the case.\n\n"
@@ -549,17 +549,17 @@
     " → `central` are all `true`, there is (again) one MCU.\n"
     "* Otherwise, there are two MCUs: One in each half of the case, because "
     "of reflection."]
-   [:parameter [:mcu :include]
+   [[:mcu :include]
     {:default false :parse-fn boolean}
     "If `true`, make space for at least one MCU PCBA."]
-   [:parameter [:mcu :preview]
+   [[:mcu :preview]
     {:default false :parse-fn boolean}
     "If `true`, render a visualization of the MCU PCBA. "
     "For use in development."]
-   [:parameter [:mcu :body]
+   [[:mcu :body]
     {:default :auto :parse-fn keyword :validate [::valid/body]}
     "A code identifying the [body](configuration.md) that houses the MCU."]
-   [:parameter [:mcu :type]
+   [[:mcu :type]
     {:default :promicro :parse-fn keyword
      :validate [(partial contains? cots/mcu-facts)]}
     "A code name for a form factor. "
@@ -567,14 +567,14 @@
     "designs for commercial products from PJRC, SparkFun, the QMK team "
     "and others:\n\n"
     (cots/support-list cots/mcu-facts)]
-   [:parameter [:mcu :anchoring]
+   [[:mcu :anchoring]
     anch/anchoring-metadata
     "Where to place the middle of the back plate. "
     stock/anchoring-documentation " "
     "The PCBA has its base point in the front and rotates around that point. "
     "By default, the PCBA appears lying flat, with the MCU side up and the "
     "connector end facing nominal north, away from the user."]
-   [:section [:mcu :support]
+   [[:mcu :support]
     "This section offers a couple of different, mutually compatible ways to "
     "hold an MCU PCBA in place. Without such support, the MCU will be "
     "rattling around inside the case.\n\n"
@@ -586,11 +586,11 @@
     "Despite the importance of support in most use cases, no MCU support is "
     "included by default. Instead of using the features offered in this "
     "section, consider using `tweaks` anchored to the PCBA instead."]
-   [:parameter [:mcu :support :preview]
+   [[:mcu :support :preview]
     {:default false :parse-fn boolean}
     "If `true`, render a visualization of the support in place. This applies "
     "only to those parts of the support that are not part of the case model."]
-   [:section [:mcu :support :shelf]
+   [[:mcu :support :shelf]
     "The case can include a shelf for the MCU.\n\n"
     "A shelf is the simplest type of MCU support, found on the original "
     "Dactyl-ManuForm. It provides very little mechanical support to hold the "
@@ -600,10 +600,10 @@
     "embedded in the case wall (see `ports`). "
     "It’s especially good with stiff single-strand wiring that will help keep "
     "the MCU in place without a lock or firm grip."]
-   [:parameter [:mcu :support :shelf :include]
+   [[:mcu :support :shelf :include]
     {:default false :parse-fn boolean}
     "If `true`, include a shelf."]
-   [:parameter [:mcu :support :shelf :extra-space]
+   [[:mcu :support :shelf :extra-space]
     {:default [0 0 0] :parse-fn vec :validate [::tarmi-core/point-3d]}
     "Modifiers for the size of the PCB, on all three axes, in mm, for the "
     "purpose of determining the size of the shelf.\n\n"
@@ -611,10 +611,10 @@
     "component side of the PCBA up to the overhang on each side of the shelf, "
     "if any. The MCU will appear centered inside the available space, so this "
     "parameter can move the plane of the shelf itself."]
-   [:parameter [:mcu :support :shelf :thickness]
+   [[:mcu :support :shelf :thickness]
     {:default 1 :parse-fn num :validate [pos?]}
     "The thickness of material in the shelf, below or behind the PCBA, in mm."]
-   [:parameter [:mcu :support :shelf :bevel]
+   [[:mcu :support :shelf :bevel]
     {:default {} :parse-fn parse/compass-angle-map
      :validate [::valid/compass-angle-map]}
     "A map of cardinal compass points to angles in radians, whereby "
@@ -622,20 +622,20 @@
     "This feature is intended mainly for manufacturability, to reduce the "
     "need for supports in printing, but it can also add strength or help "
     "connect to other features."]
-   [:section [:mcu :support :shelf :rim]
+   [[:mcu :support :shelf :rim]
     "By default, a shelf includes raised edges to hold on to the "
     "PCBA. This is most useful when the shelf is rotated, following the "
     "MCU, out of the xy-plane."]
-   [:parameter [:mcu :support :shelf :rim :lateral-thickness]
+   [[:mcu :support :shelf :rim :lateral-thickness]
     {:default 1 :parse-fn num :validate [pos?]}
     "The thickness of material to each side of the MCU, in mm."]
-   [:parameter [:mcu :support :shelf :rim :overhang-thickness]
+   [[:mcu :support :shelf :rim :overhang-thickness]
     {:default 1 :parse-fn num :validate [pos?]}
     "The thickness of material in the outermost part on each side, in mm."]
-   [:parameter [:mcu :support :shelf :rim :overhang-width]
+   [[:mcu :support :shelf :rim :overhang-width]
     {:default 0 :parse-fn num :validate [#(not (neg? %))]}
     "The extent to which each side extends out across the PCBA, in mm."]
-   [:parameter [:mcu :support :shelf :rim :offsets]
+   [[:mcu :support :shelf :rim :offsets]
     {:default [0 0]
      :parse-fn (fn [candidate]
                  (if (number? candidate) [candidate candidate] (vec candidate)))
@@ -644,7 +644,7 @@
     "sides of the shelf will appear in full. A negative or positive offset "
     "shortens the corresponding side, towards or away from the connector side "
     "of the PCBA."]
-   [:section [:mcu :support :lock]
+   [[:mcu :support :lock]
     "An MCU lock is a support feature made up of three parts:\n\n"
     "* A fixture printed as part of the case. This fixture includes a plate for "
     "the PCB and a socket. The socket holds a USB connector on the PCB in "
@@ -658,14 +658,14 @@
     "typically the wall of a rear housing. It has the advantage that it can "
     "hug the connector on the PCB tightly from four sides, thus preventing "
     "a fragile surface-mounted connector from snapping off."]
-   [:parameter [:mcu :support :lock :include]
+   [[:mcu :support :lock :include]
     {:default false :parse-fn boolean}
     "If `true`, include a lock."]
-   [:parameter [:mcu :support :lock :width-factor]
+   [[:mcu :support :lock :width-factor]
     {:default 1 :parse-fn num}
     "A multiplier for the width of the PCB. This determines the width of the "
     "parts touching the PCB in a lock: The plate and the base of the bolt."]
-   [:parameter [:mcu :support :lock :fastener-properties]
+   [[:mcu :support :lock :fastener-properties]
     ;; This parameter is named “fastener-properties” instead of the normal
     ;; “bolt-properties” to help distinguish it both from the lock bolt and
     ;; from parameters that add an implicit default length. The nomenclature
@@ -678,27 +678,27 @@
     "`total-length` because the application will interpolate default values "
     "for both `unthreaded-length` and `threaded-length` based on other "
     "properties of the lock. A contradictory `total-length` is an error."]
-   [:section [:mcu :support :lock :plate]
+   [[:mcu :support :lock :plate]
     "In the lock, the MCU PCBA sits on a plate, as part of the fixture. "
     "This plate is named by analogy with a roughly corresponding part in a "
     "door lock. The plate actually looks like a bed for the PCB.\n\n"
     "The plate is typically more narrow than the PCB, its width being "
     "determined by `width-factor`. Its total height is the sum of this "
     "section’s `base-thickness` and `clearance`."]
-   [:parameter [:mcu :support :lock :plate :alias]
+   [[:mcu :support :lock :plate :alias]
     stock/alias-metadata
     "A name you can use to target the base of the plate for `tweaks`. "
     "This is useful mainly when there isn’t a flat wall behind the lock."]
-   [:parameter [:mcu :support :lock :plate :base-thickness]
+   [[:mcu :support :lock :plate :base-thickness]
     {:default 1 :parse-fn num}
     "The thickness of the base of the plate, in mm."]
-   [:parameter [:mcu :support :lock :plate :backing-thickness]
+   [[:mcu :support :lock :plate :backing-thickness]
     {:default 0 :parse-fn num}
     "The thickness of whatever is behind the plate, in mm. "
     "The only influence of this parameter is on the length and position of "
     "the fastener, which is extended this far away from the plate to "
     "penetrate its support."]
-   [:parameter [:mcu :support :lock :plate :clearance]
+   [[:mcu :support :lock :plate :clearance]
     {:default 1 :parse-fn num}
     "The distance between the MCU PCB and the base of the plate, in mm.\n\n"
     "Unlike the base of the plate, its clearance displaces the PCB and cannot "
@@ -708,40 +708,39 @@
     "the lock and the PCB’s through-holes, so its height should be roughly "
     "matched to the length of wire overshoot through the PCB, with a safety "
     "margin for air."]
-   [:section [:mcu :support :lock :socket]
+   [[:mcu :support :lock :socket]
     "A housing around the USB connector on the MCU PCBA."]
-   [:parameter [:mcu :support :lock :socket :thickness]
+   [[:mcu :support :lock :socket :thickness]
     {:default 1 :parse-fn num}
     "The wall thickness of the socket."]
-   [:section [:mcu :support :lock :bolt]
+   [[:mcu :support :lock :bolt]
     "The bolt of the MCU lock, named by analogy with a regular door lock, is "
     "not to be confused with the threaded fastener holding it in place. "
     "The properties of the threaded fastener are set using "
     "`fastener-properties` above while the properties of the lock bolt are set "
     "here."]
-   [:parameter [:mcu :support :lock :bolt :clearance]
+   [[:mcu :support :lock :bolt :clearance]
     {:default 1 :parse-fn num}
     "The distance of the bolt from the populated side of the PCB. "
     "This distance should be slightly greater than the height of the tallest "
     "component on the PCB."]
-   [:parameter [:mcu :support :lock :bolt :overshoot]
+   [[:mcu :support :lock :bolt :overshoot]
     {:default 1 :parse-fn num}
     "The distance across which the bolt will touch the PCB at the mount end. "
     "Take care that this distance is free of components on the PCB."]
-   [:parameter [:mcu :support :lock :bolt :mount-length]
+   [[:mcu :support :lock :bolt :mount-length]
     {:default 1 :parse-fn num}
     "The length of the base containing a threaded channel used to secure the "
     "bolt over the MCU. This is in addition to `overshoot` and "
     "goes in the opposite direction, away from the PCB."]
-   [:parameter [:mcu :support :lock :bolt :mount-thickness]
+   [[:mcu :support :lock :bolt :mount-thickness]
     {:default 1 :parse-fn num}
     "The thickness of the mount. This should have some rough correspondence "
     "to the threaded portion of your fastener, which should not have a shank."]
-   [:parameter [:ports]
-    {:heading-template "Special section %s"
+   [[:ports]
+    {:freely-keyed true
      :default {}
-     :parse-fn (parse/map-of keyword
-                 (base/parser-with-defaults port/raws))
+     :parse-fn (parse/map-of keyword (base/parser-with-defaults port/raws))
      :validate [(spec/map-of
                   ::valid/alias
                   (base/delegated-validation port/raws))]}
@@ -749,36 +748,36 @@
     "contain electronic receptacles for signalling connections and other "
     "interfaces. Each port gets its own subsection. "
     "Ports are documented in detail [here](options-ports.md)."]
-   [:section [:wrist-rest]
+   [[:wrist-rest]
     "An optional extension to support the user’s wrist."]
-   [:parameter [:wrist-rest :include]
+   [[:wrist-rest :include]
     {:default false :parse-fn boolean}
     "If `true`, include a wrist rest with the keyboard."]
-   [:parameter [:wrist-rest :style]
+   [[:wrist-rest :style]
     {:default :threaded :parse-fn keyword :validate [::valid/wrist-rest-style]}
     "The style of the wrist rest. Available styles are:\n\n"
     "- `threaded`: threaded fasteners connect the case and wrist rest.\n"
     "- `solid`: the case and wrist rest are joined together by `tweaks` "
     "as a single piece of plastic."]
-   [:parameter [:wrist-rest :preview]
+   [[:wrist-rest :preview]
     {:default false :parse-fn boolean}
     "Preview mode. If `true`, this puts a model of the wrist rest in the same "
     "OpenSCAD file as the case. That model is simplified, intended for gauging "
     "distance, not for printing."]
-   [:parameter [:wrist-rest :anchoring]
+   [[:wrist-rest :anchoring]
     anch/anchoring-metadata
     "Where to place the wrist rest. "
     stock/anchoring-documentation " "
     "For wrist rests, the vertical component of the anchor’s position is "
     "ignored, including any vertical offset."]
-   [:parameter [:wrist-rest :plinth-height]
+   [[:wrist-rest :plinth-height]
     {:default 1 :parse-fn num}
     "The average height of the plastic plinth in mm, at its upper lip."]
-   [:section [:wrist-rest :shape]
+   [[:wrist-rest :shape]
     "The wrist rest needs to fit the user’s hand."]
-   [:section [:wrist-rest :shape :spline]
+   [[:wrist-rest :shape :spline]
     "The horizontal outline of the wrist rest is a closed spline."]
-   [:parameter [:wrist-rest :shape :spline :main-points]
+   [[:wrist-rest :shape :spline :main-points]
     {:default [{:position [0 0]} {:position [1 0]} {:position [1 1]}]
      :parse-fn parse/nameable-spline
      :validate [::valid/nameable-spline]}
@@ -789,7 +788,7 @@
     "points in the list.\n"
     "- Optional: `alias`. A name given to the specific point, for the purpose "
     "of placing yet more things in relation to it."]
-   [:parameter [:wrist-rest :shape :spline :resolution]
+   [[:wrist-rest :shape :spline :resolution]
     {:default 1 :parse-fn num}
     "The amount of vertices per main point. The default is 1. If 1, only the "
     "main points themselves will be used, giving you full control. A higher "
@@ -798,75 +797,75 @@
     "resolution, position your main points carefully.\n\n"
     "Resolution parameters, including this one, can be disabled in the main "
     "`resolution` section."]
-   [:section [:wrist-rest :shape :lip]
+   [[:wrist-rest :shape :lip]
     "The lip is the uppermost part of the plinth, lining and supporting the "
     "edge of the pad. Its dimensions are described here in mm away from the "
     "pad."]
-   [:parameter [:wrist-rest :shape :lip :height]
+   [[:wrist-rest :shape :lip :height]
     {:default 1 :parse-fn num} "The vertical extent of the lip."]
-   [:parameter [:wrist-rest :shape :lip :width]
+   [[:wrist-rest :shape :lip :width]
     {:default 1 :parse-fn num} "The horizontal width of the lip at its top."]
-   [:parameter [:wrist-rest :shape :lip :inset]
+   [[:wrist-rest :shape :lip :inset]
     {:default 0 :parse-fn num}
     "The difference in width between the top and bottom of the lip. "
     "A small negative value will make the lip thicker at the bottom. This is "
     "recommended for fitting a silicone mould."]
-   [:section [:wrist-rest :shape :pad]
+   [[:wrist-rest :shape :pad]
     "The top of the wrist rest should be printed or cast in a soft material, "
     "such as silicone rubber."]
-   [:section [:wrist-rest :shape :pad :surface]
+   [[:wrist-rest :shape :pad :surface]
     "The upper surface of the pad, which will be in direct contact with "
     "the user’s palm or wrist."]
-   [:section [:wrist-rest :shape :pad :height]
+   [[:wrist-rest :shape :pad :height]
     "The piece of rubber extends a certain distance up into the air and down "
     "into the plinth. All measurements in mm."]
-   [:parameter [:wrist-rest :shape :pad :height :surface-range]
+   [[:wrist-rest :shape :pad :height :surface-range]
     {:default 1 :parse-fn num}
     "The vertical range of the upper surface. Whatever values are in "
     "a heightmap will be normalized to this scale."]
-   [:parameter [:wrist-rest :shape :pad :height :lip-to-surface]
+   [[:wrist-rest :shape :pad :height :lip-to-surface]
     {:default 1 :parse-fn num}
     "The part of the rubber pad between the top of the lip and the point "
     "where the heightmap comes into effect. This is useful if your heightmap "
     "itself has very low values at the edges, such that moulding and casting "
     "it without a base would be difficult."]
-   [:parameter [:wrist-rest :shape :pad :height :below-lip]
+   [[:wrist-rest :shape :pad :height :below-lip]
     {:default 1 :parse-fn num}
     "The depth of the rubber wrist support, measured from the top of the lip, "
     "going down into the plinth. This part of the pad just keeps it in place."]
-   [:section [:wrist-rest :shape :pad :surface :edge]
+   [[:wrist-rest :shape :pad :surface :edge]
     "The edge of the pad can be rounded."]
-   [:parameter [:wrist-rest :shape :pad :surface :edge :inset]
+   [[:wrist-rest :shape :pad :surface :edge :inset]
     {:default 0 :parse-fn num}
     "The horizontal extent of softening. This cannot be more than half the "
     "width of the outline, as determined by `main-points`, at its narrowest "
     "part."]
-   [:parameter [:wrist-rest :shape :pad :surface :edge :resolution]
+   [[:wrist-rest :shape :pad :surface :edge :resolution]
     {:default 1 :parse-fn num}
     "The number of faces on the edge between horizontal points.\n\n"
     "Resolution parameters, including this one, can be disabled in the main "
     "`resolution` section."]
-   [:section [:wrist-rest :shape :pad :surface :heightmap]
+   [[:wrist-rest :shape :pad :surface :heightmap]
     "The surface can optionally be modified by the [`surface()` function]"
     "(https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/"
     "Other_Language_Features#Surface), which requires a heightmap file."]
-   [:parameter [:wrist-rest :shape :pad :surface :heightmap :include]
+   [[:wrist-rest :shape :pad :surface :heightmap :include]
     {:default false :parse-fn boolean}
     "If `true`, use a heightmap. The map will intersect the basic pad "
     "polyhedron."]
-   [:parameter [:wrist-rest :shape :pad :surface :heightmap :filepath]
+   [[:wrist-rest :shape :pad :surface :heightmap :filepath]
     {:default (file ".." ".." "resources" "heightmap" "default.dat")}
     "The file identified here should contain a heightmap in a format OpenSCAD "
     "can understand. The path should also be resolvable by OpenSCAD."]
-   [:section [:wrist-rest :rotation]
+   [[:wrist-rest :rotation]
     "The wrist rest can be rotated to align its pad with the user’s palm."]
-   [:parameter [:wrist-rest :rotation :pitch]
+   [[:wrist-rest :rotation :pitch]
     {:default 0 :parse-fn parse/compass-incompatible-angle}
     "Tait-Bryan pitch."]
-   [:parameter [:wrist-rest :rotation :roll]
+   [[:wrist-rest :rotation :roll]
     {:default 0 :parse-fn parse/compass-incompatible-angle}
     "Tait-Bryan roll."]
-   [:parameter [:wrist-rest :mounts]
+   [[:wrist-rest :mounts]
     {:heading-template "Special section %s"
      :default []
      :parse-fn (parse/tuple-of (base/parser-with-defaults restmnt/raws))
@@ -875,29 +874,29 @@
     "least one cuboid block for at least one screw that connects the wrist "
     "rest to the case. "
     "This section is used only with the `threaded` style of wrist rest."]
-   [:section [:wrist-rest :sprues]
+   [[:wrist-rest :sprues]
     "Holes in the bottom of the plinth. You pour liquid rubber through these "
     "holes when you make the rubber pad. Sprues are optional, but the general "
     "recommendation is to have two of them if you’re going to be casting your "
     "own pads. That way, air can escape even if you accidentally block one "
     "sprue with a low-viscosity silicone."]
-   [:parameter [:wrist-rest :sprues :include]
+   [[:wrist-rest :sprues :include]
     {:default false :parse-fn boolean}
     "If `true`, include sprues."]
-   [:parameter [:wrist-rest :sprues :inset]
+   [[:wrist-rest :sprues :inset]
     {:default 0 :parse-fn num}
     "The horizontal distance between the perimeter of the wrist rest and the "
     "default position of each sprue."]
-   [:parameter [:wrist-rest :sprues :diameter]
+   [[:wrist-rest :sprues :diameter]
     {:default 1 :parse-fn num}
     "The diameter of each sprue."]
-   [:parameter [:wrist-rest :sprues :positions]
+   [[:wrist-rest :sprues :positions]
     {:default [] :parse-fn (parse/tuple-of anch/parse-anchoring)
      :validate [(spec/coll-of anch/validate-anchoring)]}
     "The positions of all sprues. This is a list where each item needs an "
     "`anchor` naming a main point in the spline. You can add an optional "
     "two-dimensional `offset`."]
-   [:section [:wrist-rest :bottom-plate]
+   [[:wrist-rest :bottom-plate]
     "The equivalent of the case `bottom-plate` parameter. If included, "
     "a bottom plate for a wrist rest uses the `thickness` configured for "
     "the bottom of the case.\n"
@@ -906,15 +905,15 @@
     "protect but serve other purposes: Covering nut pockets, silicone "
     "mould-pour cavities, and plaster or other dense material poured into "
     "plinths printed without a bottom shell."]
-   [:parameter [:wrist-rest :bottom-plate :include]
+   [[:wrist-rest :bottom-plate :include]
     {:default false :parse-fn boolean}
     "Whether to include a bottom plate for each wrist rest."]
-   [:parameter [:wrist-rest :bottom-plate :inset]
+   [[:wrist-rest :bottom-plate :inset]
     {:default 0 :parse-fn num}
     "The horizontal distance between the perimeter of the wrist rest and the "
     "default position of each threaded fastener connecting it to its "
     "bottom plate."]
-   [:parameter [:wrist-rest :bottom-plate :fastener-positions]
+   [[:wrist-rest :bottom-plate :fastener-positions]
     {:default [] :parse-fn (parse/tuple-of anch/parse-anchoring)
      :validate [(spec/coll-of anch/validate-anchoring)]}
     "The positions of threaded fasteners used to attach the bottom plate to "
@@ -924,25 +923,25 @@
     "`inset` parameter above, before any offset stated here is applied.\n\n"
     "Other properties of these fasteners are determined by settings for the "
     "case."]
-   [:parameter [:wrist-rest :mould-thickness]
+   [[:wrist-rest :mould-thickness]
     {:default 1 :parse-fn num}
     "The thickness in mm of the walls and floor of the mould to be used for "
     "casting the rubber pad."]
-   [:section [:resolution]
+   [[:resolution]
     "Settings for the amount of detail on curved surfaces. More specific "
     "resolution parameters are available in other sections."]
-   [:parameter [:resolution :include]
+   [[:resolution :include]
     {:default false :parse-fn boolean}
     "If `true`, apply resolution parameters found throughout the "
     "configuration. Otherwise, use defaults built into this application, "
     "its libraries and OpenSCAD. The defaults are generally conservative, "
     "providing quick renders for previews."]
-   [:parameter [:resolution :minimum-face-size]
+   [[:resolution :minimum-face-size]
     {:default 1, :parse-fn num, :validate [::appdata/minimum-face-size]}
     "File-wide OpenSCAD minimum face size in mm."]
-   [:section [:dfm]
+   [[:dfm]
     "Settings for design for manufacturability (DFM)."]
-   [:parameter [:dfm :error-general]
+   [[:dfm :error-general]
     {:default 0 :parse-fn num}
     "A measurement in mm of errors introduced to negative space in the xy "
     "plane by slicer software and the printer you will use.\n"
@@ -952,40 +951,40 @@
     "\n"
     "This application will try to compensate for the error, though only for "
     "certain sensitive inserts, not for the case as a whole."]
-   [:section [:dfm :keycaps]
+   [[:dfm :keycaps]
     "Measurements of error, in mm, for parts of keycap models. "
     "This is separate from `error-general` because it’s especially important "
     "to have a tight fit between switch sliders and cap stems, and the "
     "size of these details is usually comparable to an FDM printer nozzle.\n"
     "\n"
     "If you will not be printing caps, ignore this section."]
-   [:parameter [:dfm :keycaps :error-stem-positive]
+   [[:dfm :keycaps :error-stem-positive]
     {:default (:error-stem-positive capdata/option-defaults) :parse-fn num}
     "Error on the positive components of stems on keycaps, such as the "
     "entire stem on an ALPS-compatible cap."]
-   [:parameter [:dfm :keycaps :error-stem-negative]
+   [[:dfm :keycaps :error-stem-negative]
     {:default (:error-stem-negative capdata/option-defaults) :parse-fn num}
     "Error on the negative components of stems on keycaps, such as the "
     "cross on an MX-compatible cap."]
-   [:section [:dfm :bottom-plate]
+   [[:dfm :bottom-plate]
     "DFM for bottom plates."]
-   [:parameter [:dfm :bottom-plate :fastener-plate-offset]
+   [[:dfm :bottom-plate :fastener-plate-offset]
     {:default 0 :parse-fn num}
     "A vertical offset in mm for the placement of screw holes in bottom "
     "plates. Without a slight negative offset, slicers will tend to make the "
     "holes too wide for screw heads to grip the plate securely.\n"
     "\n"
     "Notice this will not affect how screw holes are cut into the case."]
-   [:section [:mask]
+   [[:mask]
     "A box limits the entire shape, cutting off any projecting by-products of "
     "the algorithms. By resizing and moving this box, you can select a "
     "subsection for printing. You might want this while you are printing "
     "prototypes for a new style of switch, MCU support etc."]
-   [:parameter [:mask :size]
+   [[:mask :size]
     {:default 1000 :parse-fn parse/pad-to-3-tuple
      :validate [::tarmi-core/point-3d]}
     "The size of the mask in mm. By default, a cube of 1 m³."]
-   [:parameter [:mask :center]
+   [[:mask :center]
     {:default [0 0 500] :parse-fn vec :validate [::tarmi-core/point-3d]}
     "The position of the center point of the mask. By default, `[0, 0, 500]`, "
     "which is supposed to mask out everything below ground level. If you "

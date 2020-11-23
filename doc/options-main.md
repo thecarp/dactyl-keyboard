@@ -8,7 +8,7 @@ Each heading in this document represents a recognized configuration key in the m
 - Section <a href="#user-content-keys">`keys`</a>
     - Parameter <a href="#user-content-keys-preview">`preview`</a>
     - Parameter <a href="#user-content-keys-styles">`styles`</a>
-- Special section <a href="#user-content-key-clusters">`key-clusters`</a>
+- Freely keyed section <a href="#user-content-key-clusters">`key-clusters`</a>
 - Special section <a href="#user-content-by-key">`by-key`</a>
 - Parameter <a href="#user-content-secondaries">`secondaries`</a>
 - Section <a href="#user-content-main-body">`main-body`</a>
@@ -68,9 +68,9 @@ Each heading in this document represents a recognized configuration key in the m
         - Parameter <a href="#user-content-main-body-leds-emitter-diameter">`emitter-diameter`</a>
         - Parameter <a href="#user-content-main-body-leds-interval">`interval`</a>
 - Section <a href="#user-content-central-housing">`central-housing`</a>
-- Special section <a href="#user-content-custom-bodies">`custom-bodies`</a>
-- Special section <a href="#user-content-flanges">`flanges`</a>
-- Special section <a href="#user-content-tweaks">`tweaks`</a>
+- Freely keyed section <a href="#user-content-custom-bodies">`custom-bodies`</a>
+- Freely keyed section <a href="#user-content-flanges">`flanges`</a>
+- Freely keyed section <a href="#user-content-tweaks">`tweaks`</a>
 - Section <a href="#user-content-mcu">`mcu`</a>
     - Parameter <a href="#user-content-mcu-include">`include`</a>
     - Parameter <a href="#user-content-mcu-preview">`preview`</a>
@@ -105,7 +105,7 @@ Each heading in this document represents a recognized configuration key in the m
                 - Parameter <a href="#user-content-mcu-support-lock-bolt-overshoot">`overshoot`</a>
                 - Parameter <a href="#user-content-mcu-support-lock-bolt-mount-length">`mount-length`</a>
                 - Parameter <a href="#user-content-mcu-support-lock-bolt-mount-thickness">`mount-thickness`</a>
-- Special section <a href="#user-content-ports">`ports`</a>
+- Freely keyed section <a href="#user-content-ports">`ports`</a>
 - Section <a href="#user-content-wrist-rest">`wrist-rest`</a>
     - Parameter <a href="#user-content-wrist-rest-include">`include`</a>
     - Parameter <a href="#user-content-wrist-rest-style">`style`</a>
@@ -176,7 +176,7 @@ These key styles determine the size of key mounting plates on the keyboard and w
 
 In options by key, documented [here](options-nested.md), you specify which style of key is used for each position on the keyboard.
 
-## Special section <a id="key-clusters">`key-clusters`</a>
+## Freely keyed section <a id="key-clusters">`key-clusters`</a>
 
 This section describes the general size, shape and position of the clusters of keys on the keyboard, each in its own subsection. It is documented in detail [here](options-clusters.md).
 
@@ -299,11 +299,7 @@ The east: A fastener on the outward-facing end of the rear housing.
 
 ###### Parameter <a id="main-body-rear-housing-fasteners-sides-E-include">`include`</a> at level 7
 
-
-
 ###### Parameter <a id="main-body-rear-housing-fasteners-sides-E-offset">`offset`</a> at level 7
-
-
 
 ### Section <a id="main-body-back-plate">`back-plate`</a>
 
@@ -479,7 +475,7 @@ The distance between LEDs on the strip. You may want to apply a setting slightly
 
 A major body separate from the main body, located in between and connecting the two halves of a reflected main body. The central housing is documented in detail [here](options-central.md).
 
-## Special section <a id="custom-bodies">`custom-bodies`</a>
+## Freely keyed section <a id="custom-bodies">`custom-bodies`</a>
 
 Bodies in addition to those predefined by the application.
 
@@ -512,7 +508,7 @@ In `cut` nodes, the `positive` parameter is ignored, as is `body`. Neither `at-g
 
 If its parent body is governed by `reflect`, the custom body will also be reflected, appearing in left- and right-hand versions.
 
-## Special section <a id="flanges">`flanges`</a>
+## Freely keyed section <a id="flanges">`flanges`</a>
 
 Extra screws.
 
@@ -530,7 +526,7 @@ Each item in the list of `positions`, in turn, has the following structure:
 - `body` (optional): A code identifying the predefined [body](configuration.md) that contains the screw, before the effect of any custom bodies.
 - `anchoring` (optional): Room for standard anchoring parameters. The concept of anchoring is explained [here](options-anchoring.md), along with the parameters available in this section.
 
-## Special section <a id="tweaks">`tweaks`</a>
+## Freely keyed section <a id="tweaks">`tweaks`</a>
 
 Additional shapes. This parameter is usually needed to bridge gaps between the walls of key clusters. The expected value here is a map of [arbitrary shapes](options-arbitrary-shapes.md).
 
@@ -723,7 +719,7 @@ The length of the base containing a threaded channel used to secure the bolt ove
 
 The thickness of the mount. This should have some rough correspondence to the threaded portion of your fastener, which should not have a shank.
 
-## Special section <a id="ports">`ports`</a>
+## Freely keyed section <a id="ports">`ports`</a>
 
 This section describes ports, including sockets in the case walls to contain electronic receptacles for signalling connections and other interfaces. Each port gets its own subsection. Ports are documented in detail [here](options-ports.md).
 

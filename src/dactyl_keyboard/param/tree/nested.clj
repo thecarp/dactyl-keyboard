@@ -169,101 +169,101 @@
     "- No cluster, no column, row -1, no side.\n"
     "- No cluster, no column, no row, west side.\n"
     "- No cluster, no column, no row, no side.\n"]
-   [:parameter [:key-style]
+   [[:key-style]
     {:default :default :parse-fn keyword}
     "The name of a key style defined in the [global](options-main.md) `keys` "
     "section. The default setting is the name `default`."]
-   [:section [:layout]
+   [[:layout]
     "Settings for how to place keys."]
-   [:section [:layout :matrix]
+   [[:layout :matrix]
     "Roughly how keys are spaced out to form a matrix."]
-   [:section [:layout :matrix :neutral]
+   [[:layout :matrix :neutral]
     "The neutral point in a column or row is where any progressive curvature "
     "both starts and has no effect."]
-   [:parameter [:layout :matrix :neutral :column]
+   [[:layout :matrix :neutral :column]
     {:default 0 :parse-fn int}
     "An integer column ID."]
-   [:parameter [:layout :matrix :neutral :row]
+   [[:layout :matrix :neutral :row]
     {:default 0 :parse-fn int}
     "An integer row ID."]
-   [:section [:layout :matrix :separation]
+   [[:layout :matrix :separation]
     "Tweaks to control the systematic separation of keys. The parameters in "
     "this section will be multiplied by the difference between each affected "
     "key’s coordinates and the neutral column and row."]
-   [:parameter [:layout :matrix :separation :column]
+   [[:layout :matrix :separation :column]
     {:default 0 :parse-fn num}
     "A distance in mm."]
-   [:parameter [:layout :matrix :separation :row]
+   [[:layout :matrix :separation :row]
     {:default 0 :parse-fn num}
     "A distance in mm."]
-   [:section [:layout :pitch]
+   [[:layout :pitch]
     "Tait-Bryan pitch, meaning the rotation of keys around the x axis."]
-   [:parameter [:layout :pitch :base]
+   [[:layout :pitch :base]
     {:default 0 :parse-fn parse/compass-incompatible-angle}
     "An angle in radians, controlling a uniform front-to-back incline."]
-   [:parameter [:layout :pitch :intrinsic]
+   [[:layout :pitch :intrinsic]
     {:default 0 :parse-fn parse/compass-incompatible-angle}
     "An angle in radians. Intrinsic pitching occurs early in key placement. "
     "It is typically intended to produce a tactile break between two rows of "
     "keys, as in the typewriter-like terracing common on flat keyboards with "
     "OEM-profile or similarly angled caps."]
-   [:parameter [:layout :pitch :progressive]
+   [[:layout :pitch :progressive]
     {:default 0 :parse-fn parse/compass-incompatible-angle}
     "An angle in radians. This progressive pitch factor bends columns "
     "lengthwise. If set to zero, columns are flat."]
-   [:section [:layout :roll]
+   [[:layout :roll]
     "Tait-Bryan roll, meaning the rotation of keys around the y axis."]
-   [:parameter [:layout :roll :base]
+   [[:layout :roll :base]
     {:default 0 :parse-fn parse/compass-incompatible-angle}
     "An angle in radians, controlling a uniform right-to-left incline, also "
     "known as tenting."]
-   [:parameter [:layout :roll :intrinsic]
+   [[:layout :roll :intrinsic]
     {:default 0 :parse-fn parse/compass-incompatible-angle}
     "An angle in radians, analogous to intrinsic pitching. Where more than "
     "one column of keys is devoted to a single finger at the edge of the "
     "keyboard, this can help make the edge column easier to reach, reducing "
     "the need to bend the finger (or thumb) sideways."]
-   [:parameter [:layout :roll :progressive]
+   [[:layout :roll :progressive]
     {:default 0 :parse-fn parse/compass-incompatible-angle}
     "An angle in radians. This progressive roll factor bends rows "
     "lengthwise, which also gives the columns a lateral curvature."]
-   [:section [:layout :yaw]
+   [[:layout :yaw]
     "Tait-Bryan yaw, meaning the rotation of keys around the z axis."]
-   [:parameter [:layout :yaw :base]
+   [[:layout :yaw :base]
     {:default 0 :parse-fn parse/compass-incompatible-angle}
     "An angle in radians, corresponding to the way your hand naturally "
     "describes an arc as you rotate your arm horizontally at the elbow. "
     "Yawing columns of keys can allow the user to keep their wrists straight "
     "even on a keyboard shorter than the width of the user’s own shoulders."]
-   [:parameter [:layout :yaw :intrinsic]
+   [[:layout :yaw :intrinsic]
     {:default 0 :parse-fn parse/compass-incompatible-angle}
     "An angle in radians, analogous to intrinsic pitching."]
-   [:section [:layout :translation]
+   [[:layout :translation]
     "Translation in the geometric sense, displacing keys in relation to each "
     "other. Depending on when this translation takes places, it may have a "
     "a cascading effect on other aspects of key placement. All measurements "
     "are three-dimensional vectors in mm."]
-   [:parameter [:layout :translation :early]
+   [[:layout :translation :early]
     {:default [0 0 0] :parse-fn vec :validate [::tarmi-core/point-3d]}
     "”Early” translation happens before other operations in key placement and "
     "therefore has the biggest knock-on effects."]
-   [:parameter [:layout :translation :mid]
+   [[:layout :translation :mid]
     {:default [0 0 0] :parse-fn vec :validate [::tarmi-core/point-3d]}
     "This happens after columns are styled but before base pitch and roll. "
     "As such it is a good place to adjust whole columns for relative finger "
     "length."]
-   [:parameter [:layout :translation :late]
+   [[:layout :translation :late]
     {:default [0 0 0] :parse-fn vec :validate [::tarmi-core/point-3d]}
     "“Late” translation is the last step in key placement and therefore "
     "interacts very little with other steps."]
-   [:section [:layout :clearance]
+   [[:layout :clearance]
     "The height of each key above its mounting plate can be included when "
     "calculating the effective radius of key cluster curvature for a layout. "
     "This height is defined as the distance between the lower edge of a keycap "
     "and the top of the mounting plate, when the switch is at rest. Clearance "
     "is defined this way because caps are presumed to be widest at the lower "
     "edge and therefore most likely to collide at this height."]
-   [:parameter [:layout :clearance :use-key-style]
+   [[:layout :clearance :use-key-style]
     {:default false :parse-fn boolean}
     "If `true`, predict clearance based on `key-style`, including switch "
     "travel and configured keycap skirt length. "
@@ -271,37 +271,37 @@
     "is closely tied to the key style. Depending on how other features of the "
     "design are anchored, clearance based on key style can introduce knock-on "
     "effects that make it difficult to adapt the design to other switches."]
-   [:parameter [:layout :clearance :nominal]
+   [[:layout :clearance :nominal]
     {:default 0 :parse-fn num}
     "Nominal clearance in mm. This is only used without `use-key-style`."]
-   [:section [:channel]
+   [[:channel]
     "Above each switch mount, there is a channel of negative space for the "
     "user’s finger and the keycap to move inside. This is only useful in those "
     "cases where nearby walls or webbing between mounts on the keyboard would "
     "otherwise obstruct movement."]
-   [:parameter [:channel :height]
+   [[:channel :height]
     {:default 1 :parse-fn num}
     "The height in mm of the negative space, starting from the "
     "bottom edge of each keycap in its pressed (active) state."]
-   [:parameter [:channel :top-width]
+   [[:channel :top-width]
     {:default 0 :parse-fn num}
     "The width in mm of the negative space at its top. Its width at the "
     "bottom is defined by keycap geometry."]
-   [:parameter [:channel :margin]
+   [[:channel :margin]
     {:default 0 :parse-fn num}
     "The width in mm of extra negative space around the edges of a keycap, on "
     "all sides. This is applied before the `error-general` DFM compensator."]
-   [:section [:plate]
+   [[:plate]
     "The properties of the flat mounting plate through which each switch is "
     "inserted."]
-   [:parameter [:plate :use-key-style]
+   [[:plate :use-key-style]
     {:default false :parse-fn boolean}
     "If `true`, base the size and position of the plate on `key-style`."]
-   [:parameter [:plate :size]
+   [[:plate :size]
     {:default [1 1 1] :parse-fn vec :validate [::tarmi-core/point-3d]}
     "Three measurements in mm. If `use-key-style` is `false`, this is the "
     "size of the mounting plate."]
-   [:parameter [:plate :position]
+   [[:plate :position]
     {:default [0 0 0] :parse-fn vec :validate [::tarmi-core/point-3d]}
     "A three-dimensional offset in mm. If `use-key-style` is `false`, the "
     "mounting plate is automatically lowered underneath "
@@ -311,7 +311,7 @@
     "exotic human interfaces. To adjust the position of the entire key for "
     "other purposes, use the `translation` settings for `layout`, in this "
     "document."]
-   [:section [:wall]
+   [[:wall]
     "Properties of a wall built around the edge of the cluster.\n"
     "\n"
     "The walls of the keyboard case support the key mounts and protect the "
@@ -321,7 +321,7 @@
     "The `wall` section determines the shape of the case wall, specifically "
     "the skirt around each key mount along the edges of the board. These "
     "skirts are made up of convex hulls wrapping sets of corner posts."]
-   [:parameter [:wall :thickness]
+   [[:wall :thickness]
     {:default [1 1 1] :parse-fn parse/pad-to-3-tuple
      :validate [::tarmi-core/point-3d]}
     "The size in mm of the key mount and each wall post.\n\n"
@@ -338,16 +338,16 @@
     "`tweaks`. Whereas mounting-plate thickness ignores the x- and y-axis "
     "dimensions of this parameter, wall posts are cuboids that use all three "
     "dimensions."]
-   [:parameter [:wall :extent]
+   [[:wall :extent]
     {:default 0 :parse-fn num :validate [(set (range 4))]}
     "A segment ID describing how far away from the key mount to extend its "
     "wall. Note that even if this is set lower than the number of segments "
     "you’ve defined, you can still use `tweaks` to target other segments."]
-   [:parameter [:wall :to-ground]
+   [[:wall :to-ground]
     {:default false :parse-fn boolean}
     "If `true`, draw one extra, vertical section of wall between the segment "
     "identified by `extent` and the ground beneath it."]
-   [:parameter [:wall :segments]
+   [[:wall :segments]
     {:default {0 [0 0 0]}
      :parse-fn (parse/map-of parse/integer (parse/tuple-of num))
      :validate [(spec/map-of integer? ::tarmi-core/point-3d)]}

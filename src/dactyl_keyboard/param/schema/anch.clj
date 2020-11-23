@@ -33,22 +33,14 @@
 (def anchoring-raws
   "The full set of anchoring parameters, in the flat base format."
   [[]
-   [:parameter [:anchor]
-    anchor-metadata]
-   [:parameter [:side]
-    anchor-side-metadata]
-   [:parameter [:segment]
-    anchor-segment-metadata]
-   [:parameter [:intrinsic-offset]
-    anchor-3d-offset-metadata]
-   [:parameter [:intrinsic-rotation]
-    anchor-3d-angle-metadata]
-   [:parameter [:extrinsic-offset]
-    anchor-3d-offset-metadata]
-   [:parameter [:extrinsic-rotation]
-    anchor-3d-angle-metadata]
-   [:parameter [:preserve-orientation]
-    {:default false, :parse-fn boolean}]])
+   [[:anchor] anchor-metadata]
+   [[:side] anchor-side-metadata]
+   [[:segment] anchor-segment-metadata]
+   [[:intrinsic-offset] anchor-3d-offset-metadata]
+   [[:intrinsic-rotation] anchor-3d-angle-metadata]
+   [[:extrinsic-offset] anchor-3d-offset-metadata]
+   [[:extrinsic-rotation] anchor-3d-angle-metadata]
+   [[:preserve-orientation] {:default false, :parse-fn boolean}]])
 
 ;; See also salient-anchoring.
 (def parse-anchoring (base/parser-with-defaults anchoring-raws))
