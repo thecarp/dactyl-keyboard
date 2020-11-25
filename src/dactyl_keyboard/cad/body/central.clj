@@ -194,7 +194,9 @@
     interface))
 
 (defn- locate-above-ground-points
-  "Derive 3D coordinates on the body of the central housing."
+  "Derive 3D coordinates on the body of the central housing.
+  This uses segment codes: 0 for the outermost vertices on the body, 1 for the
+  innermost."
   [getopt interface]
   (let [[half-width _] (get-widths getopt)
         thickness (getopt :central-housing :shape :thickness)
@@ -203,12 +205,12 @@
         [right-gabel-outer adapter-outer] (resolve-offsets getopt items)
         shift-left (partial shift-points (mirror-shift base-offsets))]
     (annotate-interface interface cross-indexed [:points :above-ground]
-      [:gabel :right :outer] right-gabel-outer
-      [:gabel :right :inner] (shift-points base-offsets thickness half-width)
-      [:gabel :left :outer] (shift-left 0 - half-width)
-      [:gabel :left :inner] (shift-left thickness - half-width)
-      [:adapter :outer] adapter-outer
-      [:adapter :inner] (shift-points adapter-outer thickness))))
+      [:gabel :right 0] right-gabel-outer
+      [:gabel :right 1] (shift-points base-offsets thickness half-width)
+      [:gabel :left 0] (shift-left 0 - half-width)
+      [:gabel :left 1] (shift-left thickness - half-width)
+      [:adapter 0] adapter-outer
+      [:adapter 1] (shift-points adapter-outer thickness))))
 
 (defn- locate-lip
   "Derive 3D coordinates on the adapter lip of the central housing."
@@ -216,13 +218,13 @@
   (let [[cross-indexed items] (index-map interface :above-ground)
         thickness (getopt :central-housing :adapter :lip :thickness)
         width (partial getopt :central-housing :adapter :lip :width)
-        base (map #(get-in % [:points :above-ground :gabel :right :inner]) items)
+        base (map #(get-in % [:points :above-ground :gabel :right 1]) items)
         shift-in (partial shift-points base)]
     (annotate-interface interface cross-indexed [:points :above-ground]
-      [:lip :outside :outer] (shift-in 0 (width :outer))
-      [:lip :outside :inner] (shift-in thickness (width :outer))
-      [:lip :inside :outer] (shift-in 0 - (+ (width :taper) (width :inner)))
-      [:lip :inside :inner] (shift-in thickness - (width :inner)))))
+      [:lip :outside 0] (shift-in 0 (width :outer))
+      [:lip :outside 1] (shift-in thickness (width :outer))
+      [:lip :inside 0] (shift-in 0 - (+ (width :taper) (width :inner)))
+      [:lip :inside 1] (shift-in thickness - (width :inner)))))
 
 (defn- locate-at-ground-points
   "Derive some useful 2D coordinates for drawing bottom plates."
@@ -333,10 +335,10 @@
   "A lip for an adapter."
   [getopt]
   (poly/tuboid
-    (vertices getopt [:lip :outside :outer])
-    (vertices getopt [:lip :outside :inner])
-    (vertices getopt [:lip :inside :outer])
-    (vertices getopt [:lip :inside :inner])))
+    (vertices getopt [:lip :outside 0])
+    (vertices getopt [:lip :outside 1])
+    (vertices getopt [:lip :inside 0])
+    (vertices getopt [:lip :inside 1])))
 
 (defn adapter-shell
   "An OpenSCAD polyhedron describing an adapter for the central housing.
@@ -345,10 +347,10 @@
   [getopt]
   (maybe/union
     (poly/tuboid
-      (vertices getopt [:gabel :right :outer])
-      (vertices getopt [:gabel :right :inner])
-      (vertices getopt [:adapter :outer])
-      (vertices getopt [:adapter :inner]))
+      (vertices getopt [:gabel :right 0])
+      (vertices getopt [:gabel :right 1])
+      (vertices getopt [:adapter 0])
+      (vertices getopt [:adapter 1]))
     (fastener-feature getopt adapter-side single-receiver)))
 
 (defn main-shell
@@ -357,10 +359,10 @@
   and a bottom plate at floor level."
   [getopt]
   (poly/tuboid
-    (vertices getopt [:gabel :left :outer])
-    (vertices getopt [:gabel :left :inner])
-    (vertices getopt [:gabel :right :outer])
-    (vertices getopt [:gabel :right :inner])))
+    (vertices getopt [:gabel :left 0])
+    (vertices getopt [:gabel :left 1])
+    (vertices getopt [:gabel :right 0])
+    (vertices getopt [:gabel :right 1])))
 
 (defn negatives
   "Collected negative space for the keyboard case model beyond the adapter."

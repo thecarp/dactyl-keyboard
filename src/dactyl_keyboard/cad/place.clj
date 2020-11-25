@@ -217,10 +217,9 @@
               {:configured-segment segment
                :available-segments #{0 1}})))
   (let [points (getopt :central-housing :derived :interface index :points)
-        depth-key (case segment 0 :outer, 1 :inner)
         coord (or  ; Pick the first of a number of candidates.
-               (get-in points [:above-ground part side depth-key])  ; Gabel.
-               (get-in points [:above-ground part depth-key])  ; Adapter.
+               (get-in points [:above-ground part side segment])  ; Gabel.
+               (get-in points [:above-ground part segment])  ; Adapter.
                (get-in points [:ethereal part]))]  ; Fallback even for at-ground.
     (flex/translate coord subject)))
 
