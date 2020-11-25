@@ -176,7 +176,7 @@
 
 (defn- annotate-interface
   "Annotate relevant points in the central housing interface with additional
-  information relevant only to a shorter, hnce differently indexed, list."
+  information relevant only to a shorter, hence differently indexed, list."
   [interface index-map basepath & subpath-data-pairs]
   (map-indexed
     (fn [global-index item]

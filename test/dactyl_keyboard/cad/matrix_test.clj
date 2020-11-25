@@ -15,25 +15,25 @@
     (is (= (first (matrix/trace-edge
                     (fn [coord] (= coord [0 0]))
                     {:coordinates [0 0], :direction :N}))
-           {:coordinates [0 0], :direction :N, :corner :outer}))
+           {:coordinates [0 0], :direction :N, :corner ::matrix/outer}))
     (is (= (take 5 (matrix/trace-edge
                      (fn [coord] (= coord [0 0]))
                      {:coordinates [0 0], :direction :N}))
-           [{:coordinates [0 0], :direction :N, :corner :outer}
-            {:coordinates [0 0], :direction :E, :corner :outer}
-            {:coordinates [0 0], :direction :S, :corner :outer}
-            {:coordinates [0 0], :direction :W, :corner :outer}
-            {:coordinates [0 0], :direction :N, :corner :outer}])))
+           [{:coordinates [0 0], :direction :N, :corner ::matrix/outer}
+            {:coordinates [0 0], :direction :E, :corner ::matrix/outer}
+            {:coordinates [0 0], :direction :S, :corner ::matrix/outer}
+            {:coordinates [0 0], :direction :W, :corner ::matrix/outer}
+            {:coordinates [0 0], :direction :N, :corner ::matrix/outer}])))
   (testing "Walking the edge of a mirror L shape."
     (is (= (take 6 (matrix/trace-edge
                      (fn [coord] (contains? #{[0 0] [1 0] [1 1]} coord))
                      {:coordinates [0 0], :direction :N}))
-           [{:coordinates [0 0], :direction :N, :corner :outer}
-            {:coordinates [0 0], :direction :E, :corner :inner}
-            {:coordinates [1 1], :direction :N, :corner :outer}
-            {:coordinates [1 1], :direction :E, :corner :outer}
+           [{:coordinates [0 0], :direction :N, :corner ::matrix/outer}
+            {:coordinates [0 0], :direction :E, :corner ::matrix/inner}
+            {:coordinates [1 1], :direction :N, :corner ::matrix/outer}
+            {:coordinates [1 1], :direction :E, :corner ::matrix/outer}
             {:coordinates [1 1], :direction :S, :corner nil}
-            {:coordinates [1 0], :direction :S, :corner :outer}]))))
+            {:coordinates [1 0], :direction :S, :corner ::matrix/outer}]))))
 
 (deftest test-trace-between
   (testing "Walking a straight edge with an explicit stopping position."
@@ -41,7 +41,7 @@
              (fn [coord] (not-any? neg? coord))
              {:coordinates [0 0], :direction :W}
              {:coordinates [0 4], :direction :N})
-           [{:coordinates [0 0], :direction :W, :corner :outer}
+           [{:coordinates [0 0], :direction :W, :corner ::matrix/outer}
             {:coordinates [0 0], :direction :N, :corner nil}
             {:coordinates [0 1], :direction :N, :corner nil}
             {:coordinates [0 2], :direction :N, :corner nil}
@@ -51,22 +51,22 @@
                      (fn [coord] (= coord [0 0]))
                      {:coordinates [0 0], :direction :N}
                      {:coordinates [0 0], :direction :N}))
-           [{:coordinates [0 0], :direction :N, :corner :outer}
-            {:coordinates [0 0], :direction :E, :corner :outer}
-            {:coordinates [0 0], :direction :S, :corner :outer}
-            {:coordinates [0 0], :direction :W, :corner :outer}])))
+           [{:coordinates [0 0], :direction :N, :corner ::matrix/outer}
+            {:coordinates [0 0], :direction :E, :corner ::matrix/outer}
+            {:coordinates [0 0], :direction :S, :corner ::matrix/outer}
+            {:coordinates [0 0], :direction :W, :corner ::matrix/outer}])))
   (testing "Walking a lap around a single tile, with implicit stop."
     (is (= (matrix/trace-between
              (fn [coord] (= coord [0 0])))
-           [{:coordinates [0 0], :direction :N, :corner :outer}
-            {:coordinates [0 0], :direction :E, :corner :outer}
-            {:coordinates [0 0], :direction :S, :corner :outer}
-            {:coordinates [0 0], :direction :W, :corner :outer}])))
+           [{:coordinates [0 0], :direction :N, :corner ::matrix/outer}
+            {:coordinates [0 0], :direction :E, :corner ::matrix/outer}
+            {:coordinates [0 0], :direction :S, :corner ::matrix/outer}
+            {:coordinates [0 0], :direction :W, :corner ::matrix/outer}])))
   (testing "Walking a lap around a single tile, shifted 90º."
     (is (= (matrix/trace-between
              (fn [coord] (= coord [0 0]))
              {:coordinates [0 0], :direction :E})
-           [{:coordinates [0 0], :direction :E, :corner :outer}
-            {:coordinates [0 0], :direction :S, :corner :outer}
-            {:coordinates [0 0], :direction :W, :corner :outer}
-            {:coordinates [0 0], :direction :N, :corner :outer}]))))
+           [{:coordinates [0 0], :direction :E, :corner ::matrix/outer}
+            {:coordinates [0 0], :direction :S, :corner ::matrix/outer}
+            {:coordinates [0 0], :direction :W, :corner ::matrix/outer}
+            {:coordinates [0 0], :direction :N, :corner ::matrix/outer}]))))

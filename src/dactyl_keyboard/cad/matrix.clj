@@ -42,9 +42,9 @@
         ahead-left (walk coordinates direction (sharp-left direction))
         landscape (vec (map occlusion-fn [on-left ahead-left ahead]))]
     (case landscape
-      [false false false] :outer
+      [false false false] ::outer
       [false false true ] nil
-      [false true  true ] :inner
+      [false true  true ] ::inner
       (throw (Exception.
                (format "Unforeseen landscape at %s: %s" position landscape))))))
 
@@ -55,10 +55,10 @@
   In an inner corner, jump diagonally ahead-left while also turning left."
   [occlusion-fn {:keys [coordinates direction] :as position}]
   (case (classify-corner occlusion-fn position)
-    :outer (merge position {:direction (sharp-right direction)})
-    nil    (merge position {:coordinates (walk coordinates direction)})
-    :inner {:coordinates (walk coordinates direction (sharp-left direction))
-            :direction (sharp-left direction)}))
+    ::outer (merge position {:direction (sharp-right direction)})
+    nil     (merge position {:coordinates (walk coordinates direction)})
+    ::inner {:coordinates (walk coordinates direction (sharp-left direction))
+             :direction (sharp-left direction)}))
 
 (defn trace-edge
   "Walk the edge of a matrix, clockwise. Return a lazy, infinite sequence.

@@ -1053,12 +1053,12 @@ tweaks:
   thumb-to-housing-negatives:
   - positive: false
     hull-around:
-    - [ca-near-upper-1, null, 1, {anchoring: {intrinsic-offset: [5, 0, 0]}}]
-    - [ci-near-upper-1, null, 1]
-    - [ca-near-upper-2, null, 1, {anchoring: {intrinsic-offset: [5, 0, 0]}}]
-    - [ci-near-upper-2, null, 1]
-    - [ca-near-roof, null, 1, {anchoring: {intrinsic-offset: [5, 0, 0]}}]
-    - [ci-near-roof, null, 1]
+    - [ca-near-upper-1, {anchoring: {segment: 1, intrinsic-offset: [5, 0, 0]}}]
+    - [ci-near-upper-1, {anchoring: {segment: 1}}]
+    - [ca-near-upper-2, {anchoring: {segment: 1, intrinsic-offset: [5, 0, 0]}}]
+    - [ci-near-upper-2, {anchoring: {segment: 1}}]
+    - [ca-near-roof, {anchoring: {segment: 1, intrinsic-offset: [5, 0, 0]}}]
+    - [ci-near-roof, {anchoring: {segment: 1}}]
   gap-fill:  # Miscellaneous triangular fillers.
   - hull-around:
     - [m1L, NNW, 1]

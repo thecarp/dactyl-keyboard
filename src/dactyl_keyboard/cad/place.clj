@@ -207,7 +207,7 @@
 (defn- chousing-place
   "Place passed shape in relation to a vertex of the central housing.
   Pick the most useful precomputed 3D vertex, favouring actual vertices on
-  the body of the central housing over more ethereral vertices that are not
+  the body of the central housing over more ethereal vertices that are not
   part of the body but correspond to its outer shell."
   [getopt index part side segment subject]
   {:pre [(nat-int? index), (keyword? part), (integer? segment),

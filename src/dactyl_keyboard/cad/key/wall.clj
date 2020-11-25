@@ -60,9 +60,9 @@
 (defn connecting-wall
   [{:keys [corner] :as position}]
   (case corner
-    :outer (outer-corner position)
+    ::matrix/outer (outer-corner position)
     nil (straight-join position)
-    :inner (inner-corner position)))
+    ::matrix/inner (inner-corner position)))
 
 
 ;;;;;;;;;;;;;;;;;;
