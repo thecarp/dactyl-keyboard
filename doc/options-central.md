@@ -67,7 +67,7 @@ The thickness of the housing and its adapter (if any), in mm.
 
 The `interface` setting is essentially a list of points: Coordinates in space. Each of these points can influence the shape of the central housing itself, its adapter, and/or the shape of its bottom plate.
 
-There are no `body` parameters here (yet). Instead, the question of which bodies will include each item in the list is answered by the properties of each item in the list, including the position of each point. Specifically, the `base` z-axis `offset` coordinate (see below) controls the default values of the following two optional properties, if you omit them:
+There are no `body` parameters here. Instead, the question of which bodies will include each item in the list is answered by the properties of each item in the list, including the position of each point. Specifically, the `base` z-axis `offset` coordinate (see below) controls the default values of the following two optional properties, if you omit them:
 
 * `at-ground`: If `true`, or if omitted and the `base` z coordinate is not positive, the item will shape the bottom plate for the central housing, if any.
 * `above-ground`: If `true`, or if the `base` z coordinate is not negative, the item will shape the central housing itself as a body. If an adapter is included, the item will shape that too.
@@ -78,11 +78,13 @@ Those items which are “above ground” determine the shape of each outer edge 
 * `left-hand-alias` (optional): A symbolic name for this point on the interface. Specifically, `left-hand-alias` will identify the point on the left-hand edge of the housing in its standard orientation.
 * `right-hand-alias` (optional): A symbolic name for the point on the right-hand-side edge. Because the right-hand side of the main body of the keyboard is the source of the left-hand side (with `reflect`, hence with a central housing), a `right-hand-alias` has more general utility.
 
-In addition to all properties named thus far, each item in the `interface` list may also include an `adapter` section. This section, and everything in it, is optional and relates to the central housing adapter feature. Briefly, the adapter fits precisely onto each interface of the housing. Here’s what the `adapter` section can contain:
-* `offset`: Not to be confused with the base offset, this one is also three-dimensional and in mm. It’s added to the width of the adapter and the base position.
+In addition to all properties named thus far, each item in the `interface` list may also include an `adapter` subsection. This section, and everything in it, is optional and relates to the central housing adapter feature, described elsewhere in this document. Briefly, the adapter fits precisely onto each interface of the housing. Here’s what the `adapter` subsection can contain:
 * `alias`: A symbolic name for this point on the side of the adapter facing away from the central housing. Notice that the side facing toward the central housing is coterminous with the interface itself, so the corresponding point on it is named by `right-hand-alias`.
+* `segments`: A map of integer segment IDs to three-dimensional offsets in mm. In this map, segment 0 refers to the outer shell of the adapter, and any offset provided for it is added to both the width of the adapter and the base position when determining the exact shape of the adapter. Segment 1 refers to the inside of the adapter; any offset provided for it is relative to the sum of the final position of segment 0 and the central housing’s thickness, which acts as a radial inset.
 
-The following example covers only one vertex on the housing and one corresponding vertex on its adapter, and is therefore not a complete interface. That said, it does show all of the properties one item in the `interface` list can have, with realistic values.
+`segments` resembles an entry in the `by-key` section of parameters. There are two important differences: Segment IDs other than 0 and 1 cannot be targeted, and because the offset for segment 1 is applied only after housing thickness, it does not provide total and direct control. Notice also that adapter segment offsets refer to global vector space.
+
+The following example covers only one vertex on the housing and two corresponding vertices on its adapter, and is therefore not a complete interface. That said, it does show all of the properties one item in the `interface` list can have, with realistic values.
 
 ```
   interface:
@@ -93,10 +95,14 @@ The following example covers only one vertex on the housing and one correspondin
       left-hand-alias: housing-side-1L
       right-hand-alias: housing-side-1R
     adapter:
-      offset: [10, 0, 0]
       alias: adapter-side-1
+      segments:
+        "0": [10, 0, 0]
+        "1": [-1, 0, 0]
 ```
-In this example, the vertex named `adapter-side-1` will be placed 10 mm plus the overall width of the adapter away from `housing-side-1R`, with the adapter covering the intervening distance, so that the shell of the adapter touches both vertices, and the housing only touches one. Given that the `base` z coordinate is zero, both `at-ground` and `above-ground` have their default values and are therefore redundant.
+In this example, the vertex named `adapter-side-1` will be placed 10 mm plus the overall width of the adapter away from `housing-side-1R`, with the adapter covering the intervening distance, so that the shell of the adapter touches both vertices, and the housing only touches one. Given that the `base` z coordinate is zero, both `at-ground` and `above-ground` have their default values and are therefore redundant in the example.
+
+The example’s segment-1 offset puts a gradient on the outer face of the adapter, the side facing away from the central housing. Such a gradient can be useful for joining the adapter to key walls with `tweaks`.
 
 Aliases for vertices on the interface itself, as opposed to the adapter, are useful mainly when you anchor features like an MCU holder to the central housing. Doing so, you need to be aware that the central housing has both symmetric and asymmetric properties. Its basic shape, including everything you can determine with `interface`, will be bilaterally symmetric. Adapters and their fasteners, and bottom plates, are also symmetric, except for threaded holes. By contrast, central-housing-specific `tweaks` and MCU holders will only appear on the specific side of the housing that you indicate, breaking symmetry.
 
@@ -113,7 +119,7 @@ Here’s an example of a valid, minimal, triangular profile, like a little ridge
 ```
 In this example, the high point in the middle is offset on the x axis, giving the edge of the central housing a slant as seen from infinite y. Notice also that the lowest z coordinate is 0, which places this central housing on the floor, inside the `mask`. This is not required. A lower z coordinate will cause the `mask` to open the bottom of the central housing, which is usually more practical for running wires through the keyboard. Notice that if you do use a lower z coordinate and you still want the two lower points to be included in the central housing as a body, you will need to set `above-ground` to `true`, as an explicit addition to the two items at the extremes.
 
-The DMOTE application uses the `interface` to construct OpenSCAD polyhedrons. OpenSCAD and CGAL have many requirements upon polyhedrons and a carelessly constructed interface will violate them, resulting in a central housing that cannot be rendered or printed. As a rule of thumb, define your interface moving **clockwise** from the point of view of positive infinite x, like the tent example above. Be especially careful with `adapter` offsets on the y and z axes, and try to keep the housing itself more than twice as broad as its wall thickness.
+The DMOTE application uses the `interface` to construct OpenSCAD polyhedrons. OpenSCAD and CGAL have many requirements upon polyhedrons and a carelessly constructed interface will violate them, resulting in a central housing that cannot be rendered or printed. As a rule of thumb, define your interface moving **clockwise** from the point of view of positive infinite x, like the tent example above. Be especially careful with `adapter` segment offsets on the y and z axes, and try to keep the housing itself more than twice as broad as its wall thickness.
 
 It may not be obvious why `at-ground` and `above-ground` are mutually independent of one another and of the `base` z coordinate that gives them their default values. The main reason for this design is to allow points that are “ethereal”, appearing in neither body. Ethereal points are similar to `secondaries`, except that unlike `secondaries`, they are influenced by width settings and not tied to other points on the interface. They are intended as anchors for key clusters and tweaks, where their responsiveness to width alone comes in handy as you work out the precise shape of the housing.
 
@@ -129,7 +135,7 @@ If this is `true`, add an adapter for the central housing.
 
 ### Parameter <a id="adapter-width">`width`</a>
 
-The approximate width of the adapter on each side of the central housing, along its axis (the x axis). Individual points on the adapter can be offset from this width using the `interface` list.
+The approximate width of the adapter on each side of the central housing, along its axis (the x axis). Individual points on the adapter can be offset from this width using the `interface` list’s `segments` maps.
 
 ### Section <a id="adapter-lip">`lip`</a>
 

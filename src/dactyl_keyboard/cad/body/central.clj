@@ -141,7 +141,8 @@
   "Get raw offsets for each point on the interface."
   [interface]
   [(map #(get-in % [:base :offset] [0 0 0]) interface)
-   (map #(get-in % [:adapter :offset] [0 0 0]) interface)])
+   (map #(get-in % [:adapter :segments 0] [0 0 0]) interface)
+   (map #(get-in % [:adapter :segments 1] [0 0 0]) interface)])
 
 (defn- get-widths
   "Get half the width of the central housing and the full width of its
@@ -150,14 +151,28 @@
   [(/ (getopt :central-housing :shape :width) 2)
    (getopt :central-housing :adapter :width)])
 
-(defn- resolve-offsets
+(defn- resolve-shell-offsets
   "Find the 3D coordinates of points on the outer shell of passed interface."
   [getopt interface]
   (let [[half-width adapter-width] (get-widths getopt)
-        [base adapter] (get-offsets interface)
+        [base adapter0 _] (get-offsets interface)
         gabel (shift-points base 0 half-width)]
     [gabel
-     (mapv (partial mapv + [adapter-width 0 0]) gabel (shift-points adapter))]))
+     (mapv (partial mapv + [adapter-width 0 0]) gabel (shift-points adapter0))]))
+
+(defn- resolve-point-offsets
+  "Find the 3D coordinates of more points on the adapter.
+  This extends resolve-shell-offsets with points on the inside of the adapter,
+  which is typically not valid for small subsets of the interface."
+  [getopt interface]
+  (let [[_ _ adapter1] (get-offsets interface)
+        adapter-thickness (getopt :central-housing :shape :thickness)
+        [gabel adapter-outer] (resolve-shell-offsets getopt interface)]
+    [gabel
+     adapter-outer
+     (mapv (partial mapv +)
+           (shift-points adapter-outer adapter-thickness)
+           adapter1)]))
 
 (defn- filter-indexed
   "Filter an interface list while annotating it with its source indices."
@@ -201,16 +216,16 @@
   (let [[half-width _] (get-widths getopt)
         thickness (getopt :central-housing :shape :thickness)
         [cross-indexed items] (index-map interface :above-ground)
-        [base-offsets _] (get-offsets items)
-        [right-gabel-outer adapter-outer] (resolve-offsets getopt items)
+        [base-offsets _ _] (get-offsets items)
+        [outer adapter0 adapter1] (resolve-point-offsets getopt items)
         shift-left (partial shift-points (mirror-shift base-offsets))]
     (annotate-interface interface cross-indexed [:points :above-ground]
-      [:gabel :right 0] right-gabel-outer
+      [:gabel :right 0] outer
       [:gabel :right 1] (shift-points base-offsets thickness half-width)
       [:gabel :left 0] (shift-left 0 - half-width)
       [:gabel :left 1] (shift-left thickness - half-width)
-      [:adapter 0] adapter-outer
-      [:adapter 1] (shift-points adapter-outer thickness))))
+      [:adapter 0] adapter0
+      [:adapter 1] adapter1)))
 
 (defn- locate-lip
   "Derive 3D coordinates on the adapter lip of the central housing."
@@ -231,7 +246,7 @@
   [getopt interface]
   (let [[cross-indexed items] (index-map interface :at-ground)
         [gabel adapter] (map (partial mapv #(vec (take 2 %)))
-                             (resolve-offsets getopt items))]
+                             (resolve-shell-offsets getopt items))]
     (annotate-interface interface cross-indexed [:points :at-ground]
       [:gabel] gabel
       [:adapter] adapter)))
@@ -243,7 +258,7 @@
   housing or its floor, except as anchors."
   [getopt interface]
   (let [[cross-indexed items] (index-map interface (complement :above-ground))
-        [gabel adapter] (resolve-offsets getopt items)]
+        [gabel adapter] (resolve-shell-offsets getopt items)]
     (annotate-interface interface cross-indexed [:points :ethereal]
       [:gabel] gabel
       [:adapter] adapter)))

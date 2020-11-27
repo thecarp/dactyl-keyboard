@@ -59,7 +59,6 @@
 (spec/def ::above-ground boolean?)
 (spec/def :three/intrinsic-rotation ::tarmi/point-3d)
 
-(spec/def :central/offset ::tarmi/point-3d)
 (spec/def :central/left-hand-alias ::alias)
 (spec/def :central/right-hand-alias ::alias)
 (spec/def :central/starting-point keyword?)
@@ -75,6 +74,7 @@
 (spec/def :two/offset ::tarmi/point-2d)
 (spec/def :three/offset ::tarmi/point-3d)
 (spec/def :three/override (spec/coll-of (spec/nilable number?) :count 3))
+(spec/def :three/segments (spec/map-of integer? ::tarmi/point-3d))
 (spec/def :flexible/offset ::tarmi/point-2-3d)
 
 
@@ -90,10 +90,10 @@
 (spec/def ::nameable-spline (spec/coll-of ::spline-point))
 
 (spec/def :central/base
-  (spec/keys :req-un [:central/offset]
+  (spec/keys :req-un [:three/offset]
              :opt-un [:central/left-hand-alias :central/right-hand-alias]))
 (spec/def :central/adapter
-  (spec/keys :opt-un [:central/offset ::alias]))
+  (spec/keys :opt-un [:three/segments ::alias]))
 (spec/def :central/interface-node
   (spec/keys :req-un [:central/base]
              :opt-un [:central/adapter ::at-ground ::above-ground]))

@@ -350,7 +350,7 @@
    [[:wall :segments]
     {:default {0 [0 0 0]}
      :parse-fn (parse/map-of parse/integer (parse/tuple-of num))
-     :validate [(spec/map-of integer? ::tarmi-core/point-3d)]}
+     :validate [:three/segments]}
     "A map of segment IDs to xyz-coordinates in mm.\n"
     "\n"
     "This map is indexed by wall segment IDs, which are non-negative "

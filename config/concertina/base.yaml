@@ -531,36 +531,50 @@ central-housing:
         right-hand-alias: ci-near-base
       adapter:
         alias: ca-near-base
-        offset: [4, 0, 0]
+        segments:
+          "0": [4, 0, 0]
+          "1": [-1, 0, 0]
     - base:
         offset: [45, -55, 15]
       adapter:
         alias: ca-near-lower-1
-        offset: [4, 0, 0]
+        segments:
+          "0": [4, 0, 0]
+          "1": [-1, 0, 0]
     - base:
         offset: [45, -55, 20]
       adapter:
         alias: ca-near-lower-2
+        segments:
+          "1": [-1, 0, 0]
     - base:
         offset: [45, -55, 45]
         right-hand-alias: ci-near-lower-3
       adapter:
         alias: ca-near-lower-3
+        segments:
+          "1": [-1, 0, 0]
     - base:
         offset: [40, -55, 50]
       adapter:
         alias: ca-near-lower-4
-        offset: [10, 0, -2]
+        segments:
+          "0": [10, 0, -2]
+          "1": [-3, 0, 1]
     - base:
         offset: [0, -55, 90]
         right-hand-alias: ci-near-upper-1
       adapter:
         alias: ca-near-upper-1
+        segments:
+          "1": [2, 0, 0]
     - base:
         offset: [0, -55, 110]
         right-hand-alias: ci-near-upper-2
       adapter:
         alias: ca-near-upper-2
+        segments:
+          "1": [2, 0, 0]
     # The top, all the same height, with a couple of extra points just for
     # the bottom plate mixed in to bring the plate out of the way of the
     # bowled main key cluster.
@@ -569,6 +583,8 @@ central-housing:
         right-hand-alias: ci-near-roof
       adapter:
         alias: ca-near-roof
+        segments:
+          "1": [2, 0, 0]
     - base:
         offset: [35, -35, -10]  # Bottom plate only.
       adapter:
@@ -576,8 +592,10 @@ central-housing:
     - base:
         offset: [0, -27, 125]
       adapter:
-        offset: [15, 0, 0]
         alias: ca-mid-1
+        segments:
+          "0": [15, 0, 0]
+          "1": [1, -1, 0]
     - base:
         offset: [35, -5, -10]  # Bottom plate only.
       adapter:
@@ -586,40 +604,54 @@ central-housing:
         offset: [35, 25, 125]
         right-hand-alias: ci-far-roof
       adapter:
-        offset: [7, 0, 0]
         alias: ca-far-roof
+        segments:
+          "0": [7, 0, 0]
+          "1": [-1, 0, 0]
     # The far side, descending:
     - base:
         offset: [45, 40, 110]
       adapter:
         alias: ca-far-wall-5
+        segments:
+          "1": [-1, 0, 0]
     - base:
         offset: [45, 40, 60]
       adapter:
         alias: ca-far-wall-4
+        segments:
+          "1": [-1, 0, -1]
     - base:
         offset: [45, 40, 55]
         right-hand-alias: ci-far-wall
       adapter:
         alias: ca-far-wall-3
-        offset: [7, 0, 0]
+        segments:
+          "0": [7, 0, 0]
+          "1": [-1, 0, -1]
     - base:
         offset: [45, 40, 28]
       adapter:
         alias: ca-far-wall-2
-        offset: [7, 0, 0]
+        segments:
+          "0": [7, 0, 0]
+          "1": [-1, 0, 1]
     - base:
         offset: [45, 40, 23]
       adapter:
         alias: ca-far-wall-1
-        offset: [2, 0, 0]
+        segments:
+          "0": [2, 0, 0]
+          "1": [-1, 0, 1]
     - above-ground: true
       base:
         offset: [45, 40, -10]
         right-hand-alias: ci-far-base
       adapter:
         alias: ca-far-base
-        offset: [2, 0, 0]
+        segments:
+          "0": [2, 0, 0]
+          "1": [-1, 0, 0]
     # Finally, there’s an “ethereal” point that does not appear in the body or
     # the plate but is useful for anchoring key clusters.
     - at-ground: false

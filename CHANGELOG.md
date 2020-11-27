@@ -17,7 +17,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
     - The longer names, previously optional for MCU shelf sides, are no
       longer permitted there.
 - Disabled responsiveness to predicted resting key clearance by default.
-  This can be re-enabled with a new parameter (`use-key-travel`).
+  This can be re-enabled with a new parameter (`use-key-style`).
 - Moved and replaced some (other) parameters:
     - Made the `central-housing` → `adapter` → `receivers` → `thickness` →
       `bridge` parameter a section, with its function inherited by `tangential`
@@ -25,6 +25,8 @@ version 0.2.0, thus covering only a fraction of the project’s history.
     - Renamed MCU shelf `sides` to `rim` to prevent confusion with the
       adjacent `bevel` section of parameters, which is indexed by sides
       (compass points).
+    - Replaced central-housing interface settings for `adapter` → `offset`
+      with a `segments` map, as for key-cluster walls.
 - Bundled designs:
     - Stopped including threading on bolts in most models, for faster renders
       and reduced sensitivity to printer accuracy.
@@ -37,6 +39,8 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - Added support for custom key mounting plate size.
 - Added a parameter for central-housing interface fastener-receiver radial
   thickness.
+- Added precise control over segment 1 for each node on the central housing
+  interface’s adapter.
 - Bundled designs:
     - Added a configuration fragment for removing the rear housing of the DMOTE.
 

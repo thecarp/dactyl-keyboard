@@ -147,8 +147,8 @@
        :base (map-like {:offset vec
                         :left-hand-alias keyword
                         :right-hand-alias keyword})
-       :adapter (map-like {:offset vec
-                           :alias keyword})})))
+       :adapter (map-like {:alias keyword
+                           :segments (map-of integer (tuple-of num))})})))
 
 (def central-housing-normal-positions
   (tuple-of
