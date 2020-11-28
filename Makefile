@@ -86,7 +86,10 @@ test:
 	lein test
 
 # The “all” target is intended for code sanity checking before pushing a commit.
-all: test docs vis mutual dmote_62key
+all: test docs
+	lein run -c test/config/central_housing_1.yaml
+	lein run -c test/config/mount_types.yaml
+	make vis mutual dmote_62key
 
 clean:
 	-rm things/scad/*.scad

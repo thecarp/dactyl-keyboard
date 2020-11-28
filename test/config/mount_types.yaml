@@ -1,0 +1,36 @@
+# Complete configuration for testing key-switch fit.
+
+keys:
+  styles:
+    default:
+      switch-type: alps
+    mx:
+      switch-type: mx
+    kailh:
+      switch-type: kailh-pg1511
+key-clusters:
+  main:
+    anchoring:
+      intrinsic-offset: [0, 0, 9.5]
+    matrix-columns:
+      - rows-above-home: 0
+      - rows-above-home: 0
+      - rows-above-home: 0
+by-key:
+  parameters:
+    plate:
+      use-key-style: true
+    wall:
+      thickness: [1, 1, 5]
+      extent: 1
+      to-ground: true
+      segments:
+        "1": [0, 2, -2]
+  columns:
+    "1":
+      parameters:
+        key-style: mx
+    "2":
+      parameters:
+        key-style: kailh
+
