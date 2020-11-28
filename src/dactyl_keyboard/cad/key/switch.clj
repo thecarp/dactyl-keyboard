@@ -26,6 +26,13 @@
   [getopt cluster coord]
   (most-specific getopt [:wall :thickness 2] cluster coord))
 
+(defn switch-for-cap
+  "Simplify the choice of key switch type for a keycap.
+  This function translates types supported by this application, for the purpose
+  of modelling mounting plates, with more basic types relevant to keycaps and
+  supported by dmote-keycap."
+  [raw] (case raw, :kailh-pg1511 :mx, raw))
+
 (defn resting-clearance
   "Distance between key mount and lower edge of keycap at rest."
   [getopt cluster coord]
@@ -94,8 +101,8 @@
 
 (defn- plate-blocks
   "Basic block outlines of a switch for negative space."
-  [type-key]
-  (let [facts (get switch-facts type-key)
+  [mount-type]
+  (let [facts (mount-type switch-facts)
         {:keys [above-plate into-plate]} (:height facts)
         {hole-x :x, hole-y :y} (:hole facts)
         {foot-x :x, foot-y :y} (:foot facts)]
@@ -140,8 +147,20 @@
         (model/mirror [0 1 0]
           (alps-wing hole-x hole-y into-plate))))))
 
+(defn- pg1511-switch
+  "One cutout for just the tiny anteroposterior teeth common to Cherry MX and
+  its clones, as well as a square hole in the plate. The teeth are designed
+  to grip a 1.6 mm PCB."
+  []
+  (let [hole-y (get-in switch-facts [:mx :hole :x])]
+    (model/union
+      (plate-blocks :mx)
+      (model/hull
+        (model/translate [0 0 -2.1] (model/cube 4 (inc hole-y) 1))
+        (model/translate [0 0 -4]   (model/cube 6 (dec hole-y) 4))))))
+
 (defn- mx-switch
-  "One Cherry MX-compatible cutout model. Square."
+  "One Cherry MX-compatible cutout model with large nubs for lateral recesses."
   []
   (let [hole-xy (get-in switch-facts [:mx :hole :x])
         nub-radius 1
@@ -154,16 +173,15 @@
                    (model/translate [(+ 3/4 (/ hole-xy 2)) 0 (/ nub-depth -2)]
                      (model/cube 1.5 2.75 nub-depth))))]
     (model/difference
-      (plate-blocks :mx)
-      ;; MX-specific nubs that hold the keyswitch in place.
+      (pg1511-switch)
       (model/union
         nub
         (model/mirror [0 1 0] (model/mirror [1 0 0] nub))))))
 
 (defn single-switch
   "Negative space for the insertion of a key switch through a mounting plate."
-  [switch-type]
-  (case switch-type
+  [mount-type]
+  (case mount-type
     :alps (alps-switch)
+    :kailh-pg1511 (pg1511-switch)
     :mx (mx-switch)))
-

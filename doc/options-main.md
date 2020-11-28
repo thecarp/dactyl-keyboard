@@ -7,7 +7,7 @@ Each heading in this document represents a recognized configuration key in the m
 ## Table of contents
 - Section <a href="#user-content-keys">`keys`</a>
     - Parameter <a href="#user-content-keys-preview">`preview`</a>
-    - Parameter <a href="#user-content-keys-styles">`styles`</a>
+    - Freely keyed section <a href="#user-content-keys-styles">`styles`</a>
 - Freely keyed section <a href="#user-content-key-clusters">`key-clusters`</a>
 - Special section <a href="#user-content-by-key">`by-key`</a>
 - Parameter <a href="#user-content-secondaries">`secondaries`</a>
@@ -168,11 +168,17 @@ Keys, that is keycaps and electrical switches, are not the main focus of this ap
 
 If `true`, include models of the keycaps in place on the keyboard. This is intended for illustration as you work on a design, not for printing.
 
-### Parameter <a id="keys-styles">`styles`</a>
+### Freely keyed section <a id="keys-styles">`styles`</a>
 
-Here you name all the styles of keys on the keyboard and describe each style using parameters to the `keycap` function of the [`dmote-keycap`](https://github.com/veikman/dmote-keycap) library. Switch type is one aspect of key style.
+Here you name all the styles of keys on the keyboard and describe each style using parameters to the `keycap` function of the [`dmote-keycap`](https://github.com/veikman/dmote-keycap) library.
 
-These key styles determine the size of key mounting plates on the keyboard and what kind of holes are cut into those plates for the switches to fit inside. Negative space is also reserved above the plate for the movement of the keycap: A function of switch height, switch travel, and keycap shape. In addition, if the keyboard is curved, key styles help determine the spacing between key mounts.
+Key styles determine the size of key mounting plates on the keyboard and what kind of holes are cut into those plates for the switches to fit inside. Negative space is also reserved above the plate for the movement of the keycap: A function of switch height, switch travel, and keycap shape.
+
+`switch-type`, where you name a type of electromechanical switch, is one aspect of key style. The DMOTE application supports a superset of `dmote-keycap`’s switch types, because the added types differ only in the shape of the hole that goes through the mounting plate: Differences which are irrelevant to keycaps. The following options are thus recognized for `switch-type` in a key style:
+
+* `alps`: ALPS-style, including Matias.
+* `kailh-pg1511`: Cherry MX style except that there are no recesses in the lower body of the switch; this is true of Kailh PG1511 series switches, including KT and KS sub-series.
+* `mx`: Full Cherry MX style with lateral recesses in the lower body of the switch.
 
 In options by key, documented [here](options-nested.md), you specify which style of key is used for each position on the keyboard.
 

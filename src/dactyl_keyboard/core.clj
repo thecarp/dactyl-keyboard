@@ -136,14 +136,14 @@
     (reduce  ; Dynamic.
       (fn [coll key-style]
         (let [prop (getopt :keys :derived key-style)
-              {:keys [switch-type module-keycap module-switch]} prop]
+              {:keys [mount-type module-keycap module-switch]} prop]
           (assoc coll
             module-keycap
             {:name module-keycap
              :model-main (single-cap getopt key-style false)}
             module-switch  ; Uniqueness of input not guaranteed.
             {:name module-switch
-             :model-main (single-switch switch-type)})))
+             :model-main (single-switch mount-type)})))
       {}
       (keys (getopt :keys :styles)))))
 

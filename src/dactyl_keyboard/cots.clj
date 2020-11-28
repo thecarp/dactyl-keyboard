@@ -82,16 +82,23 @@
 
 (def switch-facts
   "Form factors of switches for the purpose of cutting holes into key mounting
-  plates. The dmote-keycap library models switches as such in more detail
-  for the contrasting purpose of modeling caps."
-  {:alps {:hole {:x 15.5,  :y 12.6}
-          :foot {:x 17.25, :y 14.25}
-          :height {:above-plate 7.6, :into-plate 4.5}
-          :description "ALPS-style, including Matias"}
-   :mx   {:hole {:x 14,    :y 14}
-          :foot {:x 15.5,  :y 15.5}
-          :height {:above-plate 5, :into-plate 5}
-          :description "Cherry MX style"}})
+  plates. The dmote-keycap library has data on the upper bodies of some of
+  these switches for the contrasting purpose of modelling caps."
+  {:alps         {:hole {:x 15.55,  :y 12.6}
+                  :foot {:x 17.25, :y 14.25}
+                  :height {:above-plate 7.6, :into-plate 4.5}
+                  :description "ALPS-style, including Matias"}
+   :kailh-pg1511 {:description
+                  (str "Cherry MX style except that there are no recesses in "
+                       "the lower body of the switch; "
+                       "this is true of Kailh PG1511 series switches, "
+                       "including KT and KS sub-series")}
+   :mx           {:hole {:x 14,    :y 14}
+                  :foot {:x 15.5,  :y 15.5}
+                  :height {:above-plate 5, :into-plate 5}
+                  :description
+                  (str "Full Cherry MX style with lateral recesses in the lower "
+                       "body of the switch")}})
 
 (defn support-list
   [coll]

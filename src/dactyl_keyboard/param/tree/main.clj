@@ -9,7 +9,6 @@
             [scad-tarmi.core :as tarmi-core]
             [scad-app.core :as appdata]
             [dmote-keycap.data :as capdata]
-            [dmote-keycap.schema :as capschema]
             [dactyl-keyboard.param.base :as base]
             [dactyl-keyboard.param.schema.valid :as valid]
             [dactyl-keyboard.param.schema.arb :as arb]
@@ -54,21 +53,28 @@
     "If `true`, include models of the keycaps in place on the keyboard. This "
     "is intended for illustration as you work on a design, not for printing."]
    [[:keys :styles]
-    {:default {:default {}} :parse-fn parse/keycap-map
-     :validate [(spec/map-of keyword? ::capschema/keycap-parameters)]}
+    {:freely-keyed true :default {:default {}} :parse-fn parse/keycap-map
+     :validate [(spec/map-of keyword? ::valid/comprehensive-key-style)]}
     "Here you name all the styles of keys on the keyboard and describe each "
     "style using parameters to the `keycap` function of the "
-    "[`dmote-keycap`](https://github.com/veikman/dmote-keycap) library. "
-    "Switch type is one aspect of key style.\n"
+    "[`dmote-keycap`](https://github.com/veikman/dmote-keycap) library.\n"
     "\n"
-    "These key styles determine the size of key mounting plates on the "
+    "Key styles determine the size of key mounting plates on the "
     "keyboard and what kind of holes are cut into those plates for the "
     "switches to fit inside. "
     "Negative space is also reserved above the plate for the movement "
     "of the keycap: A function of switch height, switch travel, and keycap "
-    "shape. In addition, if the keyboard is curved, key styles help determine "
-    "the spacing between key mounts.\n"
+    "shape.\n"
     "\n"
+    "`switch-type`, where you name a type of electromechanical switch, "
+    "is one aspect of key style. The DMOTE application supports a superset "
+    "of `dmote-keycap`’s switch types, because the added types differ only "
+    "in the shape of the hole that goes through the mounting plate: "
+    "Differences which are irrelevant to keycaps. "
+    "The following options are thus recognized for `switch-type` in a "
+    "key style:\n\n"
+    (cots/support-list cots/switch-facts)
+    "\n\n"
     "In options by key, documented [here](options-nested.md), you specify "
     "which style of key is used for each position on the keyboard."]
    [[:key-clusters]

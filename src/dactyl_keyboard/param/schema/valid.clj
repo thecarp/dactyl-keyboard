@@ -10,7 +10,9 @@
   (:require [clojure.spec.alpha :as spec]
             [scad-tarmi.core :as tarmi]
             [scad-klupe.iso :refer [head-length]]
-            [dactyl-keyboard.compass :as compass]))
+            [dmote-keycap.schema :as capschema]
+            [dactyl-keyboard.compass :as compass]
+            [dactyl-keyboard.cots :as cots]))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -27,6 +29,10 @@
     (fn [{:keys [m-diameter head-type] :as parameters}]
       (spec/valid? :scad-klupe.schema.base/bolt-length-parameters
         (assoc parameters :head-length (head-length m-diameter head-type))))))
+
+(spec/def ::switch-type (set (keys cots/switch-facts)))
+(spec/def ::comprehensive-key-style
+  (spec/and ::capschema/base-parameters (spec/keys :opt-un [::switch-type])))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;
