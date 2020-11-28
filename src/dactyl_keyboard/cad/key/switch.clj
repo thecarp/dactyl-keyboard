@@ -26,6 +26,16 @@
   [getopt cluster coord]
   (most-specific getopt [:wall :thickness 2] cluster coord))
 
+(defn resting-clearance
+  "Distance between key mount and lower edge of keycap at rest."
+  [getopt cluster coord]
+  (let [most #(most-specific getopt [:layout :clearance %] cluster coord)
+        prop (key-properties getopt cluster coord)
+        {:keys [switch-type skirt-length]} prop]
+    (if (most :use-key-style)
+      (measure/resting-clearance switch-type skirt-length)
+      (most :nominal))))
+
 (defn cap-channel-negative
   "The shape of a channel for a keycap to move in."
   [getopt cluster coord {h3 :height wd3 :top-width m :margin}]
@@ -40,7 +50,7 @@
         {sx :x, sy :y} (get-in switch-facts [switch-type :foot])
         [wx wy] (measure/skirt-footprint prop)
         h1 (measure/pressed-clearance switch-type skirt-length)
-        h2 (measure/resting-clearance switch-type skirt-length)]
+        h2 (resting-clearance getopt cluster coord)]
     (model/color (:cap-negative misc/colours)
       (model/translate [0 0 (mount-thickness getopt cluster coord)]
         (loft

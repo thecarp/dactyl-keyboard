@@ -25,6 +25,7 @@
             [dactyl-keyboard.compass :as compass]
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.misc :as misc]
+            [dactyl-keyboard.cad.key.switch :refer [resting-clearance]]
             [dactyl-keyboard.param.access
              :refer [most-specific resolve-anchor key-properties
                      salient-anchoring compensator]]
@@ -78,10 +79,8 @@
         delta-r (delta-fn neutral index)
         angle-product (* angle-factor delta-f)
         flat-distance (* space (- index neutral))
-        key-prop (key-properties getopt cluster coord)
-        {:keys [switch-type skirt-length]} key-prop
         radius (+ (if (most :layout :clearance :use-key-style)
-                    (measure/resting-clearance switch-type skirt-length)
+                    (resting-clearance getopt cluster coord)
                     (most :layout :clearance :nominal))
                   (/ (/ space 2) (Math/sin (/ angle-factor 2))))
         ortho-x (- (* delta-r (+ -1 (- (* radius (Math/sin angle-factor))))))
