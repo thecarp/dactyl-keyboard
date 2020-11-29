@@ -1,9 +1,9 @@
 ## The Dactyl-ManuForm keyboard: Opposable Thumb Edition
 
-This, the DMOTE, is an application for designing a keyboard that suits you. By
-editing text files of parameters, you can change:
+This, the DMOTE application, is a CAD program for designing a keyboard that
+suits you. By editing text files of parameters, you can change:
 
-- Switch type: ALPS or MX.
+- Switch type: ALPS, Kailh (PG1511) or MX.
 - Microcontroller type: Lots of options.
 - Size and shape.
     - Row and column curvature and tilt (tenting).
@@ -54,7 +54,7 @@ general CAD libraries for `scad-clj` have grown up around the DMOTE project.
 
 ### License
 
-Copyright © 2015-2020 Matthew Adereth, Tom Short, Viktor Eikman et al.
+Copyright © 2015–2020 Matthew Adereth, Tom Short, Viktor Eikman et al.
 
 The source code for generating the models (everything excluding the
 [things/](things/) and [resources/](resources/) directories) is distributed
