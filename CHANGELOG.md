@@ -41,6 +41,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - Added support for custom key mounting plate size.
 - Added a parameter for central-housing interface fastener-receiver radial
   thickness.
+- Added thinning of central-housing adapter lips based on DFM error setting.
 - Added precise control over segment 1 for each node on the central housing
   interface’s adapter.
 - Bundled designs:

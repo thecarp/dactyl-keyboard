@@ -241,6 +241,22 @@
       [:lip :inside 0] (shift-in 0 - (+ (width :taper) (width :inner)))
       [:lip :inside 1] (shift-in thickness - (width :inner)))))
 
+(defn- locate-shim
+  "Derive 3D coordinates on a shim: Negative space for printer inaccuracy.
+  Use one quarter of the general error setting as the inset, because the lip is
+  positive space and the inset works more like a radius than a diameter (see
+  scad-tarmi)."
+  [getopt interface]
+  (let [[cross-indexed items] (index-map interface :above-ground)
+        from (fn [& tail]
+               (map #(get-in % (concat [:points :above-ground] tail)) items))
+        error (/ (abs (getopt :dfm :error-general)) 4)
+        overshoot 20]  ; Arbitrary, meant to cover receivers.
+    (annotate-interface interface cross-indexed [:points :above-ground]
+      [:dfm-shim :inside 1] (shift-points (from :gabel :right 1) error)
+      [:dfm-shim :outside 0] (shift-points (from :gabel :right 0) 0 overshoot)
+      [:dfm-shim :outside 1] (shift-points (from :lip :outside 0) error overshoot))))
+
 (defn- locate-at-ground-points
   "Derive some useful 2D coordinates for drawing bottom plates."
   [getopt interface]
@@ -298,6 +314,7 @@
         (map categorize-explicitly)
         (locate-above-ground-points getopt)
         (locate-lip getopt)  ; Uses results from locate-above-ground-points.
+        (locate-shim getopt)  ; Uses results from locate-lip.
         (locate-at-ground-points getopt)
         (locate-non-above-ground-points getopt)
         (vec))}))  ; Because literal lists are not indexable.
@@ -354,6 +371,15 @@
     (vertices getopt [:lip :outside 1])
     (vertices getopt [:lip :inside 0])
     (vertices getopt [:lip :inside 1])))
+
+(defn dfm-shim
+  "A shim of negative space between the lip and the adapter."
+  [getopt]
+  (poly/tuboid
+    (vertices getopt [:dfm-shim :outside 0])
+    (vertices getopt [:dfm-shim :outside 1])
+    (vertices getopt [:gabel :right 0])
+    (vertices getopt [:dfm-shim :inside 1])))
 
 (defn adapter-shell
   "An OpenSCAD polyhedron describing an adapter for the central housing.

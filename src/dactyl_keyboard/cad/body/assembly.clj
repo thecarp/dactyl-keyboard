@@ -135,6 +135,8 @@
                      (getopt :mcu :support :lock :include))
             (mcu/lock-fixture-composite getopt))
           (sandbox/positive getopt))
+        (when (getopt :central-housing :derived :include-adapter)
+          (bilateral (central/dfm-shim getopt)))
         (custom-negatives getopt :central-housing))
       (when (and (getopt :main-body :bottom-plate :include)
                  (getopt :main-body :bottom-plate :preview))
