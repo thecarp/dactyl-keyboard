@@ -373,7 +373,9 @@ Preview mode. If `true`, put a model of the plate in the same file as the case i
 
 #### Parameter <a id="main-body-bottom-plate-combine">`combine`</a>
 
-If `true`, combine wrist rests for the case and the bottom plate into a single model, when both are enabled. This is typically used with the `solid` style of wrest rest.
+If `true`, combine bottom plates for the main body, the central housing and the wrist rests, where possible.
+
+This can be used with the `solid` style of wrist rest to get a plate that helps lock the wrist rest to the main body, and with a central housing to get a single, bilateral plate that extends from side to side. This larger plate can require a large build volume.
 
 #### Parameter <a id="main-body-bottom-plate-thickness">`thickness`</a>
 

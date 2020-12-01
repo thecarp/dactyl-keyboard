@@ -231,8 +231,13 @@
       :chiral (getopt :main-body :reflect)})
    ;; Bottom plate(s):
    (when (and (getopt :main-body :bottom-plate :include)
-              (not (and (getopt :main-body :bottom-plate :combine)
-                        (getopt :wrist-rest :bottom-plate :include))))
+              (not (and (getopt :wrist-rest :bottom-plate :include)
+                        (getopt :main-body :bottom-plate :combine))))
+     ;; Include a general one-sided case bottom plate.
+     ;; This can be useful even if the keyboard has a central housing, though
+     ;; only insofar as the combined plate, below, can be larger than the build
+     ;; volume of the target printer, so that two mirrored copies of the
+     ;; one-sided plate must be made.
      {:name "bottom-plate-case"
       :modules (conditional-bottom-plate-modules getopt)
       :model-precursor bottom/case-complete
@@ -242,6 +247,7 @@
               (getopt :wrist-rest :bottom-plate :include)
               (not (and (getopt :main-body :bottom-plate :include)
                         (getopt :main-body :bottom-plate :combine))))
+     ;; Include a bottom plate just for each wrist rest in isolation.
      {:name "bottom-plate-wrist-rest"
       :modules (conditional-bottom-plate-modules getopt)
       :model-precursor bottom/wrist-complete
@@ -249,13 +255,18 @@
       :chiral (getopt :main-body :reflect)})
    (when (and (getopt :main-body :bottom-plate :include)
               (getopt :main-body :bottom-plate :combine)
-              (getopt :wrist-rest :include)
-              (getopt :wrist-rest :bottom-plate :include))
+              (or (and (getopt :wrist-rest :include)
+                       (getopt :wrist-rest :bottom-plate :include))
+                  (getopt :central-housing :derived :include-main)))
+     ;; Include a bottom plate that is as large as possible, covering the
+     ;; combination of each main body and its wrist rest, where applicable, and
+     ;; the entire central housing, where applicable.
      {:name "bottom-plate-combined"
       :modules (conditional-bottom-plate-modules getopt)
       :model-precursor bottom/combined-complete
       :rotation [0 π 0]
-      :chiral (getopt :main-body :reflect)})])
+      :chiral (and (getopt :main-body :reflect)
+                   (not (getopt :central-housing :include)))})])
 
 (defn get-key-style-precursors
   "Collate key-style precursors. No maquettes though; they’re no fun to print."

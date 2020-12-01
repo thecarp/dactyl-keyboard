@@ -497,6 +497,7 @@ main-body:
   reflect: true
   bottom-plate:
     include: true
+    combine: true
     thickness: 2
     installation:
       thickness: 1

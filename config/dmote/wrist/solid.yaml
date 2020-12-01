@@ -1,5 +1,11 @@
 # Configuration fragment for a solid bridge between case and wrist rest.
 
+main-body:
+  bottom-plate:
+    combine: true
+wrist-rest:
+  include: true
+  style: solid
 secondaries:
   wrb-case:
     anchoring:
@@ -91,6 +97,3 @@ tweaks:
         - [wrb-rest]
         - [plinth-mid0]
         - [plinth-mid1]
-wrist-rest:
-  include: true
-  style: solid

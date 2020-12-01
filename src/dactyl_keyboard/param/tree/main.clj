@@ -290,9 +290,12 @@
     "the case it closes. Not for printing."]
    [[:main-body :bottom-plate :combine]
     {:default false :parse-fn boolean}
-    "If `true`, combine wrist rests for the case and the bottom plate into a "
-    "single model, when both are enabled. This is typically used with the "
-    "`solid` style of wrest rest."]
+    "If `true`, combine bottom plates for the main body, the central housing "
+    "and the wrist rests, where possible.\n\n"
+    "This can be used with the `solid` style of wrist rest to get a plate "
+    "that helps lock the wrist rest to the main body, and with a central "
+    "housing to get a single, bilateral plate that extends from side to side. "
+    "This larger plate can require a large build volume."]
    [[:main-body :bottom-plate :thickness]
     {:default 1 :parse-fn num}
     "The thickness (i.e. height) in mm of all bottom plates you choose to "

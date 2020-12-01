@@ -99,6 +99,10 @@ and test to make sure you have not damaged other styles.
 
 ## General printing tips
 
+The DMOTE application places each of its outputs in the same coordinate space.
+If you want to print two parts physically joined together, you can usually
+achieve this by concatenating the contents of multiple SCAD files.
+
 ### Accuracy
 
 If you are printing holes for threaded fasteners as part of your design, please
@@ -119,6 +123,10 @@ hole, you can drill it to clean up the print and then tap it.
 
 ### Bottom plates
 
+When you include a central housing in your design and request a combined bottom
+plate, you also get a pair of symmetrical one-sided bottom plates, just in case
+the combined version is too large for your printer.
+
 If you are using threaded fasteners to connect bottom plates directly to the
 case (the `threads` style), please see the advice on accuracy, above.
 
@@ -127,15 +135,6 @@ fasteners are helping, consider a greater `thickness` for the anchor points,
 along with slicer settings that give you thinner walls and less infill. This
 should give you a more yielding threaded hole, decreasing the risk of a
 delaminating crack, but increasing the risk of threads deforming over time.
-
-If your design includes a central housing, two bottom plates meet beneath it.
-If you would prefer to join these two plates as a single plate, a simple way
-to do so on Linux is by concatening the full contents of each OpenSCAD file
-into a third:
-
-```shell-script
-cat things/scad/*-hand-bottom-plate-case.scad > things/scad/comboplate.scad
-```
 
 ### Wrist rests
 

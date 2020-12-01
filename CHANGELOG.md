@@ -39,6 +39,8 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - Added a nominal clearance parameter to make it easier to design for multiple
   different types of switches and keycaps.
 - Added support for custom key mounting plate size.
+- Extended the concept of a combined bottom plate to include the central
+  housing.
 - Added a parameter for central-housing interface fastener-receiver radial
   thickness.
 - Added thinning of central-housing adapter lips based on DFM error setting.
