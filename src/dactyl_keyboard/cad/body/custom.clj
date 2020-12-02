@@ -15,7 +15,8 @@
     :central-housing (getopt :central-housing :include)
     :wrist-rest (getopt :wrist-rest :include)
     ;; TODO: Don’t blow the stack in case of a loop.
-    (included? getopt (getopt :custom-bodies id :parent-body))))
+    (and (getopt :custom-bodies id :include)
+         (included? getopt (getopt :custom-bodies id :parent-body)))))
 
 (defn collect
   "Collate information on body inclusion and relationships."

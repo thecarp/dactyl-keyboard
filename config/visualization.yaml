@@ -8,6 +8,16 @@ main-body:
     preview: true
 central-housing:
   preview: true
+custom-bodies:
+  # This section names custom bodies defined in various bundled configurations.
+  # They are turned off, so that they will be rendered as part of their parent
+  # bodies, resulting in a preview of an assembled keyboard.
+  left-hand-bookend:
+    include: false
+  right-hand-bookend:
+    include: false
+  thumb-cluster:
+    include: false
 mcu:
   preview: true
   support:

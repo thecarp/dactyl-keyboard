@@ -403,12 +403,9 @@
    [[:custom-bodies]
     (let [custom-body
           [[]  ;; This header will not be rendered and is therefore empty.
-           [[:include]
-            {:default false :parse-fn boolean}]
-           [[:parent-body]
-            {:default :main :parse-fn keyword}]
-           [[:cut]
-            arb/parameter-metadata]]]
+           [[:include] {:default false :parse-fn boolean}]
+           [[:parent-body] {:default :main :parse-fn keyword}]
+           [[:cut] arb/parameter-metadata]]]
       {:freely-keyed true
        :default {}
        :parse-fn (parse/map-of keyword (base/parser-with-defaults custom-body))
