@@ -118,12 +118,14 @@
   Written for use as an OpenSCAD module."
   [getopt]
   (let [prop (partial getopt :main-body :bottom-plate :installation)
-        bolt-prop (prop :fasteners :bolt-properties)]
-    (model/rotate [π 0 0]
-      (merge-bolt
-       {:compensator (compensator getopt), :negative true}
-       bolt-prop
-       (when (prop :inserts :include) {:include-threading false})))))
+        bolt-prop (prop :fasteners :bolt-properties)
+        channel-length (:channel-length bolt-prop 0)]
+    (->> (merge-bolt
+           {:compensator (compensator getopt), :negative true}
+           bolt-prop
+           (when (prop :inserts :include) {:include-threading false}))
+      (model/rotate [π 0 0])
+      (maybe/translate [0 0 channel-length]))))
 
 (defn insert-negative
   "The shape of a heat-set insert for a screw."

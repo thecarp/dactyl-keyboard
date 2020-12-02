@@ -32,6 +32,8 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       and reduced sensitivity to printer accuracy.
     - Slightly thicker bottom plate on DMOTE.
     - M3 screws instead of M4 in `config/base.yaml`.
+    - Improved USB B port and MCU shelf on Concertina.
+    - Slightly deeper holes through bottom plate on Concertina.
 
 ### New
 - Added support Kailh’s PG1511 series switches and similar MX clones without
@@ -41,6 +43,8 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - Added support for custom key mounting plate size.
 - Extended the concept of a combined bottom plate to include the central
   housing.
+- Added a side effect of `channel-length` to bottom-plate fasteners, allowing
+  them to rise from the floor.
 - Added a parameter for central-housing interface fastener-receiver radial
   thickness.
 - Added thinning of central-housing adapter lips based on DFM error setting.

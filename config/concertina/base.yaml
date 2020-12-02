@@ -506,6 +506,7 @@ main-body:
           m-diameter: 3
           total-length: 8
           include-threading: false
+          channel-length: 0.75
         positions:
         - anchor: ca-near-base
           extrinsic-offset: [0.5, 8.2, 0]

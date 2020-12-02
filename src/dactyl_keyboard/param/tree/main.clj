@@ -349,7 +349,13 @@
     "bottom plate."]
    [[:main-body :bottom-plate :installation :fasteners :bolt-properties]
     stock/implicit-threaded-bolt-metadata
-    stock/threaded-bolt-documentation]
+    stock/threaded-bolt-documentation
+    "\n\n"
+    "The optional `channel-length` property has a special side effect in this "
+    "context. With a channel length of zero (the default), bolts start from "
+    "the floor beneath the bottom plate. A positive channel length raises "
+    "each bolt up into the plate. This is useful mainly with very thick "
+    "plates. Cf. `dfm` → `bottom-plate` → `fastener-plate-offset`."]
    [[:main-body :bottom-plate :installation :fasteners :positions]
     {:default []
      :parse-fn (parse/tuple-of anch/parse-anchoring)
