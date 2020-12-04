@@ -78,4 +78,4 @@ resolution:
 dfm:
   error-general: -0.5
   bottom-plate:
-    fastener-plate-offset: -0.5
+    fastener-plate-offset: -0.1
