@@ -25,7 +25,7 @@ custom-bodies:
            {anchoring: {intrinsic-offset: [-100, 0, 0]},
             size: [200, 200, 200]}]
 flanges:
-  left-assortment-divider-flange:
+  assortment-bookend-flanges:
     bolt-properties:
       m-diameter: 3
       head-type: countersunk
