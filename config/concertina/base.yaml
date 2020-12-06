@@ -698,13 +698,9 @@ central-housing:
       intrinsic-rotation: [0, 0, π]
       intrinsic-offset: [72, -51, 0]
     # These go in the “bookend” pieces, custom bodies for the assortment mod.
-    # Of particular concern here is the need to support the external USB port
-    # on both sides.
     - anchor: origin
-      intrinsic-offset: [92, 36, 0]
-    - anchor: origin
-      intrinsic-rotation: [0, 0, π]
-      intrinsic-offset: [92, -51, 0]
+      intrinsic-offset: [87, -7.5, 0]
+      intrinsic-rotation: [0, 0, π/2]
     - anchor: ci-near-base
       intrinsic-rotation: [0, 0, π]
       intrinsic-offset: [-10, 4, 0]
@@ -1145,7 +1141,8 @@ tweaks:
   - hull-around:  # Wide sides on the port holder for printing ease and strength.
     - [ext-usb-holder]
     - [ext-usb-holder,
-       {anchoring: {side: NW, segment: 1, intrinsic-offset: [-13, 0, 0]}}]
+       {anchoring: {side: NW, segment: 1, intrinsic-offset: [-24, -5, 0]},
+        size: [1, 10, 10]}]
     - [ext-usb-holder,
        {anchoring: {side: NE, segment: 1, intrinsic-offset: [5, 0, 0]}}]
   - positive: false  # A dent in the interior wall, for DFM.

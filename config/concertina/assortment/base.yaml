@@ -31,7 +31,7 @@ flanges:
       head-type: countersunk
       point-type: cone
       include-threading: true
-      total-length: 8
+      total-length: 12
       channel-length: 4
     positions:
     # Mounting screws in the loft of the central housing:
@@ -172,30 +172,49 @@ tweaks:
   # filled with non-printed material to add mass to the keyboard.
   central-dividers:
   - at-ground: true
+    chunk-size: 2
     hull-around:
-    - [assortment1, NE, {anchoring: {intrinsic-offset: [0.5, -1, 0]}, size: 1}]
-    - [assortment1, SE, {anchoring: {intrinsic-offset: [0.5, 0, 0]}, size: 1}]
+    - hull-around:
+      - [assortment1, NE, {anchoring: {intrinsic-offset: [0.5, -1, 0]}, size: 1}]
+      - [assortment1, SE, {anchoring: {intrinsic-offset: [0.5, 0, 0]}, size: 1}]
+    - hull-around:
+      - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [0.5, -1, -14]}, size: 1}]
+      - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [0.5, 0, -14]}, size: 1}]
+    - hull-around:
+      - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [4.5, -1, -18]}, size: 1}]
+      - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [4.5, 0, -18]}, size: 1}]
   - at-ground: true
+    chunk-size: 2
     hull-around:
-    - [assortment1, NW, {anchoring: {intrinsic-offset: [-0.5, -1, 0]}, size: 1}]
-    - [assortment1, SW, {anchoring: {intrinsic-offset: [-0.5, 0, 0]}, size: 1}]
+    - hull-around:
+      - [assortment1, NW, {anchoring: {intrinsic-offset: [-0.5, -1, 0]}, size: 1}]
+      - [assortment1, SW, {anchoring: {intrinsic-offset: [-0.5, 0, 0]}, size: 1}]
+    - hull-around:
+      - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [-0.5, -1, -14]}, size: 1}]
+      - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [-0.5, 0, -14]}, size: 1}]
+    - hull-around:
+      - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [-4.5, -1, -18]}, size: 1}]
+      - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [-4.5, 0, -18]}, size: 1}]
+  # Irregular tetrahedrons going into the loft of the central housing.
+  # Their shape is meant ease cable runs and printing, while accommodating long
+  # flange screws.
   central-flanges:
   - hull-around:
     - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [0, -2, 0]}, size: 4}]
     - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [0, -15, 7.5]}, size: [4, 1, 15]}]
-    - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [30, -2, 0]}, size: 4}]
+    - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [50, -2, 0]}, size: 4}]
   - hull-around:
     - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [0, -2, 0]}, size: 4}]
     - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [0, -15, 7.5]}, size: [4, 1, 15]}]
-    - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [-30, -2, 0]}, size: 4}]
+    - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [-50, -2, 0]}, size: 4}]
   - hull-around:
     - [assortment1, SW, 0, {anchoring: {intrinsic-offset: [0, 0, 0]}, size: 4}]
     - [assortment1, SW, 0, {anchoring: {intrinsic-offset: [0, 13, 7.5]}, size: [4, 1, 15]}]
-    - [assortment1, SW, 0, {anchoring: {intrinsic-offset: [30, 0, 0]}, size: 4}]
+    - [assortment1, SW, 0, {anchoring: {intrinsic-offset: [50, 0, 0]}, size: 4}]
   - hull-around:
     - [assortment1, SE, 0, {anchoring: {intrinsic-offset: [0, 0, 0]}, size: 4}]
     - [assortment1, SE, 0, {anchoring: {intrinsic-offset: [0, 13, 7.5]}, size: [4, 1, 15]}]
-    - [assortment1, SE, 0, {anchoring: {intrinsic-offset: [-30, 0, 0]}, size: 4}]
+    - [assortment1, SE, 0, {anchoring: {intrinsic-offset: [-50, 0, 0]}, size: 4}]
   # Extra shapes beneath the lowest assortment port contain the last sets of
   # flange screws and magnets.
   outer-bosses-beneath-drawer-stack:
