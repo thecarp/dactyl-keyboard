@@ -1,0 +1,52 @@
+# Configuration fragment for a reset button in the Concertina.
+#
+# This extends the assortment drawer feature to make space for an MCU reset
+# button in one wall of the bottom drawer’s slot.
+#
+# The hardware is assumed to be any common type of normally-open push-button
+# switch on a 6x6 mm base, supported by some tiny plate that must be supplied
+# separately and pierced for connecting the legs to the MCU’s reset and ground
+# holes.
+#
+# Two screw holes appear next to the port, for attaching its plate. With a
+# specific type of button in mind, these holes should probably be replaced by a
+# simpler port holder of specific depth, and negative tweaks for its legs.
+
+ports:
+  reset-hole:
+    include: true
+    type: custom
+    size: 6.2
+    alignment:
+      side: N
+      segment: 1
+    anchoring:
+      anchor: assortment3
+      side: W
+      segment: 1
+      intrinsic-rotation: [0, 0, π/-2]
+    holder:
+      include: false  # See comment in the header of this file.
+      thickness: 2
+flanges:
+  reset-button-flange:
+    bolt-properties:
+      m-diameter: 3
+      head-type: countersunk
+      include-threading: false
+      unthreaded-length: 6
+      channel-length: 1
+    positions:
+    - anchoring:
+        anchor: reset-hole
+        side: NW
+        segment: 1
+        intrinsic-rotation: [π/-2, 0, 0]
+        intrinsic-offset: [10, -0.15, 0]
+    - anchoring:
+        anchor: reset-hole
+        side: NE
+        segment: 1
+        intrinsic-rotation: [π/-2, 0, 0]
+        intrinsic-offset: [-10, -0.15, 0]
+

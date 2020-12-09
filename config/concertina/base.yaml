@@ -469,7 +469,7 @@ main-body:
   bottom-plate:
     include: true
     combine: true
-    thickness: 2
+    thickness: 2.5
     installation:
       thickness: 1
       fasteners:

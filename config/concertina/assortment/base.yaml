@@ -136,12 +136,14 @@ flanges:
         intrinsic-offset: [2, -6, -2]
 ports:
   # Three slots follow for assortment drawers, with 4 mm between each.
+  # There is also a 4 mm lip above the top drawer, partly for aesthetics and
+  # partly because this is the natural place to grab and lift the keyboard.
   assortment1:
     include: true
     size: [162, 92, 25]
     anchoring:
       intrinsic-rotation: [0, 0, π]
-      intrinsic-offset: [0, -55, 108]
+      intrinsic-offset: [0, -55, 106]
     holder:
       include: true
       alias: assortment1-holder
@@ -151,7 +153,7 @@ ports:
     size: [162, 92, 25]
     anchoring:
       intrinsic-rotation: [0, 0, π]
-      intrinsic-offset: [0, -55, 79]
+      intrinsic-offset: [0, -55, 77]
     holder:
       include: true
       alias: assortment2-holder
@@ -161,7 +163,7 @@ ports:
     size: [162, 92, 25]
     anchoring:
       intrinsic-rotation: [0, 0, π]
-      intrinsic-offset: [0, -55, 50]
+      intrinsic-offset: [0, -55, 48]
     holder:
       include: true
       alias: assortment3-holder
@@ -178,11 +180,11 @@ tweaks:
       - [assortment1, NE, {anchoring: {intrinsic-offset: [0.5, -1, 0]}, size: 1}]
       - [assortment1, SE, {anchoring: {intrinsic-offset: [0.5, 0, 0]}, size: 1}]
     - hull-around:
-      - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [0.5, -1, -14]}, size: 1}]
-      - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [0.5, 0, -14]}, size: 1}]
+      - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [0.5, -1, -12]}, size: 1}]
+      - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [0.5, 0, -12]}, size: 1}]
     - hull-around:
-      - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [4.5, -1, -18]}, size: 1}]
-      - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [4.5, 0, -18]}, size: 1}]
+      - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [4.5, -1, -16]}, size: 1}]
+      - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [4.5, 0, -16]}, size: 1}]
   - at-ground: true
     chunk-size: 2
     hull-around:
@@ -190,52 +192,44 @@ tweaks:
       - [assortment1, NW, {anchoring: {intrinsic-offset: [-0.5, -1, 0]}, size: 1}]
       - [assortment1, SW, {anchoring: {intrinsic-offset: [-0.5, 0, 0]}, size: 1}]
     - hull-around:
-      - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [-0.5, -1, -14]}, size: 1}]
-      - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [-0.5, 0, -14]}, size: 1}]
+      - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [-0.5, -1, -12]}, size: 1}]
+      - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [-0.5, 0, -12]}, size: 1}]
     - hull-around:
-      - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [-4.5, -1, -18]}, size: 1}]
-      - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [-4.5, 0, -18]}, size: 1}]
+      - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [-4.5, -1, -16]}, size: 1}]
+      - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [-4.5, 0, -16]}, size: 1}]
   # Irregular tetrahedrons going into the loft of the central housing.
   # Their shape is meant ease cable runs and printing, while accommodating long
   # flange screws.
   central-flanges:
   - hull-around:
     - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [0, -2, 0]}, size: 4}]
-    - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [0, -15, 7.5]}, size: [4, 1, 15]}]
+    - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [0, -15, 9]}, size: [4, 1, 18]}]
     - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [50, -2, 0]}, size: 4}]
   - hull-around:
     - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [0, -2, 0]}, size: 4}]
-    - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [0, -15, 7.5]}, size: [4, 1, 15]}]
+    - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [0, -15, 9]}, size: [4, 1, 18]}]
     - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [-50, -2, 0]}, size: 4}]
   - hull-around:
     - [assortment1, SW, 0, {anchoring: {intrinsic-offset: [0, 0, 0]}, size: 4}]
-    - [assortment1, SW, 0, {anchoring: {intrinsic-offset: [0, 13, 7.5]}, size: [4, 1, 15]}]
+    - [assortment1, SW, 0, {anchoring: {intrinsic-offset: [0, 13, 9]}, size: [4, 1, 18]}]
     - [assortment1, SW, 0, {anchoring: {intrinsic-offset: [50, 0, 0]}, size: 4}]
   - hull-around:
     - [assortment1, SE, 0, {anchoring: {intrinsic-offset: [0, 0, 0]}, size: 4}]
-    - [assortment1, SE, 0, {anchoring: {intrinsic-offset: [0, 13, 7.5]}, size: [4, 1, 15]}]
+    - [assortment1, SE, 0, {anchoring: {intrinsic-offset: [0, 13, 9]}, size: [4, 1, 18]}]
     - [assortment1, SE, 0, {anchoring: {intrinsic-offset: [-50, 0, 0]}, size: 4}]
   # Extra shapes beneath the lowest assortment port contain the last sets of
   # flange screws and magnets.
   outer-bosses-beneath-drawer-stack:
   - hull-around:
-    - [assortment3, NW, 2,
-       {anchoring: {intrinsic-offset: [6, -11, -2]}, size: [12, 22, 4]}]
-    - [assortment3, NW, 2,
-       {anchoring: {intrinsic-offset: [9, -11, -1]}, size: [18, 22, 2]}]
+    - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [6, -11, -2]}, size: [12, 22, 4]}]
+    - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [9, -11, -1]}, size: [18, 22, 2]}]
   - hull-around:
-    - [assortment3, NE, 2,
-       {anchoring: {intrinsic-offset: [-6, -11, -2]}, size: [12, 22, 4]}]
-    - [assortment3, NE, 2,
-       {anchoring: {intrinsic-offset: [-9, -11, -1]}, size: [18, 22, 2]}]
+    - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [-6, -11, -2]}, size: [12, 22, 4]}]
+    - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [-9, -11, -1]}, size: [18, 22, 2]}]
   inner-bosses-beneath-drawer-stack:
   - hull-around:
-    - [assortment3, SW, 2,
-       {anchoring: {intrinsic-offset: [6, 8, -2]}, size: [12, 18, 4]}]
-    - [assortment3, SW, 2,
-       {anchoring: {intrinsic-offset: [9, 8, -1]}, size: [18, 18, 2]}]
+    - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [6, 8, -2]}, size: [12, 18, 4]}]
+    - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [9, 8, -1]}, size: [18, 18, 2]}]
   - hull-around:
-    - [assortment3, SE, 2,
-       {anchoring: {intrinsic-offset: [-6, 8, -2]}, size: [12, 18, 4]}]
-    - [assortment3, SE, 2,
-       {anchoring: {intrinsic-offset: [-9, 8, -1]}, size: [18, 18, 2]}]
+    - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [-6, 8, -2]}, size: [12, 18, 4]}]
+    - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [-9, 8, -1]}, size: [18, 18, 2]}]
