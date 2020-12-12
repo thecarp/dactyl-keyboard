@@ -9,7 +9,7 @@ SOURCECODE := $(shell find src -type f)
 
 # YAML files are not made from here but are treated as targets anyway.
 # This is a means of activating them by naming them as CLI arguments.
-.PHONY: $(YAML) dmote_62key macropad_12key vis low mutual caseside all docs test clean
+.PHONY: $(YAML) dmote_62key macropad_12key vis low mutual caseside all doc-images docs test clean
 
 # CONFFILES is a space-separated array of relative paths to selected
 # YAML files, starting with a near-neutral base.
@@ -56,31 +56,54 @@ mutual: dmote/wrist/threaded_mutual.yaml
 caseside: dmote/wrist/threaded_caseside.yaml
 
 # The remainder of this file describes more typical Make work, starting with
-# the compilation of the Clojure application into a Java .jar and specific
-# pieces of documentation.
+# the compilation of the Clojure application into a Java .jar, specific
+# pieces of documentation, and illustrations for documentation.
 
 target/dmote.jar: $(SOURCECODE)
 	lein uberjar
 
+doc/img/butty/bare.png: target/dmote.jar
+	java -jar target/dmote.jar
+	openscad -o $@ --imgsize 300,200 things/scad/body-main.scad
+
+doc/img/butty/min.png: target/dmote.jar resources/butty/config/02.yaml
+	java -jar target/dmote.jar -c resources/butty/config/02.yaml
+	openscad -o $@ --camera 0,0,8,50,0,50,70 --imgsize 400,260 --render 1 things/scad/body-main.scad
+
+doc/img/butty/base.png: target/dmote.jar resources/butty/config/02.yaml
+	java -jar target/dmote.jar -c config/base.yaml -c resources/butty/config/02.yaml
+	openscad -o $@ --camera 0,0,8,50,0,50,70 --imgsize 400,260 --render 1 things/scad/body-main.scad
+
+doc-images: doc/img/*/*
+
 doc/options-main.md: target/dmote.jar
-	java -jar target/dmote.jar --describe-parameters main > doc/options-main.md
+	java -jar target/dmote.jar --describe-parameters main > $@
 
 doc/options-central.md: target/dmote.jar
-	java -jar target/dmote.jar --describe-parameters central > doc/options-central.md
+	java -jar target/dmote.jar --describe-parameters central > $@
 
 doc/options-clusters.md: target/dmote.jar
-	java -jar target/dmote.jar --describe-parameters clusters > doc/options-clusters.md
+	java -jar target/dmote.jar --describe-parameters clusters > $@
 
 doc/options-nested.md: target/dmote.jar
-	java -jar target/dmote.jar --describe-parameters nested > doc/options-nested.md
+	java -jar target/dmote.jar --describe-parameters nested > $@
 
 doc/options-ports.md: target/dmote.jar
-	java -jar target/dmote.jar --describe-parameters ports > doc/options-ports.md
+	java -jar target/dmote.jar --describe-parameters ports > $@
 
 doc/options-wrist-rest-mounts.md: target/dmote.jar
-	java -jar target/dmote.jar --describe-parameters wrist-rest-mounts > doc/options-wrist-rest-mounts.md
+	java -jar target/dmote.jar --describe-parameters wrist-rest-mounts > $@
 
-docs: doc/options-central.md doc/options-clusters.md doc/options-main.md doc/options-nested.md doc/options-ports.md doc/options-wrist-rest-mounts.md
+doc/tutorial-1a.md: resources/butty/*/*
+	echo "<!--This document was generated. Edit the source files under “resources/butty”, not this file.-->" > $@
+	cat resources/butty/doc/01.md \
+			resources/butty/config/02.yaml \
+			resources/butty/doc/03.md \
+			resources/butty/config/04.yaml \
+			resources/butty/doc/05.md \
+			>> $@
+
+docs: doc-images doc/options-central.md doc/options-clusters.md doc/options-main.md doc/options-nested.md doc/options-ports.md doc/options-wrist-rest-mounts.md doc/tutorial-1a.md
 
 test:
 	lein test

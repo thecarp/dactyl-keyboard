@@ -1,0 +1,8 @@
+key-clusters:
+  main:
+    anchoring:
+      extrinsic-offset: [0, 0, 10]
+by-key:
+  parameters:
+    plate:
+      use-key-style: true

@@ -1,0 +1,4 @@
+key-clusters:
+  main:
+    anchoring:
+      extrinsic-offset: [0, 0, 10]
