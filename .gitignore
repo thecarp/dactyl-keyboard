@@ -7,4 +7,5 @@
 .lein-*
 *.gcode
 *.scad
-/target
+target
+things
