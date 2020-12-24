@@ -546,12 +546,12 @@ In the following example, `A` and `B` are key aliases that would be defined else
   bridge-between-A-and-B:
     - chunk-size: 2
       hull-around:
-      - [A, SSE, 0]
-      - [B, NNE, 0]
+      - [A, SE]
+      - [B, NE]
       - [A, SSW, 0, 3]
 ```
 
-The example is interpreted to mean that a plate should be created stretching from the south-by-southeast corner of `A` to the north-by-northeast corner of `B`. Due to `chunk-size` 2, that first plate will be joined to, but not fully hulled with, a second plate from `B` back to a different corner of `A`, with a longer stretch of (all) wall segments running down the corner of `A`.
+The example is interpreted to mean that a plate should be created stretching from the southeast corner of `A` to the northeast corner of `B`. Due to `chunk-size` 2, that first plate will be joined to, but not fully hulled with, a second plate from `B` back to a different corner of `A`, with a longer stretch of wall segments (0 through 3 inclusive) running down the south-by-southwest corner of `A`.
 
 In `tweaks` nodes, the `body` setting is meaningful, but should not refer to a custom body, because the shape of a custom body is always fully determined by its parent body and its cut. Tweaks are not applied to custom bodies as such.
 
