@@ -90,6 +90,26 @@ doc/img/butty/open-back-rear.png: target/dmote.jar config/base.yaml resources/bu
 	java -jar target/dmote.jar -c config/base.yaml -c resources/butty/config/16.yaml
 	openscad -o $@ --camera 0,0,6,120,0,150,78 --imgsize 400,300 --render 1 things/scad/body-main.scad
 
+doc/img/butty/rear-housing.png: target/dmote.jar config/base.yaml resources/butty/config/22.yaml
+	java -jar target/dmote.jar -c config/base.yaml -c resources/butty/config/22.yaml
+	openscad -o $@ --camera 12,0,17,50,0,40,100 --imgsize 500,400 --render 1 things/scad/body-main.scad
+
+doc/img/butty/mcu-1-default.png: target/dmote.jar config/base.yaml resources/butty/config/24.yaml
+	java -jar target/dmote.jar -c config/base.yaml -c resources/butty/config/24.yaml
+	openscad -o $@ --camera 8,0,13,55,0,35,90 --imgsize 500,400 --render 1 things/scad/body-main.scad
+
+doc/img/butty/mcu-2-preview.png: target/dmote.jar config/base.yaml resources/butty/config/26.yaml
+	java -jar target/dmote.jar -c config/base.yaml -c resources/butty/config/26.yaml
+	openscad -o $@ --camera 0,0,0,60,0,30,130 --imgsize 500,420 --render 1 things/scad/body-main.scad
+
+doc/img/butty/mcu-3-inplace.png: target/dmote.jar config/base.yaml resources/butty/config/28a.yaml
+	java -jar target/dmote.jar -c config/base.yaml -c resources/butty/config/28a.yaml
+	openscad -o $@ --camera 10,0,-11,135,0,35,100 --imgsize 500,420 --render 1 things/scad/body-main.scad
+
+doc/img/butty/mcu-4-port.png: target/dmote.jar config/base.yaml resources/butty/config/28b.yaml
+	java -jar target/dmote.jar -c config/base.yaml -c resources/butty/config/28b.yaml
+	openscad -o $@ --camera -9,0,-8,70,0,165,110 --imgsize 500,440 --render 1 things/scad/body-main.scad
+
 doc-images: doc/img/*/*
 
 doc/options-main.md: target/dmote.jar
@@ -130,7 +150,23 @@ doc/tutorial-1b.md: resources/butty/*/*
 			resources/butty/doc/17.md \
 			> $@
 
-docs: doc-images doc/options-central.md doc/options-clusters.md doc/options-main.md doc/options-nested.md doc/options-ports.md doc/options-wrist-rest-mounts.md doc/tutorial-1a.md doc/tutorial-1b.md
+doc/tutorial-1c.md: resources/butty/*/*
+	! diff resources/butty/config/22.yaml resources/butty/config/24.yaml --unchanged-line-format='' --new-line-format='%L' > /tmp/24.yaml
+	! diff resources/butty/config/22.yaml resources/butty/config/26.yaml --unchanged-line-format='' --new-line-format='%L' > /tmp/26.yaml
+	! diff resources/butty/config/22.yaml resources/butty/config/28a.yaml --unchanged-line-format='' --new-line-format='%L' > /tmp/28.yaml
+	cat resources/butty/doc/artefact_alert.md \
+			resources/butty/doc/21.md \
+			resources/butty/config/22.yaml \
+			resources/butty/doc/23.md \
+			/tmp/24.yaml \
+			resources/butty/doc/25.md \
+			/tmp/26.yaml \
+			resources/butty/doc/27.md \
+			/tmp/28.yaml \
+			resources/butty/doc/29.md \
+			> $@
+
+docs: doc-images doc/options-central.md doc/options-clusters.md doc/options-main.md doc/options-nested.md doc/options-ports.md doc/options-wrist-rest-mounts.md doc/tutorial-1a.md doc/tutorial-1b.md doc/tutorial-1c.md
 
 test:
 	lein test

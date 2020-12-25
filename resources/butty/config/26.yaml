@@ -1,0 +1,32 @@
+key-clusters:
+  main:
+    anchoring:
+      extrinsic-offset: [0, 0, 10]
+by-key:
+  parameters:
+    wall:
+      extent: 1
+      to-ground: true
+  sides:
+    NNE:
+      parameters:
+        wall:
+          extent: 0
+          to-ground: false
+    NNW:
+      parameters:
+        wall:
+          extent: 0
+          to-ground: false
+main-body:
+  rear-housing:
+    include: true
+    anchoring:
+      extrinsic-offset: [0, 32, 0]
+    size: [22, 30, 9]
+    thickness:
+      walls: 1.5
+      roof: 1.5
+mcu:
+  include: true
+  preview: true
