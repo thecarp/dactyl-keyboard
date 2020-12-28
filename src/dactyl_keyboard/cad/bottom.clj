@@ -306,7 +306,7 @@
   [getopt]
   (maybe/union
     (key/metacluster cluster-floor-polygon getopt)
-    (mask/at-ground getopt (posts-for-main-plate getopt))
+    (mask/at-ground getopt (filter some? (posts-for-main-plate getopt)))
     (tweak/floor-polygons getopt)
     (when (getopt :central-housing :derived :include-main)
       (chousing-floor-polygon getopt))

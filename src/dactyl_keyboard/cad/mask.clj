@@ -57,6 +57,6 @@
 
 (defn at-ground
   "A 2D slice of a 3D object at z=0, restricted by the bottom-plate mask."
-  [getopt & shapes]
+  [getopt shapes]
   (when-not (empty? shapes)
     (main-bottom-plate getopt 2 (apply model/cut shapes))))
