@@ -110,6 +110,42 @@ doc/img/butty/mcu-4-port.png: target/dmote.jar config/base.yaml resources/butty/
 	java -jar target/dmote.jar -c config/base.yaml -c resources/butty/config/28b.yaml
 	openscad -o $@ --camera -9,0,-8,70,0,165,110 --imgsize 500,440 --render 1 things/scad/body-main.scad
 
+doc/img/butty/tweak-roof-1.png: target/dmote.jar config/base.yaml resources/butty/config/32.yaml
+	java -jar target/dmote.jar -c config/base.yaml -c resources/butty/config/32.yaml
+	openscad -o $@ --camera 0,14,3,70,0,90,45 --imgsize 500,500 --render 1 things/scad/body-main.scad
+
+doc/img/butty/tweak-roof-2.png: target/dmote.jar config/base.yaml resources/butty/config/34a.yaml
+	java -jar target/dmote.jar -c config/base.yaml -c resources/butty/config/34a.yaml
+	openscad -o $@ --camera 0,14,6,70,0,90,30 --imgsize 500,280 --render 1 things/scad/body-main.scad
+
+doc/img/butty/tweak-roof-3.png: target/dmote.jar config/base.yaml resources/butty/config/34b.yaml
+	java -jar target/dmote.jar -c config/base.yaml -c resources/butty/config/34b.yaml
+	openscad -o $@ --camera 0,14,6,70,0,90,30 --imgsize 500,280 --render 1 things/scad/body-main.scad
+
+doc/img/butty/tweak-roof-4.png: target/dmote.jar config/base.yaml resources/butty/config/34c.yaml
+	java -jar target/dmote.jar -c config/base.yaml -c resources/butty/config/34c.yaml
+	openscad -o $@ --camera 0,14,6,70,0,90,30 --imgsize 500,280 --render 1 things/scad/body-main.scad
+
+doc/img/butty/tweak-roof-5-side.png: target/dmote.jar config/base.yaml resources/butty/config/34d.yaml
+	java -jar target/dmote.jar -c config/base.yaml -c resources/butty/config/34d.yaml
+	openscad -o $@ --camera 0,14,6,70,0,90,30 --imgsize 500,280 --render 1 things/scad/body-main.scad
+
+doc/img/butty/tweak-roof-5-bottom.png: target/dmote.jar config/base.yaml resources/butty/config/34d.yaml
+	java -jar target/dmote.jar -c config/base.yaml -c resources/butty/config/34d.yaml
+	openscad -o $@ --camera 0,14,6.5,100,0,90,36 --imgsize 500,400 --render 1 things/scad/body-main.scad
+
+doc/img/butty/tweak-roof-6-bottom.png: target/dmote.jar config/base.yaml resources/butty/config/34e.yaml
+	java -jar target/dmote.jar -c config/base.yaml -c resources/butty/config/34e.yaml
+	openscad -o $@ --camera 0,14,6.5,100,0,90,36 --imgsize 500,400 --render 1 things/scad/body-main.scad
+
+doc/img/butty/tweak-wall-side.png: target/dmote.jar config/base.yaml resources/butty/config/36.yaml
+	java -jar target/dmote.jar -c config/base.yaml -c resources/butty/config/36.yaml
+	openscad -o $@ --camera 8,0,13,55,0,35,90 --imgsize 500,400 --render 1 things/scad/body-main.scad
+
+doc/img/butty/tweak-wall-bottom.png: target/dmote.jar config/base.yaml resources/butty/config/36.yaml
+	java -jar target/dmote.jar -c config/base.yaml -c resources/butty/config/36.yaml
+	openscad -o $@ --camera 10,0,-11,135,0,35,100 --imgsize 500,420 --render 1 things/scad/body-main.scad
+
 doc-images: doc/img/*/*
 
 doc/options-main.md: target/dmote.jar
@@ -166,7 +202,37 @@ doc/tutorial-1c.md: resources/butty/*/*
 			resources/butty/doc/29.md \
 			> $@
 
-docs: doc-images doc/options-central.md doc/options-clusters.md doc/options-main.md doc/options-nested.md doc/options-ports.md doc/options-wrist-rest-mounts.md doc/tutorial-1a.md doc/tutorial-1b.md doc/tutorial-1c.md
+doc/tutorial-1d.md: resources/butty/*/*
+	! diff resources/butty/config/28b.yaml resources/butty/config/32.yaml --unchanged-line-format='' --new-line-format='%L' > /tmp/32.yaml
+	! diff resources/butty/config/32.yaml resources/butty/config/34a.yaml --unchanged-line-format='' --new-line-format='%L' > /tmp/34a.yaml
+	! diff resources/butty/config/32.yaml resources/butty/config/34b.yaml --unchanged-line-format='' --new-line-format='%L' > /tmp/34b.yaml
+	! diff resources/butty/config/32.yaml resources/butty/config/34c.yaml --unchanged-line-format='' --new-line-format='%L' > /tmp/34c.yaml
+	! diff resources/butty/config/32.yaml resources/butty/config/34d.yaml --unchanged-line-format='' --new-line-format='%L' > /tmp/34d.yaml
+	! diff resources/butty/config/32.yaml resources/butty/config/34e.yaml --unchanged-line-format='' --new-line-format='%L' > /tmp/34e.yaml
+	! diff resources/butty/config/34e.yaml resources/butty/config/36.yaml --unchanged-line-format='' --new-line-format='%L' > /tmp/36.yaml
+	cat resources/butty/doc/artefact_alert.md \
+			resources/butty/doc/31.md \
+			resources/yamlblock_begin.md \
+			resources/butty/config/32.yaml \
+			resources/yamlblock_end.md \
+			resources/butty/doc/33a.md \
+			resources/yamlblock_begin.md /tmp/32.yaml resources/yamlblock_end.md \
+			resources/butty/doc/33b.md \
+			resources/yamlblock_begin.md /tmp/34a.yaml resources/yamlblock_end.md \
+			resources/butty/doc/35a.md \
+			resources/yamlblock_begin.md /tmp/34b.yaml resources/yamlblock_end.md \
+			resources/butty/doc/35b.md \
+			resources/yamlblock_begin.md /tmp/34c.yaml resources/yamlblock_end.md \
+			resources/butty/doc/35c.md \
+			resources/yamlblock_begin.md /tmp/34d.yaml resources/yamlblock_end.md \
+			resources/butty/doc/35d.md \
+			resources/yamlblock_begin.md /tmp/34e.yaml resources/yamlblock_end.md \
+			resources/butty/doc/35e.md \
+			resources/yamlblock_begin.md /tmp/36.yaml resources/yamlblock_end.md \
+			resources/butty/doc/37.md \
+			> $@
+
+docs: doc-images doc/options-central.md doc/options-clusters.md doc/options-main.md doc/options-nested.md doc/options-ports.md doc/options-wrist-rest-mounts.md doc/tutorial-1a.md doc/tutorial-1b.md doc/tutorial-1c.md doc/tutorial-1d.md
 
 test:
 	lein test
