@@ -146,6 +146,22 @@ doc/img/butty/tweak-wall-bottom.png: target/dmote.jar config/base.yaml resources
 	java -jar target/dmote.jar -c config/base.yaml -c resources/butty/config/36.yaml
 	openscad -o $@ --camera 10,0,-11,135,0,35,100 --imgsize 500,420 --render 1 things/scad/body-main.scad
 
+doc/img/butty/bottom-1-base.png: target/dmote.jar config/base.yaml resources/butty/config/42.yaml
+	java -jar target/dmote.jar -c config/base.yaml -c resources/butty/config/42.yaml
+	openscad -o $@ --camera 14,0,17,45,0,45,85 --imgsize 500,380 --render 1 things/scad/bottom-plate-case.scad
+
+doc/img/butty/bottom-2-tweak.png: target/dmote.jar config/base.yaml resources/butty/config/44.yaml
+	java -jar target/dmote.jar -c config/base.yaml -c resources/butty/config/44.yaml
+	openscad -o $@ --camera 14,0,17,45,0,45,85 --imgsize 500,380 --render 1 things/scad/bottom-plate-case.scad
+
+doc/img/butty/bottom-3-fasteners.png: target/dmote.jar config/base.yaml resources/butty/config/46.yaml
+	java -jar target/dmote.jar -c config/base.yaml -c resources/butty/config/46.yaml
+	openscad -o $@ --camera 14,0,17,45,0,45,85 --imgsize 500,380 --render 1 things/scad/bottom-plate-case.scad
+
+doc/img/butty/main-body-fasteners.png: target/dmote.jar config/base.yaml resources/butty/config/46.yaml
+	java -jar target/dmote.jar -c config/base.yaml -c resources/butty/config/46.yaml
+	openscad -o $@ --camera -13,0,32,135,0,150,160 --imgsize 500,500 --render 1 things/scad/body-main.scad
+
 doc-images: doc/img/*/*
 
 doc/options-main.md: target/dmote.jar
@@ -230,6 +246,24 @@ doc/tutorial-1d.md: resources/butty/*/*
 			resources/butty/doc/35e.md \
 			resources/yamlblock_begin.md /tmp/36.yaml resources/yamlblock_end.md \
 			resources/butty/doc/37.md \
+			> $@
+
+doc/tutorial-1e.md: resources/butty/*/*
+	! diff resources/butty/config/36.yaml resources/butty/config/42.yaml --unchanged-line-format='' --new-line-format='%L' > /tmp/42.yaml
+	! diff resources/butty/config/42.yaml resources/butty/config/44.yaml --unchanged-line-format='' --new-line-format='%L' > /tmp/44.yaml
+	! diff resources/butty/config/44.yaml resources/butty/config/46.yaml --unchanged-line-format='' --new-line-format='%L' > /tmp/46.yaml
+	cat resources/butty/doc/artefact_alert.md \
+			resources/butty/doc/41.md \
+			resources/yamlblock_begin.md resources/butty/config/44.yaml resources/yamlblock_end.md \
+			resources/butty/doc/43a.md \
+			resources/yamlblock_begin.md /tmp/42.yaml resources/yamlblock_end.md \
+			resources/butty/doc/43b.md \
+			resources/yamlblock_begin.md /tmp/44.yaml resources/yamlblock_end.md \
+			resources/butty/doc/45a.md \
+			resources/yamlblock_begin.md resources/butty/config/46.yaml resources/yamlblock_end.md \
+			resources/butty/doc/45b.md \
+			resources/yamlblock_begin.md /tmp/46.yaml resources/yamlblock_end.md \
+			resources/butty/doc/47.md \
 			> $@
 
 docs: doc-images doc/options-central.md doc/options-clusters.md doc/options-main.md doc/options-nested.md doc/options-ports.md doc/options-wrist-rest-mounts.md doc/tutorial-1a.md doc/tutorial-1b.md doc/tutorial-1c.md doc/tutorial-1d.md
