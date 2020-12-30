@@ -2,7 +2,7 @@
 
 # Key cluster configuration options
 
-Each heading in this document represents a recognized configuration key in YAML files for a DMOTE variant.
+Each heading in this document represents a recognized configuration key in [YAML files for the DMOTE application](configuration.md).
 
 This specific document describes options for the general outline and position of any individual cluster of keys. One set of such options will exist for each entry in `key-clusters`, a section documented [here](options-main.md).
 

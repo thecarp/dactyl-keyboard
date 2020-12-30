@@ -2,7 +2,9 @@
 
 # General configuration options
 
-Each heading in this document represents a recognized configuration key in the main body of a YAML file for a DMOTE variant. Other documents cover special sections of this one in more detail.
+Each heading in this document represents a recognized configuration key in [YAML files for the DMOTE application](configuration.md).
+
+Other documents cover special sections of this one in more detail.
 
 ## Table of contents
 - Section <a href="#user-content-keys">`keys`</a>

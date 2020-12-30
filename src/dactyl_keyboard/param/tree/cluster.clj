@@ -15,7 +15,7 @@
   Default values and parsers here are secondary. Validators are used."
   [["# Key cluster configuration options\n\n"
     "Each heading in this document represents a recognized configuration key "
-    "in YAML files for a DMOTE variant.\n\n"
+    "in [YAML files for the DMOTE application](configuration.md).\n\n"
     "This specific document describes options for the general outline "
     "and position of any individual cluster of keys. One set of such "
     "options will exist for each entry in `key-clusters`, a section "

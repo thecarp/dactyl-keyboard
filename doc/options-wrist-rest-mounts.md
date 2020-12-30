@@ -2,7 +2,7 @@
 
 # Options for connecting a wrist rest
 
-Each heading in this document represents a recognized configuration key in YAML files for a DMOTE variant.
+Each heading in this document represents a recognized configuration key in [YAML files for the DMOTE application](configuration.md).
 
 This specific document describes options for each “mount”, a pair of cuboid blocks used to anchor threaded fasteners for the `threaded` style of wrist rest, a parameter documented [here](options-main.md). Each block in the pair is part of a different body: One is part of the wrist rest, and the other a “partner” body.
 

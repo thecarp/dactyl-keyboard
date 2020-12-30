@@ -43,8 +43,8 @@
   This absorbs major subsections from elsewhere."
   [["# General configuration options\n\n"
     "Each heading in this document represents a recognized configuration key "
-    "in the main body of a YAML file for a DMOTE variant. Other documents "
-    "cover special sections of this one in more detail."]
+    "in [YAML files for the DMOTE application](configuration.md).\n\n"
+    "Other documents cover special sections of this one in more detail."]
    [[:keys]
     "Keys, that is keycaps and electrical switches, are not the main focus of "
     "this application, but they influence the shape of the case."]

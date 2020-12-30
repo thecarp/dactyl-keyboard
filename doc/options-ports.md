@@ -2,7 +2,7 @@
 
 # Port configuration options
 
-Each heading in this document represents a recognized configuration key in YAML files for a DMOTE variant.
+Each heading in this document represents a recognized configuration key in [YAML files for the DMOTE application](configuration.md).
 
 This specific document describes options for the shape and position of any individual port. One set of such options will exist for each entry in `ports`, a section whose place in the larger hierarchy can be seen [here](options-main.md). Example uses for ports:
 
