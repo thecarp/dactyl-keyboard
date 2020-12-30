@@ -4,7 +4,8 @@ As noted in the [introduction](intro.md), the DMOTE application is governed by
 parameters in YAML files. This document outlines some of the general concepts
 you need to understand such files. The specifics are documented starting
 [here](options-main.md), with subordinate, nested structures linked through
-that document.
+that document. For a more hands-on approach to the process of configuration,
+starting from scratch, try the [Butty tutorial](tutorial-1a.md).
 
 ## Picking files
 

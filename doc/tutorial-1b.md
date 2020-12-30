@@ -122,7 +122,8 @@ Butty’s back.
 The wall we have seen so far is drawn between eight sides of Butty, designated
 by eight intermediate points of the compass. By providing exceptions for the
 “north by northeast” and “north by northwest” sides, restoring default settings
-for those sides alone, we break the wall where we want to.
+for those sides alone, we break the wall where we want to. The metaphor of the
+compass is explained [here](configuration.md).
 
 ![Open back, oblique view from the front](img/butty/open-back-front.png)
 

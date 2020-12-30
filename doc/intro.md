@@ -1,4 +1,4 @@
-# Introduction to the DMOTE application
+# Introduction
 
 The DMOTE application is a CAD application. It grew out of a single keyboard
 design (the DMOTE keyboard) and now comes bundled with several different
@@ -11,12 +11,12 @@ DMOTE application as such, not its individual bundled designs or any firmware.
 Concrete build guides and other peripheral documents can be found elsewhere:
 
 * A less technical, more [general introduction](https://viktor.eikman.se/article/the-dmote/).
-* A guide to [planning for wiring](https://viktor.eikman.se/article/3d-keyboard-wiring/) in 3D.
 * Build guides:
     * The [Dactyl](https://github.com/adereth/dactyl-keyboard/tree/master/guide),
       which is currently not bundled with the DMOTE application.
     * The [Dactyl-ManuForm](https://github.com/tshort/dactyl-keyboard).
     * The [Concertina](https://viktor.eikman.se/article/concertina-v060-build-guide/).
+* A guide to [planning for wiring](https://viktor.eikman.se/article/3d-keyboard-wiring/) in 3D.
 
 As for microcontroller firmware, QMK works great and has good documentation. In
 that project, the DMOTE is filed as a version of the Dactyl-ManuForm
@@ -62,6 +62,20 @@ On Debian GNU+Linux, the first three are accomplished with `apt install clojure
 leiningen make`. The necessary Clojure libraries will be pulled in when you run
 Leiningen.
 
+### Designing a keyboard
+
+The Clojure application combines configuration details from zero or more
+[YAML](https://en.wikipedia.org/wiki/YAML) files like the ones under `config`.
+The process is [documented here](configuration.md). Together, the files you
+select define the shape of your keyboard.
+
+Even if you go with a bundled design, you might want to customize it for your
+own hands. You won’t need to touch the source code for such a personal fit.
+Just edit the YAML or add your own file to the configuration.
+
+To start learning how to configure the application, go to the Butty tutorial,
+[here](tutorial-1a.md). It starts from scratch and covers a lot of the basics.
+
 ### Producing OpenSCAD and STL files
 
 There is more than one way to run the application. The easiest and most
@@ -70,20 +84,11 @@ guide](execution.md) for details and alternatives.
 
 After running the application, start OpenSCAD. Open one of the
 `things/scad/*.scad` files for a preview. To render a complex model in
-OpenSCAD, you may need to go to Edit >> Preferences >> Advanced and raise the
+OpenSCAD, you may need to go to Edit → Preferences → Advanced and raise the
 ceiling for when to “Turn off rendering”. When you are satisfied with the
 preview, you can render to STL from OpenSCAD.
 
-## Customization
-
-You probably want to customize the design for your own hands. You won’t need
-to touch the source code for a personal fit or additional keys.
-
-The Clojure application combines configuration details from zero or more
-[YAML](https://en.wikipedia.org/wiki/YAML) files like the ones under `config`.
-The process is [documented here](configuration.md).
-
-### Deeper changes
+## Deep changes
 
 If you find that you cannot get what you want just by changing the parameters,
 you need to edit the source code. If you are not familiar with OpenSCAD, start
