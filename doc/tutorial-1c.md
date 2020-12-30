@@ -6,7 +6,7 @@ microcontrollers.
 
 ![Three sides short of a rough cuboid](img/butty/open-back-rear.png)
 
-At the end of part 2, Butty was this box with three open sides: An irregular
+⤤ At the end of part 2, Butty was this box with three open sides: An irregular
 hole in the top for mounting a switch, a hole in the bottom for soldering
 access, and a hole in the back, which we had just opened, for adding a
 microcontroller unit, also known as an MCU.
@@ -71,8 +71,8 @@ mcu:
 
 ![A fourth hole](img/butty/mcu-1-default.png)
 
-⤤ Now, where is the MCU? You can’t see it. Instead, there’s a new hole in
-Butty’s front, to about a third of the way up the south wall.
+⤤ Where is the MCU? You can’t see it. Instead, there’s a new hole in Butty’s
+front, to about a third of the way up the south wall.
 
 The reason why we cannot see the MCU is not the same as the reason we could not
 see Butty at first, in part 1 of this tutorial. The MCU is there in the model,
@@ -120,17 +120,17 @@ mcu:
     extrinsic-offset: [0, 0, -3]
 ```
 
-This is similar to the `anchoring` section for the `main` key cluster in
+⤤ This is similar to the `anchoring` section for the `main` key cluster in
 Butty’s configuration, but it’s more detailed. We have specified that the MCU’s
 position should be based on the rear housing’s position: Its `anchor` is the
-automatically defined name `rear-housing-exterior` instead of the implicit
+automatically defined name `rear-housing-interior` instead of the implicit
 default `origin` of the coordinate system.
 
-The result is to put Butty’s MCU inside the rear housing:
+⤥ The result is to put Butty’s MCU inside the rear housing.
 
 ![The MCU translated](img/butty/mcu-3-inplace.png)
 
-As a result, there is no longer a hole in the front.
+As a side effect, there is no longer a hole in the front.
 
 Now that the MCU is in a reasonable place, we no longer need to preview it, so
 you can remove the line that sets `preview: true`. Running without it, here’s a

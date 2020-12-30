@@ -107,7 +107,7 @@ By contrast, the node anchored to Butty’s key mount uses the name we just
 defined: k. Keys do not have default names.
 
 We won’t be getting very advanced in this tutorial, but you can read about the
-syntax of tweaks in detail here.
+syntax of tweaks in detail [here](options-main.md).
 
 ### Differences in size
 
@@ -216,10 +216,10 @@ tweaks:
 
 Because we have expanded a single convex hull all the way across Butty’s top
 (around all of our four groups), the same shape also intrudes on Butty’s
-inside. That is not a practical problem in this case, but printing that extra
-plastic would serve no purpose. Let’s get rid of it by altering the properties
-of the outermost hull in our tweak, without altering the subordinate nodes. Add
-a setting for `chunk-size`:
+inside. That is not a fatal problem, but printing that extra plastic would
+serve no purpose. Let’s get rid of it by altering the properties of the
+outermost hull in our tweak, without altering the subordinate nodes. Add a
+setting for `chunk-size`:
 
 ```yaml
 tweaks:

@@ -121,7 +121,7 @@ application produces a whole new file of output, called
 ⤤ This is a bottom plate that will fit perfectly under Butty’s main body, but
 there’s a hole in it. This is because the tweaks we created in the last part of
 this tutorial cover the roof and walls, but they don’t tell the application
-precisely where to fill in the floor. We’re going fix that by adding another
+precisely where to fill in the floor. We’re going to fix that by adding another
 tweak, at the very bottom of `butty.yaml`.
 
 ```yaml
@@ -272,12 +272,13 @@ Add that to `butty.yaml`, save it and run the application once more.
 ![The complete bottom plate](img/butty/main-body-fasteners.png)
 
 ⤤ The change adds two internally threaded posts for M3 screws inside the case,
-with countersinks for the same screws’ heads in the bottom plate.
+with countersinks for the same screws’ heads in the bottom plate. The placement
+of each post uses the same set of anchoring parameters we have seen elsewhere,
+but automatically drops to the floor.
 
 Inside the case, there are notches cut into the two posts. These notches are
 made by the invisible model of the MCU’s circuit board. They show that the
-posts are properly aligned, with the same kind of anchoring we’ve used
-elsewhere, to support the MCU without preventing assembly.
+posts are properly aligned to support the MCU without preventing assembly.
 
 ## Summary
 
@@ -287,7 +288,7 @@ In this part of the tutorial we have learned:
 * How to tweak the bottom plate without touching the main body.
 * How to add fasteners for assembly.
 
-Our illustrated tour of some DMOTE application features is complete.
-Feel free to modify the configuration further as you explore the
-[options](options-main.md), or print a copy of Butty as is, for a truly
-hardcore 1% experience.
+This illustrated tour of some DMOTE application features is at an end.  Feel
+free to modify the configuration further as you explore the
+[options](options-main.md), or print a copy of Butty as is, for a hardcore 1%
+keyboard experience.

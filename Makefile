@@ -185,20 +185,20 @@ doc/options-wrist-rest-mounts.md: target/dmote.jar
 doc/tutorial-1a.md: resources/butty/*/*
 	cat resources/butty/doc/artefact_alert.md \
 			resources/butty/doc/01.md \
-			resources/butty/config/02.yaml \
+			resources/yamlblock_begin.md resources/butty/config/02.yaml resources/yamlblock_end.md \
 			resources/butty/doc/03.md \
-			resources/butty/config/04.yaml \
+			resources/yamlblock_begin.md resources/butty/config/04.yaml resources/yamlblock_end.md \
 			resources/butty/doc/05.md \
 			> $@
 
 doc/tutorial-1b.md: resources/butty/*/*
 	cat resources/butty/doc/artefact_alert.md \
 			resources/butty/doc/11.md \
-			resources/butty/config/12.yaml \
+			resources/yamlblock_begin.md resources/butty/config/12.yaml resources/yamlblock_end.md \
 			resources/butty/doc/13.md \
-			resources/butty/config/14.yaml \
+			resources/yamlblock_begin.md resources/butty/config/14.yaml resources/yamlblock_end.md \
 			resources/butty/doc/15.md \
-			resources/butty/config/16.yaml \
+			resources/yamlblock_begin.md resources/butty/config/16.yaml resources/yamlblock_end.md \
 			resources/butty/doc/17.md \
 			> $@
 
@@ -208,13 +208,13 @@ doc/tutorial-1c.md: resources/butty/*/*
 	! diff resources/butty/config/22.yaml resources/butty/config/28a.yaml --unchanged-line-format='' --new-line-format='%L' > /tmp/28.yaml
 	cat resources/butty/doc/artefact_alert.md \
 			resources/butty/doc/21.md \
-			resources/butty/config/22.yaml \
+			resources/yamlblock_begin.md resources/butty/config/22.yaml resources/yamlblock_end.md \
 			resources/butty/doc/23.md \
-			/tmp/24.yaml \
+			resources/yamlblock_begin.md /tmp/24.yaml resources/yamlblock_end.md \
 			resources/butty/doc/25.md \
-			/tmp/26.yaml \
+			resources/yamlblock_begin.md /tmp/26.yaml resources/yamlblock_end.md \
 			resources/butty/doc/27.md \
-			/tmp/28.yaml \
+			resources/yamlblock_begin.md /tmp/28.yaml resources/yamlblock_end.md \
 			resources/butty/doc/29.md \
 			> $@
 
@@ -228,9 +228,7 @@ doc/tutorial-1d.md: resources/butty/*/*
 	! diff resources/butty/config/34e.yaml resources/butty/config/36.yaml --unchanged-line-format='' --new-line-format='%L' > /tmp/36.yaml
 	cat resources/butty/doc/artefact_alert.md \
 			resources/butty/doc/31.md \
-			resources/yamlblock_begin.md \
-			resources/butty/config/32.yaml \
-			resources/yamlblock_end.md \
+			resources/yamlblock_begin.md resources/butty/config/32.yaml resources/yamlblock_end.md \
 			resources/butty/doc/33a.md \
 			resources/yamlblock_begin.md /tmp/32.yaml resources/yamlblock_end.md \
 			resources/butty/doc/33b.md \

@@ -32,7 +32,7 @@ The command to run the application is, and will continue to be:
 
 Here’s `body-main.scad` with the new configuration:
 
-![Bevel](img/butty/bevel.png)
+![Mounting plate bevel](img/butty/bevel.png)
 
 A bevel has appeared, lining the edge of the keyboard. Here’s how it works:
 
@@ -58,7 +58,8 @@ bevel all the way round.
 
 ## Bringing the wall to the ground
 
-Change `butty.yaml` to the following contents, and run the application again.
+Change `butty.yaml` to have the following contents, and run the application
+again.
 
 ```yaml
 key-clusters:
@@ -74,10 +75,9 @@ by-key:
 
 ![Wall to ground](img/butty/to-ground.png)
 
-There we go: The wall of the keyboard case now extends vertically from the
-segment specified by our setting for `extent` all the way to the ground at
-z-coordinate 0. The total height of the case is 10 mm, given by our
-`extrinsic-offset`.
+⤤ The wall of the keyboard case now extends vertically from the segment
+specified by our setting for `extent` all the way to the ground at z-coordinate
+0. The total height of the case is 10 mm, given by our `extrinsic-offset`.
 
 You see there is still room inside the case for a key switch. You could print
 this version of Butty, mount a switch in it, and click away to your heart’s

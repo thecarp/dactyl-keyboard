@@ -73,7 +73,7 @@ This recreates `body-main.scad`. If you have it open in OpenSCAD, you now see th
 
 ![Just a plate](img/butty/min.png)
 
-That’s a mounting plate for a single key. It will be the heart of Butty.
+⤤ That’s a mounting plate for a single key. It will be the heart of Butty.
 
 Each part of the YAML file you have created helps Butty in the following way:
 
@@ -95,7 +95,7 @@ to make exceptions for specific parts of the keyboard, as detailed
 
 You might wonder why `use-key-style` isn’t always on. The application generally
 leaves `false` as the default value for Boolean (i.e. `true` or `false`)
-parameters. This is mainly for consistency. In the case `use-key-style` for
+parameters. This is mainly for consistency. In the case of `use-key-style` for
 mounting plates, you may one day need an odd size to fit a custom rotary
 encoder or some other unusual feature.
 
@@ -115,8 +115,9 @@ tutorial.
 
 There is a visible difference: The mounting plate is now thicker. This is
 because, among other useful properties, `base.yaml` contains the value 2 for
-`by-key` → `parameters` → `wall` → `thickness`. That makes the case 2 mm thick,
-whereas the built-in default is 1 mm, and we have no override in `butty.yaml`.
+`by-key` → `parameters` → `wall` → `thickness`. That makes the case a sturdy 2
+mm thick, whereas the built-in default is 1 mm, and we have no override in
+`butty.yaml`.
 
 ## Simplification
 
@@ -138,9 +139,8 @@ addition of `base.yaml`.
 This kind of simplification is good for maintenance. If you want to have two
 kinds of Butty later on—perhaps a two-button Tutty model—you can maintain the
 alternate version as yet another separate file that comes after `butty.yaml`
-and duplicates nothing in `butty.yaml`. That is how the other bundled
-configurations work. The application never changes the contents of a
-configuration file.
+and duplicates nothing in `butty.yaml`. That is how the bundled configurations
+work. The application never changes the contents of a configuration file.
 
 ## Summary
 
