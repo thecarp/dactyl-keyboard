@@ -5,6 +5,8 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 
 ## [Unreleased]
 ### Changed
+- Switched the default build target (with GNU Make) from the DMOTE to the
+  Dactyl-ManuForm.
 - Replaced the way that key-cluster walls are measured. Instead of separate
   settings for `bevel`, `parallel` and `perpendicular`, there is now only
   one setting, called `segments`, with more power.
@@ -27,6 +29,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       (compass points).
     - Replaced central-housing interface settings for `adapter` → `offset`
       with a `segments` map, as for key-cluster walls.
+- Dropped support for arbitrary YAML inclusions through GNU Make.
 - Bundled designs:
     - Stopped including threading on bolts in most models, for faster renders
       and reduced sensitivity to printer accuracy.
@@ -50,13 +53,14 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - Added thinning of central-housing adapter lips based on DFM error setting.
 - Added precise control over segment 1 for each node on the central housing
   interface’s adapter.
+- Added a tutorial for getting started designing from scratch.
 - Bundled designs:
     - Added a configuration fragment for removing the rear housing of the DMOTE.
 
 ### Migration guide
 Here is an example of adaptation from the old wall-building syntax to the new:
 
-```
+```diff
 -      parallel: 4
 -      perpendicular: -16
 +      segments:

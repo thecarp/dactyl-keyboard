@@ -11,29 +11,22 @@ and cons:
 * Pro: Convenient for a small set of bundled designs.
 * Pro: Fast iterations when you change a configuration.
 * Con: You need Make.
-* Con: Advanced configuration selection is awkward.
+* Con: No advanced selection of configuration files.
 * Con: Slow iterations when you change application source code.
 
 ### Examples
 
-To produce OpenSCAD files for the default configuration, just run `make` in
-your terminal, from the project folder. As of v0.5.0, the default configuration
-is a 62-key DMOTE.
+To produce OpenSCAD files for the Dactyl-ManuForm, just run `make` in your
+terminal, from the project folder.
 
-To produce something more similar to Tom Short’s original Dactyl-ManuForm
-instead of a DMOTE, run `make dactylmanuform_46key` instead of `make`. There is
-a very short list of such canonical build targets in the `Makefile`. Notice
-that Make echoes its commands to your terminal so you can see which
-[YAML](https://en.wikipedia.org/wiki/YAML) files are used for each target, and
-in what order.
+To produce a Concertina instead of a Dactyl-ManuForm, run `make
+concertina_64key` instead of `make`. There is a very short list of such
+canonical build targets in the `Makefile`. A similarly short list of modifiers,
+such as `vis` for visualization, can be mixed in, e.g. `make vis concertina_64key`.
 
-If you want to weave in more such files, you can put more YAML paths on the
-command line or name an intermediate canonical target, or do both. However,
-this is not what Make is for, so you will need to finish with a named target
-that actually calls the application, as in `make vis dmote_62key`, where
-`dmote_62key` is the otherwise implicit default, and `vis` is a predefined
-intermediate target for visualization. Ultimately, this is a limited method,
-and therefore not the only method.
+Make shows you each command it runs, so you can see which YAML files are used
+for each target, and in what order. However, arbitrary YAML files cannot be
+mixed in by this method.
 
 ### Further automation
 
@@ -48,7 +41,7 @@ is not very portable.
 [Leiningen](https://leiningen.org/) is an automation tool used to manage the
 DMOTE project. You can use it to run the application as a one-off CLI program.
 
-* Pro: Portable. Pure Clojure, no extra tools.
+* Pro: Portable. Pure Clojure.
 * Pro: Easy configuration selection.
 * Pro: Easy rendering to STL. It’s just an extra flag.
 * Pro: Faster than Make when you’re changing source code.
@@ -57,13 +50,13 @@ DMOTE project. You can use it to run the application as a one-off CLI program.
 Note: The default configuration with Leiningen is built into the application
 itself and is not the same as you get with a plain `make`. This means that
 although free configuration selection is easier, it is marginally harder to
-just look at the bundled designs.
+just look at bundled designs.
 
 ### Examples
 
 For OpenSCAD files identical to what you get with a plain `make`, run `lein run
--c config/base.yaml -c config/dmote/base.yaml`. To render to STL automatically,
-add the `--render` flag.
+-c config/base.yaml -c config/dactyl_manuform/base.yaml`. To render to STL
+automatically, add the `--render` flag.
 
 Notice that you are naming specific YAML files and combining them into one
 configuration, in the order of your choice. This gives you full control over
