@@ -471,7 +471,7 @@ mcu:
       include: true
       extra-space: [3, 19.9, 0.43]
       thickness: 3
-      sides:
+      rim:
         lateral-thickness: 4
         overhang-thickness: 4
         overhang-width: 3
