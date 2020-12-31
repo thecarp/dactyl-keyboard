@@ -114,7 +114,11 @@
    (reduce
      (fn [coll key]
        (let [metadata (get-in nominal [key ::metadata])]
-         (assert (spec/valid? ::metadata metadata))
+         (when-not (spec/valid? ::metadata metadata)
+           (throw (ex-info "Superfluous entry in configuration file"
+                           {:type :superfluous-key
+                            :keys (list key)
+                            :accepted-keys (keys nominal)})))
          (assoc coll key
            (if (:leaf metadata)
              ;; Entry is a leaf.
