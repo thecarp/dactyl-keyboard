@@ -107,7 +107,7 @@ By contrast, the node anchored to Butty’s key mount uses the name we just
 defined: k. Keys do not have default names.
 
 We won’t be getting very advanced in this tutorial, but you can read about the
-syntax of tweaks in detail [here](options-main.md).
+syntax of tweaks in detail [here](options-arbitrary-shapes.md).
 
 ### Differences in size
 
@@ -254,9 +254,9 @@ particular, the first and last groups no longer meet.
 
 ## Walls
 
-To round out this tutorial, we’re going to add another tweak in one go. It uses
-the same anchors as the edges of the roof, but this one goes to ground like
-the walls around the key mounting plate. Add this to the bottom of `butty.yaml`:
+To round out this chapter, we’re going to add another tweak in one go. It uses
+the same anchors as the edges of the roof, but this one goes to ground like the
+walls around the key mounting plate. Add this to the bottom of `butty.yaml`:
 
 ```yaml
   wall-bridges:
@@ -283,7 +283,7 @@ so we’re good.
 
 ## Summary
 
-In this tutorial, we have learned:
+In this part of the tutorial, we have learned:
 
 * How to name a key for use as an anchor of tweaks.
 * How to use tweaks with `hull-around`, `chunk-size` and `at-ground`.

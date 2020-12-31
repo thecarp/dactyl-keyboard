@@ -149,7 +149,7 @@ all, you will need to connect the MCU to your computer.
 
 ## Summary
 
-In this tutorial, we have learned:
+In this part of the tutorial, we have learned:
 
 * How to include a rear housing.
 * How to include an MCU.
