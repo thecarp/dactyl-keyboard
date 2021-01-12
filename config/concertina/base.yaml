@@ -313,7 +313,7 @@ by-key:
               roll:
                 intrinsic: -0.1
               translation:
-                mid: [0.6, -2, 7]
+                mid: [0.6, -3, 8]
           sides:
             NNE:
               parameters:
@@ -325,13 +325,13 @@ by-key:
                 wall:
                   extent: 1
                   segments:
-                    "1": [-2, 6, -3]
+                    "1": [-2, 4, -3]
             SSW:
               parameters:
                 wall:
                   extent: 1
                   segments:
-                    "1": [0, 5, -3]
+                    "1": [0, 4, -3]
             NNW:
               parameters:
                 wall:
@@ -349,7 +349,7 @@ by-key:
               roll:
                 intrinsic: -0.28
               translation:
-                mid: [0.5, -2, 9]
+                mid: [0.5, -3, 10]
           rows:
             first:
               parameters:
@@ -437,6 +437,19 @@ by-key:
                 base: 0.08
               translation:
                 mid: [0, 5, 1]
+          rows:
+            first:
+              parameters:
+                layout:
+                  translation:
+                    early: [0, -0.5, 1.5]
+            last:
+              parameters:
+                layout:
+                  translation:
+                    early: [0, -1, -2]
+                  pitch:
+                    intrinsic: -0.4
         "2":
           parameters:
             layout:
@@ -458,7 +471,7 @@ by-key:
               parameters:
                 wall:
                   segments:
-                    "2": [-1, 0, -6]
+                    "2": [-1, 2, -6]
             NNE:
               parameters:
                 wall:
@@ -757,7 +770,7 @@ flanges:
         side: N
         preserve-orientation: true
         intrinsic-rotation: [π*-0.75, 0, 0]
-        intrinsic-offset: [4, 11, -9]
+        intrinsic-offset: [4, 10, -9]
 tweaks:
   near-wall:  # Up the south side of the main key cluster:
   - chunk-size: 3
@@ -865,7 +878,7 @@ tweaks:
     - [f0-lower-right, null, 0, 3]
     - [f0-lower-right, null, 0, {anchoring: {intrinsic-offset: [0, 0, 10]}, size: 6}]
     - [f0-lower-right, null, 0, {anchoring: {intrinsic-offset: [-4, 0, 16]}, size: 1}]
-    - [m2F, SSW, 0, 2]
+    - [m2F, SSW, 0, 3]
   - hull-around:
     - [t1F, SSW, 2, 3]
     - [t1F, SSW, 2, 3, {anchoring: {intrinsic-offset: [8, 0, 0]}}]
@@ -884,8 +897,8 @@ tweaks:
     - [f0-upper-left, null, 0, {size: [7, 5, 0.1]}]
     - [f0-upper-left, null, 0, {size: [5, 7, 0.1]}]
     - [ca-mid-1]
-  # Girdle the outermost keys in the cluster without connecting to, as natural
-  # walling based on extent would.
+  # Girdle the outermost keys in the cluster without connecting as many sides
+  # as natural walling based on extent would.
   thumb-border:
   - chunk-size: 2
     hull-around:

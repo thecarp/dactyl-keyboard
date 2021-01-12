@@ -35,12 +35,15 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       and reduced sensitivity to printer accuracy.
     - Slightly thicker bottom plate on DMOTE.
     - M3 screws instead of M4 in `config/base.yaml`.
-    - Improved USB B port and MCU shelf on Concertina.
-    - Slightly deeper holes through bottom plate on Concertina.
+    - Concertina:
+        - Improved USB B port and MCU shelf.
+        - More tactile thumb clusters.
+        - Pinky-finger keys closer.
+        - Deeper holes through bottom plate.
 
 ### New
-- Added support Kailh’s PG1511 series switches and similar MX clones without
-  lateral recesses in the lower body.
+- Added support for Kailh’s PG1511 series switches and similar MX clones
+  without lateral recesses in the lower body.
 - Added a nominal clearance parameter to make it easier to design for multiple
   different types of switches and keycaps.
 - Added support for custom key mounting plate size.
