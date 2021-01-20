@@ -39,7 +39,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
         - Improved USB B port and MCU shelf.
         - More tactile thumb clusters.
         - Pinky-finger keys closer.
-        - Deeper holes through bottom plate.
+        - Deeper, fewer holes through bottom plate.
 
 ### New
 - Added support for Kailh’s PG1511 series switches and similar MX clones

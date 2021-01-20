@@ -701,12 +701,12 @@ central-housing:
     fastener-positions:
     # With the assortment mod, these go inside the centermost piece of the housing.
     - anchor: origin
-      intrinsic-offset: [13, 36, 0]
+      intrinsic-offset: [0, 36, 0]
     - anchor: origin
       intrinsic-offset: [72, 36, 0]
     - anchor: origin
       intrinsic-rotation: [0, 0, π]
-      intrinsic-offset: [13, -51, 0]
+      intrinsic-offset: [0, -51, 0]
     - anchor: origin
       intrinsic-rotation: [0, 0, π]
       intrinsic-offset: [72, -51, 0]
