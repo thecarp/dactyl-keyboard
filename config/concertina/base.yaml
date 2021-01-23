@@ -1161,8 +1161,7 @@ tweaks:
   - positive: false  # A dent in the interior wall, for DFM.
     hull-around:
     - [ext-usb-hole]
-    - [ext-usb-hole,
-       {anchoring: {side: E, segment: 1, intrinsic-offset: [2, 0, 0]}}]
+    - [ext-usb-hole, E, 1, {size: [1, 1, 11]}]
   - positive: false  # A hole for USB pins and a locking nub.
     hull-around:
     - [ext-usb-hole,
