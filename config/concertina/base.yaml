@@ -10,13 +10,9 @@
 
 keys:
   styles:
-    default:  # A medium-height minimal keycap.
+    default:
       style: minimal
       top-size: [10, 10, 2.6]
-      skirt-thickness: 2.4
-    minimal-tall:  # Thick top, i.e. an extra tall plate above the stem.
-      style: minimal
-      top-size: [10, 10, 3.6]
       skirt-thickness: 2.4
 key-clusters:
   main:
@@ -124,7 +120,9 @@ by-key:
                     early: [0.2, 0.15, -1]
             last:
               parameters:
-                key-style: minimal-tall
+                layout:
+                  translation:
+                    early: [0, 0, 1]
         "1":
           parameters:
             layout:
@@ -154,12 +152,11 @@ by-key:
                     early: [0, -0.6, 2]
             last:
               parameters:
-                key-style: minimal-tall
                 layout:
                   pitch:
                     intrinsic: -0.15
                   translation:
-                    early: [0, -1, 0]
+                    early: [0, -1, 1]
           sides:
             NNE:
               parameters:
@@ -212,7 +209,9 @@ by-key:
                     intrinsic: -0.1
             last:
               parameters:
-                key-style: minimal-tall
+                layout:
+                  translation:
+                    early: [0, 0, 2]
           sides:
             NNE:
               parameters:
@@ -314,6 +313,12 @@ by-key:
                 intrinsic: -0.1
               translation:
                 mid: [0.6, -3, 8]
+          rows:
+            last:
+              parameters:
+                layout:
+                  translation:
+                    early: [0, 0, 1]
           sides:
             NNE:
               parameters:
@@ -358,7 +363,9 @@ by-key:
                     early: [0, -1, 3]
             last:
               parameters:
-                key-style: minimal-tall
+                layout:
+                  translation:
+                    early: [0, 0.4, 1]
           sides:
             SSE:
               parameters:
@@ -379,10 +386,11 @@ by-key:
             neutral:
               column: 2
             separation:
-              column: -0.3
+              column: -0.8
               row: -1.4
           pitch:
             progressive: 0.35
+            intrinsic: -0.1
         wall:
           segments:
             "2": [0, -1, -6]
@@ -413,12 +421,6 @@ by-key:
             layout:
               translation:
                 mid: [0, -4, 0]
-          rows:
-            last:
-              parameters:
-                layout:
-                  pitch:
-                    intrinsic: -0.25
           sides:
             SSW:
               parameters:
@@ -443,11 +445,16 @@ by-key:
                 layout:
                   translation:
                     early: [0, -0.5, 1.5]
+            "0":
+              parameters:
+                layout:
+                  translation:
+                    early: [0, 0.5, -1]
             last:
               parameters:
                 layout:
                   translation:
-                    early: [0, -1, -2]
+                    early: [0, -1, -3]
                   pitch:
                     intrinsic: -0.4
         "2":
@@ -501,7 +508,7 @@ main-body:
         - anchor: m5L
           side: SE
           segment: 1
-          extrinsic-offset: [-3.25, 0.5, 0]
+          extrinsic-offset: [-3.75, 0.5, 0]
         - anchor: ca-far-base
           extrinsic-offset: [1, -9, 0]
 central-housing:
@@ -729,14 +736,14 @@ custom-bodies:
         - [t1C,
            {anchoring: {preserve-orientation: true,
                         intrinsic-rotation: [π/4, 0, 0],
-                        extrinsic-offset: [0, 0, 20]},
+                        extrinsic-offset: [0, 0, 22]},
             size: [150, 150, 50]}]
 flanges:
   main-to-thumb-flange:
     bolt-properties:
       m-diameter: 3
       head-type: countersunk
-      include-threading: true
+      include-threading: false
       threaded-length: 6.5
       unthreaded-length: 2.5
       channel-length: 20
@@ -770,7 +777,7 @@ flanges:
         side: N
         preserve-orientation: true
         intrinsic-rotation: [π*-0.75, 0, 0]
-        intrinsic-offset: [4, 10, -9]
+        intrinsic-offset: [4, 10, -10]
 tweaks:
   near-wall:  # Up the south side of the main key cluster:
   - chunk-size: 3
@@ -884,6 +891,7 @@ tweaks:
     - [t1F, SSW, 2, 3, {anchoring: {intrinsic-offset: [8, 0, 0]}}]
     - [f0-lower-left, null, 3, {size: 5}]
     - [f0-lower-left, null, 1, {anchoring: {intrinsic-offset: [6, 6, 0]}, size: 1}]
+    - [f0-lower-left, null, 1, {anchoring: {intrinsic-offset: [-11, 0, 0]}, size: 1}]
     - [f0-lower-left, null, 1, {size: [10, 6, 1]}]
     - [f0-lower-left, null, 1, {size: [6, 10, 1]}]
     - [f0-lower-left, null, 0, {size: [8, 8, 0.1]}]

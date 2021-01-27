@@ -36,9 +36,10 @@ version 0.2.0, thus covering only a fraction of the project’s history.
     - Slightly thicker bottom plate on DMOTE.
     - M3 screws instead of M4 in `config/base.yaml`.
     - Concertina:
+        - Reduced to one size of keycaps.
         - Improved USB B port and MCU shelf.
-        - More tactile thumb clusters.
-        - Pinky-finger keys closer.
+        - More tactile, variegated thumb clusters.
+        - Pinky-finger and thumb-cluster keys closer.
         - Deeper, fewer holes through bottom plate.
 
 ### New
