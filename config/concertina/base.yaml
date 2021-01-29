@@ -53,7 +53,7 @@ key-clusters:
     anchoring:
       anchor: m0F
       preserve-orientation: true
-      intrinsic-rotation: [0.55, 0, 0.15]
+      intrinsic-rotation: [0.55, 0.03, 0.16]
       extrinsic-offset: [9.5, -29, 10]
     matrix-columns:
     - rows-above-home: 1
@@ -247,10 +247,14 @@ by-key:
               parameters:
                 wall:
                   extent: 1
+                  segments:
+                    "1": [-1, 1, 0]
             WNW:
               parameters:
                 wall:
                   extent: 1
+                  segments:
+                    "1": [-1, 1, 0]
             NNW:
               parameters:
                 wall:
@@ -354,7 +358,7 @@ by-key:
               roll:
                 intrinsic: -0.28
               translation:
-                mid: [0.5, -3, 10]
+                mid: [0.5, -3, 11]
           rows:
             first:
               parameters:
@@ -365,8 +369,18 @@ by-key:
               parameters:
                 layout:
                   translation:
-                    early: [0, 0.4, 1]
+                    early: [0, 0.4, 2]
           sides:
+            ENE:
+              parameters:
+                wall:
+                  segments:
+                    "1": [0, 1, -1]
+            ESE:
+              parameters:
+                wall:
+                  segments:
+                    "1": [0, 1, -1]
             SSE:
               parameters:
                 wall:
@@ -421,6 +435,14 @@ by-key:
             layout:
               translation:
                 mid: [0, -4, 0]
+          rows:
+            first:
+              sides:
+                WNW:
+                  parameters:
+                    wall:
+                      segments:
+                        "2": [0, 0, -3]
           sides:
             SSW:
               parameters:
@@ -449,7 +471,7 @@ by-key:
               parameters:
                 layout:
                   translation:
-                    early: [0, 0.5, -1]
+                    early: [0, 0.5, -2]
             last:
               parameters:
                 layout:
@@ -465,6 +487,16 @@ by-key:
               translation:
                 mid: [0, 9, 0]
         last:
+          parameters:
+            layout:
+              translation:
+                mid: [0, 2, 0]
+          rows:
+            first:
+              parameters:
+                layout:
+                  translation:
+                    early: [0, 0, -3]
           sides:
             ENE:
               parameters:
@@ -500,17 +532,13 @@ main-body:
           channel-length: 0.75
         positions:
         - anchor: ca-near-base
-          extrinsic-offset: [0.5, 8.2, 0]
-        - anchor: m5M
-          side: SE
-          segment: 1
-          extrinsic-offset: [-1, -3.5, 0]
+          extrinsic-offset: [-3, 8.2, 0]
         - anchor: m5L
           side: SE
           segment: 1
-          extrinsic-offset: [-3.75, 0.5, 0]
+          extrinsic-offset: [-4, 2, 0]
         - anchor: ca-far-base
-          extrinsic-offset: [1, -9, 0]
+          extrinsic-offset: [1, -10, 0]
 central-housing:
   include: true
   shape:
@@ -525,14 +553,14 @@ central-housing:
       adapter:
         alias: ca-near-base
         segments:
-          "0": [4, 0, 0]
+          "0": [6.5, 0, 0]
           "1": [-1, 0, 0]
     - base:
         offset: [45, -55, 5]
       adapter:
         alias: ca-near-lower-1
         segments:
-          "0": [4, 0, 0]
+          "0": [6.5, 0, 0]
           "1": [-1, 0, 0]
     - base:
         offset: [45, -55, 20]
@@ -595,7 +623,7 @@ central-housing:
       adapter:
         alias: ca-mid-2
         segments:
-          "0": [15, 8, 0]
+          "0": [14, 6, 0]
           "1": [2, -1, 0]
     - base:
         offset: [35, -5, -10]  # Bottom plate only.
@@ -736,7 +764,7 @@ custom-bodies:
         - [t1C,
            {anchoring: {preserve-orientation: true,
                         intrinsic-rotation: [π/4, 0, 0],
-                        extrinsic-offset: [0, 0, 22]},
+                        extrinsic-offset: [0, 0, 17.5]},
             size: [150, 150, 50]}]
 flanges:
   main-to-thumb-flange:
@@ -744,8 +772,8 @@ flanges:
       m-diameter: 3
       head-type: countersunk
       include-threading: false
-      threaded-length: 6.5
-      unthreaded-length: 2.5
+      threaded-length: 7
+      unthreaded-length: 2
       channel-length: 20
     boss-diameter-factor: 2
     positions:
@@ -754,30 +782,29 @@ flanges:
         anchor: t3L
         side: N
         preserve-orientation: true
-        intrinsic-rotation: [π*-0.72, 0, 0]
-        intrinsic-offset: [-2, 9, -4]
+        intrinsic-rotation: [π*-0.75, 0, 0]
+        extrinsic-offset: [-2, 8, -6]
     - alias: f0-lower-right
       anchoring:
         anchor: t3F
         side: S
         preserve-orientation: true
         intrinsic-rotation: [π*-0.75, 0, 0]
-        intrinsic-offset: [-2, 6, -11]
+        extrinsic-offset: [-2, 6, -11]
     - alias: f0-lower-left
       anchoring:
-        anchor: t1F
-        side: SSW
-        segment: 3
+        anchor: sec-near-upper-1b
         preserve-orientation: true
         intrinsic-rotation: [π*-0.75, 0, 0]
-        intrinsic-offset: [3, 14, -10]
+        extrinsic-offset: [9, -2, -5]
     - alias: f0-upper-left
       anchoring:
         anchor: t0L
-        side: N
+        side: NNW
+        segment: 2
         preserve-orientation: true
         intrinsic-rotation: [π*-0.75, 0, 0]
-        intrinsic-offset: [4, 10, -10]
+        extrinsic-offset: [12, 10, -11]
 tweaks:
   near-wall:  # Up the south side of the main key cluster:
   - chunk-size: 3
@@ -814,7 +841,6 @@ tweaks:
     - [m00, NW]
   - hull-around:  # Level plate.
     - [ca-mid-2]
-    - [sec-near-mid-1-2]
     - [sec-far-roof-1b]
     - [sec-far-roof-1c]
     - [ca-far-roof]
@@ -831,10 +857,10 @@ tweaks:
       - [sec-far-roof-1c-1]
   - chunk-size: 3
     hull-around:
-    - [m0F, SW, 0]
+    - [sec-far-roof-1a]
     - [m0F, NW]
     - [sec-far-roof-1a-1]
-    - [m00, SW, 0]
+    - [m00, SW]
     - [sec-far-roof-1b-1]
     - [m00, NW]
     - hull-around:
@@ -878,35 +904,35 @@ tweaks:
     - [t3L, NNW, 1]
     - [t3L, NNE, 0, 2]
     - [f0-upper-right, null, 0, 3]
+    - [m0F1]
   - hull-around:
     - [t2F, SSE]
     - [t3F, SSE, 0, 2]
     - [t3F, SSW, 1]
     - [f0-lower-right, null, 0, 3]
-    - [f0-lower-right, null, 0, {anchoring: {intrinsic-offset: [0, 0, 10]}, size: 6}]
-    - [f0-lower-right, null, 0, {anchoring: {intrinsic-offset: [-4, 0, 16]}, size: 1}]
     - [m2F, SSW, 0, 3]
+    - [m1F1]
   - hull-around:
+    - [t0F, SSW, 2, 3]
     - [t1F, SSW, 2, 3]
-    - [t1F, SSW, 2, 3, {anchoring: {intrinsic-offset: [8, 0, 0]}}]
     - [f0-lower-left, null, 3, {size: 5}]
-    - [f0-lower-left, null, 1, {anchoring: {intrinsic-offset: [6, 6, 0]}, size: 1}]
-    - [f0-lower-left, null, 1, {anchoring: {intrinsic-offset: [-11, 0, 0]}, size: 1}]
-    - [f0-lower-left, null, 1, {size: [10, 6, 1]}]
-    - [f0-lower-left, null, 1, {size: [6, 10, 1]}]
-    - [f0-lower-left, null, 0, {size: [8, 8, 0.1]}]
+    - [f0-lower-left, null, 0, {size: [7, 3.5, 0.1]}]
+    - [f0-lower-left, null, 0, {size: [3.5, 7, 0.1]}]
+    - [sec-near-upper-1a]
+    - [sec-near-upper-1b]
+    - [sec-near-upper-1b-1]
+    - [sec-near-upper-1b-2]
   - hull-around:
     - [t0L, NNW, 0, 2]
     - [t0L, NE]
     - [t1L, NNW, 0, 2]
     - [f0-upper-left, null, 3, {size: 5}]
-    - [f0-upper-left, null, 1, {size: [10, 5, 1]}]
-    - [f0-upper-left, null, 1, {size: [5, 10, 1]}]
-    - [f0-upper-left, null, 0, {size: [7, 5, 0.1]}]
-    - [f0-upper-left, null, 0, {size: [5, 7, 0.1]}]
-    - [ca-mid-1]
-  # Girdle the outermost keys in the cluster without connecting as many sides
-  # as natural walling based on extent would.
+    - [f0-upper-left, null, 0, {size: [7, 3.5, 0.1]}]
+    - [f0-upper-left, null, 0, {size: [3.5, 7, 0.1]}]
+    - [ca-mid-2]
+    - [ca-mid-1, 1]
+  # Girdle the outermost keys in the thumb cluster without connecting as many
+  # sides as natural walling based on extent would.
   thumb-border:
   - chunk-size: 2
     hull-around:
@@ -951,10 +977,13 @@ tweaks:
   - chunk-size: 3
     hull-around:
     # Bring the outer edge into the central housing.
-    - [t0F, WNW, 2]
-    - [t0L, WSW, 2]
-    - [ca-near-roof]
-    - [t0L, WNW, 2]
+    - hull-around:
+      - [ca-near-roof]
+      - [t0L, WNW, 2]
+    - hull-around:
+      - [t0F, WNW, 2]
+      - [t0L, WSW, 1, 2]
+    - [ca-near-upper-2]
   - chunk-size: 3
     hull-around:
     - [ca-near-roof]
@@ -970,15 +999,38 @@ tweaks:
       - [sec-far-roof-1a]
       - [sec-far-roof-1a-1]
     - [t2L, NNE, 2, 3]
-    - [m0F, SW, 0]
+    - [m0F1]
     - [t3L, NNE, 2, 3]
-    - [m0F, SW, 0]
-    - [t3L, ESE, 2, 3]
-    - [m0F, SE, 0]
-    - [t3F, ENE, 2, 3]
+  - chunk-size: 3
+    hull-around:
+    - [sec-far-roof-1a]
+    - [m0F, NW]
+    - [m0F1]
+    - [m0F, SW]
+    - [t3L, NNE, 3]
+  - chunk-size: 3
+    hull-around:
+    - [t3L, NNE, 3]
+    - [m0F, SW]
+    - [t3L, ESE, 3]
     - [m1F, SW]
-    - [m2F, WNW, 1]
-    - [m1F, SE]
+    - [t3F, NNE, 3]
+    - [m1F1]
+    - hull-around:
+      - [m2F, WSW, 1]
+      - [m2F, SSW, 0, 1]
+  - chunk-size: 3
+    hull-around:
+    - [m2F, WSW, 1]
+    - hull-around:
+      - [m2F, WNW, 1]
+      - [m1F, SE]
+    - [m1F1]
+    - [m1F, SW]
+  - hull-around:
+    - [m0F, SW]
+    - [m0F, SE]
+    - [m1F, SW]
   # m2F and m3F joined by a couple of secondaries beneath the thumb cluster.
   - chunk-size: 2
     hull-around:  # User-facing back of m2F.
@@ -1006,7 +1058,6 @@ tweaks:
   # Between the thumb cluster and the near side of the central housing:
   - chunk-size: 3
     hull-around:
-    - [m2F, WNW, 1]
     - [t3F, ENE, 2, 3]
     - [m2F, SSW, 0, 1]
     - hull-around:
@@ -1016,8 +1067,14 @@ tweaks:
     - [t2F, SSE, 2]
     - [sec-near-lower-4-2-1]
     - [t1F, SSE, 2]
-    - [sec-near-lower-4-2]
+    - [sec-near-upper-1b-2]
     - [t1F, SSW, 2]
+    - [sec-near-upper-1b-1]
+  - chunk-size: 3
+    hull-around:
+    - [sec-near-lower-4-2-1]
+    - [sec-near-lower-4-2]
+    - [sec-near-upper-1b-2]
     - [sec-near-upper-1a]
     - [sec-near-upper-1b-1]
   - chunk-size: 3
@@ -1060,15 +1117,15 @@ tweaks:
   - hull-around:
     - [sec-far-roof-1a]
     - [sec-far-roof-1b]
-    - [sec-near-mid-1-2]
+    - [ca-mid-2]
     - [m00, SW]
   - hull-around:
     - [m00, SW]
-    - [sec-near-mid-1-2]
+    - [ca-mid-2]
     - [m0F, NW]
   - hull-around:
     - [m0F, NW]
-    - [sec-near-mid-1-2]
+    - [ca-mid-2]
     - [sec-far-roof-1a]
   # Cleaning up the interior of the central housing immediately beneath the
   # west edge of the thumb cluster, by removing cluster walls penetrating the
@@ -1197,9 +1254,10 @@ tweaks:
   - at-ground: true
     hull-around:
     - [ca-bottom-1, null, 0]
-    - [m5F, NE]
+    - [m5F, ENE, 1]
     - [m5M, SE]
     - [m5M, NE]
+    - [m5L, ESE, 1]
     - [ca-bottom-2, null, 0]
   - at-ground: true
     hull-around:
@@ -1241,6 +1299,20 @@ ports:
       alias: ext-usb-holder
       thickness: 2
 secondaries:
+  m0F1:
+    anchoring:
+      anchor: m0F
+      side: SW
+      segment: 0
+      extrinsic-offset: [11, 12, 11]
+    size: 3
+  m1F1:
+    anchoring:
+      anchor: m1F
+      side: SW
+      segment: 0
+      extrinsic-offset: [20, 0, -4]
+    size: 4
   m3F1:
     anchoring:
       anchor: m3F
@@ -1262,11 +1334,6 @@ secondaries:
   # A set of anchors to make the wall between the thumb cluster and the
   # central-housing adapter thick enough, despite making an acute angle against
   # the adapter.
-  sec-near-mid-1-2:
-    anchoring:
-      anchor: ca-mid-1
-      intrinsic-offset: [18, 12, -1]
-    size: 2
   sec-far-roof-1a:
     anchoring:
       anchor: ca-far-roof
@@ -1324,6 +1391,11 @@ secondaries:
     anchoring:
       anchor: sec-near-upper-1b
       intrinsic-offset: [0, -6, 0]
+    size: 2
+  sec-near-upper-1b-2:
+    anchoring:
+      anchor: sec-near-upper-1b
+      intrinsic-offset: [19, -18, -5]
     size: 2
   sec-near-upper-1c:
     anchoring:
