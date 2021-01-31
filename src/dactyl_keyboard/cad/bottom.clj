@@ -120,9 +120,7 @@
   (let [prop (partial getopt :main-body :bottom-plate :installation)
         bolt-prop (prop :fasteners :bolt-properties)
         channel-length (:channel-length bolt-prop 0)]
-    (->> (merge-bolt
-           {:compensator (compensator getopt), :negative true}
-           bolt-prop
+    (->> (merge-bolt getopt bolt-prop
            (when (prop :inserts :include) {:include-threading false}))
       (model/rotate [π 0 0])
       (maybe/translate [0 0 channel-length]))))

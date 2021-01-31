@@ -206,10 +206,9 @@
         head-type (getopt :mcu :support :lock :fastener-properties :head-type)
         [_ pcb-y pcb-z] (map-to-3d-vec (getopt :mcu :derived :pcb))]
     (->>
-      (merge-bolt
+      (merge-bolt getopt
         {:unthreaded-length (+ p b (max 0 (- c (head-length d head-type))))
-         :threaded-length (getopt :mcu :support :lock :bolt :mount-thickness)
-         :negative true}
+         :threaded-length (getopt :mcu :support :lock :bolt :mount-thickness)}
         (getopt :mcu :support :lock :fastener-properties))
       (model/rotate [π 0 0])
       (model/translate [0 (- (+ pcb-y (/ m 2))) (- (+ (/ pcb-z 2) p b c))]))))

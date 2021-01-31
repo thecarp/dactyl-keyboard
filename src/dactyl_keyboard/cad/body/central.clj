@@ -19,8 +19,7 @@
             [dactyl-keyboard.cad.misc :refer [merge-bolt wafer]]
             [dactyl-keyboard.cad.poly :as poly]
             [dactyl-keyboard.cad.place :as place]
-            [dactyl-keyboard.misc :refer [soft-merge]]
-            [dactyl-keyboard.param.access :refer [compensator]]))
+            [dactyl-keyboard.misc :refer [soft-merge]]))
 
 
 ;;;;;;;;;;;;;;;
@@ -342,8 +341,7 @@
   This needs to be mirrored for the left-hand-side adapter, being chiral
   by default. Hence it is written for use as an OpenSCAD module."
   [getopt]
-  (merge-bolt
-    {:compensator (compensator getopt), :negative true}
+  (merge-bolt getopt
     (getopt :central-housing :adapter :fasteners :bolt-properties)))
 
 (defn adapter-right-fasteners

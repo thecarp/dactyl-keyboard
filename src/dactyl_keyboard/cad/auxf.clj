@@ -220,5 +220,5 @@
   [getopt body]
   (map (fn [{:keys [flange position-index bolt-properties]}]
          (place/flange-place getopt flange position-index 0
-           (misc/merge-bolt {:negative true} bolt-properties)))
+           (misc/merge-bolt getopt bolt-properties)))
        (filter (partial flange-filter getopt) (filtered-flanges getopt))))
