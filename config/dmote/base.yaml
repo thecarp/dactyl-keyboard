@@ -514,24 +514,30 @@ main-body:
       dome-caps: true
       fasteners:
         positions:
-        - anchor: rear-housing-interior
-          side: NW
-          intrinsic-offset: [3, -3, 0]
-        - anchor: rear-housing-interior
-          side: ENE
-          intrinsic-offset: [-2, -5, 0]
-        - anchor: a1
-          side: NE
-          intrinsic-offset: [-3, -3, 0]
-        - anchor: front5
-          side: SE
-          intrinsic-offset: [-3, -1, 0]
-        - anchor: t4
-          side: S
-          intrinsic-offset: [-1, 2, 0]
-        - anchor: t1
-          side: N
-          intrinsic-offset: [2, -1, 0]
+          bottom-main0:
+            anchor: rear-housing-interior
+            side: NW
+            intrinsic-offset: [3, -3, 0]
+          bottom-main1:
+            anchor: rear-housing-interior
+            side: ENE
+            intrinsic-offset: [-2, -5, 0]
+          bottom-main2:
+            anchor: a1
+            side: NE
+            intrinsic-offset: [-3, -3, 0]
+          bottom-main3:
+            anchor: front5
+            side: SE
+            intrinsic-offset: [-3, -1, 0]
+          bottom-main4:
+            anchor: t4
+            side: S
+            intrinsic-offset: [-1, 2, 0]
+          bottom-main5:
+            anchor: t1
+            side: N
+            intrinsic-offset: [2, -1, 0]
   leds:
     include: true
     amount: 3
@@ -947,10 +953,13 @@ wrist-rest:
     include: true
     inset: 2
     fastener-positions:
-    - anchor: plinth-mid0
-      intrinsic-offset: [0, -3, 0]
-    - anchor: plinth-near
-      intrinsic-offset: [3, 3, 0]
-    - anchor: plinth-right
-      intrinsic-offset: [-2, -3, 0]
+      bottom-wrist0:
+        anchor: plinth-mid0
+        intrinsic-offset: [0, -3, 0]
+      bottom-wrist1:
+        anchor: plinth-near
+        intrinsic-offset: [3, 3, 0]
+      bottom-wrist2:
+        anchor: plinth-right
+        intrinsic-offset: [-2, -3, 0]
   mould-thickness: 2

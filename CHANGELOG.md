@@ -20,6 +20,8 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       longer permitted there.
 - Disabled responsiveness to predicted resting key clearance by default.
   This can be re-enabled with a new parameter (`use-key-style`).
+- Added a requirement that positions for bottom-plate fasteners be named,
+  instead of appearing in flat lists.
 - Moved and replaced some (other) parameters:
     - Made the `central-housing` → `adapter` → `receivers` → `thickness` →
       `bridge` parameter a section, with its function inherited by `tangential`
@@ -60,6 +62,10 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - Added a tutorial for getting started designing from scratch.
 - Bundled designs:
     - Added a configuration fragment for removing the rear housing of the DMOTE.
+
+### Fixed
+- Made the application of the DFM `error-general` setting to bolts more
+  consistent.
 
 ### Migration guide
 Here is an example of adaptation from the old wall-building syntax to the new:

@@ -356,12 +356,8 @@
     "at the distance between the center of the anchor and the outermost "
     "part of its shell."]
    [[:bottom-plate :fastener-positions]
-    {:default []
-     :parse-fn (parse/tuple-of anch/parse-anchoring)
-     :validate [(spec/coll-of anch/validate-anchoring)]}
-    "The positions of threaded fasteners used to attach the bottom plate to "
-    "the central housing. In addition to the properties permitted "
-    "in similar lists of such anchors, the central housing permits a "
-    "`direction`, formulated as a point on the compass or an angle in "
-    "radians. This property controls the facing of a projection. Typically, "
-    "you want it facing the central housing’s nearest wall."]])
+    anch/anchoring-map-metadata
+    "A list of named places where threaded fasteners will connect the bottom "
+    "plate to the central housing."
+    "Properties of these fasteners, beyond positions and projections, are "
+    "determined by settings for the main body."]])

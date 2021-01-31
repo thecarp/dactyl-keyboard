@@ -39,12 +39,14 @@ main-body:
           channel-length: 0.25
           include-threading: true
         positions:
-        - anchor: k
-          side: NNW
-          extrinsic-offset: [1.5, 1, 0]
-        - anchor: k
-          side: NNE
-          extrinsic-offset: [-1.5, 1, 0]
+          b0:
+            anchor: k
+            side: NNW
+            extrinsic-offset: [1.5, 1, 0]
+          b1:
+            anchor: k
+            side: NNE
+            extrinsic-offset: [-1.5, 1, 0]
 mcu:
   include: true
   anchoring:

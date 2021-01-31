@@ -531,14 +531,16 @@ main-body:
           include-threading: false
           channel-length: 0.75
         positions:
-        - anchor: ca-near-base
-          extrinsic-offset: [-3, 8.2, 0]
-        - anchor: m5L
-          side: SE
-          segment: 1
-          extrinsic-offset: [-4, 2, 0]
-        - anchor: ca-far-base
-          extrinsic-offset: [1, -10, 0]
+          bottom-main-N:
+            anchor: ca-far-base
+            extrinsic-offset: [1, -10, 0]
+          bottom-main-E:
+            anchor: m5L
+            side: SE
+            extrinsic-offset: [-4, 2, 0]
+          bottom-main-S:
+            anchor: ca-near-base
+            extrinsic-offset: [-3, 8.2, 0]
 central-housing:
   include: true
   shape:
@@ -734,26 +736,17 @@ central-housing:
       include: true
       scale: [2.5, 1]
     fastener-positions:
-    # With the assortment mod, these go inside the centermost piece of the housing.
-    - anchor: origin
-      intrinsic-offset: [0, 36, 0]
-    - anchor: origin
-      intrinsic-offset: [72, 36, 0]
-    - anchor: origin
-      intrinsic-rotation: [0, 0, π]
-      intrinsic-offset: [0, -51, 0]
-    - anchor: origin
-      intrinsic-rotation: [0, 0, π]
-      intrinsic-offset: [72, -51, 0]
-    # These go in the “bookend” pieces, custom bodies for the assortment mod.
-    - anchor: origin
-      intrinsic-offset: [87, -7.5, 0]
-      intrinsic-rotation: [0, 0, π/2]
-    - anchor: ci-near-base
-      intrinsic-rotation: [0, 0, π]
-      intrinsic-offset: [-10, 4, 0]
-    - anchor: ci-far-base
-      intrinsic-offset: [-7, -4, 0]
+      # These go inside the centermost piece of the housing.
+      bottom-central-N:  # When mirrored, this ends up in the same position.
+        intrinsic-offset: [0, 36, 0]
+      bottom-central-NE:  # When mirrored, this ends up on the west side.
+        intrinsic-offset: [72, 36, 0]
+      bottom-central-SE:
+        intrinsic-rotation: [0, 0, π]
+        intrinsic-offset: [72, -51, 0]
+      bottom-central-S:
+        intrinsic-rotation: [0, 0, π]
+        intrinsic-offset: [0, -51, 0]
 custom-bodies:
   # For ease of assembly, print the thumb cluster separately.
   thumb-cluster:

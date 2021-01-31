@@ -264,14 +264,15 @@
     "of it from a set of polygons, trying to match the perimeter of the case "
     "at the ground level (i.e. z = 0).\n"
     "\n"
-    "Specifically, there is one polygon per key cluster, limited to `full` "
-    "wall edges, one polygon for the rear housing, and one set of polygons "
-    "for each of the first-level case `tweaks` that use `at-ground`, ignoring "
-    "chunk size and almost ignoring tweaks nested within lists of tweaks.\n"
+    "Specifically, there is one polygon per key cluster (limited to wall "
+    "edges drawn to the floor), one polygon for the rear housing, and one "
+    "set of polygons for each of the first-level case `tweaks` that use "
+    "`at-ground`, ignoring chunk size and almost ignoring tweaks nested "
+    "within lists of tweaks.\n"
     "\n"
     "This methodology is mentioned here because its results are not perfect. "
     "Pending future features in OpenSCAD, a future version may be based on a "
-    "more exact projection of the case, but as of 2018, such a projection is "
+    "more exact projection of the case, but as of 2020, such a projection is "
     "hollow and cannot be convex-hulled without escaping the case, unless "
     "your case is convex to start with.\n"
     "\n"
@@ -357,13 +358,14 @@
     "each bolt up into the plate. This is useful mainly with very thick "
     "plates. Cf. `dfm` → `bottom-plate` → `fastener-plate-offset`."]
    [[:main-body :bottom-plate :installation :fasteners :positions]
-    {:default []
-     :parse-fn (parse/tuple-of anch/parse-anchoring)
-     :validate [(spec/coll-of anch/validate-anchoring)]}
-    "A list of places where threaded fasteners will connect the bottom plate "
-    "to the rest of the case."]
+    anch/anchoring-map-metadata
+    "A list of named places where threaded fasteners will connect the bottom "
+    "plate to the main body."]
    [[:main-body :leds]
-    "Support for light-emitting diodes in the case walls."]
+    "Support for light-emitting diodes in the case walls.\n\n"
+    "This feature of the application is poorly developed and may be removed "
+    "in a future version. Consider using `ports` for greater freedom in "
+    "the placement of LEDs."]
    [[:main-body :leds :include]
     {:default false :parse-fn boolean}
     "If `true`, cut slots for LEDs out of the case wall, facing "
@@ -911,7 +913,7 @@
     "two-dimensional `offset`."]
    [[:wrist-rest :bottom-plate]
     "The equivalent of the case `bottom-plate` parameter. If included, "
-    "a bottom plate for a wrist rest uses the `thickness` configured for "
+    "a bottom plate for a erist rest uses the `thickness` configured for "
     "the bottom of the case.\n"
     "\n"
     "Bottom plates for the wrist rests have no ESDS electronics to "
@@ -927,15 +929,14 @@
     "default position of each threaded fastener connecting it to its "
     "bottom plate."]
    [[:wrist-rest :bottom-plate :fastener-positions]
-    {:default [] :parse-fn (parse/tuple-of anch/parse-anchoring)
-     :validate [(spec/coll-of anch/validate-anchoring)]}
-    "The positions of threaded fasteners used to attach the bottom plate to "
-    "its wrist rest. The syntax of this parameter is precisely the same as "
-    "for the case’s bottom-plate fasteners. Corners are ignored and the "
-    "starting position is inset from the perimeter of the wrist rest by the "
-    "`inset` parameter above, before any offset stated here is applied.\n\n"
+    anch/anchoring-map-metadata
+    "A list of named places where threaded fasteners will connect the bottom "
+    "plate to the wrist resty.\n\n"
+    "The starting position of each fastener is inset from the perimeter of "
+    "the wrist rest by the `inset` parameter above, before any offset stated "
+    "here is applied.\n\n"
     "Other properties of these fasteners are determined by settings for the "
-    "case."]
+    "main body."]
    [[:wrist-rest :mould-thickness]
     {:default 1 :parse-fn num}
     "The thickness in mm of the walls and floor of the mould to be used for "

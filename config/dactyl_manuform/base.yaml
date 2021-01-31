@@ -334,25 +334,30 @@ main-body:
           total-length: 6
           include-threading: false  # Threading not used with inserts.
         positions:
-        - anchor: thumb-ml
-          side: N
-          segment: 2
-          intrinsic-offset: [0, 0, 0]
-        - anchor: back0
-          side: W
-          segment: 2
-          intrinsic-offset: [-3, 2, 0]
-        - anchor: back3
-          side: N
-          segment: 2
-        - anchor: right0
-          side: E
-          segment: 2
-          intrinsic-offset: [-1, 0, 0]
-        - anchor: m02
-          side: S
-          segment: 2
-          intrinsic-offset: [2, -4, 0]
+          bottom-main0:
+            anchor: thumb-ml
+            side: N
+            segment: 2
+            intrinsic-offset: [0, 0, 0]
+          bottom-main1:
+            anchor: back0
+            side: W
+            segment: 2
+            intrinsic-offset: [-3, 2, 0]
+          bottom-main2:
+            anchor: back3
+            side: N
+            segment: 2
+          bottom-main3:
+            anchor: right0
+            side: E
+            segment: 2
+            intrinsic-offset: [-1, 0, 0]
+          bottom-main4:
+            anchor: m02
+            side: S
+            segment: 2
+            intrinsic-offset: [2, -4, 0]
 tweaks:
   webbing:
     - chunk-size: 3

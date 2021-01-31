@@ -4,6 +4,20 @@
 # central housing. They’re about the right size for drawers to hold stationery.
 # The drawers themselves are not modeled by the DMOTE application.
 
+central-housing:
+  bottom-plate:
+    # Extra fasteners for the bottom plate.
+    fastener-positions:
+      bottom-bookend-N:
+        anchor: ci-far-base
+        intrinsic-offset: [-7, -4, 0]
+      bottom-bookend-S:
+        anchor: ci-near-base
+        intrinsic-rotation: [0, 0, π]
+        intrinsic-offset: [-10, 4, 0]
+      bottom-bookend-W:
+        intrinsic-offset: [87, -7.5, 0]
+        intrinsic-rotation: [0, 0, π/2]
 custom-bodies:
   # As a piece of design for manufacturing, both to support printers with a
   # z-axis limitation lower than the full central housing and to limit the need

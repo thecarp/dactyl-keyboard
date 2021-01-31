@@ -60,7 +60,7 @@ Other documents cover special sections of this one in more detail.
                     - Parameter <a href="#user-content-main-body-bottom-plate-installation-inserts-diameter-bottom">`bottom`</a>
             - Section <a href="#user-content-main-body-bottom-plate-installation-fasteners">`fasteners`</a>
                 - Parameter <a href="#user-content-main-body-bottom-plate-installation-fasteners-bolt-properties">`bolt-properties`</a>
-                - Parameter <a href="#user-content-main-body-bottom-plate-installation-fasteners-positions">`positions`</a>
+                - Freely keyed section <a href="#user-content-main-body-bottom-plate-installation-fasteners-positions">`positions`</a>
     - Section <a href="#user-content-main-body-leds">`leds`</a>
         - Parameter <a href="#user-content-main-body-leds-include">`include`</a>
         - Section <a href="#user-content-main-body-leds-position">`position`</a>
@@ -146,7 +146,7 @@ Other documents cover special sections of this one in more detail.
     - Section <a href="#user-content-wrist-rest-bottom-plate">`bottom-plate`</a>
         - Parameter <a href="#user-content-wrist-rest-bottom-plate-include">`include`</a>
         - Parameter <a href="#user-content-wrist-rest-bottom-plate-inset">`inset`</a>
-        - Parameter <a href="#user-content-wrist-rest-bottom-plate-fastener-positions">`fastener-positions`</a>
+        - Freely keyed section <a href="#user-content-wrist-rest-bottom-plate-fastener-positions">`fastener-positions`</a>
     - Parameter <a href="#user-content-wrist-rest-mould-thickness">`mould-thickness`</a>
 - Section <a href="#user-content-resolution">`resolution`</a>
     - Parameter <a href="#user-content-resolution-include">`include`</a>
@@ -359,9 +359,9 @@ A bottom plate can be added to close the case. This is useful mainly to simplify
 
 The bottom plate is largely two-dimensional. The application builds most of it from a set of polygons, trying to match the perimeter of the case at the ground level (i.e. z = 0).
 
-Specifically, there is one polygon per key cluster, limited to `full` wall edges, one polygon for the rear housing, and one set of polygons for each of the first-level case `tweaks` that use `at-ground`, ignoring chunk size and almost ignoring tweaks nested within lists of tweaks.
+Specifically, there is one polygon per key cluster (limited to wall edges drawn to the floor), one polygon for the rear housing, and one set of polygons for each of the first-level case `tweaks` that use `at-ground`, ignoring chunk size and almost ignoring tweaks nested within lists of tweaks.
 
-This methodology is mentioned here because its results are not perfect. Pending future features in OpenSCAD, a future version may be based on a more exact projection of the case, but as of 2018, such a projection is hollow and cannot be convex-hulled without escaping the case, unless your case is convex to start with.
+This methodology is mentioned here because its results are not perfect. Pending future features in OpenSCAD, a future version may be based on a more exact projection of the case, but as of 2020, such a projection is hollow and cannot be convex-hulled without escaping the case, unless your case is convex to start with.
 
 For this reason, while the polygons fill the interior, the perimeter of the bottom plate is extended by key walls and case `tweaks` as they would appear at the height of the bottom plate. Even this brutality may be inadequate. If you require a more exact match, do a projection of the case without a bottom plate, save it as DXF/SVG etc. and post-process that file to fill the interior gap.
 
@@ -445,13 +445,15 @@ Default values provided by the application are bare minima. More usefully, the a
 
 The optional `channel-length` property has a special side effect in this context. With a channel length of zero (the default), bolts start from the floor beneath the bottom plate. A positive channel length raises each bolt up into the plate. This is useful mainly with very thick plates. Cf. `dfm` → `bottom-plate` → `fastener-plate-offset`.
 
-###### Parameter <a id="main-body-bottom-plate-installation-fasteners-positions">`positions`</a>
+###### Freely keyed section <a id="main-body-bottom-plate-installation-fasteners-positions">`positions`</a>
 
-A list of places where threaded fasteners will connect the bottom plate to the rest of the case.
+A list of named places where threaded fasteners will connect the bottom plate to the main body.
 
 ### Section <a id="main-body-leds">`leds`</a>
 
 Support for light-emitting diodes in the case walls.
+
+This feature of the application is poorly developed and may be removed in a future version. Consider using `ports` for greater freedom in the placement of LEDs.
 
 #### Parameter <a id="main-body-leds-include">`include`</a>
 
@@ -889,7 +891,7 @@ The positions of all sprues. This is a list where each item needs an `anchor` na
 
 ### Section <a id="wrist-rest-bottom-plate">`bottom-plate`</a>
 
-The equivalent of the case `bottom-plate` parameter. If included, a bottom plate for a wrist rest uses the `thickness` configured for the bottom of the case.
+The equivalent of the case `bottom-plate` parameter. If included, a bottom plate for a erist rest uses the `thickness` configured for the bottom of the case.
 
 Bottom plates for the wrist rests have no ESDS electronics to protect but serve other purposes: Covering nut pockets, silicone mould-pour cavities, and plaster or other dense material poured into plinths printed without a bottom shell.
 
@@ -901,11 +903,13 @@ Whether to include a bottom plate for each wrist rest.
 
 The horizontal distance between the perimeter of the wrist rest and the default position of each threaded fastener connecting it to its bottom plate.
 
-#### Parameter <a id="wrist-rest-bottom-plate-fastener-positions">`fastener-positions`</a>
+#### Freely keyed section <a id="wrist-rest-bottom-plate-fastener-positions">`fastener-positions`</a>
 
-The positions of threaded fasteners used to attach the bottom plate to its wrist rest. The syntax of this parameter is precisely the same as for the case’s bottom-plate fasteners. Corners are ignored and the starting position is inset from the perimeter of the wrist rest by the `inset` parameter above, before any offset stated here is applied.
+A list of named places where threaded fasteners will connect the bottom plate to the wrist resty.
 
-Other properties of these fasteners are determined by settings for the case.
+The starting position of each fastener is inset from the perimeter of the wrist rest by the `inset` parameter above, before any offset stated here is applied.
+
+Other properties of these fasteners are determined by settings for the main body.
 
 ### Parameter <a id="wrist-rest-mould-thickness">`mould-thickness`</a>
 

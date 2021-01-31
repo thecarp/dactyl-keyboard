@@ -39,7 +39,7 @@ When present, a central housing naturally determines the position of each other 
     - Section <a href="#user-content-bottom-plate-projections">`projections`</a>
         - Parameter <a href="#user-content-bottom-plate-projections-include">`include`</a>
         - Parameter <a href="#user-content-bottom-plate-projections-scale">`scale`</a>
-    - Parameter <a href="#user-content-bottom-plate-fastener-positions">`fastener-positions`</a>
+    - Freely keyed section <a href="#user-content-bottom-plate-fastener-positions">`fastener-positions`</a>
 
 ## Parameter <a id="include">`include`</a>
 
@@ -259,9 +259,9 @@ If `true`, extend each bottom-plating anchor.
 
 The scale of each projection, as a 2-tuple of horizontal and vertical factors. The horizontal factor controls the width of the projection and the vertical factor its height. The length of the projection is fixed at the distance between the center of the anchor and the outermost part of its shell.
 
-### Parameter <a id="bottom-plate-fastener-positions">`fastener-positions`</a>
+### Freely keyed section <a id="bottom-plate-fastener-positions">`fastener-positions`</a>
 
-The positions of threaded fasteners used to attach the bottom plate to the central housing. In addition to the properties permitted in similar lists of such anchors, the central housing permits a `direction`, formulated as a point on the compass or an angle in radians. This property controls the facing of a projection. Typically, you want it facing the central housing’s nearest wall.
+A list of named places where threaded fasteners will connect the bottom plate to the central housing.Properties of these fasteners, beyond positions and projections, are determined by settings for the main body.
 
 ⸻
 

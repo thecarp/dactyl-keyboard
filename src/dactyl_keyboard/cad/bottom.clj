@@ -172,7 +172,8 @@
   [getopt]
   (mapcat
     (fn [[source-type raw-path]]
-      (map #(assoc % ::type source-type) (apply getopt raw-path)))
+      (map #(assoc % ::type source-type)
+           (filter some? (vals (apply getopt raw-path)))))
     (concat
       ;; Be sensitive to the relevant inclusion switches, so that the
       ;; higher-level model functions don’t always need to be.

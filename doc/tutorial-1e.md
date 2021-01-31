@@ -194,12 +194,14 @@ main-body:
           channel-length: 0.25
           include-threading: true
         positions:
-        - anchor: k
-          side: NNW
-          extrinsic-offset: [1.5, 1, 0]
-        - anchor: k
-          side: NNE
-          extrinsic-offset: [-1.5, 1, 0]
+          b0:
+            anchor: k
+            side: NNW
+            extrinsic-offset: [1.5, 1, 0]
+          b1:
+            anchor: k
+            side: NNE
+            extrinsic-offset: [-1.5, 1, 0]
 mcu:
   include: true
   anchoring:
@@ -258,12 +260,14 @@ Here’s the new part, in the middle:
           channel-length: 0.25
           include-threading: true
         positions:
-        - anchor: k
-          side: NNW
-          extrinsic-offset: [1.5, 1, 0]
-        - anchor: k
-          side: NNE
-          extrinsic-offset: [-1.5, 1, 0]
+          b0:
+            anchor: k
+            side: NNW
+            extrinsic-offset: [1.5, 1, 0]
+          b1:
+            anchor: k
+            side: NNE
+            extrinsic-offset: [-1.5, 1, 0]
 ```
 
 Add that to `butty.yaml`, save it and run the application once more.
@@ -275,6 +279,10 @@ Add that to `butty.yaml`, save it and run the application once more.
 with countersinks for the same screws’ heads in the bottom plate. The placement
 of each post uses the same set of anchoring parameters we have seen elsewhere,
 but automatically drops to the floor.
+
+The posts are named `b0` and `b1`. Like the name `k` for Butty’s key, these
+names are arbitrary, but could be useful in further work. In more complex
+designs, consider picking longer, more descriptive names.
 
 Inside the case, there are notches cut into the two posts. These notches are
 made by the invisible model of the MCU’s circuit board. They show that the

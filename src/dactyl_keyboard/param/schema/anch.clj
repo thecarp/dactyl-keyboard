@@ -46,11 +46,21 @@
 (def parse-anchoring (base/parser-with-defaults anchoring-raws))
 (def validate-anchoring (base/delegated-validation anchoring-raws))
 (def anchoring-metadata
-  "For use in the configuration spec."
+  "Metadata for a parameter specifying a position through anchoring.
+  For use in the configuration spec."
   {:heading-template "Section %s"
    :default (parse-anchoring {})
    :parse-fn parse-anchoring
    :validate [validate-anchoring]})
+(let [position (parse/map-of keyword parse-anchoring)]
+  (def anchoring-map-metadata
+    "A map of freely keyed positions that use only standard anchoring features.
+    Ignore items with the value nil; this allows canceling out entries from
+    other configuration files named earlier on the command line."
+    {:freely-keyed true
+     :default {}
+     :parse-fn (fn [raw] (position (remove #(nil? (second %)) raw)))
+     :validate [(spec/map-of keyword validate-anchoring)]}))
 
 ;; Registration:
 (spec/def ::anchoring validate-anchoring)
