@@ -8,19 +8,20 @@
             [scad-klupe.iso :as threaded]
             [scad-tarmi.core :refer [π] :as tarmi-core]
             [scad-tarmi.maybe :as maybe]
-            [dactyl-keyboard.compass :as compass]
-            [dactyl-keyboard.misc :refer [colours]]
-            [dactyl-keyboard.cad.body.main :refer [rear-housing-exterior]]
+            [dactyl-keyboard.cad.auxf :as auxf]
             [dactyl-keyboard.cad.body.central :as central]
+            [dactyl-keyboard.cad.body.main :refer [rear-housing-exterior]]
             [dactyl-keyboard.cad.body.wrist :as wrist]
+            [dactyl-keyboard.cad.key :as key]
+            [dactyl-keyboard.cad.key.wall :as wall]
             [dactyl-keyboard.cad.mask :as mask]
             [dactyl-keyboard.cad.misc :as misc :refer [merge-bolt wafer]]
             [dactyl-keyboard.cad.place :as place]
-            [dactyl-keyboard.cad.key :as key]
-            [dactyl-keyboard.cad.key.wall :as wall]
             [dactyl-keyboard.cad.tweak :as tweak]
-            [dactyl-keyboard.cad.auxf :as auxf]
-            [dactyl-keyboard.param.access :refer [most-specific compensator]]))
+            [dactyl-keyboard.compass :as compass]
+            [dactyl-keyboard.misc :refer [colours]]
+            [dactyl-keyboard.param.access :refer [most-specific compensator]]
+            [dactyl-keyboard.param.proc.anch :as anch]))
 
 
 ;;;;;;;;;;;
@@ -163,30 +164,7 @@
 ;; The proper selection of fasteners varies with the program output.
 ;; For example, as long as the bottom plate for the main body also
 ;; covers half of the central housing, the screw holes for the bottom
-;; plate must include positions from two sources.
-
-(defn- all-fastener-positions
-  "Collate the various sources of fastener positions for filtering.
-  Return a vector of fastener positions where each position is annotated
-  with a locally namespaced keyword corresponding to its source."
-  [getopt]
-  (mapcat
-    (fn [[source-type raw-path]]
-      (map #(assoc % ::type source-type)
-           (filter some? (vals (apply getopt raw-path)))))
-    (concat
-      ;; Be sensitive to the relevant inclusion switches, so that the
-      ;; higher-level model functions don’t always need to be.
-      (when (getopt :main-body :bottom-plate :include)
-        [[::main
-          [:main-body :bottom-plate :installation :fasteners :positions]]])
-      (when (and (getopt :main-body :bottom-plate :include)
-                 (getopt :central-housing :derived :include-main))
-        [[::centre
-          [:central-housing :bottom-plate :fastener-positions]]])
-      (when (getopt :wrist-rest :bottom-plate :include)
-        [[::wrist
-          [:wrist-rest :bottom-plate :fastener-positions]]]))))
+;; plate must include positions from two bodies.
 
 (let [module-names {1 "bottom_plate_anchor_positive_nonprojecting"
                     2 "bottom_plate_anchor_positive_central"
@@ -205,7 +183,9 @@
     ([type-id pred offset-z mirror]
      (fn [getopt]
        (let [z-offset (getopt :dfm :bottom-plate :fastener-plate-offset)
-             module (model/call-module (get module-names type-id))]
+             module (model/call-module (get module-names type-id))
+             positions (filter #(= (::anch/type %) ::anch/bottom-screw)
+                               (vals (getopt :derived :anchors)))]
          (maybe/translate [0 0 (if offset-z z-offset 0)]
            (apply maybe/union
              (map (fn [anchoring]
@@ -213,25 +193,23 @@
                      (merge anchoring {:preserve-orientation true  ; Override!)
                                        ::place/n-dimensions 2})
                      (if mirror (model/mirror [-1 0 0] module) module)))
-                  (filter pred (all-fastener-positions getopt))))))))))
+                  (filter pred positions)))))))))
 
-(defn- any-type
-  "Return a predicate function for filtering fasteners.
-  The filter will match fastener positions of any type included in the whitelist
-  passed to this function."
-  [& types]
-  (fn [position] (some (set types) #{(::type position)})))
+(defn- body
+  "Return a predicate function for filtering fasteners by source body."
+  [& bodies]
+  (fn [position] (some (set bodies) #{(:body position)})))
 
-(def posts-in-main-body (fastener-fn 1 (any-type ::main)))
-(def posts-for-main-plate (fastener-fn 1 (any-type ::main ::centre)))
-(def posts-in-wrist-rest (fastener-fn 1 (any-type ::wrist)))
-(def posts-in-central-housing (fastener-fn 2 (any-type ::centre)))
-(def holes-in-main-body (fastener-fn 3 (any-type ::main ::centre)))
-(def holes-in-main-plate (fastener-fn 3 (any-type ::main ::centre) true))
-(def holes-in-left-housing-body (fastener-fn 3 (any-type ::centre) false true))
-(def holes-in-wrist-body (fastener-fn 3 (any-type ::wrist)))
-(def holes-in-wrist-plate (fastener-fn 3 (any-type ::wrist) true))
-(def lateral-holes (fastener-fn 3 (any-type ::main ::centre ::wrist) true))
+(def posts-in-main-body (fastener-fn 1 (body :main)))
+(def posts-for-main-plate (fastener-fn 1 (body :main :central-housing)))
+(def posts-in-wrist-rest (fastener-fn 1 (body :wrist-rest)))
+(def posts-in-central-housing (fastener-fn 2 (body :central-housing)))
+(def holes-in-main-body (fastener-fn 3 (body :main :central-housing)))
+(def holes-in-main-plate (fastener-fn 3 (body :main :central-housing) true))
+(def holes-in-left-housing-body (fastener-fn 3 (body :central-housing) false true))
+(def holes-in-wrist-body (fastener-fn 3 (body :wrist-rest)))
+(def holes-in-wrist-plate (fastener-fn 3 (body :wrist-rest) true))
+(def lateral-holes (fastener-fn 3 (body :main :central-housing :wrist-rest) true))
 (def inserts (fastener-fn 4))
 
 

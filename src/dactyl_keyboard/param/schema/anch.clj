@@ -60,7 +60,7 @@
     {:freely-keyed true
      :default {}
      :parse-fn (fn [raw] (position (remove #(nil? (second %)) raw)))
-     :validate [(spec/map-of keyword validate-anchoring)]}))
+     :validate [(spec/map-of ::valid/alias validate-anchoring)]}))
 
 ;; Registration:
 (spec/def ::anchoring validate-anchoring)

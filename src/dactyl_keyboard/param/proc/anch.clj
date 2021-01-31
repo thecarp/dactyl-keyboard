@@ -123,6 +123,34 @@
          (getopt :wrist-rest :mounts mount-index :aliases :nuts)))
       (getopt :wrist-rest :mounts))
 
+    ;; Bottom plate screw posts from multiple sources:
+    (mapmap
+      (fn [[source-body raw-path]]
+        (mapmap
+          (fn [[alias anchoring]]
+            ;; Annotate each position with a body, based on its provenance.
+            ;; To save other functions from having to trawl each source,
+            ;; save all the positional data.
+            ;; TODO: Restructure parameters to get a single source where the
+            ;; body is named.
+            {alias (merge {::type ::bottom-screw, :body source-body}
+                          anchoring)})
+          (apply getopt raw-path)))
+      (concat
+        []
+        ;; Be sensitive to the relevant inclusion switches, so that the
+        ;; higher-level model functions don’t always need to be.
+        (when (getopt :main-body :bottom-plate :include)
+          [[:main
+            [:main-body :bottom-plate :installation :fasteners :positions]]])
+        (when (and (getopt :main-body :bottom-plate :include)
+                   (getopt :central-housing :derived :include-main))
+          [[:central-housing
+            [:central-housing :bottom-plate :fastener-positions]]])
+        (when (getopt :wrist-rest :bottom-plate :include)
+          [[:wrist-rest
+            [:wrist-rest :bottom-plate :fastener-positions]]])))
+
     ;; Flanges:
     (mapmap
       (fn [[flange {:keys [positions]}]]
