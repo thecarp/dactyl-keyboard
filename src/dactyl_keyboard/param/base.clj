@@ -77,35 +77,10 @@
        (catch clojure.lang.ExceptionInfo ~sym
          (expand-exception ~sym ~key)))))
 
-
-;;;;;;;;;;;;;;;
-;; Interface ;;
-;;;;;;;;;;;;;;;
-
-(defn hard-defaults
-  "Pick a user-supplied value over a default value.
-  This is the default method for resolving overlap between built-in defaults
-  and the user configuration, at the leaf level."
-  [{:keys [default]} candidate]
-  (or candidate default))
-
-(defn soft-defaults
-  "Prioritize a user-supplied value over a default value, but make it spongy.
-  This is an alternate method for resolving overlap, intended for use with
-  defaults that are so complicated the user will not want to write a complete,
-  explicit replacement every time."
-  [{:keys [default]} candidate]
-  (soft-merge default candidate))
-
-(defn inflate
-  "Recursively assemble a tree from flat specifications.
-  Skip the first entry, assuming it’s documentation."
-  [flat]
-  (reduce coalesce (ordered-map) (rest flat)))
-
-(defn traverse-node
+(defn- traverse-node
   "Treat a branch or leaf. Raise an exception on superfluous entries.
   Branches and leaves are distinguished by arity."
+  ;; TODO: Track path for use in exceptions.
   ([leafer key-picker nominal candidate]
    (when-not (map? candidate)
      (throw (ex-info "Non-mapping section in configuration file"
@@ -134,6 +109,32 @@
                       :keys (list key)
                       :accepted-keys (keys nominal)})))
    (expand-any-exception key (leafer (key nominal) (key candidate)))))
+
+
+;;;;;;;;;;;;;;;
+;; Interface ;;
+;;;;;;;;;;;;;;;
+
+(defn hard-defaults
+  "Pick a user-supplied value over a default value.
+  This is the default method for resolving overlap between built-in defaults
+  and the user configuration, at the leaf level."
+  [{:keys [default]} candidate]
+  (or candidate default))
+
+(defn soft-defaults
+  "Prioritize a user-supplied value over a default value, but make it spongy.
+  This is an alternate method for resolving overlap, intended for use with
+  defaults that are so complicated the user will not want to write a complete,
+  explicit replacement every time."
+  [{:keys [default]} candidate]
+  (soft-merge default candidate))
+
+(defn inflate
+  "Recursively assemble a tree from flat specifications.
+  Skip the first entry, assuming it’s documentation."
+  [flat]
+  (reduce coalesce (ordered-map) (rest flat)))
 
 
 ;; Parsing:
