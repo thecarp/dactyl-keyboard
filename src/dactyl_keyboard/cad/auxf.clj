@@ -8,7 +8,7 @@
             [scad-tarmi.core :refer [π]]
             [scad-tarmi.maybe :as maybe]
             [scad-klupe.iso :as iso :refer [nut]]
-            [dactyl-keyboard.cad.misc :as misc]
+            [dactyl-keyboard.cad.misc :as misc :refer [merge-bolt]]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.param.proc.anch :as anch]))
 
@@ -179,46 +179,3 @@
 ;; Unions of the positive and negative spaces for holding all ports, in place.
 (defn ports-positive [getopt bodies] (port-set getopt bodies true))
 (defn ports-negative [getopt bodies] (port-set getopt bodies false))
-
-
-;;;;;;;;;;;;;
-;; Flanges ;;
-;;;;;;;;;;;;;
-
-(defn derive-flange-properties
-  [getopt]
-  (into {}
-    (map (fn [[flange {:keys [bolt-properties boss-diameter-factor]}]]
-           [flange {:boss-radius (/ (* boss-diameter-factor
-                                       (:m-diameter bolt-properties))
-                                    2)
-                    :boss-height (iso/bolt-length bolt-properties)}])
-         (getopt :flanges))))
-
-(defn- flange-sequence
-  [getopt id]
-  (let [{:keys [positions] :as base} (getopt :flanges id)]
-    (map-indexed
-      (fn [index position]
-        (-> base
-          (dissoc :positions)
-          (assoc :flange id)
-          (assoc :position-index index)
-          (merge position)))
-      positions)))
-
-(defn- filtered-flanges
-  [getopt]
-  (mapcat (partial flange-sequence getopt) (keys (getopt :flanges))))
-
-(defn- flange-filter
-  [getopt subject]
-  (fn [{:keys [body anchoring]}]
-    (= subject (anch/resolve-body getopt (:anchor anchoring) body))))
-
-(defn flange-negatives
-  [getopt body]
-  (map (fn [{:keys [flange position-index bolt-properties]}]
-         (place/flange-place getopt flange position-index 0
-           (misc/merge-bolt getopt bolt-properties)))
-       (filter (partial flange-filter getopt) (filtered-flanges getopt))))

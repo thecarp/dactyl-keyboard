@@ -122,6 +122,9 @@ doc/options-clusters.md: target/dmote.jar
 doc/options-nested.md: target/dmote.jar
 	java -jar target/dmote.jar --describe-parameters nested > $@
 
+doc/options-flanges.md: target/dmote.jar
+	java -jar target/dmote.jar --describe-parameters flanges > $@
+
 doc/options-ports.md: target/dmote.jar
 	java -jar target/dmote.jar --describe-parameters ports > $@
 
@@ -242,7 +245,7 @@ macropad_12key: target/dmote.jar
 
 # Higher-level phony targets follow.
 
-docs: doc/img/*/* doc/options-central.md doc/options-clusters.md doc/options-main.md doc/options-nested.md doc/options-ports.md doc/options-wrist-rest-mounts.md doc/tutorial-1a.md doc/tutorial-1b.md doc/tutorial-1c.md doc/tutorial-1d.md
+docs: doc/img/*/* doc/options-central.md doc/options-clusters.md doc/options-main.md doc/options-nested.md doc/options-flanges.md doc/options-ports.md doc/options-wrist-rest-mounts.md doc/tutorial-1a.md doc/tutorial-1b.md doc/tutorial-1c.md doc/tutorial-1d.md doc/tutorial-1e.md
 
 test:
 	lein test

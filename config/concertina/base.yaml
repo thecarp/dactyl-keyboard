@@ -520,27 +520,6 @@ main-body:
   reflect: true
   bottom-plate:
     include: true
-    combine: true
-    thickness: 2.5
-    installation:
-      thickness: 1
-      fasteners:
-        bolt-properties:
-          m-diameter: 3
-          total-length: 8
-          include-threading: false
-          channel-length: 0.75
-        positions:
-          bottom-main-N:
-            anchor: ca-far-base
-            extrinsic-offset: [1, -10, 0]
-          bottom-main-E:
-            anchor: m5L
-            side: SE
-            extrinsic-offset: [-4, 2, 0]
-          bottom-main-S:
-            anchor: ca-near-base
-            extrinsic-offset: [-3, 8.2, 0]
 central-housing:
   include: true
   shape:
@@ -731,22 +710,6 @@ central-housing:
       width:
         inner: 4.5
         taper: 5
-  bottom-plate:
-    projections:
-      include: true
-      scale: [2.5, 1]
-    fastener-positions:
-      # These go inside the centermost piece of the housing.
-      bottom-central-N:  # When mirrored, this ends up in the same position.
-        intrinsic-offset: [0, 36, 0]
-      bottom-central-NE:  # When mirrored, this ends up on the west side.
-        intrinsic-offset: [72, 36, 0]
-      bottom-central-SE:
-        intrinsic-rotation: [0, 0, π]
-        intrinsic-offset: [72, -51, 0]
-      bottom-central-S:
-        intrinsic-rotation: [0, 0, π]
-        intrinsic-offset: [0, -51, 0]
 custom-bodies:
   # For ease of assembly, print the thumb cluster separately.
   thumb-cluster:
@@ -759,38 +722,74 @@ custom-bodies:
                         intrinsic-rotation: [π/4, 0, 0],
                         extrinsic-offset: [0, 0, 17.5]},
             size: [150, 150, 50]}]
+bottom-plates:
+  combine: true
+  thickness: 2.5
 flanges:
-  main-to-thumb-flange:
-    bolt-properties:
-      m-diameter: 3
-      head-type: countersunk
-      include-threading: false
-      threaded-length: 7
-      unthreaded-length: 2
-      channel-length: 20
-    boss-diameter-factor: 2
+  main-bottom-plate:
+    include: true
+    bosses:
+      segments:
+        "0":
+          diameter: 6
+        "1":
+          diameter: 6
+          intrinsic-offset: [0, 0, 7]
     positions:
-    - alias: f0-upper-right
+    - boss-alias: bottom-main-N
+      anchoring:
+        anchor: ca-far-base
+        extrinsic-offset: [1, -10, 0]
+    - boss-alias: bottom-main-E
+      anchoring:
+        anchor: m5L
+        side: SE
+        extrinsic-offset: [-4, 2, 0]
+    - boss-alias: bottom-main-S
+      anchoring:
+        anchor: ca-near-base
+        extrinsic-offset: [-3, 8.2, 0]
+  main-to-thumb-flange:
+    include: true
+    bolts:
+      include: true
+      bolt-properties:
+        m-diameter: 3
+        head-type: countersunk
+        include-threading: false
+        threaded-length: 7
+        unthreaded-length: 2
+        channel-length: 20
+    bosses:
+      segments:
+        "0":
+          diameter: 6
+          height: 0.001
+        "1":
+          diameter: 6
+          intrinsic-offset: [0, 0, 8]
+    positions:
+    - boss-alias: f0-upper-right
       anchoring:
         anchor: t3L
         side: N
         preserve-orientation: true
         intrinsic-rotation: [π*-0.75, 0, 0]
         extrinsic-offset: [-2, 8, -6]
-    - alias: f0-lower-right
+    - boss-alias: f0-lower-right
       anchoring:
         anchor: t3F
         side: S
         preserve-orientation: true
         intrinsic-rotation: [π*-0.75, 0, 0]
         extrinsic-offset: [-2, 6, -11]
-    - alias: f0-lower-left
+    - boss-alias: f0-lower-left
       anchoring:
         anchor: sec-near-upper-1b
         preserve-orientation: true
         intrinsic-rotation: [π*-0.75, 0, 0]
         extrinsic-offset: [9, -2, -5]
-    - alias: f0-upper-left
+    - boss-alias: f0-upper-left
       anchoring:
         anchor: t0L
         side: NNW
@@ -896,19 +895,19 @@ tweaks:
     - [t2L, NNE, 0, 2]
     - [t3L, NNW, 1]
     - [t3L, NNE, 0, 2]
-    - [f0-upper-right, null, 0, 3]
+    - [f0-upper-right, null, 0, 1]
     - [m0F1]
   - hull-around:
     - [t2F, SSE]
     - [t3F, SSE, 0, 2]
     - [t3F, SSW, 1]
-    - [f0-lower-right, null, 0, 3]
+    - [f0-lower-right, null, 0, 1]
     - [m2F, SSW, 0, 3]
     - [m1F1]
   - hull-around:
     - [t0F, SSW, 2, 3]
     - [t1F, SSW, 2, 3]
-    - [f0-lower-left, null, 3, {size: 5}]
+    - [f0-lower-left, null, 1, {size: 5}]
     - [f0-lower-left, null, 0, {size: [7, 3.5, 0.1]}]
     - [f0-lower-left, null, 0, {size: [3.5, 7, 0.1]}]
     - [sec-near-upper-1a]
@@ -919,7 +918,7 @@ tweaks:
     - [t0L, NNW, 0, 2]
     - [t0L, NE]
     - [t1L, NNW, 0, 2]
-    - [f0-upper-left, null, 3, {size: 5}]
+    - [f0-upper-left, null, 1, {size: 5}]
     - [f0-upper-left, null, 0, {size: [7, 3.5, 0.1]}]
     - [f0-upper-left, null, 0, {size: [3.5, 7, 0.1]}]
     - [ca-mid-2]

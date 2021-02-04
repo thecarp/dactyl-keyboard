@@ -4,20 +4,6 @@
 # central housing. They’re about the right size for drawers to hold stationery.
 # The drawers themselves are not modeled by the DMOTE application.
 
-central-housing:
-  bottom-plate:
-    # Extra fasteners for the bottom plate.
-    fastener-positions:
-      bottom-bookend-N:
-        anchor: ci-far-base
-        intrinsic-offset: [-7, -4, 0]
-      bottom-bookend-S:
-        anchor: ci-near-base
-        intrinsic-rotation: [0, 0, π]
-        intrinsic-offset: [-10, 4, 0]
-      bottom-bookend-W:
-        intrinsic-offset: [87, -7.5, 0]
-        intrinsic-rotation: [0, 0, π/2]
 custom-bodies:
   # As a piece of design for manufacturing, both to support printers with a
   # z-axis limitation lower than the full central housing and to limit the need
@@ -40,13 +26,15 @@ custom-bodies:
             size: [200, 200, 200]}]
 flanges:
   assortment-bookend-flanges:
-    bolt-properties:
-      m-diameter: 3
-      head-type: countersunk
-      point-type: cone
-      include-threading: true
-      total-length: 12
-      channel-length: 4
+    bolts:
+      include: true
+      bolt-properties:
+        m-diameter: 3
+        head-type: countersunk
+        point-type: cone
+        include-threading: true
+        total-length: 12
+        channel-length: 4
     positions:
     # Mounting screws in the loft of the central housing:
     - anchoring:
@@ -148,6 +136,41 @@ flanges:
         segment: 2
         intrinsic-rotation: [0, π/2, 0]
         intrinsic-offset: [2, -6, -2]
+  central-housing-bottom-plate:
+    positions:
+    # The first of these go inside the centermost piece of the
+    # housing.
+    - boss-alias: bottom-central-N
+      # Not reflected; it would just end up in the same position.
+      anchoring:
+        intrinsic-offset: [0, 36, 0]
+    - boss-alias: bottom-central-NE
+      reflect: true  # Copy to the NW side.
+      anchoring:
+        intrinsic-offset: [72, 36, 0]
+    - boss-alias: bottom-central-SE
+      reflect: true
+      anchoring:
+        intrinsic-offset: [72, -51, 0]
+    - boss-alias: bottom-central-S
+      anchoring:
+        intrinsic-offset: [0, -51, 0]
+    # The remaining positions are inside the custom bodies made
+    # from the central housing.
+    - boss-alias: bottom-bookend-N
+      reflect: true
+      anchoring:
+        anchor: ci-far-base
+        intrinsic-offset: [-7, -4, 0]
+    - boss-alias: bottom-bookend-S
+      reflect: true
+      anchoring:
+        anchor: ci-near-base
+        intrinsic-offset: [-10, 4, 0]
+    - boss-alias: bottom-bookend-W
+      reflect: true
+      anchoring:
+        intrinsic-offset: [87, -7.5, 0]
 ports:
   # Three slots follow for assortment drawers, with 4 mm between each.
   # There is also a 4 mm lip above the top drawer, partly for aesthetics and

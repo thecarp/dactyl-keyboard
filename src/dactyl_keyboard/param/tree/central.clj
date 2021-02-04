@@ -335,29 +335,4 @@
     "The width of the receiver at its base, before it starts to taper, in mm."]
    [[:adapter :receivers :width :taper]
     {:default 0 :parse-fn num}
-    "The width of a taper, as with the lip."]
-   [[:bottom-plate]
-    "Any bottom plating for the case will extend to the midpoint of the "
-    "central housing, on the assumption that bottom-plating anchors will "
-    "be used to attach it there."]
-   [[:bottom-plate :projections]
-    "To facilitate printing a central housing standing on its edge, or to add "
-    "strength, you can extend bottom-plating anchors onto the nearest wall, "
-    "via a convex hull of each anchor and its projection. The result is an "
-    "internal chamfer resembling a primitive fillet."]
-   [[:bottom-plate :projections :include]
-    {:default false :parse-fn boolean}
-    "If `true`, extend each bottom-plating anchor."]
-   [[:bottom-plate :projections :scale]
-    {:default [1 1] :parse-fn vec :validate [::tarmi-core/point-2d]}
-    "The scale of each projection, as a 2-tuple of horizontal and vertical "
-    "factors. The horizontal factor controls the width of the projection and "
-    "the vertical factor its height. The length of the projection is fixed "
-    "at the distance between the center of the anchor and the outermost "
-    "part of its shell."]
-   [[:bottom-plate :fastener-positions]
-    anch/anchoring-map-metadata
-    "A list of named places where threaded fasteners will connect the bottom "
-    "plate to the central housing."
-    "Properties of these fasteners, beyond positions and projections, are "
-    "determined by settings for the main body."]])
+    "The width of a taper, as with the lip."]])

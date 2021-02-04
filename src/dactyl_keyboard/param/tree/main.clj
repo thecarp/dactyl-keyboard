@@ -7,21 +7,22 @@
   (:require [clojure.spec.alpha :as spec]
             [clojure.java.io :refer [file]]
             [scad-tarmi.core :as tarmi-core]
-            [scad-app.core :as appdata]
+            [scad-app.schema :as appschema]
             [dmote-keycap.data :as capdata]
+            [dactyl-keyboard.compass :as compass]
+            [dactyl-keyboard.cots :as cots]
             [dactyl-keyboard.param.base :as base]
-            [dactyl-keyboard.param.schema.valid :as valid]
-            [dactyl-keyboard.param.schema.arb :as arb]
             [dactyl-keyboard.param.schema.anch :as anch]
+            [dactyl-keyboard.param.schema.arb :as arb]
             [dactyl-keyboard.param.schema.parse :as parse]
+            [dactyl-keyboard.param.schema.valid :as valid]
             [dactyl-keyboard.param.stock :as stock]
             [dactyl-keyboard.param.tree.central :as central]
             [dactyl-keyboard.param.tree.cluster :as cluster]
-            [dactyl-keyboard.param.tree.port :as port]
+            [dactyl-keyboard.param.tree.flange :as flange]
             [dactyl-keyboard.param.tree.nested :as nested]
-            [dactyl-keyboard.param.tree.restmnt :as restmnt]
-            [dactyl-keyboard.cots :as cots]
-            [dactyl-keyboard.compass :as compass]))
+            [dactyl-keyboard.param.tree.port :as port]
+            [dactyl-keyboard.param.tree.restmnt :as restmnt]))
 
 
 ;; Though this module describes the main body of parameters, it contains
@@ -36,7 +37,6 @@
 (spec/def ::nested-key-configuration
   (spec/keys :opt-un [:nested/parameters :nested/clusters :nested/columns
                       :nested/rows :nested/rows :nested/sides]))
-
 
 (def raws
   "A flat version of the specification for a complete user configuration.
@@ -255,112 +255,11 @@
     "Where to place the middle of the back plate. "
     stock/anchoring-documentation]
    [[:main-body :bottom-plate]
-    "A bottom plate can be added to close the case. This is useful mainly to "
-    "simplify transportation.\n"
-    "\n"
-    "#### Overview\n"
-    "\n"
-    "The bottom plate is largely two-dimensional. The application builds most "
-    "of it from a set of polygons, trying to match the perimeter of the case "
-    "at the ground level (i.e. z = 0).\n"
-    "\n"
-    "Specifically, there is one polygon per key cluster (limited to wall "
-    "edges drawn to the floor), one polygon for the rear housing, and one "
-    "set of polygons for each of the first-level case `tweaks` that use "
-    "`at-ground`, ignoring chunk size and almost ignoring tweaks nested "
-    "within lists of tweaks.\n"
-    "\n"
-    "This methodology is mentioned here because its results are not perfect. "
-    "Pending future features in OpenSCAD, a future version may be based on a "
-    "more exact projection of the case, but as of 2020, such a projection is "
-    "hollow and cannot be convex-hulled without escaping the case, unless "
-    "your case is convex to start with.\n"
-    "\n"
-    "For this reason, while the polygons fill the interior, the perimeter of "
-    "the bottom plate is extended by key walls and case `tweaks` as they "
-    "would appear at the height of the bottom plate. Even this brutality may "
-    "be inadequate. If you require a more exact match, do a projection of the "
-    "case without a bottom plate, save it as DXF/SVG etc. and post-process "
-    "that file to fill the interior gap."]
+    "Plating underneath the main body. See the top-level `bottom-plates` "
+    "section for shared properties of bottom plates."]
    [[:main-body :bottom-plate :include]
     {:default false :parse-fn boolean}
-    "If `true`, include a bottom plate for the case."]
-   [[:main-body :bottom-plate :preview]
-    {:default false :parse-fn boolean}
-    "Preview mode. If `true`, put a model of the plate in the same file as "
-    "the case it closes. Not for printing."]
-   [[:main-body :bottom-plate :combine]
-    {:default false :parse-fn boolean}
-    "If `true`, combine bottom plates for the main body, the central housing "
-    "and the wrist rests, where possible.\n\n"
-    "This can be used with the `solid` style of wrist rest to get a plate "
-    "that helps lock the wrist rest to the main body, and with a central "
-    "housing to get a single, bilateral plate that extends from side to side. "
-    "This larger plate can require a large build volume."]
-   [[:main-body :bottom-plate :thickness]
-    {:default 1 :parse-fn num}
-    "The thickness (i.e. height) in mm of all bottom plates you choose to "
-    "include. This covers plates for the case and for the wrist rest.\n"
-    "\n"
-    "The case will not be raised to compensate for this. Instead, the height "
-    "of the bottom plate will be removed from the bottom of the main model so "
-    "that it does not extend to z = 0."]
-   [[:main-body :bottom-plate :installation]
-    "How your bottom plate is attached to the rest of your case."]
-   [[:main-body :bottom-plate :installation :style]
-    {:default :threads :parse-fn keyword
-     :validate [::valid/plate-installation-style]}
-    "The general means of installation. This parameter has been reduced to a "
-    "placeholder: The only available style is `threads`, signifying the use "
-    "of threaded fasteners connecting the bottom plate to anchors in "
-    "the body of the keyboard."]
-   [[:main-body :bottom-plate :installation :dome-caps]
-    {:default false :parse-fn boolean}
-    "If `true`, terminate each anchor with a hemispherical tip. This is "
-    "an aesthetic feature, primarily intended for externally visible anchors "
-    "and printed threading. "
-    "If all of your anchors are completely internal to the case, and/or you "
-    "intend to tap the screw holes after printing, dome caps are wasteful at "
-    "best and counterproductive at worst."]
-   [[:main-body :bottom-plate :installation :thickness]
-    {:default 1 :parse-fn num}
-    "The thickness in mm of each wall of the anchor points for threaded "
-    "fasteners."]
-   [[:main-body :bottom-plate :installation :inserts]
-    "You can use heat-set inserts in the anchor points.\n\n"
-    "It is assumed that, as in Tom Short’s Dactyl-ManuForm, the inserts are "
-    "largely cylindrical."]
-   [[:main-body :bottom-plate :installation :inserts :include]
-    {:default false :parse-fn boolean}
-    "If `true`, make space for inserts."]
-   [[:main-body :bottom-plate :installation :inserts :length]
-    {:default 1 :parse-fn num}
-    "The length in mm of each insert."]
-   [[:main-body :bottom-plate :installation :inserts :diameter]
-    "Inserts may vary in diameter across their length."]
-   [[:main-body :bottom-plate :installation :inserts :diameter :top]
-    {:default 1 :parse-fn num}
-    "Top diameter in mm."]
-   [[:main-body :bottom-plate :installation :inserts :diameter :bottom]
-    {:default 1 :parse-fn num}
-    "Bottom diameter in mm. This needs to be at least as large as the top "
-    "diameter since the mounts for the inserts only open from the bottom."]
-   [[:main-body :bottom-plate :installation :fasteners]
-    "The type and positions of the threaded fasteners used to secure each "
-    "bottom plate."]
-   [[:main-body :bottom-plate :installation :fasteners :bolt-properties]
-    stock/implicit-threaded-bolt-metadata
-    stock/threaded-bolt-documentation
-    "\n\n"
-    "The optional `channel-length` property has a special side effect in this "
-    "context. With a channel length of zero (the default), bolts start from "
-    "the floor beneath the bottom plate. A positive channel length raises "
-    "each bolt up into the plate. This is useful mainly with very thick "
-    "plates. Cf. `dfm` → `bottom-plate` → `fastener-plate-offset`."]
-   [[:main-body :bottom-plate :installation :fasteners :positions]
-    anch/anchoring-map-metadata
-    "A list of named places where threaded fasteners will connect the bottom "
-    "plate to the main body."]
+    "If `true`, include a bottom plate for this body."]
    [[:main-body :leds]
     "Support for light-emitting diodes in the case walls.\n\n"
     "This feature of the application is poorly developed and may be removed "
@@ -399,9 +298,217 @@
      :default (base/extract-defaults central/raws)
      :parse-fn (base/parser-with-defaults central/raws)
      :validate [(base/delegated-validation central/raws)]}
-    "A major body separate from the main body, located in between and "
+    "An optional body separate from the main body, located in between and "
     "connecting the two halves of a reflected main body. "
     "The central housing is documented in detail [here](options-central.md)."]
+   [[:wrist-rest]
+    "An optional extra body to support the user’s wrist."]
+   [[:wrist-rest :include]
+    {:default false :parse-fn boolean}
+    "If `true`, include a wrist rest with the keyboard."]
+   [[:wrist-rest :style]
+    {:default :threaded :parse-fn keyword :validate [::valid/wrist-rest-style]}
+    "The style of the wrist rest. Available styles are:\n\n"
+    "- `threaded`: threaded fasteners connect the case and wrist rest.\n"
+    "- `solid`: the case and wrist rest are joined together by `tweaks` "
+    "as a single piece of plastic."]
+   [[:wrist-rest :preview]
+    {:default false :parse-fn boolean}
+    "Preview mode. If `true`, this puts a model of the wrist rest in the same "
+    "OpenSCAD file as the case. That model is simplified, intended for gauging "
+    "distance, not for printing."]
+   [[:wrist-rest :anchoring]
+    anch/anchoring-metadata
+    "Where to place the wrist rest. "
+    stock/anchoring-documentation " "
+    "For wrist rests, the vertical component of the anchor’s position is "
+    "ignored, including any vertical offset."]
+   [[:wrist-rest :plinth-height]
+    {:default 1 :parse-fn num}
+    "The average height of the plastic plinth in mm, at its upper lip."]
+   [[:wrist-rest :shape]
+    "The wrist rest needs to fit the user’s hand."]
+   [[:wrist-rest :shape :spline]
+    "The horizontal outline of the wrist rest is a closed spline."]
+   [[:wrist-rest :shape :spline :main-points]
+    {:default [{:position [0 0]} {:position [1 0]} {:position [1 1]}]
+     :parse-fn parse/nameable-spline
+     :validate [::valid/nameable-spline]}
+    "A list of nameable points, in clockwise order. The spline will pass "
+    "through all of these and then return to the first one. Each point can "
+    "have two properties:\n\n"
+    "- Mandatory: `position`. A pair of coordinates, in mm, relative to other "
+    "points in the list.\n"
+    "- Optional: `alias`. A name given to the specific point, for the purpose "
+    "of placing yet more things in relation to it."]
+   [[:wrist-rest :shape :spline :resolution]
+    {:default 1 :parse-fn num}
+    "The amount of vertices per main point. The default is 1. If 1, only the "
+    "main points themselves will be used, giving you full control. A higher "
+    "number gives you smoother curves.\n\n"
+    "If you want the closing part of the curve to look smooth in high "
+    "resolution, position your main points carefully.\n\n"
+    "Resolution parameters, including this one, can be disabled in the main "
+    "`resolution` section."]
+   [[:wrist-rest :shape :lip]
+    "The lip is the uppermost part of the plinth, lining and supporting the "
+    "edge of the pad. Its dimensions are described here in mm away from the "
+    "pad."]
+   [[:wrist-rest :shape :lip :height]
+    {:default 1 :parse-fn num} "The vertical extent of the lip."]
+   [[:wrist-rest :shape :lip :width]
+    {:default 1 :parse-fn num} "The horizontal width of the lip at its top."]
+   [[:wrist-rest :shape :lip :inset]
+    {:default 0 :parse-fn num}
+    "The difference in width between the top and bottom of the lip. "
+    "A small negative value will make the lip thicker at the bottom. This is "
+    "recommended for fitting a silicone mould."]
+   [[:wrist-rest :shape :pad]
+    "The top of the wrist rest should be printed or cast in a soft material, "
+    "such as silicone rubber."]
+   [[:wrist-rest :shape :pad :surface]
+    "The upper surface of the pad, which will be in direct contact with "
+    "the user’s palm or wrist."]
+   [[:wrist-rest :shape :pad :height]
+    "The piece of rubber extends a certain distance up into the air and down "
+    "into the plinth. All measurements in mm."]
+   [[:wrist-rest :shape :pad :height :surface-range]
+    {:default 1 :parse-fn num}
+    "The vertical range of the upper surface. Whatever values are in "
+    "a heightmap will be normalized to this scale."]
+   [[:wrist-rest :shape :pad :height :lip-to-surface]
+    {:default 1 :parse-fn num}
+    "The part of the rubber pad between the top of the lip and the point "
+    "where the heightmap comes into effect. This is useful if your heightmap "
+    "itself has very low values at the edges, such that moulding and casting "
+    "it without a base would be difficult."]
+   [[:wrist-rest :shape :pad :height :below-lip]
+    {:default 1 :parse-fn num}
+    "The depth of the rubber wrist support, measured from the top of the lip, "
+    "going down into the plinth. This part of the pad just keeps it in place."]
+   [[:wrist-rest :shape :pad :surface :edge]
+    "The edge of the pad can be rounded."]
+   [[:wrist-rest :shape :pad :surface :edge :inset]
+    {:default 0 :parse-fn num}
+    "The horizontal extent of softening. This cannot be more than half the "
+    "width of the outline, as determined by `main-points`, at its narrowest "
+    "part."]
+   [[:wrist-rest :shape :pad :surface :edge :resolution]
+    {:default 1 :parse-fn num}
+    "The number of faces on the edge between horizontal points.\n\n"
+    "Resolution parameters, including this one, can be disabled in the main "
+    "`resolution` section."]
+   [[:wrist-rest :shape :pad :surface :heightmap]
+    "The surface can optionally be modified by the [`surface()` function]"
+    "(https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/"
+    "Other_Language_Features#Surface), which requires a heightmap file."]
+   [[:wrist-rest :shape :pad :surface :heightmap :include]
+    {:default false :parse-fn boolean}
+    "If `true`, use a heightmap. The map will intersect the basic pad "
+    "polyhedron."]
+   [[:wrist-rest :shape :pad :surface :heightmap :filepath]
+    {:default (file ".." ".." "resources" "heightmap" "default.dat")}
+    "The file identified here should contain a heightmap in a format OpenSCAD "
+    "can understand. The path should also be resolvable by OpenSCAD."]
+   [[:wrist-rest :rotation]
+    "The wrist rest can be rotated to align its pad with the user’s palm."]
+   [[:wrist-rest :rotation :pitch]
+    {:default 0 :parse-fn parse/compass-incompatible-angle}
+    "Tait-Bryan pitch."]
+   [[:wrist-rest :rotation :roll]
+    {:default 0 :parse-fn parse/compass-incompatible-angle}
+    "Tait-Bryan roll."]
+   [[:wrist-rest :mounts]
+    {:heading-template "Special section %s"
+     :default []
+     :parse-fn (parse/tuple-of (base/parser-with-defaults restmnt/raws))
+     :validate [(spec/coll-of (base/delegated-validation restmnt/raws))]}
+    "A list of mounts for threaded fasteners. Each such mount will include at "
+    "least one cuboid block for at least one screw that connects the wrist "
+    "rest to the case. "
+    "This section is used only with the `threaded` style of wrist rest."]
+   [[:wrist-rest :sprues]
+    "Holes in the bottom of the plinth. You pour liquid rubber through these "
+    "holes when you make the rubber pad. Sprues are optional, but the general "
+    "recommendation is to have two of them if you’re going to be casting your "
+    "own pads. That way, air can escape even if you accidentally block one "
+    "sprue with a low-viscosity silicone."]
+   [[:wrist-rest :sprues :include]
+    {:default false :parse-fn boolean}
+    "If `true`, include sprues."]
+   [[:wrist-rest :sprues :inset]
+    {:default 0 :parse-fn num}
+    "The horizontal distance between the perimeter of the wrist rest and the "
+    "default position of each sprue."]
+   [[:wrist-rest :sprues :diameter]
+    {:default 1 :parse-fn num}
+    "The diameter of each sprue."]
+   [[:wrist-rest :sprues :positions]
+    {:default [] :parse-fn (parse/tuple-of anch/parse-anchoring)
+     :validate [(spec/coll-of anch/validate-anchoring)]}
+    "The positions of all sprues. This is a list where each item needs an "
+    "`anchor` naming a main point in the spline. You can add an optional "
+    "two-dimensional `offset`."]
+   [[:wrist-rest :bottom-plate]
+    "Plating underneath the wrist rest. See the top-level `bottom-plates` "
+    "section for shared properties of bottom plates.\n"
+    "\n"
+    "Bottom plates for wrist rests have no ESDS electronics to "
+    "protect but serve other purposes: Covering nut pockets, silicone "
+    "mould-pour cavities, and plaster or other dense material poured into "
+    "plinths printed without a bottom shell."]
+   [[:wrist-rest :bottom-plate :include]
+    {:default false :parse-fn boolean}
+    "If `true`, include a bottom plate for this body."]
+   [[:wrist-rest :mould-thickness]
+    {:default 1 :parse-fn num}
+    "The thickness in mm of the walls and floor of the mould to be used for "
+    "casting the rubber pad."]
+   [[:bottom-plates]
+    "A bottom plate can be added to each body of the keyboard, to close the "
+    "case. This is useful mainly to simplify transportation.\n"
+    "\n"
+    "Bottom plates are largely two-dimensional. The application builds most "
+    "of each plate from a set of polygons, trying to match the perimeter of "
+    "the case at the ground level (i.e. z = 0).\n"
+    "\n"
+    "Specifically, there is one polygon per key cluster (limited to wall "
+    "edges drawn to the floor), one polygon for each housing, and one "
+    "set of polygons for each of the first-level case `tweaks` that use "
+    "`at-ground`, ignoring chunk size and almost ignoring tweaks nested "
+    "within lists of tweaks.\n"
+    "\n"
+    "This methodology is mentioned here because its results are not perfect. "
+    "Pending future features in OpenSCAD, a future version may be based on a "
+    "more exact projection of the case, but as of 2020, such a projection is "
+    "hollow and cannot be convex-hulled without escaping the case, unless "
+    "your case is convex to start with.\n"
+    "\n"
+    "For this reason, while the polygons fill the interior, the perimeter of "
+    "the bottom plate is extended by key walls and case `tweaks` as they "
+    "would appear at the height of the bottom plate. Even this brutality may "
+    "be inadequate. If you require a more exact match, do a projection of the "
+    "case without a bottom plate, save it as DXF/SVG etc. and post-process "
+    "that file to fill the interior gap."]
+   [[:bottom-plates :preview]
+    {:default false :parse-fn boolean}
+    "Preview mode. If `true`, put a model of the plate in the same file as "
+    "the body it closes. Not for printing."]
+   [[:bottom-plates :combine]
+    {:default false :parse-fn boolean}
+    "If `true`, combine bottom plates for as many bodies as possible.\n\n"
+    "This can be used with the `solid` style of wrist rest to get a plate "
+    "that helps lock the wrist rest to the main body, and with a central "
+    "housing to get a single, bilateral plate that extends from side to side. "
+    "This larger plate can require a large build volume."]
+   [[:bottom-plates :thickness]
+    {:default 1 :parse-fn num}
+    "The thickness (i.e. height) in mm of all bottom plates you choose to "
+    "include. This covers plates for the case and for the wrist rest.\n"
+    "\n"
+    "The case will not be raised to compensate for this. Instead, the "
+    "thickness of the bottom plate will be removed from the bottom of the "
+    "main model."]
    [[:custom-bodies]
     (let [custom-body
           [[]  ;; This header will not be rendered and is therefore empty.
@@ -470,58 +577,14 @@
     "If its parent body is governed by `reflect`, the custom body will also "
     "be reflected, appearing in left- and right-hand versions."]
    [[:flanges]
-    (let [flange-position
-          [[]  ;; This header will not be rendered and is therefore empty.
-           [[:alias]
-            stock/alias-metadata]
-           [[:body]
-            {:default :auto :parse-fn keyword :validate [::valid/body]}]
-           [[:anchoring]
-            anch/anchoring-metadata]]
-          flange-type
-          [[]  ;; This header will not be rendered and is therefore empty.
-           [[:bolt-properties]
-            stock/implicit-threaded-bolt-metadata]
-           [[:boss-diameter-factor]
-            {:default 1 :parse-fn num}]
-           [[:positions]
-            {:default []
-             :parse-fn (parse/tuple-of
-                         (base/parser-with-defaults flange-position))
-             :validate [(spec/coll-of
-                          (base/delegated-validation flange-position))]}]]]
-      {:freely-keyed true
-       :default {}
-       :parse-fn (parse/map-of keyword (base/parser-with-defaults flange-type))
-       :validate [(spec/map-of ::valid/original
-                               (base/delegated-validation flange-type))]})
-    "Extra screws.\n\n"
-    "`flanges` is named by analogy. It is intended to connect custom "
-    "bodies to their parent bodies by means of screws, in the manner of "
-    "pipe flanges joined by threaded fasteners.\n\n"
-    "The structure of the `flanges` section is a map of arbitrary "
-    "names to maps of the following parameters:\n\n"
-    "- `bolt-properties` (required): A map of standard `scad-klupe` "
-    "parameters, as for `bolt-properties` elsewhere.\n"
-    "- `boss-diameter-factor` (optional): This factor multiplies the "
-    "`m-diameter` of `bolt-properties` to produce the total exterior "
-    "diameter of a boss for each screw. Typical values range from about "
-    "1.5 to 2.5. Even if a value is supplied, bosses are not included "
-    "by default. Instead, they are added to the keyboard as a result of "
-    "`tweaks` targeting each individual flange screw by its alias.\n"
-    "- `positions` (optional): A list of individual flange screws.\n"
-    "\n"
-    "Each item in the list of `positions`, in turn, has the following "
-    "structure:\n"
-    "\n"
-    "- `alias` (optional): A name for the position. Unlike the name for the "
-    "flange as a whole, the alias can be used with `tweaks` to target the "
-    "screw and build a boss or larger positive shape.\n"
-    "- `body` (optional): A code identifying the predefined "
-    "[body](configuration.md) that contains the screw, before the effect "
-    "of any custom bodies.\n"
-    "- `anchoring` (optional): Room for standard anchoring parameters. "
-    stock/anchoring-documentation]
+    {:freely-keyed true
+     :default {}
+     :parse-fn (parse/map-of keyword (base/parser-with-defaults flange/raws))
+     :validate [(spec/map-of ::valid/original (base/delegated-validation flange/raws))]}
+    "This section describes shapes connecting different bodies, with special "
+    "features for connecting bottom plates to their parent bodies. "
+    "Each flange gets its own subsection. "
+    "Flanges are documented in detail [here](options-flanges.md)."]
    [[:tweaks]
     arb/parameter-metadata
     "Additional shapes. This parameter is usually needed to bridge gaps "
@@ -763,184 +826,6 @@
     "contain electronic receptacles for signalling connections and other "
     "interfaces. Each port gets its own subsection. "
     "Ports are documented in detail [here](options-ports.md)."]
-   [[:wrist-rest]
-    "An optional extension to support the user’s wrist."]
-   [[:wrist-rest :include]
-    {:default false :parse-fn boolean}
-    "If `true`, include a wrist rest with the keyboard."]
-   [[:wrist-rest :style]
-    {:default :threaded :parse-fn keyword :validate [::valid/wrist-rest-style]}
-    "The style of the wrist rest. Available styles are:\n\n"
-    "- `threaded`: threaded fasteners connect the case and wrist rest.\n"
-    "- `solid`: the case and wrist rest are joined together by `tweaks` "
-    "as a single piece of plastic."]
-   [[:wrist-rest :preview]
-    {:default false :parse-fn boolean}
-    "Preview mode. If `true`, this puts a model of the wrist rest in the same "
-    "OpenSCAD file as the case. That model is simplified, intended for gauging "
-    "distance, not for printing."]
-   [[:wrist-rest :anchoring]
-    anch/anchoring-metadata
-    "Where to place the wrist rest. "
-    stock/anchoring-documentation " "
-    "For wrist rests, the vertical component of the anchor’s position is "
-    "ignored, including any vertical offset."]
-   [[:wrist-rest :plinth-height]
-    {:default 1 :parse-fn num}
-    "The average height of the plastic plinth in mm, at its upper lip."]
-   [[:wrist-rest :shape]
-    "The wrist rest needs to fit the user’s hand."]
-   [[:wrist-rest :shape :spline]
-    "The horizontal outline of the wrist rest is a closed spline."]
-   [[:wrist-rest :shape :spline :main-points]
-    {:default [{:position [0 0]} {:position [1 0]} {:position [1 1]}]
-     :parse-fn parse/nameable-spline
-     :validate [::valid/nameable-spline]}
-    "A list of nameable points, in clockwise order. The spline will pass "
-    "through all of these and then return to the first one. Each point can "
-    "have two properties:\n\n"
-    "- Mandatory: `position`. A pair of coordinates, in mm, relative to other "
-    "points in the list.\n"
-    "- Optional: `alias`. A name given to the specific point, for the purpose "
-    "of placing yet more things in relation to it."]
-   [[:wrist-rest :shape :spline :resolution]
-    {:default 1 :parse-fn num}
-    "The amount of vertices per main point. The default is 1. If 1, only the "
-    "main points themselves will be used, giving you full control. A higher "
-    "number gives you smoother curves.\n\n"
-    "If you want the closing part of the curve to look smooth in high "
-    "resolution, position your main points carefully.\n\n"
-    "Resolution parameters, including this one, can be disabled in the main "
-    "`resolution` section."]
-   [[:wrist-rest :shape :lip]
-    "The lip is the uppermost part of the plinth, lining and supporting the "
-    "edge of the pad. Its dimensions are described here in mm away from the "
-    "pad."]
-   [[:wrist-rest :shape :lip :height]
-    {:default 1 :parse-fn num} "The vertical extent of the lip."]
-   [[:wrist-rest :shape :lip :width]
-    {:default 1 :parse-fn num} "The horizontal width of the lip at its top."]
-   [[:wrist-rest :shape :lip :inset]
-    {:default 0 :parse-fn num}
-    "The difference in width between the top and bottom of the lip. "
-    "A small negative value will make the lip thicker at the bottom. This is "
-    "recommended for fitting a silicone mould."]
-   [[:wrist-rest :shape :pad]
-    "The top of the wrist rest should be printed or cast in a soft material, "
-    "such as silicone rubber."]
-   [[:wrist-rest :shape :pad :surface]
-    "The upper surface of the pad, which will be in direct contact with "
-    "the user’s palm or wrist."]
-   [[:wrist-rest :shape :pad :height]
-    "The piece of rubber extends a certain distance up into the air and down "
-    "into the plinth. All measurements in mm."]
-   [[:wrist-rest :shape :pad :height :surface-range]
-    {:default 1 :parse-fn num}
-    "The vertical range of the upper surface. Whatever values are in "
-    "a heightmap will be normalized to this scale."]
-   [[:wrist-rest :shape :pad :height :lip-to-surface]
-    {:default 1 :parse-fn num}
-    "The part of the rubber pad between the top of the lip and the point "
-    "where the heightmap comes into effect. This is useful if your heightmap "
-    "itself has very low values at the edges, such that moulding and casting "
-    "it without a base would be difficult."]
-   [[:wrist-rest :shape :pad :height :below-lip]
-    {:default 1 :parse-fn num}
-    "The depth of the rubber wrist support, measured from the top of the lip, "
-    "going down into the plinth. This part of the pad just keeps it in place."]
-   [[:wrist-rest :shape :pad :surface :edge]
-    "The edge of the pad can be rounded."]
-   [[:wrist-rest :shape :pad :surface :edge :inset]
-    {:default 0 :parse-fn num}
-    "The horizontal extent of softening. This cannot be more than half the "
-    "width of the outline, as determined by `main-points`, at its narrowest "
-    "part."]
-   [[:wrist-rest :shape :pad :surface :edge :resolution]
-    {:default 1 :parse-fn num}
-    "The number of faces on the edge between horizontal points.\n\n"
-    "Resolution parameters, including this one, can be disabled in the main "
-    "`resolution` section."]
-   [[:wrist-rest :shape :pad :surface :heightmap]
-    "The surface can optionally be modified by the [`surface()` function]"
-    "(https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/"
-    "Other_Language_Features#Surface), which requires a heightmap file."]
-   [[:wrist-rest :shape :pad :surface :heightmap :include]
-    {:default false :parse-fn boolean}
-    "If `true`, use a heightmap. The map will intersect the basic pad "
-    "polyhedron."]
-   [[:wrist-rest :shape :pad :surface :heightmap :filepath]
-    {:default (file ".." ".." "resources" "heightmap" "default.dat")}
-    "The file identified here should contain a heightmap in a format OpenSCAD "
-    "can understand. The path should also be resolvable by OpenSCAD."]
-   [[:wrist-rest :rotation]
-    "The wrist rest can be rotated to align its pad with the user’s palm."]
-   [[:wrist-rest :rotation :pitch]
-    {:default 0 :parse-fn parse/compass-incompatible-angle}
-    "Tait-Bryan pitch."]
-   [[:wrist-rest :rotation :roll]
-    {:default 0 :parse-fn parse/compass-incompatible-angle}
-    "Tait-Bryan roll."]
-   [[:wrist-rest :mounts]
-    {:heading-template "Special section %s"
-     :default []
-     :parse-fn (parse/tuple-of (base/parser-with-defaults restmnt/raws))
-     :validate [(spec/coll-of (base/delegated-validation restmnt/raws))]}
-    "A list of mounts for threaded fasteners. Each such mount will include at "
-    "least one cuboid block for at least one screw that connects the wrist "
-    "rest to the case. "
-    "This section is used only with the `threaded` style of wrist rest."]
-   [[:wrist-rest :sprues]
-    "Holes in the bottom of the plinth. You pour liquid rubber through these "
-    "holes when you make the rubber pad. Sprues are optional, but the general "
-    "recommendation is to have two of them if you’re going to be casting your "
-    "own pads. That way, air can escape even if you accidentally block one "
-    "sprue with a low-viscosity silicone."]
-   [[:wrist-rest :sprues :include]
-    {:default false :parse-fn boolean}
-    "If `true`, include sprues."]
-   [[:wrist-rest :sprues :inset]
-    {:default 0 :parse-fn num}
-    "The horizontal distance between the perimeter of the wrist rest and the "
-    "default position of each sprue."]
-   [[:wrist-rest :sprues :diameter]
-    {:default 1 :parse-fn num}
-    "The diameter of each sprue."]
-   [[:wrist-rest :sprues :positions]
-    {:default [] :parse-fn (parse/tuple-of anch/parse-anchoring)
-     :validate [(spec/coll-of anch/validate-anchoring)]}
-    "The positions of all sprues. This is a list where each item needs an "
-    "`anchor` naming a main point in the spline. You can add an optional "
-    "two-dimensional `offset`."]
-   [[:wrist-rest :bottom-plate]
-    "The equivalent of the case `bottom-plate` parameter. If included, "
-    "a bottom plate for a erist rest uses the `thickness` configured for "
-    "the bottom of the case.\n"
-    "\n"
-    "Bottom plates for the wrist rests have no ESDS electronics to "
-    "protect but serve other purposes: Covering nut pockets, silicone "
-    "mould-pour cavities, and plaster or other dense material poured into "
-    "plinths printed without a bottom shell."]
-   [[:wrist-rest :bottom-plate :include]
-    {:default false :parse-fn boolean}
-    "Whether to include a bottom plate for each wrist rest."]
-   [[:wrist-rest :bottom-plate :inset]
-    {:default 0 :parse-fn num}
-    "The horizontal distance between the perimeter of the wrist rest and the "
-    "default position of each threaded fastener connecting it to its "
-    "bottom plate."]
-   [[:wrist-rest :bottom-plate :fastener-positions]
-    anch/anchoring-map-metadata
-    "A list of named places where threaded fasteners will connect the bottom "
-    "plate to the wrist resty.\n\n"
-    "The starting position of each fastener is inset from the perimeter of "
-    "the wrist rest by the `inset` parameter above, before any offset stated "
-    "here is applied.\n\n"
-    "Other properties of these fasteners are determined by settings for the "
-    "main body."]
-   [[:wrist-rest :mould-thickness]
-    {:default 1 :parse-fn num}
-    "The thickness in mm of the walls and floor of the mould to be used for "
-    "casting the rubber pad."]
    [[:resolution]
     "Settings for the amount of detail on curved surfaces. More specific "
     "resolution parameters are available in other sections."]
@@ -950,8 +835,8 @@
     "configuration. Otherwise, use defaults built into this application, "
     "its libraries and OpenSCAD. The defaults are generally conservative, "
     "providing quick renders for previews."]
-   [[:resolution :minimum-face-size]
-    {:default 1, :parse-fn num, :validate [::appdata/minimum-face-size]}
+   [[:resolution :minimum-facet-size]
+    {:default 1, :parse-fn num, :validate [::appschema/minimum-facet-size]}
     "File-wide OpenSCAD minimum face size in mm."]
    [[:dfm]
     "Settings for design for manufacturability (DFM)."]
@@ -961,7 +846,7 @@
     "plane by slicer software and the printer you will use.\n"
     "\n"
     "The default value is zero. An appropriate value for a typical slicer "
-    "and FDM printer with a 0.5 mm nozzle would be about -0.5 mm.\n"
+    "and FDM printer with a 0.4 mm nozzle would be about -0.4 mm.\n"
     "\n"
     "This application will try to compensate for the error, though only for "
     "certain sensitive inserts, not for the case as a whole."]
@@ -980,15 +865,6 @@
     {:default (:error-stem-negative capdata/option-defaults) :parse-fn num}
     "Error on the negative components of stems on keycaps, such as the "
     "cross on an MX-compatible cap."]
-   [[:dfm :bottom-plate]
-    "DFM for bottom plates."]
-   [[:dfm :bottom-plate :fastener-plate-offset]
-    {:default 0 :parse-fn num}
-    "A vertical offset in mm for the placement of screw holes in bottom "
-    "plates. Without a slight negative offset, slicers will tend to make the "
-    "holes too wide for screw heads to grip the plate securely.\n"
-    "\n"
-    "Notice this will not affect how screw holes are cut into the case."]
    [[:mask]
     "A box limits the entire shape, cutting off any projecting by-products of "
     "the algorithms. By resizing and moving this box, you can select a "
@@ -998,6 +874,15 @@
     {:default 1000 :parse-fn parse/pad-to-3-tuple
      :validate [::tarmi-core/point-3d]}
     "The size of the mask in mm. By default, a cube of 1 m³."]
+   [[:dfm :bottom-plate]
+    "DFM for bottom plates."]
+   [[:dfm :bottom-plate :fastener-plate-offset]
+    {:default 0 :parse-fn num}
+    "A vertical offset in mm for the placement of screw holes in bottom "
+    "plates. Without a slight negative offset, slicers will tend to make the "
+    "holes too wide for screw heads to grip the plate securely.\n"
+    "\n"
+    "Notice this will not affect how screw holes are cut into the case."]
    [[:mask :center]
     {:default [0 0 500] :parse-fn vec :validate [::tarmi-core/point-3d]}
     "The position of the center point of the mask. By default, `[0, 0, 500]`, "

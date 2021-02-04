@@ -1,6 +1,5 @@
 # Configuration fragment for a combined bottom plate, i.e. one plate per half
 # of the keyboard, covering the case and wrist rest of that half.
 
-main-body:
-  bottom-plate:
-    combine: true
+bottom-plates:
+  combine: true

@@ -4,12 +4,26 @@ This log follows the conventions of
 version 0.2.0, thus covering only a fraction of the project’s history.
 
 ## [Unreleased]
+
 ### Changed
 - Switched the default build target (with GNU Make) from the DMOTE to the
   Dactyl-ManuForm.
-- Replaced the way that key-cluster walls are measured. Instead of separate
-  settings for `bevel`, `parallel` and `perpendicular`, there is now only
-  one setting, called `segments`, with more power.
+- More precise control.
+    - Replaced the way that key-cluster walls are measured. Instead of separate
+      settings for `bevel`, `parallel` and `perpendicular`, there is now only
+      one setting, called `segments`, with more power.
+    - Integrated bottom-plate fasteners and their bosses with the `flanges`
+      section of configuration introduced in v0.6.0. This invalidates most of
+      the `bottom-plate` settings that were previously available under
+      `main-body`, `central-housing` and `wrist-rest`, but adds more power:
+      Customizable boss `segments` richer than those of keys, heat-set
+      inserts universally available, the option of different kinds of screws
+      for different bottom plates (e.g. shorter in wrist rest) etc.
+- Fewer side effects.
+    - Disabled responsiveness to predicted resting key clearance by default.
+      This can be re-enabled with a new parameter (`use-key-style`).
+    - Disabled responsiveness to flange screw size (including the “new”
+      bottom-plate flanges) for making flange bosses.
 - Completed migration from long-form names for the points of the compass,
   like `north`, to short-form names, like `N`. This leaves only short forms,
   so the distinction itself is abolished.
@@ -18,10 +32,6 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       under a new section (`sides`).
     - The longer names, previously optional for MCU shelf sides, are no
       longer permitted there.
-- Disabled responsiveness to predicted resting key clearance by default.
-  This can be re-enabled with a new parameter (`use-key-style`).
-- Added a requirement that positions for bottom-plate fasteners be named,
-  instead of appearing in flat lists.
 - Moved and replaced some (other) parameters:
     - Made the `central-housing` → `adapter` → `receivers` → `thickness` →
       `bridge` parameter a section, with its function inherited by `tangential`
@@ -31,18 +41,25 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       (compass points).
     - Replaced central-housing interface settings for `adapter` → `offset`
       with a `segments` map, as for key-cluster walls.
+    - Migrated to `scad-app` v1.0.0, which includes renaming the
+      `minimum-face-size` parameter to `minimum-facet-size`, even in the DMOTE
+      configuration interface.
 - Dropped support for arbitrary YAML inclusions through GNU Make.
 - Bundled designs:
     - Stopped including threading on bolts in most models, for faster renders
       and reduced sensitivity to printer accuracy.
-    - Slightly thicker bottom plate on DMOTE.
     - M3 screws instead of M4 in `config/base.yaml`.
+    - DMOTE:
+        - Slightly thicker bottom plate.
+        - Smaller bosses for screws attaching the wrist’s bottom plate.
     - Concertina:
         - Reduced to one size of keycaps.
         - Improved USB B port and MCU shelf.
         - More tactile, variegated thumb clusters.
         - Pinky-finger and thumb-cluster keys closer.
         - Deeper, fewer holes through bottom plate.
+    - Slight tuning of DFM settings for more common printers and more modern
+      slicers.
 
 ### New
 - Added support for Kailh’s PG1511 series switches and similar MX clones

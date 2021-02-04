@@ -15,14 +15,15 @@
             [dactyl-keyboard.cad.auxf :as auxf]
             [dactyl-keyboard.cad.body :refer [body-plate-hull]]
             [dactyl-keyboard.cad.body.wrist :as wrist]
+            [dactyl-keyboard.cad.flange :as flange]
+            [dactyl-keyboard.cad.key :refer [single-plate]]
+            [dactyl-keyboard.cad.key.web :refer [web-post]]
             [dactyl-keyboard.cad.mcu :as mcu]
             [dactyl-keyboard.cad.misc :as misc]
             [dactyl-keyboard.cad.place :as place]
-            [dactyl-keyboard.cad.key.web :refer [web-post]]
-            [dactyl-keyboard.cad.key :refer [single-plate]]
-            [dactyl-keyboard.param.schema.arb :as arb]
             [dactyl-keyboard.param.access :refer [resolve-anchor]]
-            [dactyl-keyboard.param.proc.anch :as anch]))
+            [dactyl-keyboard.param.proc.anch :as anch]
+            [dactyl-keyboard.param.schema.arb :as arb]))
 
 
 ;;;;;;;;;;;;;
@@ -145,13 +146,12 @@
         (if (or side segment)
           (auxf/port-tweak-post getopt primary)
           (auxf/port-holder getopt primary))
-      ::anch/flange-screw
-        (let [{:keys [flange]} resolved
-              {:keys [boss-radius boss-height]} (getopt :flanges :derived flange)]
+      ::anch/flange-boss
+        (let [{:keys [flange position-index]} resolved]
           (if segment
-            (model/cylinder boss-radius misc/wafer)
-            (model/translate [0 0 (/ boss-height -2)]
-              (model/cylinder boss-radius boss-height))))
+            (flange/segment-model
+              (getopt :flanges flange :bosses :segments segment))
+            (flange/boss-model getopt flange position-index)))
       ::anch/secondary
         (let [{:keys [size]} (getopt :secondaries anchor)]
           (when size (apply model/cube size)))

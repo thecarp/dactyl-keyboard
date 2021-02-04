@@ -3,10 +3,10 @@
 ;; Placement Utilities                                                 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; This module consolidates functions on the basis that some minor features,
-;;; including foot plates and bottom-plate anchors, can be positioned in
-;;; relation to multiple other types of features, creating the need for a
-;;; a high-level, delegating placement utility that builds on the rest.
+;;; This module consolidates functions on the basis that some features can be
+;;; positioned in relation to multiple other types of features, creating the
+;;; need for a a high-level, delegating placement utility that builds on the
+;;; rest.
 
 (ns dactyl-keyboard.cad.place
   (:require [clojure.spec.alpha :as spec]
@@ -17,8 +17,6 @@
             [scad-tarmi.core :refer [abs π] :as tarmi-core]
             [scad-tarmi.maybe :as maybe]
             [scad-tarmi.flex :as flex]
-            [scad-klupe.base :refer [shank-section-lengths]]
-            [scad-klupe.iso :refer [head-length]]
             [dmote-keycap.data :as capdata]
             [dmote-keycap.measure :as measure]
             [dactyl-keyboard.cots :as cots]
@@ -415,11 +413,10 @@
   (let [{:keys [p size]} (getopt :wrist-rest :derived :spline :bounds)]
     (mapv - point p (mapv #(/ % 2) size))))
 
-(defn wrist-segment-naive
-  "Use wrist-segment-coord with a layer of translation from the naïve/relative
-  coordinates initially supplied by the user to the derived base.
-  Also support outline keys as an alternative to segment IDs, for bottom-plate
-  fasteners."
+(defn- wrist-segment-naive
+  "Support outline keys as an alternative to segment IDs. With no outline key,
+  use wrist-segment-coord with a layer of translation from the naïve/relative
+  coordinates initially supplied by the user to the derived base."
   [getopt naive-xy outline-key segment]
   (let [aware-xy (relative-to-wrist-base getopt naive-xy)]
     (if (some? outline-key)
@@ -453,27 +450,25 @@
 
 ;; Flanges.
 
-(defn- flange-boss-zoffset
-  "Compute the z-axis offset for part of a flange screw."
-  [getopt flange segment]
-  (let [{:keys [m-diameter head-type] :as bolt-properties}
-        (getopt :flanges flange :bolt-properties)
-        head (head-length m-diameter head-type)
-        bolt-lengths (shank-section-lengths
-                       (assoc bolt-properties :head-length head))
-        [unthreaded threaded] bolt-lengths]
-    (- (case segment 0 0
-                     1 head
-                     2 (+ head unthreaded)
-                     3 (+ head unthreaded threaded)))))
+(defn flange-segment-offset
+  "Compute the cumulative offset for part of a screw boss."
+  [getopt flange position-index segment]
+  (let [prop (partial getopt :flanges flange :bosses :segments)]
+    (apply mapv + (map #(prop % :intrinsic-offset)
+                       (range 0 (inc segment))))))
 
 (defn flange-place
-  "Place a flange screw or part of a boss for such a screw."
+  "Place a flange screw or its boss.
+  For bottom flanges, force the preservation of orientation and use only the
+  xy-plane for positioning relative to the anchor."
   [getopt flange position-index segment subject]
   (at-named getopt
-    (getopt :flanges flange :positions position-index :anchoring)
-    (flex/translate [0 0 (flange-boss-zoffset getopt flange segment)]
-                    subject)))
+    (merge (getopt :flanges flange :positions position-index :anchoring)
+           (when (getopt :flanges flange :bottom)
+             {:preserve-orientation true, ::n-dimensions 2}))
+    (flex/translate
+      (flange-segment-offset getopt flange position-index segment)
+      subject)))
 
 ;; Polymorphic treatment of the properties of aliases.
 
@@ -572,7 +567,7 @@
     (flex/translate (port-holder-offset getopt (assoc opts :anchor primary))
        subject)))
 
-(defmethod by-type ::anch/flange-screw
+(defmethod by-type ::anch/flange-boss
   [getopt {:keys [flange position-index segment subject]}]
   (flange-place getopt flange position-index (or segment 0) subject))
 

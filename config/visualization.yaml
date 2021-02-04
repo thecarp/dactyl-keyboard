@@ -3,10 +3,9 @@
 
 keys:
   preview: true
-main-body:
-  bottom-plate:
-    preview: true
 central-housing:
+  preview: true
+wrist-rest:
   preview: true
 custom-bodies:
   # This section names custom bodies defined in various bundled configurations.
@@ -18,9 +17,9 @@ custom-bodies:
     include: false
   thumb-cluster:
     include: false
+bottom-plates:
+  preview: true
 mcu:
   preview: true
   support:
     preview: true
-wrist-rest:
-  preview: true

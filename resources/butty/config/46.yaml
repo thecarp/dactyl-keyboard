@@ -31,22 +31,26 @@ main-body:
       roof: 1.5
   bottom-plate:
     include: true
-    thickness: 2
-    installation:
-      thickness: 1.5
-      fasteners:
-        bolt-properties:
-          channel-length: 0.25
-          include-threading: true
-        positions:
-          b0:
-            anchor: k
-            side: NNW
-            extrinsic-offset: [1.5, 1, 0]
-          b1:
-            anchor: k
-            side: NNE
-            extrinsic-offset: [-1.5, 1, 0]
+bottom-plates:
+  thickness: 2
+flanges:
+  main-bottom-plate:
+    include: true
+    bolts:
+      include: true
+      bolt-properties:
+        include-threading: true
+    bosses:
+      include: true
+    positions:
+    - anchoring:
+        anchor: k
+        side: NNW
+        extrinsic-offset: [1.5, 1, 0]
+    - anchoring:
+        anchor: k
+        side: NNE
+        extrinsic-offset: [-1.5, 1, 0]
 mcu:
   include: true
   anchoring:

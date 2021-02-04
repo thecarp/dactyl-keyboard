@@ -318,46 +318,58 @@ main-body:
   reflect: true
   bottom-plate:
     include: true
-    installation:
-      dome-caps: true
-      thickness: 1.2
-      inserts:
-        include: true
-        diameter:
-          top: 5.1
-          bottom: 5.31
-        length: 3.8
-      fasteners:
-        bolt-properties:
-          m-diameter: 3  # Speculation; Short may have used non-metric.
-          head-type: countersunk
-          total-length: 6
-          include-threading: false  # Threading not used with inserts.
-        positions:
-          bottom-main0:
-            anchor: thumb-ml
-            side: N
-            segment: 2
-            intrinsic-offset: [0, 0, 0]
-          bottom-main1:
-            anchor: back0
-            side: W
-            segment: 2
-            intrinsic-offset: [-3, 2, 0]
-          bottom-main2:
-            anchor: back3
-            side: N
-            segment: 2
-          bottom-main3:
-            anchor: right0
-            side: E
-            segment: 2
-            intrinsic-offset: [-1, 0, 0]
-          bottom-main4:
-            anchor: m02
-            side: S
-            segment: 2
-            intrinsic-offset: [2, -4, 0]
+flanges:
+  main-bottom-plate:
+    include: true
+    bottom: true
+    bolts:
+      include: true
+      bolt-properties:
+        m-diameter: 3  # Speculation; Short may have used non-metric.
+        head-type: countersunk
+        point-type: cone  # Design for manufacturing: Easy printing.
+        total-length: 6
+        include-threading: false  # Threading not used with inserts.
+    inserts:
+      include: true
+      length: 3.8
+      height: 2
+      diameter:
+        top: 5.1
+        bottom: 5.31
+    bosses:
+      include: true
+      segments:
+        "0":
+          diameter: 6.91
+        "1":
+          style: sphere
+          diameter: 6.7
+          intrinsic-offset: [0, 0, 6]
+    positions:
+      - anchoring:
+          anchor: thumb-ml
+          side: N
+          segment: 2
+      - anchoring:
+          anchor: back0
+          side: W
+          segment: 2
+          intrinsic-offset: [-3, 2, 0]
+      - anchoring:
+          anchor: back3
+          side: N
+          segment: 2
+      - anchoring:
+          anchor: right0
+          side: E
+          segment: 2
+          intrinsic-offset: [-1, 0, 0]
+      - anchoring:
+          anchor: m02
+          side: S
+          segment: 2
+          intrinsic-offset: [2, -4, 0]
 tweaks:
   webbing:
     - chunk-size: 3

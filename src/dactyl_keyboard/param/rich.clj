@@ -15,7 +15,6 @@
             [dactyl-keyboard.cad.body.main :as main-body]
             [dactyl-keyboard.cad.body.central :as central]
             [dactyl-keyboard.cad.body.wrist :as wrist]
-            [dactyl-keyboard.cad.auxf :as auxf]
             [dactyl-keyboard.cad.key :as key]
             [dactyl-keyboard.cad.mcu :as mcu]))
 
@@ -36,8 +35,7 @@
                      :bodies (custom-body/collect getopt)})]
    [[:main-body :rear-housing] main-body/rhousing-properties]
    [[:mcu] mcu/derive-properties]
-   [[:wrist-rest] wrist/derive-properties]
-   [[:flanges] auxf/derive-flange-properties]])
+   [[:wrist-rest] wrist/derive-properties]])
 
 (defn derivers-dynamic
   "Additions for more varied parts of a configuration."

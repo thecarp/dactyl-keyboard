@@ -13,18 +13,19 @@
                                    refine-all build-all]]
             [scad-tarmi.core :refer [π]]
             [scad-tarmi.maybe :as maybe]
-            [dactyl-keyboard.misc :refer [output-directory soft-merge]]
-            [dactyl-keyboard.param.access :as access]
-            [dactyl-keyboard.param.rich :as rich]
-            [dactyl-keyboard.param.proc.doc :refer [print-markdown-section]]
-            [dactyl-keyboard.cad.body.custom :as custom-body]
             [dactyl-keyboard.cad.body.assembly :as assembly]
             [dactyl-keyboard.cad.body.central :as central]
+            [dactyl-keyboard.cad.body.custom :as custom-body]
             [dactyl-keyboard.cad.body.wrist :as wrist]
             [dactyl-keyboard.cad.bottom :as bottom]
+            [dactyl-keyboard.cad.flange :as flange]
             [dactyl-keyboard.cad.key :as key]
             [dactyl-keyboard.cad.key.switch :refer [single-cap single-switch]]
-            [dactyl-keyboard.cad.mcu :as mcu])
+            [dactyl-keyboard.cad.mcu :as mcu]
+            [dactyl-keyboard.misc :refer [output-directory soft-merge]]
+            [dactyl-keyboard.param.access :as access]
+            [dactyl-keyboard.param.proc.doc :refer [print-markdown-section]]
+            [dactyl-keyboard.param.rich :as rich])
   (:gen-class :main true))
 
 (defn pprint-settings
@@ -46,6 +47,7 @@
     (case section
       :central dactyl-keyboard.param.tree.central/raws
       :clusters dactyl-keyboard.param.tree.cluster/raws
+      :flanges dactyl-keyboard.param.tree.flange/raws
       :main dactyl-keyboard.param.tree.main/raws
       :nested dactyl-keyboard.param.tree.nested/raws
       :ports dactyl-keyboard.param.tree.port/raws
@@ -108,19 +110,10 @@
 (def module-asset-list
   "OpenSCAD modules and the functions that make them."
   [{:name "housing_adapter_fastener"
-    :model-precursor central/build-fastener,
+    :model-precursor central/build-fastener
     :chiral true}
    {:name "sprue_negative"
-    :model-precursor wrist/sprue-negative}
-   {:name "bottom_plate_anchor_positive_nonprojecting"
-    :model-precursor bottom/anchor-positive-nonprojecting}
-   {:name "bottom_plate_anchor_positive_central"
-    :model-precursor bottom/anchor-positive-central}
-   {:name "bottom_plate_screw_negative"
-    :model-precursor bottom/screw-negative
-    :chiral true}
-   {:name "bottom_plate_insert_negative"
-    :model-precursor bottom/insert-negative}])
+    :model-precursor wrist/sprue-negative}])
 
 (defn module-asset-map
   "Convert module-asset-list to a hash map with fully resolved models.
@@ -133,7 +126,7 @@
           (assoc asset :model-main (model-precursor getopt))))
       {}
       module-asset-list)
-    (reduce  ; Dynamic.
+    (reduce  ; Dynamic for keys.
       (fn [coll key-style]
         (let [prop (getopt :keys :derived key-style)
               {:keys [mount-type module-keycap module-switch]} prop]
@@ -145,7 +138,20 @@
             {:name module-switch
              :model-main (single-switch mount-type)})))
       {}
-      (keys (getopt :keys :styles)))))
+      (keys (getopt :keys :styles)))
+    (reduce  ; Dynamic for flanges.
+      (fn [coll group-name]
+        (if (getopt :flanges group-name :include)
+          (assoc coll
+            (flange/name-module group-name)
+            {:name (flange/name-module group-name)
+             :model-main (flange/build-negative getopt group-name)
+             :chiral (:include-threading (getopt :flanges group-name :bolts
+                                                 :bolt-properties)
+                                         true)})
+          coll))
+      {}
+      (keys (getopt :flanges)))))
 
 (defn- get-key-modules
   "Produce a sorted vector of module name strings for user-defined key styles."
@@ -157,22 +163,13 @@
         #{}
         (vals (getopt :keys :derived))))))
 
-(defn- conditional-bottom-plate-modules
-  [getopt]
-  (if (getopt :main-body :bottom-plate :include)
-    ["bottom_plate_anchor_positive_nonprojecting",
-     "bottom_plate_anchor_positive_central",
-     "bottom_plate_screw_negative"
-     "bottom_plate_insert_negative"]
-    []))
-
 (defn- central-housing-modules
   "A collection of OpenSCAD modules for the central housing."
   [getopt]
   (concat
     [(when (getopt :central-housing :derived :include-adapter)
        "housing_adapter_fastener")]
-    (conditional-bottom-plate-modules getopt)))
+    (flange/relevant-modules getopt :central-housing)))
 
 (defn get-static-precursors
   "Make the central roster of files and the models that go into each.
@@ -189,7 +186,8 @@
                   "housing_adapter_fastener")
                 (when (getopt :wrist-rest :sprues :include)
                   "sprue_negative")]
-               (conditional-bottom-plate-modules getopt)
+               ;; All flange modules are relevant in case of  major preview.
+               (flange/relevant-modules getopt :main :central-housing :wrist-rest)
                (get-key-modules getopt :module-keycap :module-switch))
     :model-precursor assembly/main-body-right
     :chiral (getopt :main-body :reflect)}
@@ -202,7 +200,7 @@
               (not (= (getopt :wrist-rest :style) :solid)))
      {:name "body-wrist-rest"
       ::body :wrist-rest
-      :modules (concat (conditional-bottom-plate-modules getopt)
+      :modules (concat (flange/relevant-modules getopt :wrist-rest)
                        (when (getopt :wrist-rest :sprues :include)
                          ["sprue_negative"]))
       :model-precursor assembly/wrist-rest-plinth-right
@@ -220,41 +218,41 @@
    ;; Auxiliary outputs specifically for wrist rests.
    (when (getopt :wrist-rest :include)
      {:name "pad-mould"
-      :modules (conditional-bottom-plate-modules getopt)
+      :modules (flange/relevant-modules getopt :wrist-rest)
       :model-precursor assembly/wrist-rest-rubber-casting-mould-right
       :rotation [π 0 0]
       :chiral (getopt :main-body :reflect)})  ; Chirality is possible but not guaranteed.
    (when (getopt :wrist-rest :include)
      {:name "pad-shape"
-      :modules (conditional-bottom-plate-modules getopt)
+      :modules (flange/relevant-modules getopt :wrist-rest)
       :model-precursor assembly/wrist-rest-rubber-pad-right
       :chiral (getopt :main-body :reflect)})
    ;; Bottom plate(s):
    (when (and (getopt :main-body :bottom-plate :include)
               (not (and (getopt :wrist-rest :bottom-plate :include)
-                        (getopt :main-body :bottom-plate :combine))))
+                        (getopt :bottom-plates :combine))))
      ;; Include a general one-sided case bottom plate.
      ;; This can be useful even if the keyboard has a central housing, though
      ;; only insofar as the combined plate, below, can be larger than the build
      ;; volume of the target printer, so that two mirrored copies of the
      ;; one-sided plate must be made.
      {:name "bottom-plate-case"
-      :modules (conditional-bottom-plate-modules getopt)
+      :modules (flange/relevant-modules getopt :main :central-housing)
       :model-precursor bottom/case-complete
       :rotation [0 π 0]
       :chiral (getopt :main-body :reflect)})
    (when (and (getopt :wrist-rest :include)
               (getopt :wrist-rest :bottom-plate :include)
               (not (and (getopt :main-body :bottom-plate :include)
-                        (getopt :main-body :bottom-plate :combine))))
+                        (getopt :bottom-plates :combine))))
      ;; Include a bottom plate just for each wrist rest in isolation.
      {:name "bottom-plate-wrist-rest"
-      :modules (conditional-bottom-plate-modules getopt)
+      :modules (flange/relevant-modules getopt :wrist-rest)
       :model-precursor bottom/wrist-complete
       :rotation [0 π 0]
       :chiral (getopt :main-body :reflect)})
    (when (and (getopt :main-body :bottom-plate :include)
-              (getopt :main-body :bottom-plate :combine)
+              (getopt :bottom-plates :combine)
               (or (and (getopt :wrist-rest :include)
                        (getopt :wrist-rest :bottom-plate :include))
                   (getopt :central-housing :derived :include-main)))
@@ -262,7 +260,7 @@
      ;; combination of each main body and its wrist rest, where applicable, and
      ;; the entire central housing, where applicable.
      {:name "bottom-plate-combined"
-      :modules (conditional-bottom-plate-modules getopt)
+      :modules (flange/relevant-modules getopt :main :central-housing :wrist-rest)
       :model-precursor bottom/combined-complete
       :rotation [0 π 0]
       :chiral (and (getopt :main-body :reflect)
@@ -299,7 +297,7 @@
       (select-keys proto-asset [:name :chiral ::body])  ; Simplified base.
       [:model-main (maybe/rotate rotation (model-precursor getopt))]
       (when (getopt :resolution :include)
-        [:minimum-face-size (getopt :resolution :minimum-face-size)]))
+        [:minimum-facet-size (getopt :resolution :minimum-facet-size)]))
     (map (partial get module-map) (remove nil? modules))))
 
 (defn- builtin-assets

@@ -11,7 +11,7 @@
 (defn bottom-plate-hull [getopt with-plate & shapes]
   "Extend passed shapes down to the level of the bottom of the body, as
   constrained by an optional bottom plate."
-  (let [plate (if with-plate (- (getopt :main-body :bottom-plate :thickness)) 0)]
+  (let [plate (if with-plate (- (getopt :bottom-plates :thickness)) 0)]
     (maybe/hull
       (apply maybe/union shapes)
       (bottom-extrusion wafer

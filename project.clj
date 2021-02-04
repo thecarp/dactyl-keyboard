@@ -10,7 +10,7 @@
                  ;; geom uses hiccup v1 whereas dmote-keycap uses v2.
                  [thi.ng/geom "1.0.0-RC3" :exclusions [hiccup]]
                  [clj-yaml "0.4.0"]
-                 [scad-app "0.3.0"]
+                 [scad-app "1.0.0"]
                  [scad-clj "0.5.3"]
                  [scad-klupe "0.2.0"]
                  [scad-tarmi "0.6.0"]

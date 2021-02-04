@@ -45,22 +45,6 @@ Other documents cover special sections of this one in more detail.
         - Section <a href="#user-content-main-body-back-plate-anchoring">`anchoring`</a>
     - Section <a href="#user-content-main-body-bottom-plate">`bottom-plate`</a>
         - Parameter <a href="#user-content-main-body-bottom-plate-include">`include`</a>
-        - Parameter <a href="#user-content-main-body-bottom-plate-preview">`preview`</a>
-        - Parameter <a href="#user-content-main-body-bottom-plate-combine">`combine`</a>
-        - Parameter <a href="#user-content-main-body-bottom-plate-thickness">`thickness`</a>
-        - Section <a href="#user-content-main-body-bottom-plate-installation">`installation`</a>
-            - Parameter <a href="#user-content-main-body-bottom-plate-installation-style">`style`</a>
-            - Parameter <a href="#user-content-main-body-bottom-plate-installation-dome-caps">`dome-caps`</a>
-            - Parameter <a href="#user-content-main-body-bottom-plate-installation-thickness">`thickness`</a>
-            - Section <a href="#user-content-main-body-bottom-plate-installation-inserts">`inserts`</a>
-                - Parameter <a href="#user-content-main-body-bottom-plate-installation-inserts-include">`include`</a>
-                - Parameter <a href="#user-content-main-body-bottom-plate-installation-inserts-length">`length`</a>
-                - Section <a href="#user-content-main-body-bottom-plate-installation-inserts-diameter">`diameter`</a>
-                    - Parameter <a href="#user-content-main-body-bottom-plate-installation-inserts-diameter-top">`top`</a>
-                    - Parameter <a href="#user-content-main-body-bottom-plate-installation-inserts-diameter-bottom">`bottom`</a>
-            - Section <a href="#user-content-main-body-bottom-plate-installation-fasteners">`fasteners`</a>
-                - Parameter <a href="#user-content-main-body-bottom-plate-installation-fasteners-bolt-properties">`bolt-properties`</a>
-                - Freely keyed section <a href="#user-content-main-body-bottom-plate-installation-fasteners-positions">`positions`</a>
     - Section <a href="#user-content-main-body-leds">`leds`</a>
         - Parameter <a href="#user-content-main-body-leds-include">`include`</a>
         - Section <a href="#user-content-main-body-leds-position">`position`</a>
@@ -70,6 +54,48 @@ Other documents cover special sections of this one in more detail.
         - Parameter <a href="#user-content-main-body-leds-emitter-diameter">`emitter-diameter`</a>
         - Parameter <a href="#user-content-main-body-leds-interval">`interval`</a>
 - Section <a href="#user-content-central-housing">`central-housing`</a>
+- Section <a href="#user-content-wrist-rest">`wrist-rest`</a>
+    - Parameter <a href="#user-content-wrist-rest-include">`include`</a>
+    - Parameter <a href="#user-content-wrist-rest-style">`style`</a>
+    - Parameter <a href="#user-content-wrist-rest-preview">`preview`</a>
+    - Section <a href="#user-content-wrist-rest-anchoring">`anchoring`</a>
+    - Parameter <a href="#user-content-wrist-rest-plinth-height">`plinth-height`</a>
+    - Section <a href="#user-content-wrist-rest-shape">`shape`</a>
+        - Section <a href="#user-content-wrist-rest-shape-spline">`spline`</a>
+            - Parameter <a href="#user-content-wrist-rest-shape-spline-main-points">`main-points`</a>
+            - Parameter <a href="#user-content-wrist-rest-shape-spline-resolution">`resolution`</a>
+        - Section <a href="#user-content-wrist-rest-shape-lip">`lip`</a>
+            - Parameter <a href="#user-content-wrist-rest-shape-lip-height">`height`</a>
+            - Parameter <a href="#user-content-wrist-rest-shape-lip-width">`width`</a>
+            - Parameter <a href="#user-content-wrist-rest-shape-lip-inset">`inset`</a>
+        - Section <a href="#user-content-wrist-rest-shape-pad">`pad`</a>
+            - Section <a href="#user-content-wrist-rest-shape-pad-surface">`surface`</a>
+                - Section <a href="#user-content-wrist-rest-shape-pad-surface-edge">`edge`</a>
+                    - Parameter <a href="#user-content-wrist-rest-shape-pad-surface-edge-inset">`inset`</a>
+                    - Parameter <a href="#user-content-wrist-rest-shape-pad-surface-edge-resolution">`resolution`</a>
+                - Section <a href="#user-content-wrist-rest-shape-pad-surface-heightmap">`heightmap`</a>
+                    - Parameter <a href="#user-content-wrist-rest-shape-pad-surface-heightmap-include">`include`</a>
+                    - Parameter <a href="#user-content-wrist-rest-shape-pad-surface-heightmap-filepath">`filepath`</a>
+            - Section <a href="#user-content-wrist-rest-shape-pad-height">`height`</a>
+                - Parameter <a href="#user-content-wrist-rest-shape-pad-height-surface-range">`surface-range`</a>
+                - Parameter <a href="#user-content-wrist-rest-shape-pad-height-lip-to-surface">`lip-to-surface`</a>
+                - Parameter <a href="#user-content-wrist-rest-shape-pad-height-below-lip">`below-lip`</a>
+    - Section <a href="#user-content-wrist-rest-rotation">`rotation`</a>
+        - Parameter <a href="#user-content-wrist-rest-rotation-pitch">`pitch`</a>
+        - Parameter <a href="#user-content-wrist-rest-rotation-roll">`roll`</a>
+    - Special section <a href="#user-content-wrist-rest-mounts">`mounts`</a>
+    - Section <a href="#user-content-wrist-rest-sprues">`sprues`</a>
+        - Parameter <a href="#user-content-wrist-rest-sprues-include">`include`</a>
+        - Parameter <a href="#user-content-wrist-rest-sprues-inset">`inset`</a>
+        - Parameter <a href="#user-content-wrist-rest-sprues-diameter">`diameter`</a>
+        - Parameter <a href="#user-content-wrist-rest-sprues-positions">`positions`</a>
+    - Section <a href="#user-content-wrist-rest-bottom-plate">`bottom-plate`</a>
+        - Parameter <a href="#user-content-wrist-rest-bottom-plate-include">`include`</a>
+    - Parameter <a href="#user-content-wrist-rest-mould-thickness">`mould-thickness`</a>
+- Section <a href="#user-content-bottom-plates">`bottom-plates`</a>
+    - Parameter <a href="#user-content-bottom-plates-preview">`preview`</a>
+    - Parameter <a href="#user-content-bottom-plates-combine">`combine`</a>
+    - Parameter <a href="#user-content-bottom-plates-thickness">`thickness`</a>
 - Freely keyed section <a href="#user-content-custom-bodies">`custom-bodies`</a>
 - Freely keyed section <a href="#user-content-flanges">`flanges`</a>
 - Freely keyed section <a href="#user-content-tweaks">`tweaks`</a>
@@ -108,49 +134,9 @@ Other documents cover special sections of this one in more detail.
                 - Parameter <a href="#user-content-mcu-support-lock-bolt-mount-length">`mount-length`</a>
                 - Parameter <a href="#user-content-mcu-support-lock-bolt-mount-thickness">`mount-thickness`</a>
 - Freely keyed section <a href="#user-content-ports">`ports`</a>
-- Section <a href="#user-content-wrist-rest">`wrist-rest`</a>
-    - Parameter <a href="#user-content-wrist-rest-include">`include`</a>
-    - Parameter <a href="#user-content-wrist-rest-style">`style`</a>
-    - Parameter <a href="#user-content-wrist-rest-preview">`preview`</a>
-    - Section <a href="#user-content-wrist-rest-anchoring">`anchoring`</a>
-    - Parameter <a href="#user-content-wrist-rest-plinth-height">`plinth-height`</a>
-    - Section <a href="#user-content-wrist-rest-shape">`shape`</a>
-        - Section <a href="#user-content-wrist-rest-shape-spline">`spline`</a>
-            - Parameter <a href="#user-content-wrist-rest-shape-spline-main-points">`main-points`</a>
-            - Parameter <a href="#user-content-wrist-rest-shape-spline-resolution">`resolution`</a>
-        - Section <a href="#user-content-wrist-rest-shape-lip">`lip`</a>
-            - Parameter <a href="#user-content-wrist-rest-shape-lip-height">`height`</a>
-            - Parameter <a href="#user-content-wrist-rest-shape-lip-width">`width`</a>
-            - Parameter <a href="#user-content-wrist-rest-shape-lip-inset">`inset`</a>
-        - Section <a href="#user-content-wrist-rest-shape-pad">`pad`</a>
-            - Section <a href="#user-content-wrist-rest-shape-pad-surface">`surface`</a>
-                - Section <a href="#user-content-wrist-rest-shape-pad-surface-edge">`edge`</a>
-                    - Parameter <a href="#user-content-wrist-rest-shape-pad-surface-edge-inset">`inset`</a>
-                    - Parameter <a href="#user-content-wrist-rest-shape-pad-surface-edge-resolution">`resolution`</a>
-                - Section <a href="#user-content-wrist-rest-shape-pad-surface-heightmap">`heightmap`</a>
-                    - Parameter <a href="#user-content-wrist-rest-shape-pad-surface-heightmap-include">`include`</a>
-                    - Parameter <a href="#user-content-wrist-rest-shape-pad-surface-heightmap-filepath">`filepath`</a>
-            - Section <a href="#user-content-wrist-rest-shape-pad-height">`height`</a>
-                - Parameter <a href="#user-content-wrist-rest-shape-pad-height-surface-range">`surface-range`</a>
-                - Parameter <a href="#user-content-wrist-rest-shape-pad-height-lip-to-surface">`lip-to-surface`</a>
-                - Parameter <a href="#user-content-wrist-rest-shape-pad-height-below-lip">`below-lip`</a>
-    - Section <a href="#user-content-wrist-rest-rotation">`rotation`</a>
-        - Parameter <a href="#user-content-wrist-rest-rotation-pitch">`pitch`</a>
-        - Parameter <a href="#user-content-wrist-rest-rotation-roll">`roll`</a>
-    - Special section <a href="#user-content-wrist-rest-mounts">`mounts`</a>
-    - Section <a href="#user-content-wrist-rest-sprues">`sprues`</a>
-        - Parameter <a href="#user-content-wrist-rest-sprues-include">`include`</a>
-        - Parameter <a href="#user-content-wrist-rest-sprues-inset">`inset`</a>
-        - Parameter <a href="#user-content-wrist-rest-sprues-diameter">`diameter`</a>
-        - Parameter <a href="#user-content-wrist-rest-sprues-positions">`positions`</a>
-    - Section <a href="#user-content-wrist-rest-bottom-plate">`bottom-plate`</a>
-        - Parameter <a href="#user-content-wrist-rest-bottom-plate-include">`include`</a>
-        - Parameter <a href="#user-content-wrist-rest-bottom-plate-inset">`inset`</a>
-        - Freely keyed section <a href="#user-content-wrist-rest-bottom-plate-fastener-positions">`fastener-positions`</a>
-    - Parameter <a href="#user-content-wrist-rest-mould-thickness">`mould-thickness`</a>
 - Section <a href="#user-content-resolution">`resolution`</a>
     - Parameter <a href="#user-content-resolution-include">`include`</a>
-    - Parameter <a href="#user-content-resolution-minimum-face-size">`minimum-face-size`</a>
+    - Parameter <a href="#user-content-resolution-minimum-facet-size">`minimum-facet-size`</a>
 - Section <a href="#user-content-dfm">`dfm`</a>
     - Parameter <a href="#user-content-dfm-error-general">`error-general`</a>
     - Section <a href="#user-content-dfm-keycaps">`keycaps`</a>
@@ -353,101 +339,11 @@ Where to place the middle of the back plate. The concept of anchoring is explain
 
 ### Section <a id="main-body-bottom-plate">`bottom-plate`</a>
 
-A bottom plate can be added to close the case. This is useful mainly to simplify transportation.
-
-#### Overview
-
-The bottom plate is largely two-dimensional. The application builds most of it from a set of polygons, trying to match the perimeter of the case at the ground level (i.e. z = 0).
-
-Specifically, there is one polygon per key cluster (limited to wall edges drawn to the floor), one polygon for the rear housing, and one set of polygons for each of the first-level case `tweaks` that use `at-ground`, ignoring chunk size and almost ignoring tweaks nested within lists of tweaks.
-
-This methodology is mentioned here because its results are not perfect. Pending future features in OpenSCAD, a future version may be based on a more exact projection of the case, but as of 2020, such a projection is hollow and cannot be convex-hulled without escaping the case, unless your case is convex to start with.
-
-For this reason, while the polygons fill the interior, the perimeter of the bottom plate is extended by key walls and case `tweaks` as they would appear at the height of the bottom plate. Even this brutality may be inadequate. If you require a more exact match, do a projection of the case without a bottom plate, save it as DXF/SVG etc. and post-process that file to fill the interior gap.
+Plating underneath the main body. See the top-level `bottom-plates` section for shared properties of bottom plates.
 
 #### Parameter <a id="main-body-bottom-plate-include">`include`</a>
 
-If `true`, include a bottom plate for the case.
-
-#### Parameter <a id="main-body-bottom-plate-preview">`preview`</a>
-
-Preview mode. If `true`, put a model of the plate in the same file as the case it closes. Not for printing.
-
-#### Parameter <a id="main-body-bottom-plate-combine">`combine`</a>
-
-If `true`, combine bottom plates for the main body, the central housing and the wrist rests, where possible.
-
-This can be used with the `solid` style of wrist rest to get a plate that helps lock the wrist rest to the main body, and with a central housing to get a single, bilateral plate that extends from side to side. This larger plate can require a large build volume.
-
-#### Parameter <a id="main-body-bottom-plate-thickness">`thickness`</a>
-
-The thickness (i.e. height) in mm of all bottom plates you choose to include. This covers plates for the case and for the wrist rest.
-
-The case will not be raised to compensate for this. Instead, the height of the bottom plate will be removed from the bottom of the main model so that it does not extend to z = 0.
-
-#### Section <a id="main-body-bottom-plate-installation">`installation`</a>
-
-How your bottom plate is attached to the rest of your case.
-
-##### Parameter <a id="main-body-bottom-plate-installation-style">`style`</a>
-
-The general means of installation. This parameter has been reduced to a placeholder: The only available style is `threads`, signifying the use of threaded fasteners connecting the bottom plate to anchors in the body of the keyboard.
-
-##### Parameter <a id="main-body-bottom-plate-installation-dome-caps">`dome-caps`</a>
-
-If `true`, terminate each anchor with a hemispherical tip. This is an aesthetic feature, primarily intended for externally visible anchors and printed threading. If all of your anchors are completely internal to the case, and/or you intend to tap the screw holes after printing, dome caps are wasteful at best and counterproductive at worst.
-
-##### Parameter <a id="main-body-bottom-plate-installation-thickness">`thickness`</a>
-
-The thickness in mm of each wall of the anchor points for threaded fasteners.
-
-##### Section <a id="main-body-bottom-plate-installation-inserts">`inserts`</a>
-
-You can use heat-set inserts in the anchor points.
-
-It is assumed that, as in Tom Short’s Dactyl-ManuForm, the inserts are largely cylindrical.
-
-###### Parameter <a id="main-body-bottom-plate-installation-inserts-include">`include`</a>
-
-If `true`, make space for inserts.
-
-###### Parameter <a id="main-body-bottom-plate-installation-inserts-length">`length`</a>
-
-The length in mm of each insert.
-
-###### Section <a id="main-body-bottom-plate-installation-inserts-diameter">`diameter`</a>
-
-Inserts may vary in diameter across their length.
-
-###### Parameter <a id="main-body-bottom-plate-installation-inserts-diameter-top">`top`</a> at level 7
-
-Top diameter in mm.
-
-###### Parameter <a id="main-body-bottom-plate-installation-inserts-diameter-bottom">`bottom`</a> at level 7
-
-Bottom diameter in mm. This needs to be at least as large as the top diameter since the mounts for the inserts only open from the bottom.
-
-##### Section <a id="main-body-bottom-plate-installation-fasteners">`fasteners`</a>
-
-The type and positions of the threaded fasteners used to secure each bottom plate.
-
-###### Parameter <a id="main-body-bottom-plate-installation-fasteners-bolt-properties">`bolt-properties`</a>
-
-This parameter describes the properties of a screw or bolt. It takes a mapping appropriate for the `bolt` function in the [`scad-klupe.iso`](https://github.com/veikman/scad-klupe) library.
-
-The following describes only a subset of what you can include here:
-
-* `m-diameter`: The ISO metric diameter of a bolt, e.g. `6` for M6.
-* `head-type`: A keyword describing the head of the bolt, such as `hex` or `countersunk`.
-* `total-length`: The length of the threaded part of the bolt, in mm.
-
-Default values provided by the application are bare minima. More usefully, the application injects DFM functions and flags negative space for specific uses.
-
-The optional `channel-length` property has a special side effect in this context. With a channel length of zero (the default), bolts start from the floor beneath the bottom plate. A positive channel length raises each bolt up into the plate. This is useful mainly with very thick plates. Cf. `dfm` → `bottom-plate` → `fastener-plate-offset`.
-
-###### Freely keyed section <a id="main-body-bottom-plate-installation-fasteners-positions">`positions`</a>
-
-A list of named places where threaded fasteners will connect the bottom plate to the main body.
+If `true`, include a bottom plate for this body.
 
 ### Section <a id="main-body-leds">`leds`</a>
 
@@ -487,7 +383,201 @@ The distance between LEDs on the strip. You may want to apply a setting slightly
 
 ## Section <a id="central-housing">`central-housing`</a>
 
-A major body separate from the main body, located in between and connecting the two halves of a reflected main body. The central housing is documented in detail [here](options-central.md).
+An optional body separate from the main body, located in between and connecting the two halves of a reflected main body. The central housing is documented in detail [here](options-central.md).
+
+## Section <a id="wrist-rest">`wrist-rest`</a>
+
+An optional extra body to support the user’s wrist.
+
+### Parameter <a id="wrist-rest-include">`include`</a>
+
+If `true`, include a wrist rest with the keyboard.
+
+### Parameter <a id="wrist-rest-style">`style`</a>
+
+The style of the wrist rest. Available styles are:
+
+- `threaded`: threaded fasteners connect the case and wrist rest.
+- `solid`: the case and wrist rest are joined together by `tweaks` as a single piece of plastic.
+
+### Parameter <a id="wrist-rest-preview">`preview`</a>
+
+Preview mode. If `true`, this puts a model of the wrist rest in the same OpenSCAD file as the case. That model is simplified, intended for gauging distance, not for printing.
+
+### Section <a id="wrist-rest-anchoring">`anchoring`</a>
+
+Where to place the wrist rest. The concept of anchoring is explained [here](options-anchoring.md), along with the parameters available in this section. For wrist rests, the vertical component of the anchor’s position is ignored, including any vertical offset.
+
+### Parameter <a id="wrist-rest-plinth-height">`plinth-height`</a>
+
+The average height of the plastic plinth in mm, at its upper lip.
+
+### Section <a id="wrist-rest-shape">`shape`</a>
+
+The wrist rest needs to fit the user’s hand.
+
+#### Section <a id="wrist-rest-shape-spline">`spline`</a>
+
+The horizontal outline of the wrist rest is a closed spline.
+
+##### Parameter <a id="wrist-rest-shape-spline-main-points">`main-points`</a>
+
+A list of nameable points, in clockwise order. The spline will pass through all of these and then return to the first one. Each point can have two properties:
+
+- Mandatory: `position`. A pair of coordinates, in mm, relative to other points in the list.
+- Optional: `alias`. A name given to the specific point, for the purpose of placing yet more things in relation to it.
+
+##### Parameter <a id="wrist-rest-shape-spline-resolution">`resolution`</a>
+
+The amount of vertices per main point. The default is 1. If 1, only the main points themselves will be used, giving you full control. A higher number gives you smoother curves.
+
+If you want the closing part of the curve to look smooth in high resolution, position your main points carefully.
+
+Resolution parameters, including this one, can be disabled in the main `resolution` section.
+
+#### Section <a id="wrist-rest-shape-lip">`lip`</a>
+
+The lip is the uppermost part of the plinth, lining and supporting the edge of the pad. Its dimensions are described here in mm away from the pad.
+
+##### Parameter <a id="wrist-rest-shape-lip-height">`height`</a>
+
+The vertical extent of the lip.
+
+##### Parameter <a id="wrist-rest-shape-lip-width">`width`</a>
+
+The horizontal width of the lip at its top.
+
+##### Parameter <a id="wrist-rest-shape-lip-inset">`inset`</a>
+
+The difference in width between the top and bottom of the lip. A small negative value will make the lip thicker at the bottom. This is recommended for fitting a silicone mould.
+
+#### Section <a id="wrist-rest-shape-pad">`pad`</a>
+
+The top of the wrist rest should be printed or cast in a soft material, such as silicone rubber.
+
+##### Section <a id="wrist-rest-shape-pad-surface">`surface`</a>
+
+The upper surface of the pad, which will be in direct contact with the user’s palm or wrist.
+
+###### Section <a id="wrist-rest-shape-pad-surface-edge">`edge`</a>
+
+The edge of the pad can be rounded.
+
+###### Parameter <a id="wrist-rest-shape-pad-surface-edge-inset">`inset`</a> at level 7
+
+The horizontal extent of softening. This cannot be more than half the width of the outline, as determined by `main-points`, at its narrowest part.
+
+###### Parameter <a id="wrist-rest-shape-pad-surface-edge-resolution">`resolution`</a> at level 7
+
+The number of faces on the edge between horizontal points.
+
+Resolution parameters, including this one, can be disabled in the main `resolution` section.
+
+###### Section <a id="wrist-rest-shape-pad-surface-heightmap">`heightmap`</a>
+
+The surface can optionally be modified by the [`surface()` function](https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Other_Language_Features#Surface), which requires a heightmap file.
+
+###### Parameter <a id="wrist-rest-shape-pad-surface-heightmap-include">`include`</a> at level 7
+
+If `true`, use a heightmap. The map will intersect the basic pad polyhedron.
+
+###### Parameter <a id="wrist-rest-shape-pad-surface-heightmap-filepath">`filepath`</a> at level 7
+
+The file identified here should contain a heightmap in a format OpenSCAD can understand. The path should also be resolvable by OpenSCAD.
+
+##### Section <a id="wrist-rest-shape-pad-height">`height`</a>
+
+The piece of rubber extends a certain distance up into the air and down into the plinth. All measurements in mm.
+
+###### Parameter <a id="wrist-rest-shape-pad-height-surface-range">`surface-range`</a>
+
+The vertical range of the upper surface. Whatever values are in a heightmap will be normalized to this scale.
+
+###### Parameter <a id="wrist-rest-shape-pad-height-lip-to-surface">`lip-to-surface`</a>
+
+The part of the rubber pad between the top of the lip and the point where the heightmap comes into effect. This is useful if your heightmap itself has very low values at the edges, such that moulding and casting it without a base would be difficult.
+
+###### Parameter <a id="wrist-rest-shape-pad-height-below-lip">`below-lip`</a>
+
+The depth of the rubber wrist support, measured from the top of the lip, going down into the plinth. This part of the pad just keeps it in place.
+
+### Section <a id="wrist-rest-rotation">`rotation`</a>
+
+The wrist rest can be rotated to align its pad with the user’s palm.
+
+#### Parameter <a id="wrist-rest-rotation-pitch">`pitch`</a>
+
+Tait-Bryan pitch.
+
+#### Parameter <a id="wrist-rest-rotation-roll">`roll`</a>
+
+Tait-Bryan roll.
+
+### Special section <a id="wrist-rest-mounts">`mounts`</a>
+
+A list of mounts for threaded fasteners. Each such mount will include at least one cuboid block for at least one screw that connects the wrist rest to the case. This section is used only with the `threaded` style of wrist rest.
+
+### Section <a id="wrist-rest-sprues">`sprues`</a>
+
+Holes in the bottom of the plinth. You pour liquid rubber through these holes when you make the rubber pad. Sprues are optional, but the general recommendation is to have two of them if you’re going to be casting your own pads. That way, air can escape even if you accidentally block one sprue with a low-viscosity silicone.
+
+#### Parameter <a id="wrist-rest-sprues-include">`include`</a>
+
+If `true`, include sprues.
+
+#### Parameter <a id="wrist-rest-sprues-inset">`inset`</a>
+
+The horizontal distance between the perimeter of the wrist rest and the default position of each sprue.
+
+#### Parameter <a id="wrist-rest-sprues-diameter">`diameter`</a>
+
+The diameter of each sprue.
+
+#### Parameter <a id="wrist-rest-sprues-positions">`positions`</a>
+
+The positions of all sprues. This is a list where each item needs an `anchor` naming a main point in the spline. You can add an optional two-dimensional `offset`.
+
+### Section <a id="wrist-rest-bottom-plate">`bottom-plate`</a>
+
+Plating underneath the wrist rest. See the top-level `bottom-plates` section for shared properties of bottom plates.
+
+Bottom plates for wrist rests have no ESDS electronics to protect but serve other purposes: Covering nut pockets, silicone mould-pour cavities, and plaster or other dense material poured into plinths printed without a bottom shell.
+
+#### Parameter <a id="wrist-rest-bottom-plate-include">`include`</a>
+
+If `true`, include a bottom plate for this body.
+
+### Parameter <a id="wrist-rest-mould-thickness">`mould-thickness`</a>
+
+The thickness in mm of the walls and floor of the mould to be used for casting the rubber pad.
+
+## Section <a id="bottom-plates">`bottom-plates`</a>
+
+A bottom plate can be added to each body of the keyboard, to close the case. This is useful mainly to simplify transportation.
+
+Bottom plates are largely two-dimensional. The application builds most of each plate from a set of polygons, trying to match the perimeter of the case at the ground level (i.e. z = 0).
+
+Specifically, there is one polygon per key cluster (limited to wall edges drawn to the floor), one polygon for each housing, and one set of polygons for each of the first-level case `tweaks` that use `at-ground`, ignoring chunk size and almost ignoring tweaks nested within lists of tweaks.
+
+This methodology is mentioned here because its results are not perfect. Pending future features in OpenSCAD, a future version may be based on a more exact projection of the case, but as of 2020, such a projection is hollow and cannot be convex-hulled without escaping the case, unless your case is convex to start with.
+
+For this reason, while the polygons fill the interior, the perimeter of the bottom plate is extended by key walls and case `tweaks` as they would appear at the height of the bottom plate. Even this brutality may be inadequate. If you require a more exact match, do a projection of the case without a bottom plate, save it as DXF/SVG etc. and post-process that file to fill the interior gap.
+
+### Parameter <a id="bottom-plates-preview">`preview`</a>
+
+Preview mode. If `true`, put a model of the plate in the same file as the body it closes. Not for printing.
+
+### Parameter <a id="bottom-plates-combine">`combine`</a>
+
+If `true`, combine bottom plates for as many bodies as possible.
+
+This can be used with the `solid` style of wrist rest to get a plate that helps lock the wrist rest to the main body, and with a central housing to get a single, bilateral plate that extends from side to side. This larger plate can require a large build volume.
+
+### Parameter <a id="bottom-plates-thickness">`thickness`</a>
+
+The thickness (i.e. height) in mm of all bottom plates you choose to include. This covers plates for the case and for the wrist rest.
+
+The case will not be raised to compensate for this. Instead, the thickness of the bottom plate will be removed from the bottom of the main model.
 
 ## Freely keyed section <a id="custom-bodies">`custom-bodies`</a>
 
@@ -524,21 +614,7 @@ If its parent body is governed by `reflect`, the custom body will also be reflec
 
 ## Freely keyed section <a id="flanges">`flanges`</a>
 
-Extra screws.
-
-`flanges` is named by analogy. It is intended to connect custom bodies to their parent bodies by means of screws, in the manner of pipe flanges joined by threaded fasteners.
-
-The structure of the `flanges` section is a map of arbitrary names to maps of the following parameters:
-
-- `bolt-properties` (required): A map of standard `scad-klupe` parameters, as for `bolt-properties` elsewhere.
-- `boss-diameter-factor` (optional): This factor multiplies the `m-diameter` of `bolt-properties` to produce the total exterior diameter of a boss for each screw. Typical values range from about 1.5 to 2.5. Even if a value is supplied, bosses are not included by default. Instead, they are added to the keyboard as a result of `tweaks` targeting each individual flange screw by its alias.
-- `positions` (optional): A list of individual flange screws.
-
-Each item in the list of `positions`, in turn, has the following structure:
-
-- `alias` (optional): A name for the position. Unlike the name for the flange as a whole, the alias can be used with `tweaks` to target the screw and build a boss or larger positive shape.
-- `body` (optional): A code identifying the predefined [body](configuration.md) that contains the screw, before the effect of any custom bodies.
-- `anchoring` (optional): Room for standard anchoring parameters. The concept of anchoring is explained [here](options-anchoring.md), along with the parameters available in this section.
+This section describes shapes connecting different bodies, with special features for connecting bottom plates to their parent bodies. Each flange gets its own subsection. Flanges are documented in detail [here](options-flanges.md).
 
 ## Freely keyed section <a id="tweaks">`tweaks`</a>
 
@@ -737,184 +813,6 @@ The thickness of the mount. This should have some rough correspondence to the th
 
 This section describes ports, including sockets in the case walls to contain electronic receptacles for signalling connections and other interfaces. Each port gets its own subsection. Ports are documented in detail [here](options-ports.md).
 
-## Section <a id="wrist-rest">`wrist-rest`</a>
-
-An optional extension to support the user’s wrist.
-
-### Parameter <a id="wrist-rest-include">`include`</a>
-
-If `true`, include a wrist rest with the keyboard.
-
-### Parameter <a id="wrist-rest-style">`style`</a>
-
-The style of the wrist rest. Available styles are:
-
-- `threaded`: threaded fasteners connect the case and wrist rest.
-- `solid`: the case and wrist rest are joined together by `tweaks` as a single piece of plastic.
-
-### Parameter <a id="wrist-rest-preview">`preview`</a>
-
-Preview mode. If `true`, this puts a model of the wrist rest in the same OpenSCAD file as the case. That model is simplified, intended for gauging distance, not for printing.
-
-### Section <a id="wrist-rest-anchoring">`anchoring`</a>
-
-Where to place the wrist rest. The concept of anchoring is explained [here](options-anchoring.md), along with the parameters available in this section. For wrist rests, the vertical component of the anchor’s position is ignored, including any vertical offset.
-
-### Parameter <a id="wrist-rest-plinth-height">`plinth-height`</a>
-
-The average height of the plastic plinth in mm, at its upper lip.
-
-### Section <a id="wrist-rest-shape">`shape`</a>
-
-The wrist rest needs to fit the user’s hand.
-
-#### Section <a id="wrist-rest-shape-spline">`spline`</a>
-
-The horizontal outline of the wrist rest is a closed spline.
-
-##### Parameter <a id="wrist-rest-shape-spline-main-points">`main-points`</a>
-
-A list of nameable points, in clockwise order. The spline will pass through all of these and then return to the first one. Each point can have two properties:
-
-- Mandatory: `position`. A pair of coordinates, in mm, relative to other points in the list.
-- Optional: `alias`. A name given to the specific point, for the purpose of placing yet more things in relation to it.
-
-##### Parameter <a id="wrist-rest-shape-spline-resolution">`resolution`</a>
-
-The amount of vertices per main point. The default is 1. If 1, only the main points themselves will be used, giving you full control. A higher number gives you smoother curves.
-
-If you want the closing part of the curve to look smooth in high resolution, position your main points carefully.
-
-Resolution parameters, including this one, can be disabled in the main `resolution` section.
-
-#### Section <a id="wrist-rest-shape-lip">`lip`</a>
-
-The lip is the uppermost part of the plinth, lining and supporting the edge of the pad. Its dimensions are described here in mm away from the pad.
-
-##### Parameter <a id="wrist-rest-shape-lip-height">`height`</a>
-
-The vertical extent of the lip.
-
-##### Parameter <a id="wrist-rest-shape-lip-width">`width`</a>
-
-The horizontal width of the lip at its top.
-
-##### Parameter <a id="wrist-rest-shape-lip-inset">`inset`</a>
-
-The difference in width between the top and bottom of the lip. A small negative value will make the lip thicker at the bottom. This is recommended for fitting a silicone mould.
-
-#### Section <a id="wrist-rest-shape-pad">`pad`</a>
-
-The top of the wrist rest should be printed or cast in a soft material, such as silicone rubber.
-
-##### Section <a id="wrist-rest-shape-pad-surface">`surface`</a>
-
-The upper surface of the pad, which will be in direct contact with the user’s palm or wrist.
-
-###### Section <a id="wrist-rest-shape-pad-surface-edge">`edge`</a>
-
-The edge of the pad can be rounded.
-
-###### Parameter <a id="wrist-rest-shape-pad-surface-edge-inset">`inset`</a> at level 7
-
-The horizontal extent of softening. This cannot be more than half the width of the outline, as determined by `main-points`, at its narrowest part.
-
-###### Parameter <a id="wrist-rest-shape-pad-surface-edge-resolution">`resolution`</a> at level 7
-
-The number of faces on the edge between horizontal points.
-
-Resolution parameters, including this one, can be disabled in the main `resolution` section.
-
-###### Section <a id="wrist-rest-shape-pad-surface-heightmap">`heightmap`</a>
-
-The surface can optionally be modified by the [`surface()` function](https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Other_Language_Features#Surface), which requires a heightmap file.
-
-###### Parameter <a id="wrist-rest-shape-pad-surface-heightmap-include">`include`</a> at level 7
-
-If `true`, use a heightmap. The map will intersect the basic pad polyhedron.
-
-###### Parameter <a id="wrist-rest-shape-pad-surface-heightmap-filepath">`filepath`</a> at level 7
-
-The file identified here should contain a heightmap in a format OpenSCAD can understand. The path should also be resolvable by OpenSCAD.
-
-##### Section <a id="wrist-rest-shape-pad-height">`height`</a>
-
-The piece of rubber extends a certain distance up into the air and down into the plinth. All measurements in mm.
-
-###### Parameter <a id="wrist-rest-shape-pad-height-surface-range">`surface-range`</a>
-
-The vertical range of the upper surface. Whatever values are in a heightmap will be normalized to this scale.
-
-###### Parameter <a id="wrist-rest-shape-pad-height-lip-to-surface">`lip-to-surface`</a>
-
-The part of the rubber pad between the top of the lip and the point where the heightmap comes into effect. This is useful if your heightmap itself has very low values at the edges, such that moulding and casting it without a base would be difficult.
-
-###### Parameter <a id="wrist-rest-shape-pad-height-below-lip">`below-lip`</a>
-
-The depth of the rubber wrist support, measured from the top of the lip, going down into the plinth. This part of the pad just keeps it in place.
-
-### Section <a id="wrist-rest-rotation">`rotation`</a>
-
-The wrist rest can be rotated to align its pad with the user’s palm.
-
-#### Parameter <a id="wrist-rest-rotation-pitch">`pitch`</a>
-
-Tait-Bryan pitch.
-
-#### Parameter <a id="wrist-rest-rotation-roll">`roll`</a>
-
-Tait-Bryan roll.
-
-### Special section <a id="wrist-rest-mounts">`mounts`</a>
-
-A list of mounts for threaded fasteners. Each such mount will include at least one cuboid block for at least one screw that connects the wrist rest to the case. This section is used only with the `threaded` style of wrist rest.
-
-### Section <a id="wrist-rest-sprues">`sprues`</a>
-
-Holes in the bottom of the plinth. You pour liquid rubber through these holes when you make the rubber pad. Sprues are optional, but the general recommendation is to have two of them if you’re going to be casting your own pads. That way, air can escape even if you accidentally block one sprue with a low-viscosity silicone.
-
-#### Parameter <a id="wrist-rest-sprues-include">`include`</a>
-
-If `true`, include sprues.
-
-#### Parameter <a id="wrist-rest-sprues-inset">`inset`</a>
-
-The horizontal distance between the perimeter of the wrist rest and the default position of each sprue.
-
-#### Parameter <a id="wrist-rest-sprues-diameter">`diameter`</a>
-
-The diameter of each sprue.
-
-#### Parameter <a id="wrist-rest-sprues-positions">`positions`</a>
-
-The positions of all sprues. This is a list where each item needs an `anchor` naming a main point in the spline. You can add an optional two-dimensional `offset`.
-
-### Section <a id="wrist-rest-bottom-plate">`bottom-plate`</a>
-
-The equivalent of the case `bottom-plate` parameter. If included, a bottom plate for a erist rest uses the `thickness` configured for the bottom of the case.
-
-Bottom plates for the wrist rests have no ESDS electronics to protect but serve other purposes: Covering nut pockets, silicone mould-pour cavities, and plaster or other dense material poured into plinths printed without a bottom shell.
-
-#### Parameter <a id="wrist-rest-bottom-plate-include">`include`</a>
-
-Whether to include a bottom plate for each wrist rest.
-
-#### Parameter <a id="wrist-rest-bottom-plate-inset">`inset`</a>
-
-The horizontal distance between the perimeter of the wrist rest and the default position of each threaded fastener connecting it to its bottom plate.
-
-#### Freely keyed section <a id="wrist-rest-bottom-plate-fastener-positions">`fastener-positions`</a>
-
-A list of named places where threaded fasteners will connect the bottom plate to the wrist resty.
-
-The starting position of each fastener is inset from the perimeter of the wrist rest by the `inset` parameter above, before any offset stated here is applied.
-
-Other properties of these fasteners are determined by settings for the main body.
-
-### Parameter <a id="wrist-rest-mould-thickness">`mould-thickness`</a>
-
-The thickness in mm of the walls and floor of the mould to be used for casting the rubber pad.
-
 ## Section <a id="resolution">`resolution`</a>
 
 Settings for the amount of detail on curved surfaces. More specific resolution parameters are available in other sections.
@@ -923,7 +821,7 @@ Settings for the amount of detail on curved surfaces. More specific resolution p
 
 If `true`, apply resolution parameters found throughout the configuration. Otherwise, use defaults built into this application, its libraries and OpenSCAD. The defaults are generally conservative, providing quick renders for previews.
 
-### Parameter <a id="resolution-minimum-face-size">`minimum-face-size`</a>
+### Parameter <a id="resolution-minimum-facet-size">`minimum-facet-size`</a>
 
 File-wide OpenSCAD minimum face size in mm.
 
@@ -935,7 +833,7 @@ Settings for design for manufacturability (DFM).
 
 A measurement in mm of errors introduced to negative space in the xy plane by slicer software and the printer you will use.
 
-The default value is zero. An appropriate value for a typical slicer and FDM printer with a 0.5 mm nozzle would be about -0.5 mm.
+The default value is zero. An appropriate value for a typical slicer and FDM printer with a 0.4 mm nozzle would be about -0.4 mm.
 
 This application will try to compensate for the error, though only for certain sensitive inserts, not for the case as a whole.
 

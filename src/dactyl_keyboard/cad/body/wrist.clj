@@ -323,8 +323,7 @@
       {:base (inset 0)
        :lip (inset lip-inset)
        :mould (inset (+ lip-inset (- (getopt :wrist-rest :mould-thickness))))
-       :sprue (inset (getopt :wrist-rest :sprues :inset))
-       :bottom (inset (getopt :wrist-rest :bottom-plate :inset))}
+       :sprue (inset (getopt :wrist-rest :sprues :inset))}
     :center-2d (mapv - absolute-ne bound-center)
     :pad-surface-height pad-above
     :z5 z5     ; Base of the mould (as positioned for printing, not use).

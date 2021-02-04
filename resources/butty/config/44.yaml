@@ -31,7 +31,8 @@ main-body:
       roof: 1.5
   bottom-plate:
     include: true
-    thickness: 2
+bottom-plates:
+  thickness: 2
 mcu:
   include: true
   anchoring:

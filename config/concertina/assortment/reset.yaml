@@ -30,12 +30,15 @@ ports:
       thickness: 2
 flanges:
   reset-button-flange:
-    bolt-properties:
-      m-diameter: 3
-      head-type: countersunk
-      include-threading: false
-      unthreaded-length: 6
-      channel-length: 1
+    include: true
+    bolts:
+      include: true
+      bolt-properties:
+        m-diameter: 3
+        head-type: countersunk
+        include-threading: false
+        unthreaded-length: 6
+        channel-length: 1
     positions:
     - anchoring:
         anchor: reset-hole

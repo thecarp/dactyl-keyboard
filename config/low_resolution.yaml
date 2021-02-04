@@ -8,14 +8,22 @@ main-body:
     fasteners:
       bolt-properties:
         include-threading: false
-  bottom-plate:
-    installation:
-      fasteners:
-        bolt-properties:
-          include-threading: false
 central-housing:
   adapter:
     fasteners:
+      bolt-properties:
+        include-threading: false
+flanges:
+  main-body-bottom-plate:
+    bolts:
+      bolt-properties:
+        include-threading: false
+  central-housing-bottom-plate:
+    bolts:
+      bolt-properties:
+        include-threading: false
+  wrist-rest-bottom-plate:
+    bolts:
       bolt-properties:
         include-threading: false
 mcu:

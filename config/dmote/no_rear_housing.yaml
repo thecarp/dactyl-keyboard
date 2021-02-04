@@ -52,22 +52,24 @@ by-key:
 main-body:
   rear-housing:
     include: false
-  bottom-plate:
-    installation:
-      fasteners:
-        positions:
-          # Change the properties of two of the fasteners defined in base.yaml:
-          # The two that ordinarily anchor to the rear housing.
-          bottom-main0:
-            anchor: back0
-            side: NW
-            segment: 3
-            intrinsic-offset: [3, -3, 0]
-          bottom-main1:
-            anchor: back3
-            side: NW
-            segment: 3
-            intrinsic-offset: [-2, -3, 0]
+flanges:
+  main-bottom-plate-rear:
+    positions:  # Override base design.
+    - anchoring:
+        anchor: back0
+        side: NW
+        segment: 3
+        intrinsic-offset: [3, -3, 0]
+    - anchoring:
+        anchor: back3
+        side: NW
+        segment: 3
+        intrinsic-offset: [-2, -3, 0]
+mcu:
+  include: false
+ports:
+  reflection-port:
+    include: false
 tweaks:
   # Tweaks directly involving the rear housing are disabled.
   rear-housing-sides: null
@@ -88,8 +90,3 @@ tweaks:
       - [a0, NW, 1]
       - [back3, NNE, 3]
       - [back3, ENE, 2, 3]
-mcu:
-  include: false
-ports:
-  reflection-port:
-    include: false

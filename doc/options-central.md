@@ -35,11 +35,6 @@ When present, a central housing naturally determines the position of each other 
         - Section <a href="#user-content-adapter-receivers-width">`width`</a>
             - Parameter <a href="#user-content-adapter-receivers-width-inner">`inner`</a>
             - Parameter <a href="#user-content-adapter-receivers-width-taper">`taper`</a>
-- Section <a href="#user-content-bottom-plate">`bottom-plate`</a>
-    - Section <a href="#user-content-bottom-plate-projections">`projections`</a>
-        - Parameter <a href="#user-content-bottom-plate-projections-include">`include`</a>
-        - Parameter <a href="#user-content-bottom-plate-projections-scale">`scale`</a>
-    - Freely keyed section <a href="#user-content-bottom-plate-fastener-positions">`fastener-positions`</a>
 
 ## Parameter <a id="include">`include`</a>
 
@@ -242,26 +237,6 @@ The width of the receiver at its base, before it starts to taper, in mm.
 ##### Parameter <a id="adapter-receivers-width-taper">`taper`</a>
 
 The width of a taper, as with the lip.
-
-## Section <a id="bottom-plate">`bottom-plate`</a>
-
-Any bottom plating for the case will extend to the midpoint of the central housing, on the assumption that bottom-plating anchors will be used to attach it there.
-
-### Section <a id="bottom-plate-projections">`projections`</a>
-
-To facilitate printing a central housing standing on its edge, or to add strength, you can extend bottom-plating anchors onto the nearest wall, via a convex hull of each anchor and its projection. The result is an internal chamfer resembling a primitive fillet.
-
-#### Parameter <a id="bottom-plate-projections-include">`include`</a>
-
-If `true`, extend each bottom-plating anchor.
-
-#### Parameter <a id="bottom-plate-projections-scale">`scale`</a>
-
-The scale of each projection, as a 2-tuple of horizontal and vertical factors. The horizontal factor controls the width of the projection and the vertical factor its height. The length of the projection is fixed at the distance between the center of the anchor and the outermost part of its shell.
-
-### Freely keyed section <a id="bottom-plate-fastener-positions">`fastener-positions`</a>
-
-A list of named places where threaded fasteners will connect the bottom plate to the central housing.Properties of these fasteners, beyond positions and projections, are determined by settings for the main body.
 
 ⸻
 

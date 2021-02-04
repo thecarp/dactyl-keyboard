@@ -38,16 +38,6 @@ main-body:
         m-diameter: 4
         head-type: countersunk
         include-threading: false
-  bottom-plate:
-    installation:
-      thickness: 2.5
-      fasteners:
-        bolt-properties:
-          m-diameter: 3
-          head-type: countersunk
-          point-type: cone  # Design for manufacturing: Easy printing.
-          total-length: 8.5
-          include-threading: false
 central-housing:
   adapter:
     fasteners:
@@ -56,6 +46,58 @@ central-housing:
         head-type: countersunk
         total-length: 8.5
         include-threading: false
+flanges:
+  main-bottom-plate:
+    bottom: true
+    bolts:
+      include: true
+      bolt-properties:
+        m-diameter: 3
+        head-type: countersunk
+        point-type: cone
+        total-length: 8.5
+        include-threading: false
+    bosses:
+      segments:
+        "0":
+          diameter: 7
+        "1":
+          diameter: 4
+          intrinsic-offset: [0, 0, 6]
+  central-housing-bottom-plate:
+    bottom: true
+    bolts:
+      include: true
+      bolt-properties:
+        m-diameter: 3
+        head-type: countersunk
+        point-type: cone
+        total-length: 8.5
+        include-threading: false
+    bosses:
+      segments:
+        "0":
+          diameter: 7
+        "1":
+          diameter: 4
+          intrinsic-offset: [0, 0, 6]
+  wrist-rest-bottom-plate:
+    bottom: true
+    bolts:
+      include: true
+      bolt-properties:
+        m-diameter: 3
+        head-type: countersunk
+        point-type: cone
+        total-length: 8.5
+        include-threading: false
+    bosses:
+      segments:
+        "0":
+          diameter: 7
+        "1":
+          diameter: 4
+          intrinsic-offset: [0, 0, 6]
 mcu:
   type: promicro
   support:
@@ -76,6 +118,6 @@ mcu:
 resolution:
   include: true
 dfm:
-  error-general: -0.5
+  error-general: -0.4
   bottom-plate:
-    fastener-plate-offset: -0.1
+    fastener-plate-offset: -0.15

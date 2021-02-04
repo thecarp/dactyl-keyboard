@@ -509,35 +509,6 @@ main-body:
       intrinsic-offset: [0, 0, 0]
   bottom-plate:
     include: true
-    thickness: 1
-    installation:
-      dome-caps: true
-      fasteners:
-        positions:
-          bottom-main0:
-            anchor: rear-housing-interior
-            side: NW
-            intrinsic-offset: [3, -3, 0]
-          bottom-main1:
-            anchor: rear-housing-interior
-            side: ENE
-            intrinsic-offset: [-2, -5, 0]
-          bottom-main2:
-            anchor: a1
-            side: NE
-            intrinsic-offset: [-3, -3, 0]
-          bottom-main3:
-            anchor: front5
-            side: SE
-            intrinsic-offset: [-3, -1, 0]
-          bottom-main4:
-            anchor: t4
-            side: S
-            intrinsic-offset: [-1, 2, 0]
-          bottom-main5:
-            anchor: t1
-            side: N
-            intrinsic-offset: [2, -1, 0]
   leds:
     include: true
     amount: 3
@@ -545,6 +516,153 @@ main-body:
     housing-size: 5.5  # Real size: 5 mm.
     emitter-diameter: 4
     interval: 16.8
+wrist-rest:
+  anchoring:
+    intrinsic-offset: [83, -90, 0]
+  plinth-height: 2
+  shape:
+    spline:
+      main-points:
+      - position: [0, 32]
+        alias: plinth-left
+      - position: [20, 40]
+        alias: plinth-mid0
+      - position: [35, 38]
+        alias: plinth-mid1
+      - position: [41, 50]
+      - position: [50, 63]
+      - position: [68, 62]
+        alias: plinth-right
+      - position: [74, 42]
+      - position: [63, 20]
+      - position: [50, 5]
+      - position: [30, 0]
+      - position: [3, 2]
+        alias: plinth-near
+      resolution: 2
+    lip:
+      inset: -0.6
+      height: 1.5
+    pad:
+      height:
+        surface-range: 8
+        lip-to-surface: 3
+        below-lip: 2
+      surface:
+        edge:
+          inset: 8
+          resolution: 5
+  rotation:
+    pitch: 0.05
+    roll: 0.05
+  sprues:
+    include: true
+    inset: 10
+    diameter: 12
+    positions:
+    - anchor: plinth-mid0
+      intrinsic-offset: [0, -10, 0]
+    - anchor: plinth-right
+      intrinsic-offset: [-5, -10, 0]
+  bottom-plate:
+    include: true
+  mould-thickness: 2
+bottom-plates:
+  thickness: 1
+flanges:
+  main-bottom-plate-front:
+    include: true
+    bottom: true
+    bolts:
+      include: true
+      bolt-properties:
+        m-diameter: 3
+        head-type: countersunk
+        point-type: cone
+        total-length: 8.5
+        include-threading: false
+    bosses:
+      include: true
+      segments:
+        "0":
+          diameter: 6
+        "1":
+          style: sphere
+          diameter: 5
+          intrinsic-offset: [0, 0, 6]
+    positions:
+    - anchoring:
+        anchor: a1
+        side: NE
+        intrinsic-offset: [-3, -3, 0]
+    - anchoring:
+        anchor: front5
+        side: SE
+        intrinsic-offset: [-3, -1, 0]
+    - anchoring:
+        anchor: t4
+        side: S
+        intrinsic-offset: [-1, 2, 0]
+    - anchoring:
+        anchor: t1
+        side: N
+        intrinsic-offset: [2, -1, 0]
+  main-bottom-plate-rear:
+    # The purpose of main-bottom-plate-rear as distinct from
+    # main-bottom-plate-front is to allow the former to be overridden for a
+    # DMOTE variant without a rear housing.
+    include: true
+    bottom: true
+    bolts:
+      include: true
+      bolt-properties:
+        m-diameter: 3
+        head-type: countersunk
+        point-type: cone
+        total-length: 8.5
+        include-threading: false
+    bosses:
+      include: true
+      segments:
+        "0":
+          diameter: 6
+        "1":
+          style: sphere
+          diameter: 5
+          intrinsic-offset: [0, 0, 6]
+    positions:
+    - anchoring:
+        anchor: rear-housing-interior
+        side: NW
+        intrinsic-offset: [3, -3, 0]
+    - anchoring:
+        anchor: rear-housing-interior
+        side: ENE
+        intrinsic-offset: [-2, -5, 0]
+  wrist-rest-bottom-plate:
+    include: true
+    bosses:
+      # The wrist rest’s bottom plate can use the same type of screws as the
+      # main body’s, but its bosses are shorter to make less of an intrusion
+      # into a soft pad.
+      include: true
+      segments:
+        "0":
+          diameter: 5
+        "1":
+          style: sphere
+          diameter: 4
+          intrinsic-offset: [0, 0, 3]
+    positions:
+    - anchoring:
+        anchor: plinth-mid0
+        intrinsic-offset: [0, -3, 0]
+    - anchoring:
+        anchor: plinth-near
+        intrinsic-offset: [3, 3, 0]
+    - anchoring:
+        anchor: plinth-right
+        intrinsic-offset: [-2, -3, 0]
 tweaks:
   thumb-to-finger-gap:
     # This large tweak covers the gap between the thumb clusters and the main
@@ -901,65 +1019,3 @@ ports:
       include: true
       alias: reflection-port-holder
       thickness: 2
-wrist-rest:
-  anchoring:
-    intrinsic-offset: [83, -90, 0]
-  plinth-height: 2
-  shape:
-    spline:
-      main-points:
-      - position: [0, 32]
-        alias: plinth-left
-      - position: [20, 40]
-        alias: plinth-mid0
-      - position: [35, 38]
-        alias: plinth-mid1
-      - position: [41, 50]
-      - position: [50, 63]
-      - position: [68, 62]
-        alias: plinth-right
-      - position: [74, 42]
-      - position: [63, 20]
-      - position: [50, 5]
-      - position: [30, 0]
-      - position: [3, 2]
-        alias: plinth-near
-      resolution: 2
-    lip:
-      inset: -0.6
-      height: 1.5
-    pad:
-      height:
-        surface-range: 8
-        lip-to-surface: 3
-        below-lip: 2
-      surface:
-        edge:
-          inset: 8
-          resolution: 5
-  rotation:
-    pitch: 0.05
-    roll: 0.05
-  sprues:
-    include: true
-    inset: 10
-    diameter: 12
-    positions:
-    - anchor: plinth-mid0
-      intrinsic-offset: [0, -10, 0]
-    - anchor: plinth-right
-      intrinsic-offset: [-5, -10, 0]
-  bottom-plate:
-    include: true
-    inset: 2
-    fastener-positions:
-      bottom-wrist0:
-        anchor: plinth-mid0
-        intrinsic-offset: [0, -3, 0]
-      bottom-wrist1:
-        anchor: plinth-near
-        intrinsic-offset: [3, 3, 0]
-      bottom-wrist2:
-        anchor: plinth-right
-        intrinsic-offset: [-2, -3, 0]
-  mould-thickness: 2

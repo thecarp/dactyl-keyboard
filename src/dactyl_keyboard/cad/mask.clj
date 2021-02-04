@@ -23,7 +23,7 @@
   is preferable to designing each body so carefully that it touches the floor
   without penetrating it in the first place."
   [getopt with-plate & shapes]
-  (let [plate (if with-plate (getopt :main-body :bottom-plate :thickness) 0)]
+  (let [plate (if with-plate (getopt :bottom-plates :thickness) 0)]
     (intersect (maybe/translate [0 0 plate]
                  (model/translate (getopt :mask :center)
                    (apply model/cube (getopt :mask :size))))
@@ -48,7 +48,7 @@
   [getopt dimensions & shapes]
   {:pre [(contains? #{2 3} dimensions)]}
   (let [[x y _] (getopt :mask :size)
-        z (getopt :main-body :bottom-plate :thickness)
+        z (getopt :bottom-plates :thickness)
         c (getopt :central-housing :derived :include-main)]
     (intersect (maybe/translate (take dimensions [(if c (/ x 4) 0) 0 (/ z 2)])
                  (apply (case dimensions 2 model/square model/cube)
@@ -57,6 +57,6 @@
 
 (defn at-ground
   "A 2D slice of a 3D object at z=0, restricted by the bottom-plate mask."
-  [getopt shapes]
-  (when-not (empty? shapes)
+  [getopt & shapes]
+  (when-not (empty? (remove nil? shapes))
     (main-bottom-plate getopt 2 (apply model/cut shapes))))

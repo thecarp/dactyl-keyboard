@@ -53,7 +53,8 @@ main-body:
       roof: 1.5
   bottom-plate:
     include: true
-    thickness: 2
+bottom-plates:
+  thickness: 2
 mcu:
   include: true
   anchoring:
@@ -103,12 +104,13 @@ tweaks:
 ```
 
 That’s everything we had at the end of the last part of this tutorial, plus
-these new lines in the `main-body` section:
+these new lines in the `main-body` section and right below it:
 
 ```yaml
   bottom-plate:
     include: true
-    thickness: 2
+bottom-plates:
+  thickness: 2
 ```
 
 This has a visible effect in `body-main.yaml`, cutting 2 mm off the bottom of
@@ -186,22 +188,26 @@ main-body:
       roof: 1.5
   bottom-plate:
     include: true
-    thickness: 2
-    installation:
-      thickness: 1.5
-      fasteners:
-        bolt-properties:
-          channel-length: 0.25
-          include-threading: true
-        positions:
-          b0:
-            anchor: k
-            side: NNW
-            extrinsic-offset: [1.5, 1, 0]
-          b1:
-            anchor: k
-            side: NNE
-            extrinsic-offset: [-1.5, 1, 0]
+bottom-plates:
+  thickness: 2
+flanges:
+  main-bottom-plate:
+    include: true
+    bolts:
+      include: true
+      bolt-properties:
+        include-threading: true
+    bosses:
+      include: true
+    positions:
+    - anchoring:
+        anchor: k
+        side: NNW
+        extrinsic-offset: [1.5, 1, 0]
+    - anchoring:
+        anchor: k
+        side: NNE
+        extrinsic-offset: [-1.5, 1, 0]
 mcu:
   include: true
   anchoring:
@@ -253,21 +259,24 @@ tweaks:
 Here’s the new part, in the middle:
 
 ```yaml
-    installation:
-      thickness: 1.5
-      fasteners:
-        bolt-properties:
-          channel-length: 0.25
-          include-threading: true
-        positions:
-          b0:
-            anchor: k
-            side: NNW
-            extrinsic-offset: [1.5, 1, 0]
-          b1:
-            anchor: k
-            side: NNE
-            extrinsic-offset: [-1.5, 1, 0]
+flanges:
+  main-bottom-plate:
+    include: true
+    bolts:
+      include: true
+      bolt-properties:
+        include-threading: true
+    bosses:
+      include: true
+    positions:
+    - anchoring:
+        anchor: k
+        side: NNW
+        extrinsic-offset: [1.5, 1, 0]
+    - anchoring:
+        anchor: k
+        side: NNE
+        extrinsic-offset: [-1.5, 1, 0]
 ```
 
 Add that to `butty.yaml`, save it and run the application once more.
@@ -275,18 +284,17 @@ Add that to `butty.yaml`, save it and run the application once more.
 ![The complete main body](img/butty/bottom-3-fasteners.png)
 ![The complete bottom plate](img/butty/main-body-fasteners.png)
 
-⤤ The change adds two internally threaded posts for M3 screws inside the case,
-with countersinks for the same screws’ heads in the bottom plate. The placement
-of each post uses the same set of anchoring parameters we have seen elsewhere,
-but automatically drops to the floor.
+⤤ The change adds two internally threaded bosses for M3 screws inside the case.
+It also adds countersinks for the same screws’ heads, which go into the bottom
+plate.
 
-The posts are named `b0` and `b1`. Like the name `k` for Butty’s key, these
-names are arbitrary, but could be useful in further work. In more complex
-designs, consider picking longer, more descriptive names.
+The placement of each boss uses anchoring parameters, the same way we have seen
+elsewhere, but automatically drops to the floor because of properties already
+defined for `main-bottom-plate` in `base.yaml`.
 
-Inside the case, there are notches cut into the two posts. These notches are
+Inside the case, there are notches cut into the two bosses. These notches are
 made by the invisible model of the MCU’s circuit board. They show that the
-posts are properly aligned to support the MCU without preventing assembly.
+bosses are properly aligned to support the MCU without preventing assembly.
 
 ## Summary
 
