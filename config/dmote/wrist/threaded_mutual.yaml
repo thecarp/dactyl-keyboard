@@ -1,5 +1,9 @@
 # Configuration fragment for mutual anchoring.
 
+# To understand the difference between this and the “caseside” option (a
+# neighbouring file), read about “mutual” authority in the manual for wrist
+# rest mount configuration (i.e. doc/options-wrist-rest-mounts.md).
+
 wrist-rest:
   include: true
   style: threaded
