@@ -114,7 +114,7 @@
     (is (= (node {:anchoring {:extrinsic-offset [0 0 1]}})
            [true (facit {:anchoring {:anchor :origin, :extrinsic-offset [0 0 1]}})])))
   (testing "long-format high leaf, near maximal"
-    (is (= (node {:positive false
+    (is (= (node {:cut true
                   :body "central-housing"
                   :at-ground true
                   :above-ground false
@@ -127,7 +127,7 @@
                               :extrinsic-rotation [0 "pi/10" 0]}
                   :sweep 1
                   :size [1 10 2]})
-           [true {:positive false
+           [true {:cut true
                   :body :central-housing
                   :at-ground true
                   :above-ground false

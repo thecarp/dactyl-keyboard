@@ -88,7 +88,7 @@
                  (fn [node] (= (get node key default) target)))))]
     (apply every-pred
       (remove nil?
-        [(is :positive true)
+        [(is :cut false)
          (is :above-ground true)
          (is :at-ground false)
          (when bodies (fn [node] ((get-body getopt node) bodies)))]))))
@@ -214,7 +214,7 @@
   "User-requested additional shapes for some body, in 3D."
   [getopt positive body]
   (grow getopt (filter
-                 (screener getopt {:positive positive
+                 (screener getopt {:cut (when (not positive) true)
                                    :above-ground true
                                    :bodies #{body}})
                  (tweak-forest getopt))))

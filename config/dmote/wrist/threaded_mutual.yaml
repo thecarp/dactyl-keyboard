@@ -39,5 +39,5 @@ wrist-rest:
 tweaks:
   wrist-rest-nut-pockets:
   - at-ground: true
-    positive: false
+    cut: true
     hull-around: [[wr0w0]]

@@ -469,11 +469,11 @@ tweaks:
         - [thumb-tr, ESE, 0, 1]
       - [m03, SSW, 0, 2]
   hole-through-big-port:
-    - {positive: false,
+    - {cut: true,
        anchoring: {anchor: big-port, side: S, intrinsic-offset: [0, 0, 5]},
        size: [10.78, 13, 5]}
   hole-through-small-port:
-    - {positive: false,
+    - {cut: true,
        anchoring: {anchor: small-port},
        size: [6.5, 20, 13.6]}
 mcu:

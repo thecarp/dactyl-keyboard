@@ -26,7 +26,7 @@
                      :size parse/pad-to-3-tuple}
       branch-skeleton {:chunk-size int
                        :highlight boolean}
-      top-extras {:positive boolean
+      top-extras {:cut boolean
                   :at-ground boolean
                   :above-ground boolean
                   :body keyword}
@@ -111,7 +111,7 @@
                               :opt-un [::highlight ::chunk-size
                                        ::above-ground
                                        ;; Additional keys expected in trees only:
-                                       ::positive ::at-ground ::body]))
+                                       ::cut ::at-ground ::body]))
 (spec/def ::leaf  ;; A leaf in its parsed (unfolded) form.
   (spec/and
     (spec/keys :req-un [::anch/anchoring] :opt-un [::sweep ::size])

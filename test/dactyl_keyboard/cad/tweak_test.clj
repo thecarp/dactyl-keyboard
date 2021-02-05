@@ -28,7 +28,7 @@
    :hull-around [leaf-a]})
 
 (def branch-b
-  {:positive false
+  {:cut true
    :at-ground false  ; Normally implicit.
    :hull-around [leaf-a]})
 
@@ -47,10 +47,10 @@
     (is (thrown? java.lang.AssertionError
           (screener getopt {}))))
   (testing "positive"
-    (is (= (filter (screener getopt {:positive true}) forest)
+    (is (= (filter (screener getopt {:cut false}) forest)
            [leaf-a branch-a branch-c])))
   (testing "negative"
-    (is (= (filter (screener getopt {:positive false}) forest)
+    (is (= (filter (screener getopt {:cut true}) forest)
            [branch-b])))
   (testing "at ground"
     (is (= (filter (screener getopt {:at-ground true}) forest)

@@ -27,7 +27,8 @@ must follow one of the following patterns:
   representing some combination of the nodes in it.
 
 These terms are metaphorical. In the metaphor, the list itself is not one tree
-but the soil of a grove of trees. Nodes at this entry level can have special properties, whereas subordinate nodes cannot.
+but the soil of a grove of trees. Nodes at this entry level can have special
+properties, whereas subordinate nodes cannot.
 
 ## Leaf nodes
 
@@ -72,7 +73,7 @@ Here’s the fine print on the two different ways to specify a leaf:
 - When you use the list format, the first element must be the name of an
   anchor. You cannot have a map as the first element.
 - In the list format, you can specify `null` in place of elements you don’t
-  want but, this is only meaningful for `side`.
+  want, though this is only meaningful for `side`.
 
 ## Branch nodes
 
@@ -89,18 +90,17 @@ recognized in any branch node:
 
 ## Special properties at the entry level
 
-Leaf and branch nodes immediately following a root-level
-name are special. They grow in the soil and represent individual plants with
-their own roots. When nodes are selected for a particular purpose, that
-selection happens at the root level. Nodes at the root level may therefore
-contain the following extra keys, which determine how each node affects the
-keyboard in a tweak:
+Leaf and branch nodes immediately following a root-level name are special. They
+grow in the soil and represent individual plants with their own roots. When
+nodes are selected for a particular purpose, that selection happens at the root
+level. Nodes at the root level may therefore contain the following extra keys,
+which determine how each node affects the keyboard in a tweak:
 
-- `positive` (optional): If `true`, add material to the case. If `false`,
-  subtract material. The default value is `true`.
+- `cut` (optional): If `true`, subtract material from the case instead of
+  adding material. All such cuts happen after all additions.
 - `at-ground` (optional): This setting has two effects. If `true`, extend
-  vertically down to the ground plane, as with a `full` wall, *and* influence
-  the shape of a `bottom-plate`. The default value is `false`.
+  vertically down to the ground plane, as with a wall `to-ground`, *and*
+  influence the shape of a `bottom-plate`.
 - `above-ground` (optional): If `true`, appear as part of the case. The
   default value is `true`. When this is `false` and `at-ground` is `true`, the
   node affects the bottom plate only, which is the only use for this option.
@@ -108,5 +108,9 @@ keyboard in a tweak:
   As usual, the default value is `auto`. When the node is a branch, `auto`
   uses the first leaf subordinate to the branch for the usual heuristics.
 
-Nodes subordinate to branches may not contain these extra keys. They are
-largely ignored for custom-body cuts.
+Nodes subordinate to branches may not contain these extra keys.
+
+The extra keys are largely ignored for custom-body cuts. Specifically, `cut`
+and `body` have no meaning in defining the shape of a custom body, because the
+entire grove is already a cut from one specific body. Neither `at-ground` nor
+`to-ground` will affect bottom plates in such a context.

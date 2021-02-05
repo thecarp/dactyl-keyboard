@@ -173,7 +173,7 @@
               (filter (partial base-pred getopt include-bottom include-top)
                       (flatten-flanges getopt))))))))
 
-;; TODO: Possible remove the following to make the interface more like
+;; TODO: Possibly remove the following to make the interface more like
 ;; selected-tweaks.
 
 ;; The proper selection of fasteners varies with the program output.

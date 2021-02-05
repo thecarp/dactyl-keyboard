@@ -61,21 +61,21 @@ wrist-rest:
 tweaks:
   wrist-rest-nut-pockets:
   - at-ground: true
-    positive: false
+    cut: true
     hull-around: [[wr0w0]]
   - at-ground: true
-    positive: false
+    cut: true
     hull-around: [[wr0p0, {anchoring: {intrinsic-offset: [0, -2, 0]}}]]
   - at-ground: true
-    positive: false
+    cut: true
     hull-around: [[wr1w0]]
   - at-ground: true
-    positive: false
+    cut: true
     hull-around: [[wr1p0, {anchoring: {intrinsic-offset: [0, -0.5, 0]}}]]
   wrist-rest-nut-bosses:
   # These are superficial, intended for use together with the
   # pockets in the same mounts.
-  - positive: false
+  - cut: true
     hull-around: [[wr0p0, {anchoring: {intrinsic-offset: [0, 5.5, 0]}}]]
-  - positive: false
+  - cut: true
     hull-around: [[wr1p0, {anchoring: {intrinsic-offset: [0, 4, 0]}}]]

@@ -562,7 +562,7 @@
     "  pet-flap:\n"
     "    include: true\n"
     "    parent-body: central-housing\n"
-    "    cut\n"
+    "    cut:\n"
     "      shape:\n"
     "      - [origin, {size: 60}]\n```\n"
     "\n"
@@ -571,11 +571,9 @@
     "separately and then mount it on hinges for small animals to live in your "
     "keyboard.\n"
     "\n"
-    "In `cut` nodes, the `positive` parameter is ignored, as is `body`. "
-    "Neither `at-ground` nor `to-ground` will affect bottom plates.\n"
-    "\n"
     "If its parent body is governed by `reflect`, the custom body will also "
-    "be reflected, appearing in left- and right-hand versions."]
+    "be reflected, appearing in left- and right-hand versions as separate "
+    "outputs of the application."]
    [[:flanges]
     {:freely-keyed true
      :default {}

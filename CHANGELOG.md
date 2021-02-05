@@ -40,7 +40,10 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       adjacent `bevel` section of parameters, which is indexed by sides
       (compass points).
     - Replaced central-housing interface settings for `adapter` → `offset`
-      with a `segments` map, as for key-cluster walls.
+      with a `segments` map, as for key-cluster walls and flange bosses.
+    - Replaced the `positive` property of tweaks (default true) with a `cut`
+      property (default false). Its effects are identical, but the values are
+      inverted.
     - Migrated to `scad-app` v1.0.0, which includes renaming the
       `minimum-face-size` parameter to `minimum-facet-size`, even in the DMOTE
       configuration interface.

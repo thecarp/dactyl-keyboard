@@ -601,16 +601,14 @@ Here’s an example of a custom body named `pet-flap`, with a simple cut, arbitr
   pet-flap:
     include: true
     parent-body: central-housing
-    cut
+    cut:
       shape:
       - [origin, {size: 60}]
 ```
 
 This example describes a cube-shaped area in the middle of the central housing. The wall there will gets its own SCAD file, so you can print it separately and then mount it on hinges for small animals to live in your keyboard.
 
-In `cut` nodes, the `positive` parameter is ignored, as is `body`. Neither `at-ground` nor `to-ground` will affect bottom plates.
-
-If its parent body is governed by `reflect`, the custom body will also be reflected, appearing in left- and right-hand versions.
+If its parent body is governed by `reflect`, the custom body will also be reflected, appearing in left- and right-hand versions as separate outputs of the application.
 
 ## Freely keyed section <a id="flanges">`flanges`</a>
 

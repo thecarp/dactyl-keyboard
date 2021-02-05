@@ -1123,7 +1123,7 @@ tweaks:
   # west edge of the thumb cluster, by removing cluster walls penetrating the
   # interior.
   thumb-to-housing-negatives:
-  - positive: false
+  - cut: true
     hull-around:
     - [ca-near-upper-1, {anchoring: {segment: 1, intrinsic-offset: [5, 0, 0]}}]
     - [ci-near-upper-1, {anchoring: {segment: 1}}]
@@ -1215,11 +1215,11 @@ tweaks:
         size: [1, 10, 10]}]
     - [ext-usb-holder,
        {anchoring: {side: NE, segment: 1, intrinsic-offset: [5, 0, 0]}}]
-  - positive: false  # A dent in the interior wall, for DFM.
+  - cut: true  # A dent in the interior wall, for DFM.
     hull-around:
     - [ext-usb-hole]
     - [ext-usb-hole, E, 1, {size: [1, 1, 11]}]
-  - positive: false  # A hole for USB pins and a locking nub.
+  - cut: true  # A hole for USB pins and a locking nub.
     hull-around:
     - [ext-usb-hole,
        {anchoring: {side: S, segment: 1, intrinsic-offset: [3, -2, -2]},

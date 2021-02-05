@@ -970,13 +970,13 @@ tweaks:
       - [a0, WNW, 0, 1]
   connector-housing:
     # A slightly pyramidal ceiling to the port, as DFM.
-    - positive: false
+    - cut: true
       hull-around:
       - [reflection-port]
       - [reflection-port,
          {anchoring: {segment: 0, intrinsic-offset: [0, 0, 1]}}]
     # An opening from the port to the interior.
-    - positive: false
+    - cut: true
       hull-around:
       - [reflection-port,
          {anchoring: {side: S, segment: 1, intrinsic-offset: [0, 0, -3]}, size: [8, 8, 8]}]

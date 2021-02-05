@@ -114,7 +114,7 @@ A map of short names to specific blocks as such, i.e. `partner-side` or `wrist-s
 
 A map of short names to nuts. Nuts are identified by tuples (lists of two items) where each tuple names a block, i.e. `partner-side` or `wrist-side`, and indexes a fastener in the `heights` list above. Indexing starts from zero.
 
-This parameter is used to name nuts to go on each end of each threaded rod. The intended use for this is with negative-space `tweaks`, where you target each nut by its name and supply `positive: false`. Some recipes:
+This parameter is used to name nuts to go on each end of each threaded rod. The intended use for this is with negative-space `tweaks`, where you target each nut by its name and supply `cut: true`. Some recipes:
 
 - To get a cavity for a nut wholly inside a block, just target the nut for a tweak without an offset or other special arguments. It will be necessary to pause printing in order to insert the nut in such a cavity.
 - To get a pocket for sliding in a nut from the top of the mount, hull a nut in its place with the same nut, offset higher on the z axis. Design the pad of the wrist rest to cover the pocket.
