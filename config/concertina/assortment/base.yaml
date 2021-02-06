@@ -27,6 +27,7 @@ custom-bodies:
 flanges:
   assortment-bookend-flanges:
     include: true
+    reflect: true
     bolts:
       include: true
       bolt-properties:
@@ -50,20 +51,8 @@ flanges:
         segment: 0
         intrinsic-rotation: [0, π/-2, 0]
         intrinsic-offset: [-2, 10, 6]
-    - anchoring:
-        anchor: assortment1
-        side: NE
-        segment: 0
-        intrinsic-rotation: [0, π/2, 0]
-        intrinsic-offset: [2, -12, 6]
-    - anchoring:
-        anchor: assortment1
-        side: SE
-        segment: 0
-        intrinsic-rotation: [0, π/2, 0]
-        intrinsic-offset: [2, 10, 6]
     # One screw beneath each of the four lower corners of each assortment port,
-    # right-hand-side.
+    # except the mid-level rear.
     - anchoring:
         anchor: assortment1
         side: SW
@@ -76,12 +65,6 @@ flanges:
         segment: 2
         intrinsic-rotation: [0, π/-2, 0]
         intrinsic-offset: [-2, -6, -2]
-    - anchoring:
-        anchor: assortment2
-        side: SW
-        segment: 2
-        intrinsic-rotation: [0, π/-2, 0]
-        intrinsic-offset: [-2, 12, -2]
     - anchoring:
         anchor: assortment2
         side: NW
@@ -100,43 +83,6 @@ flanges:
         segment: 2
         intrinsic-rotation: [0, π/-2, 0]
         intrinsic-offset: [-2, -6, -2]
-    # The same on the left.
-    - anchoring:
-        anchor: assortment1
-        side: SE
-        segment: 2
-        intrinsic-rotation: [0, π/2, 0]
-        intrinsic-offset: [2, 12, -2]
-    - anchoring:
-        anchor: assortment1
-        side: NE
-        segment: 2
-        intrinsic-rotation: [0, π/2, 0]
-        intrinsic-offset: [2, -6, -2]
-    - anchoring:
-        anchor: assortment2
-        side: SE
-        segment: 2
-        intrinsic-rotation: [0, π/2, 0]
-        intrinsic-offset: [2, 12, -2]
-    - anchoring:
-        anchor: assortment2
-        side: NE
-        segment: 2
-        intrinsic-rotation: [0, π/2, 0]
-        intrinsic-offset: [2, -6, -2]
-    - anchoring:
-        anchor: assortment3
-        side: SE
-        segment: 2
-        intrinsic-rotation: [0, π/2, 0]
-        intrinsic-offset: [2, 12, -2]
-    - anchoring:
-        anchor: assortment3
-        side: NE
-        segment: 2
-        intrinsic-rotation: [0, π/2, 0]
-        intrinsic-offset: [2, -6, -2]
   central-housing-bottom-plate:
     include: true
     positions:
@@ -213,6 +159,7 @@ tweaks:
   # filled with non-printed material to add mass to the keyboard.
   central-dividers:
   - to-ground: true
+    reflect: true
     chunk-size: 2
     hull-around:
     - hull-around:
@@ -224,38 +171,18 @@ tweaks:
     - hull-around:
       - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [4.5, -1, -16]}, size: 1}]
       - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [4.5, 0, -16]}, size: 1}]
-  - to-ground: true
-    chunk-size: 2
-    hull-around:
-    - hull-around:
-      - [assortment1, NW, {anchoring: {intrinsic-offset: [-0.5, -1, 0]}, size: 1}]
-      - [assortment1, SW, {anchoring: {intrinsic-offset: [-0.5, 0, 0]}, size: 1}]
-    - hull-around:
-      - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [-0.5, -1, -12]}, size: 1}]
-      - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [-0.5, 0, -12]}, size: 1}]
-    - hull-around:
-      - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [-4.5, -1, -16]}, size: 1}]
-      - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [-4.5, 0, -16]}, size: 1}]
   # Irregular tetrahedrons going into the loft of the central housing.
   # Their shape is meant to ease cable runs and printing, while accommodating
   # long flange screws.
   central-flanges:
   - above-ground: true
-    hull-around:
-    - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [0, -2, 0]}, size: 4}]
-    - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [0, -15, 9]}, size: [4, 1, 18]}]
-    - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [75, -0.5, 2]}, size: [1, 1, 4]}]
-  - above-ground: true
+    reflect: true
     hull-around:
     - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [0, -2, 0]}, size: 4}]
     - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [0, -15, 9]}, size: [4, 1, 18]}]
     - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [-75, -0.5, 2]}, size: [1, 1, 4]}]
   - above-ground: true
-    hull-around:
-    - [assortment1, SW, 0, {anchoring: {intrinsic-offset: [0, 0, 0]}, size: 4}]
-    - [assortment1, SW, 0, {anchoring: {intrinsic-offset: [0, 13, 9]}, size: [4, 1, 18]}]
-    - [assortment1, SW, 0, {anchoring: {intrinsic-offset: [75, 0, 2]}, size: [1, 1, 4]}]
-  - above-ground: true
+    reflect: true
     hull-around:
     - [assortment1, SE, 0, {anchoring: {intrinsic-offset: [0, 0, 0]}, size: 4}]
     - [assortment1, SE, 0, {anchoring: {intrinsic-offset: [0, 13, 9]}, size: [4, 1, 18]}]
@@ -264,19 +191,13 @@ tweaks:
   # flange screws and magnets.
   outer-bosses-beneath-drawer-stack:
   - above-ground: true
-    hull-around:
-    - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [6, -11, -2]}, size: [12, 22, 4]}]
-    - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [9, -11, -1]}, size: [18, 22, 2]}]
-  - above-ground: true
+    reflect: true
     hull-around:
     - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [-6, -11, -2]}, size: [12, 22, 4]}]
     - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [-9, -11, -1]}, size: [18, 22, 2]}]
   inner-bosses-beneath-drawer-stack:
   - above-ground: true
-    hull-around:
-    - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [6, 8, -2]}, size: [12, 18, 4]}]
-    - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [9, 8, -1]}, size: [18, 18, 2]}]
-  - above-ground: true
+    reflect: true
     hull-around:
     - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [-6, 8, -2]}, size: [12, 18, 4]}]
     - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [-9, 8, -1]}, size: [18, 18, 2]}]

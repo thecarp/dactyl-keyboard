@@ -16,7 +16,7 @@
             [scad-tarmi.maybe :as maybe]
             [scad-tarmi.util :refer [loft]]
             [scad-klupe.iso :as iso]
-            [dactyl-keyboard.cad.misc :refer [merge-bolt wafer]]
+            [dactyl-keyboard.cad.misc :refer [merge-bolt wafer flip-x]]
             [dactyl-keyboard.cad.poly :as poly]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.misc :refer [soft-merge]]))
@@ -91,11 +91,6 @@
   and invoked here as a module, so scad-app can mirror it."
   [_ _]
   (model/call-module "housing_adapter_fastener"))
-
-(defn- single-left-side-fastener
-  "The same model, pre-emptively mirrored to get the right threading."
-  [_ _]
-  (model/mirror [-1 0 0] (model/call-module "housing_adapter_fastener")))
 
 (defn- single-receiver
   "An extension through the central-housing interface array to receive a single
@@ -354,7 +349,7 @@
   symmetry is currently implemented for the central housing, this function does
   not mirror the positions of adapter-right-fasteners."
   [getopt]
-  (fastener-feature getopt any-side single-left-side-fastener))
+  (fastener-feature getopt any-side #(flip-x (single-right-side-fastener %1 %2))))
 
 (defn adapter-fastener-receivers
   "Receivers for screws, extending from the central housing into the adapter."

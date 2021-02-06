@@ -4,56 +4,40 @@
 
 tweaks:
   inner-magnet-pocket-slits:
-    # Right-hand side:
     - cut: true
-      hull-around:
-      - [assortment1, SW, 2, {anchoring: {intrinsic-offset: [11, 4, -4]}, size: [6, 0.2, 2]}]
-      - [assortment1, SW, 2, {anchoring: {intrinsic-offset: [11, 4, -4]}, size: [1, 1.5, 5]}]
-    - cut: true
-      hull-around:
-      - [assortment2, SW, 2, {anchoring: {intrinsic-offset: [11, 4, -4]}, size: [6, 0.2, 2]}]
-      - [assortment2, SW, 2, {anchoring: {intrinsic-offset: [11, 4, -4]}, size: [1, 1.5, 5]}]
-    - cut: true
-      hull-around:
-      - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [11, 4, -4]}, size: [6, 0.2, 2]}]
-      - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [11, 4, -4]}, size: [1, 1.5, 5]}]
-    # Left-hand side:
-    - cut: true
+      reflect: true
+      above-ground: true
       hull-around:
       - [assortment1, SE, 2, {anchoring: {intrinsic-offset: [-11, 4, -4]}, size: [6, 0.2, 2]}]
       - [assortment1, SE, 2, {anchoring: {intrinsic-offset: [-11, 4, -4]}, size: [1, 1.5, 5]}]
     - cut: true
+      reflect: true
+      above-ground: true
       hull-around:
       - [assortment2, SE, 2, {anchoring: {intrinsic-offset: [-11, 4, -4]}, size: [6, 0.2, 2]}]
       - [assortment2, SE, 2, {anchoring: {intrinsic-offset: [-11, 4, -4]}, size: [1, 1.5, 5]}]
     - cut: true
+      reflect: true
+      above-ground: true
       hull-around:
       - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [-11, 4, -4]}, size: [6, 0.2, 2]}]
       - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [-11, 4, -4]}, size: [1, 1.5, 5]}]
   outer-magnet-pocket-slits:
-    # Right-hand side:
     - cut: true
-      hull-around:
-      - [assortment1, NW, 2, {anchoring: {intrinsic-offset: [11, -15, -4]}, size: [6, 0.2, 2]}]
-      - [assortment1, NW, 2, {anchoring: {intrinsic-offset: [11, -15, -4]}, size: [1, 1.5, 5]}]
-    - cut: true
-      hull-around:
-      - [assortment2, NW, 2, {anchoring: {intrinsic-offset: [11, -15, -4]}, size: [6, 0.2, 2]}]
-      - [assortment2, NW, 2, {anchoring: {intrinsic-offset: [11, -15, -4]}, size: [1, 1.5, 5]}]
-    - cut: true
-      hull-around:
-      - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [11, -15, -4]}, size: [6, 0.2, 2]}]
-      - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [11, -15, -4]}, size: [1, 1.5, 5]}]
-    # Left-hand side:
-    - cut: true
+      reflect: true
+      above-ground: true
       hull-around:
       - [assortment1, NE, 2, {anchoring: {intrinsic-offset: [-11, -15, -4]}, size: [6, 0.2, 2]}]
       - [assortment1, NE, 2, {anchoring: {intrinsic-offset: [-11, -15, -4]}, size: [1, 1.5, 5]}]
     - cut: true
+      reflect: true
+      above-ground: true
       hull-around:
       - [assortment2, NE, 2, {anchoring: {intrinsic-offset: [-11, -15, -4]}, size: [6, 0.2, 2]}]
       - [assortment2, NE, 2, {anchoring: {intrinsic-offset: [-11, -15, -4]}, size: [1, 1.5, 5]}]
     - cut: true
+      reflect: true
+      above-ground: true
       hull-around:
       - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [-11, -15, -4]}, size: [6, 0.2, 2]}]
       - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [-11, -15, -4]}, size: [1, 1.5, 5]}]

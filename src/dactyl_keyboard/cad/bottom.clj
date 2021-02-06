@@ -14,7 +14,7 @@
             [dactyl-keyboard.cad.key :as key]
             [dactyl-keyboard.cad.key.wall :as wall]
             [dactyl-keyboard.cad.mask :as mask]
-            [dactyl-keyboard.cad.misc :as misc :refer [wafer]]
+            [dactyl-keyboard.cad.misc :refer [reflect-x wafer]]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.tweak :as tweak]
             [dactyl-keyboard.compass :as compass]
@@ -206,10 +206,9 @@
 (defn- bilateral
   "Fit passed shape onto both sides of a central housing, if any."
   [getopt shape]
-  (maybe/union
-    shape
-    (when (getopt :central-housing :derived :include-main)
-      (model/mirror [-1 0 0] shape))))
+  (if (getopt :central-housing :derived :include-main)
+    (reflect-x shape)
+    shape))
 
 (defn combined-positive
   "The positive space of a combined bottom plate: One plate that extends to

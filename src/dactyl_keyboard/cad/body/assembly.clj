@@ -17,6 +17,7 @@
             [dactyl-keyboard.cad.key.web :as web]
             [dactyl-keyboard.cad.mask :as mask]
             [dactyl-keyboard.cad.mcu :as mcu]
+            [dactyl-keyboard.cad.misc :refer [flip-x reflect-x]]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.tweak :as tweak]
             [dactyl-keyboard.sandbox :as sandbox]))
@@ -98,9 +99,9 @@
   [getopt]
   (let [bilateral
         (fn ([subject]  ; Non-chiral.
-             (maybe/union subject (maybe/mirror [-1 0 0] subject)))
+             (reflect-x subject))
             ([subject-right subject-left]  ; Chiral.
-             (maybe/union subject-right (maybe/mirror [-1 0 0] subject-left))))]
+             (maybe/union subject-right (flip-x subject-left))))]
     (maybe/union
       (maybe/difference
         (mask/above-main-bottom-plate getopt

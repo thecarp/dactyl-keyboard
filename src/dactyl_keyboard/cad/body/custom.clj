@@ -5,7 +5,8 @@
 
 (ns dactyl-keyboard.cad.body.custom
   (:require [scad-clj.model :as model]
-            [dactyl-keyboard.cad.tweak :refer [grow unfence]]))
+            [dactyl-keyboard.cad.tweak :refer [grow unfence]]
+            [dactyl-keyboard.cad.misc :refer [flip-x]]))
 
 
 (defn- included?
@@ -26,10 +27,13 @@
                                        (keys (getopt :custom-bodies))))})
 
 (defn- cut
-  "Grow the mask that delimits a specific, possibly chiral, custom body."
+  "Grow the mask that delimits a specific, possibly chiral, custom body.
+  Use all nodes and combine them as if above ground."
   [getopt mirrored id]
-  (let [contain (if mirrored (partial model/mirror [-1 0 0]) model/union)]
-    (->> (getopt :custom-bodies id :cut) (unfence) (grow getopt false) (contain))))
+  (cond->> (getopt :custom-bodies id :cut)
+    true (unfence)
+    true (grow getopt false)
+    mirrored flip-x))
 
 (defn intersection
   "Model a custom body as a positive shape, without removing child bodies."

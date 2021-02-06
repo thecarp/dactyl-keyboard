@@ -99,6 +99,14 @@ which determine how each node affects the keyboard in a tweak:
   uses the first leaf subordinate to the branch for the usual heuristics.
 - `cut` (optional): If `true`, subtract material from the body instead of
   adding material. All such cuts happen after all additions.
+- `reflect` (optional): If `true`, use the node on both sides of the yz-plane,
+  i.e. on both sides of x = 0 within `body`. This is useful mainly in a central
+  housing, for those tweaks that should be symmetrical on the left and right.
+  It is not so useful in a main body or wrist rest, because those bodies are
+  reflected with all of their tweaks, on a higher level, if at all.
+
+Additionally, on a common theme:
+
 - `above-ground` (optional): If `true`, influence the shape of `body` itself.
 - `at-ground` (optional): If `true`, influence the shape of the bottom plate
   under `body`.

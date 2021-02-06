@@ -12,9 +12,9 @@
             [scad-tarmi.core :refer [π]]
             [scad-tarmi.maybe :as maybe]
             [scad-tarmi.util :refer [loft]]
-            [dactyl-keyboard.cad.misc :as misc :refer [merge-bolt]]
-            [dactyl-keyboard.misc :refer [key-to-scadstr]]
+            [dactyl-keyboard.cad.misc :refer [merge-bolt flip-x]]
             [dactyl-keyboard.cad.place :as place]
+            [dactyl-keyboard.misc :refer [key-to-scadstr]]
             [dactyl-keyboard.param.proc.anch :as anch]))
 
 (defn name-module
@@ -151,8 +151,7 @@
         (when (or reflect  ; Reflection forced by caller.
                   (getopt :flanges flange :reflect)
                   (getopt :flanges flange :positions position-index :reflect))
-          (model/mirror [-1 0 0]
-            (pose (if positive shape (model/mirror [-1 0 0] shape)))))))))
+          (flip-x (pose (if positive shape (flip-x shape)))))))))
 
 (defn union
   "Shapes in place for all flanges associated with one or more bodies.

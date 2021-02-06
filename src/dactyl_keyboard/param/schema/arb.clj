@@ -28,6 +28,7 @@
                        :highlight boolean}
       top-extras {:body keyword
                   :cut boolean
+                  :reflect boolean
                   :at-ground boolean
                   :above-ground boolean
                   :to-ground boolean
@@ -113,7 +114,7 @@
 (spec/def ::branch (spec/keys :req-un [::hull-around]
                               :opt-un [::highlight ::chunk-size
                                        ;; Additional keys expected in trees only:
-                                       ::cut ::body
+                                       ::body ::cut ::reflect
                                        ::above-ground ::at-ground
                                        ::to-ground ::shadow-ground ::polyfill]))
 

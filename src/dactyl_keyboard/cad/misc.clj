@@ -201,3 +201,13 @@
              [(edge (compass/gentle-left direction))
               (edge (compass/gentle-right direction))]])
           [:NE :SE :SW :NW]))))
+
+(defn flip-x
+  "Mirror on the x-axis, discarding the original."
+  [shape]
+  (if (some? shape) (model/mirror [-1 0 0] shape)))
+
+(defn reflect-x
+  "Mirror on the x-axis, keeping the original."
+  [shape]
+  (if (some? shape) (model/union shape (flip-x shape))))

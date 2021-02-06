@@ -190,20 +190,22 @@
 (declare model-node-3d)
 
 (defn- model-branch-3d
-  [getopt bottom {:keys [to-ground hull-around chunk-size highlight] :as node}]
+  [getopt bottom
+   {:keys [reflect to-ground hull-around chunk-size highlight] :as node}]
   {:pre [(spec/valid? ::arb/branch node)]}
-  (let [prefix (if highlight model/-# identity)
+  (let [
         shapes (map (partial model-node-3d getopt bottom) hull-around)
         hull (if (or (and bottom (projected-at-ground? node))
                      (and (not bottom) to-ground))
                (partial body-plate-hull getopt (get-body getopt node))
                maybe/hull)]
-    (prefix
-      (apply (if chunk-size model/union hull)
-        (if chunk-size
-          ;; Emulate scad-tarmi.util/loft but with hulls.
-          (map (partial apply hull) (partition chunk-size 1 shapes))
-          shapes)))))
+    (cond->> shapes
+      chunk-size (partition chunk-size 1)  ; Fragment of scad-tarmi.util/loft.
+      chunk-size (map (partial apply hull))
+      chunk-size (apply model/union)
+      (not chunk-size) (apply hull)
+      reflect misc/reflect-x
+      highlight model/-#)))
 
 (defn- model-node-3d
   "Screen a tweak node. If it’s relevant, represent it as a model."
