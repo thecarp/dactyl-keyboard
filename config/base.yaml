@@ -63,7 +63,7 @@ flanges:
           diameter: 7
         "1":
           diameter: 4
-          intrinsic-offset: [0, 0, 6]
+          intrinsic-offset: [0, 0, -6]
   central-housing-bottom-plate:
     bottom: true
     bolts:
@@ -80,7 +80,7 @@ flanges:
           diameter: 7
         "1":
           diameter: 4
-          intrinsic-offset: [0, 0, 6]
+          intrinsic-offset: [0, 0, -6]
   wrist-rest-bottom-plate:
     bottom: true
     bolts:
@@ -97,7 +97,7 @@ flanges:
           diameter: 7
         "1":
           diameter: 4
-          intrinsic-offset: [0, 0, 6]
+          intrinsic-offset: [0, 0, -6]
 mcu:
   type: promicro
   support:

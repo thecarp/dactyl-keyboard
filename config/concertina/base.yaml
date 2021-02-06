@@ -734,7 +734,7 @@ flanges:
           diameter: 6
         "1":
           diameter: 6
-          intrinsic-offset: [0, 0, 7]
+          intrinsic-offset: [0, 0, -7]
     positions:
     - boss-alias: bottom-main-N
       anchoring:

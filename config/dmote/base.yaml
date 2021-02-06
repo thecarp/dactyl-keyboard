@@ -585,11 +585,11 @@ flanges:
       include: true
       segments:
         "0":
-          diameter: 6
+          diameter: 7
         "1":
           style: sphere
           diameter: 5
-          intrinsic-offset: [0, 0, 6]
+          intrinsic-offset: [0, 0, -6]
     positions:
     - anchoring:
         anchor: a1
@@ -625,11 +625,11 @@ flanges:
       include: true
       segments:
         "0":
-          diameter: 6
+          diameter: 7
         "1":
           style: sphere
           diameter: 5
-          intrinsic-offset: [0, 0, 6]
+          intrinsic-offset: [0, 0, -6]
     positions:
     - anchoring:
         anchor: rear-housing-interior
@@ -652,7 +652,7 @@ flanges:
         "1":
           style: sphere
           diameter: 4
-          intrinsic-offset: [0, 0, 3]
+          intrinsic-offset: [0, 0, -3]
     positions:
     - anchoring:
         anchor: plinth-mid0
