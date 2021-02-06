@@ -462,13 +462,13 @@
   For bottom flanges, force the preservation of orientation and use only the
   xy-plane for positioning relative to the anchor."
   [getopt flange position-index segment subject]
-  (at-named getopt
-    (merge (getopt :flanges flange :positions position-index :anchoring)
-           (when (getopt :flanges flange :bottom)
-             {:preserve-orientation true, ::n-dimensions 2}))
-    (flex/translate
-      (flange-segment-offset getopt flange position-index segment)
-      subject)))
+  (let [bottom (getopt :flanges flange :bottom)]
+    (->> subject
+      (flex/rotate [(if bottom  π 0) 0 0])
+      (flex/translate (flange-segment-offset getopt flange position-index segment))
+      (at-named getopt
+        (merge (getopt :flanges flange :positions position-index :anchoring)
+               (when bottom {:preserve-orientation true, ::n-dimensions 2}))))))
 
 ;; Polymorphic treatment of the properties of aliases.
 

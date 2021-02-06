@@ -9,7 +9,6 @@
 (ns dactyl-keyboard.cad.flange
   (:require [clojure.set :refer [intersection]]
             [scad-clj.model :as model]
-            [scad-tarmi.core :refer [π]]
             [scad-tarmi.maybe :as maybe]
             [scad-tarmi.util :refer [loft]]
             [dactyl-keyboard.cad.misc :refer [merge-bolt flip-x]]
@@ -41,10 +40,8 @@
         gap (max 0 (- (ins :height) base))]
     (maybe/union
       (when (prop :bolts :include)
-       (model/-#
-        (maybe/rotate [(if (prop :bottom) π 0) 0 0]
-          (merge-bolt getopt (prop :bolts :bolt-properties)
-                             (when (ins :include) {:include-threading false})))))
+        (merge-bolt getopt (prop :bolts :bolt-properties)
+                           (when (ins :include) {:include-threading false})))
       (when (ins :include)
         (maybe/union
           (model/translate [0 0 (+ (ins :height) (/ (ins :length) 2))]
