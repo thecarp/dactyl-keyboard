@@ -29,7 +29,7 @@
   "Grow the mask that delimits a specific, possibly chiral, custom body."
   [getopt mirrored id]
   (let [contain (if mirrored (partial model/mirror [-1 0 0]) model/union)]
-    (->> (getopt :custom-bodies id :cut) (unfence) (grow getopt) (contain))))
+    (->> (getopt :custom-bodies id :cut) (unfence) (grow getopt false) (contain))))
 
 (defn intersection
   "Model a custom body as a positive shape, without removing child bodies."

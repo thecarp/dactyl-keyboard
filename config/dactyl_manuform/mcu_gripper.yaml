@@ -5,10 +5,12 @@
 tweaks:
   hole-through-small-port: null  # Disabled; replaced by gripper.
   mcu-grip:
-    - hull-around:  # A bar at the rear end of the MCU PCBA.
+    - above-ground: true
+      hull-around:  # A bar at the rear end of the MCU PCBA.
       - [mcu-grip-base]
       - [mcu-grip-plate]
-    - hull-around:  # A thick support beam descending from the key cluster.
+    - above-ground: true
+      hull-around:  # A thick support beam descending from the key cluster.
       - [mcu-grip-base]
       - [back0, ESE, 0]
       - [back1, WSW, 0]

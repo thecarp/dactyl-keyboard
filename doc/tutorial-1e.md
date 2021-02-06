@@ -64,7 +64,9 @@ mcu:
     extrinsic-offset: [0, 0, -3]
 tweaks:
   top-bridge:
-  - chunk-size: 2
+  - above-ground: true
+    shadow-ground: true
+    chunk-size: 2
     hull-around:
     - hull-around:
       - [k, WNW, 1]
@@ -83,24 +85,16 @@ tweaks:
       - [rear-housing-interior, ESE, 1]
       - [rear-housing-exterior, ESE, 1]
   wall-bridges:
-  - at-ground: true
+  - to-ground: true
     hull-around:
     - [k, WNW, 1]
     - [rear-housing-exterior, WSW, 1]
     - [rear-housing-interior, WSW, 1]
-  - at-ground: true
+  - to-ground: true
     hull-around:
     - [k, ENE, 1]
     - [rear-housing-exterior, ESE, 1]
     - [rear-housing-interior, ESE, 1]
-  bottom-bridge:
-  - at-ground: true
-    above-ground: false
-    hull-around:
-    - [k, WNW, 1]
-    - [rear-housing-exterior, WSW, 1]
-    - [rear-housing-exterior, ESE, 1]
-    - [k, ENE, 1]
 ```
 
 That’s everything we had at the end of the last part of this tutorial, plus
@@ -124,21 +118,16 @@ application produces a whole new file of output, called
 there’s a hole in it. This is because the tweaks we created in the last part of
 this tutorial cover the roof and walls, but they don’t tell the application
 precisely where to fill in the floor. We’re going to fix that by adding another
-tweak, at the very bottom of `butty.yaml`.
+property to the first tweak we made in `butty.yaml`, right under
+`above-ground`.
 
 ```yaml
-  bottom-bridge:
-  - at-ground: true
-    above-ground: false
-    hull-around:
-    - [k, WNW, 1]
-    - [rear-housing-exterior, WSW, 1]
-    - [rear-housing-exterior, ESE, 1]
-    - [k, ENE, 1]
+    shadow-ground: true
 ```
 
-⤤ This combination of `at-ground` with `above-ground` makes the tweak affect
-the bottom plate but not the main body.
+⤤ This combination of `above-ground` with `shadow-ground` makes the tweak affect
+both the main body and the bottom plate of Butty. Specifically, the tweak is
+projected onto the ground plane to fill in the hole in the plate.
 
 ![An unbroken plate](img/butty/bottom-2-tweak.png)
 
@@ -217,7 +206,9 @@ mcu:
     extrinsic-offset: [0, 0, -3]
 tweaks:
   top-bridge:
-  - chunk-size: 2
+  - above-ground: true
+    shadow-ground: true
+    chunk-size: 2
     hull-around:
     - hull-around:
       - [k, WNW, 1]
@@ -236,24 +227,16 @@ tweaks:
       - [rear-housing-interior, ESE, 1]
       - [rear-housing-exterior, ESE, 1]
   wall-bridges:
-  - at-ground: true
+  - to-ground: true
     hull-around:
     - [k, WNW, 1]
     - [rear-housing-exterior, WSW, 1]
     - [rear-housing-interior, WSW, 1]
-  - at-ground: true
+  - to-ground: true
     hull-around:
     - [k, ENE, 1]
     - [rear-housing-exterior, ESE, 1]
     - [rear-housing-interior, ESE, 1]
-  bottom-bridge:
-  - at-ground: true
-    above-ground: false
-    hull-around:
-    - [k, WNW, 1]
-    - [rear-housing-exterior, WSW, 1]
-    - [rear-housing-exterior, ESE, 1]
-    - [k, ENE, 1]
 ```
 
 Here’s the new part, in the middle:

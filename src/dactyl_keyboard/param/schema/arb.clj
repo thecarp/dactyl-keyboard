@@ -26,10 +26,13 @@
                      :size parse/pad-to-3-tuple}
       branch-skeleton {:chunk-size int
                        :highlight boolean}
-      top-extras {:cut boolean
+      top-extras {:body keyword
+                  :cut boolean
                   :at-ground boolean
                   :above-ground boolean
-                  :body keyword}
+                  :to-ground boolean
+                  :shadow-ground boolean
+                  :polyfill boolean}
       tail-leafer (parse/map-like leaf-skeleton)
       destructure-leaf
         (fn parse-leaf
@@ -109,9 +112,11 @@
 (spec/def ::hull-around ::list)
 (spec/def ::branch (spec/keys :req-un [::hull-around]
                               :opt-un [::highlight ::chunk-size
-                                       ::above-ground
                                        ;; Additional keys expected in trees only:
-                                       ::cut ::at-ground ::body]))
+                                       ::cut ::body
+                                       ::above-ground ::at-ground
+                                       ::to-ground ::shadow-ground ::polyfill]))
+
 (spec/def ::leaf  ;; A leaf in its parsed (unfolded) form.
   (spec/and
     (spec/keys :req-un [::anch/anchoring] :opt-un [::sweep ::size])

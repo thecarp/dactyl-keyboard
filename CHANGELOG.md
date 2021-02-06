@@ -24,6 +24,14 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       This can be re-enabled with a new parameter (`use-key-style`).
     - Disabled responsiveness to flange screw size (including the “new”
       bottom-plate flanges) for making flange bosses.
+    - Changed the meaning of the `at-ground` parameter for tweak nodes,
+      so that hulling to ground is no longer a side effect of it.
+      Added a corresponding, explicit `to-ground` parameter.
+- Made `false` the default value of all Boolean parameters originating in
+  the application, though `bolt-properties` (using `scad-klupe`) can still
+  be default `true`.
+    - Stopped including arbitrary shapes in `above-ground` contexts by default.
+    - Replaced `positive` for arbitrary shapes with an inverted `cut` parameter.
 - Completed migration from long-form names for the points of the compass,
   like `north`, to short-form names, like `N`. This leaves only short forms,
   so the distinction itself is abolished.
@@ -70,10 +78,10 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - Added a nominal clearance parameter to make it easier to design for multiple
   different types of switches and keycaps.
 - Added support for custom key mounting plate size.
+- Added several new optional behaviours for arbitrary shapes (`to-ground`,
+  `shadow-ground`, `polyfill`).
 - Extended the concept of a combined bottom plate to include the central
   housing.
-- Added a side effect of `channel-length` to bottom-plate fasteners, allowing
-  them to rise from the floor.
 - Added a parameter for central-housing interface fastener-receiver radial
   thickness.
 - Added thinning of central-housing adapter lips based on DFM error setting.
@@ -99,6 +107,14 @@ Here is an example of adaptation from the old wall-building syntax to the new:
 
 That is an excerpt from `config/macropad/base.yaml`, preserving the shape of
 the wall.
+
+To preserve the old behaviour of a tweak node that should affect the keyboard
+case body, add `above-ground: true` to it. Where you had `positive: false`,
+replace it with `cut: true`. Where you had `at-ground: true`, replace it with
+`to-ground: true`.
+
+Migrating bottom-plate settings is a lot more complex, owing to the volume of
+changes. Please inspect bundled configurations.
 
 ## [Version 0.6.0] - 2020-09-09
 ### Changed

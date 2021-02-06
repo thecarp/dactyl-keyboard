@@ -475,7 +475,8 @@
     "Specifically, there is one polygon per key cluster (limited to wall "
     "edges drawn to the floor), one polygon for each housing, and one "
     "set of polygons for each of the first-level case `tweaks` that use "
-    "`at-ground`, ignoring chunk size and almost ignoring tweaks nested "
+    "`at-ground` (or `polyfill`, details [here](options-arbitrary-shapes.md)), "
+    "ignoring chunk size and almost ignoring tweaks nested "
     "within lists of tweaks.\n"
     "\n"
     "This methodology is mentioned here because its results are not perfect. "
@@ -486,10 +487,11 @@
     "\n"
     "For this reason, while the polygons fill the interior, the perimeter of "
     "the bottom plate is extended by key walls and case `tweaks` as they "
-    "would appear at the height of the bottom plate. Even this brutality may "
-    "be inadequate. If you require a more exact match, do a projection of the "
-    "case without a bottom plate, save it as DXF/SVG etc. and post-process "
-    "that file to fill the interior gap."]
+    "would appear at the height of the bottom plate. Even this brutality is "
+    "inadequate in a corner case when you have tweaks `to-ground` from below "
+    "that should affect the bottom plate. If you require a more exact match, "
+    "do a projection of the case without a bottom plate, save it as DXF/SVG "
+    "etc. and post-process that file to fill the interior gap."]
    [[:bottom-plates :preview]
     {:default false :parse-fn boolean}
     "Preview mode. If `true`, put a model of the plate in the same file as "

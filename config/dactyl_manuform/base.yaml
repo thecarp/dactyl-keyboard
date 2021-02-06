@@ -372,7 +372,8 @@ flanges:
           intrinsic-offset: [2, -4, 0]
 tweaks:
   webbing:
-    - chunk-size: 3
+    - above-ground: true
+      chunk-size: 3
       hull-around:  # Between the two thumb clusters.
       - [thumb-tl, NW, 0]
       - [thumb-ml, NE, 0]
@@ -383,7 +384,8 @@ tweaks:
       - [thumb-tr, SW, 0]
       - [thumb-mr, SE, 0]
       - [thumb-tr, SE, 0]
-    - chunk-size: 3
+    - above-ground: true
+      chunk-size: 3
       hull-around:  # Between thumb0 and the main cluster.
       - [thumb-tl, NW, 0]
       - [m00, SSW, 0]
@@ -405,48 +407,47 @@ tweaks:
         - [m02, SSE, 0]
         - [m03, WSW, 0]
   near-low-corner:
-    - chunk-size: 3
+    - above-ground: true
+      chunk-size: 3
       hull-around:
       - [m03, NE]
       - [m04, SW]
       - [m03, SE]
       - [m04, SSW, 0, 2]
       - [m03, SSE, 0, 2]
-    - at-ground: true
+    - to-ground: true
       hull-around:
       - [m04, SSW, 2]
       - [m03, SSE, 2]
   to-floor:
-    - at-ground: true
+    - to-ground: true
       hull-around:
       - [m00, WSW, 3]
       - [thumb-ml, NNE, 2]
-    - at-ground: true
+    - to-ground: true
       hull-around:
       - [thumb-ml, NNW, 2]
       - [thumb-bl, NNE, 2]
-    - at-ground: true
+    - to-ground: true
       hull-around:
       - [m03, SSW, 2]
       - [thumb-tr, SSE, 2]
-    - at-ground: true
+    - to-ground: true
       hull-around:
       - [thumb-tr, SSE, 2]
       - [thumb-mr, SSE, 2]
-    - at-ground: true
+    - to-ground: true
       hull-around:
       - [thumb-mr, SSW, 2]
       - [thumb-br, SSE, 2]
   bottom-plate-only:
     - at-ground: true
-      above-ground: false
       hull-around:
       - [m03, E, 2]
       - [m03, ESE, 2]
       - [m03, SSE, 2]
       - [m03, SSW, 2]
     - at-ground: true
-      above-ground: false
       hull-around:
       - [thumb-mr, SSE, 2]
       - [thumb-ml, NNE, 2]
@@ -454,14 +455,18 @@ tweaks:
       - [m03, NE]
       - [thumb-tr, SSE, 2]
   thumb-to-finger-gap:
-    - chunk-size: 3
+    - above-ground: true
+      at-ground: true
+      chunk-size: 3
       hull-around:
       - [m00, WSW, 0, 1]
       - [m00, WSW, 2, 3]
       - [thumb-tl, WNW, 0]
       - [thumb-ml, NNE, 2]
       - [thumb-ml, NNE, 0, 1]
-    - chunk-size: 2
+    - above-ground: true
+      shadow-ground: true  # Better than at-ground here for one tiny detail.
+      chunk-size: 2
       hull-around:
       - [thumb-mr, SSE, 0, 2]
       - hull-around:
@@ -469,11 +474,11 @@ tweaks:
         - [thumb-tr, ESE, 0, 1]
       - [m03, SSW, 0, 2]
   hole-through-big-port:
-    - {cut: true,
+    - {above-ground: true, cut: true,
        anchoring: {anchor: big-port, side: S, intrinsic-offset: [0, 0, 5]},
        size: [10.78, 13, 5]}
   hole-through-small-port:
-    - {cut: true,
+    - {above-ground: true, cut: true,
        anchoring: {anchor: small-port},
        size: [6.5, 20, 13.6]}
 mcu:

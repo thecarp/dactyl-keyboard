@@ -668,7 +668,8 @@ tweaks:
     # This large tweak covers the gap between the thumb clusters and the main
     # cluster of keys.
     # Webbing at the outer front0–front1 triangle at the edge of the cluster gap:
-    - chunk-size: 3
+    - above-ground: true
+      chunk-size: 3
       hull-around:
       - [front0, SSW, 0]
       - [front0, SSE, 0]
@@ -678,7 +679,8 @@ tweaks:
         - [front1, NNW, 0]
       - [front1, SSW, 0]
     # The near (user-facing) wall of the thumb0 cluster:
-    - chunk-size: 3
+    - above-ground: true
+      chunk-size: 3
       hull-around:
       - hull-around:
         - [t3, ESE, 0, 1]
@@ -691,7 +693,8 @@ tweaks:
         - [t4, SSE, 0, 1]
       - [t4, SSE, 2, 3]
     # West side:
-    - chunk-size: 2
+    - above-ground: true
+      chunk-size: 2
       hull-around:
       - hull-around:
         - [t1, NNW, 2]
@@ -702,7 +705,8 @@ tweaks:
       - [front0, WNW, 0, 2]
       - [m0, WSW, 2]
     # Between front0–front2 and t2, taking a low road under the secondaries:
-    - chunk-size: 3
+    - above-ground: true
+      chunk-size: 3
       hull-around:
       - [front0, SW]
       - hull-around:
@@ -717,7 +721,8 @@ tweaks:
         - [front2, NNW, 0]
         - [front2, SSW, 0]
     # More cluster gap, taking a high road over the secondaries:
-    - chunk-size: 3
+    - above-ground: true
+      chunk-size: 3
       hull-around:
       - [t2, ENE, 3]
       - [mt0b]
@@ -726,12 +731,14 @@ tweaks:
       - [t3, ENE, 3]
       - [front2, SSW, 0]
     # The west side of front2:
-    - hull-around:
+    - above-ground: true
+      hull-around:
       - [front1, SSE, 0]
       - [front2, WNW, 0]
       - [front2, WSW, 0]
     # The eastern topside plate, ending in a wedge between front2 and front3:
-    - chunk-size: 3
+    - above-ground: true
+      chunk-size: 3
       hull-around:
       - [front2, WSW, 0]
       - [t3, NNE, 3]
@@ -747,38 +754,45 @@ tweaks:
       - [t4, SSW, 2, 3]
       - [front3, SSW, 2, 3]
     # The low eastern plate:
-    - chunk-size: 3
+    - above-ground: true
+      chunk-size: 3
       hull-around:
       - hull-around:
         - [front2, ESE, 2, 3]
         - [front2, SSE, 2, 3]
       - [front2, ENE, 2, 3]
     # A triangular southern wall of front2:
-    - hull-around:
+    - above-ground: true
+      hull-around:
       - [front2, SSW, 0, 1]
       - [front2, SSE, 0, 3]
       - [front2, ESE, 0, 3]
   thumb-corner-webbing:
     # Extra webbing at the four corners of the thumb0 and thumb1 clusters:
-    - hull-around:
+    - above-ground: true
+      hull-around:
       - [t0, NNW, 0]
       - [t0, NNE, 0]
       - [t1, NNW, 0]
-    - hull-around:
+    - above-ground: true
+      hull-around:
       - [t2, NNW, 0]
       - [t2, NNE, 0, 3]
       - [t2, ENE, 0, 3]
       - [t1, NNE, 0, 3]
-    - hull-around:
+    - above-ground: true
+      hull-around:
       - [t2, NNE, 2, 3]
       - [t1, NNE, 2, 3]
       - [front0, SW]
-    - hull-around:
+    - above-ground: true
+      hull-around:
       - [tc, SSE, 0]
       - [t3, WSW, 0]
       - [t4, ENE, 0]
     # The near upper corner:
-    - chunk-size: 3
+    - above-ground: true
+      chunk-size: 3
       hull-around:
       - [t4, ENE, 0]
       - [t4, SSE, 0]
@@ -788,7 +802,8 @@ tweaks:
         - [t3, ESE, 0, 3]
   thumb0-to-thumb1-gap:
     # Webbing between the two thumb clusters:
-    - chunk-size: 2
+    - above-ground: true
+      chunk-size: 2
       hull-around:
       - hull-around:
         - [t1, NNW, 0]
@@ -804,7 +819,8 @@ tweaks:
         - [t5, NNE, 0]
       - [t4, NNW, 0]
     # Lower near corner:
-    - chunk-size: 3
+    - above-ground: true
+      chunk-size: 3
       hull-around:
       - [t5, NNE, 0]
       - [t4, NNW, 0]
@@ -813,7 +829,8 @@ tweaks:
       - [t5, SSW, 0]
   thumb-to-main-to-ground:
     # Plating to ground beneath the thumb clusters:
-    - at-ground: true
+    - to-ground: true
+      polyfill: true
       chunk-size: 2
       hull-around:
       - [m0, WSW, 2]
@@ -831,7 +848,8 @@ tweaks:
       - [front3, SSW, 2, 3]
   aux0-to-main-gap:
     # Strengthening the wall between m1 and back4.
-    - hull-around:
+    - above-ground: true
+      hull-around:
       - [a0, SSW, 0]
       - [back3, ESE, 0]
       - [m1, ENE, 0]
@@ -839,13 +857,15 @@ tweaks:
       - [back4, WNW, 0]
       - [back4, WSW, 0]
     # Filling out the a0 mounting plate.
-    - hull-around:
+    - above-ground: true
+      hull-around:
       - [a0, NE]
       - [a0, SE]
       - [a0, SW]
       - [a0, NW]
     # Plating over the main-aux cluster gap.
-    - chunk-size: 3
+    - above-ground: true
+      chunk-size: 3
       hull-around:
       - [back3, ENE, 0]
       - [a0, WNW, 0]
@@ -860,14 +880,13 @@ tweaks:
       - [back5, NNE, 0, 1]
       - [a1, ESE, 0, 1]
       - [back5, ENE, 0, 1]
-    - at-ground: true
+    - to-ground: true
       hull-around:
       - [a1, ESE, 1]
       - [a1, ENE, 1]
       - [back5, ENE, 1]
     # Bottom-only plating at the main-aux cluster gap:
     - at-ground: true
-      above-ground: false
       hull-around:
       - [back5, ESE, 1]
       - [a1, NE, 1]
@@ -875,7 +894,7 @@ tweaks:
       - [back2, S]
   rear-housing-sides:
     # A plate to ground at the south-west corner of the rear housing:
-    - at-ground: true
+    - to-ground: true
       hull-around:
       - [rear-housing-exterior, WSW, 0, 1]
       - [rear-housing-exterior, SSW, 1]
@@ -883,7 +902,7 @@ tweaks:
       - [back0, WNW, 2]
     # A plate to ground at the south-east corner of the rear housing,
     # integrating it with the aux and main clusters:
-    - at-ground: true
+    - to-ground: true
       hull-around:
       - [rear-housing-exterior, ESE, 1]
       - [rear-housing-exterior, SSE, 1]
@@ -892,7 +911,6 @@ tweaks:
     # Bottom-only plating to compensate for the aux cluster breaking up the
     # ground-level profile of the main cluster:
     - at-ground: true
-      above-ground: false
       hull-around:
       - [m1, SSW, 0]
       - [a0, NNW, 0]
@@ -903,7 +921,8 @@ tweaks:
       - [back0, WSW, 3]
   rear-housing-near-edge:
     # Complete the arched ceiling of the rear housing:
-    - hull-around:
+    - above-ground: true
+      hull-around:
       - [rear-housing-exterior, WSW, 0, 1]
       - [rear-housing-exterior, SSW, 0, 1]
       - [rear-housing-exterior, ESE, 0, 1]
@@ -915,17 +934,20 @@ tweaks:
   rear-housing-to-main-gap:
     # This tweak connects the top of the rear housing to the main cluster’s
     # webbing. First, the western half of the connection:
-    - hull-around:
+    - above-ground: true
+      hull-around:
       - [rear-housing-exterior, WSW, 0, 1]
       - [rear-housing-interior, WSW, 0]
       - [rear-housing-interior, SSW, 0, 1]
       - [rear-housing-interior, SSW, 1, {anchoring: {intrinsic-offset: [-7, 0, 0]}}]
       - [back0, WNW, 2]
-    - hull-around:  # Triangle at the edge of the web.
+    - above-ground: true
+      hull-around:  # Triangle at the edge of the web.
       - [back0, NNW, 0, 1]
       - [back0, NE, 0]
       - [back1, NW, 0]
-    - hull-around:
+    - above-ground: true
+      hull-around:
       - [rear-housing-exterior, WSW, 0, 1]
       - [rear-housing-exterior, SSW, 0]
       - [rear-housing-interior, SSW, 0]
@@ -936,7 +958,8 @@ tweaks:
       - [rear-housing-interior, S, 1]
       - [rear-housing-interior, SSW, 1]
       - [back1, NW, 0]
-    - hull-around:
+    - above-ground: true
+      hull-around:
       - [back1, NW, 0]
       - [back1, NE, 0]
       - [back2, NW, 0]
@@ -944,13 +967,15 @@ tweaks:
         - [rear-housing-exterior, S, 1]
         - [rear-housing-interior, S, 1]
     # The eastern half:
-    - hull-around:
+    - above-ground: true
+      hull-around:
       - hull-around:
         - [rear-housing-exterior, S, 1]
         - [rear-housing-interior, S, 1]
       - [back2, NW]
       - [back2, NE]
-    - hull-around:
+    - above-ground: true
+      hull-around:
       - hull-around:
         - [rear-housing-exterior, S, 1]
         - [rear-housing-interior, S, 1]
@@ -961,7 +986,8 @@ tweaks:
       - hull-around:
         - [rear-housing-exterior, SSE, 1]
         - [rear-housing-interior, SSE, 1]
-    - hull-around:
+    - above-ground: true
+      hull-around:
       - [rear-housing-exterior, SSE, 0, 1]
       - [rear-housing-exterior, SSE, 0, 1]
       - [rear-housing-exterior, ESE, 0, 1]
@@ -970,18 +996,21 @@ tweaks:
       - [a0, WNW, 0, 1]
   connector-housing:
     # A slightly pyramidal ceiling to the port, as DFM.
-    - cut: true
+    - above-ground: true
+      cut: true
       hull-around:
       - [reflection-port]
       - [reflection-port,
          {anchoring: {segment: 0, intrinsic-offset: [0, 0, 1]}}]
     # An opening from the port to the interior.
-    - cut: true
+    - above-ground: true
+      cut: true
       hull-around:
       - [reflection-port,
          {anchoring: {side: S, segment: 1, intrinsic-offset: [0, 0, -3]}, size: [8, 8, 8]}]
     # A gentle transition from the rear housing’s corners to the port holder.
-    - hull-around:
+    - above-ground: true
+      hull-around:
       - [reflection-port-holder]
       - [reflection-port-holder,
          {anchoring: {side: NW, segment: 2, intrinsic-offset: [0, 0, -10]}}]

@@ -27,7 +27,8 @@
   This includes negative sandbox shapes, applied to all bodies."
   [getopt body bottom]
   (maybe/union
-    (tweak/selected-tweaks getopt false body)
+    (tweak/union-3d getopt {:include-negative true, :include-bottom bottom,
+                            :include-top true, :bodies #{body}})
     ((flange/union false body) getopt {:include-bottom bottom})
     (sandbox/negative getopt)))
 
@@ -38,7 +39,8 @@
     (maybe/union
       (mask/above-wrist-bottom-plate getopt
         (wrist/plinth-plastic getopt)
-        (tweak/selected-tweaks getopt true :wrist-rest)
+        (tweak/union-3d getopt {:include-positive true, :include-top true,
+                                :bodies #{:wrist-rest}})
         (flange/bosses-in-wrist-rest getopt
           {:include-bottom (getopt :wrist-rest :bottom-plate :include)}))
       (when (and (getopt :wrist-rest :preview)
@@ -60,7 +62,8 @@
       (flange/bosses-in-wrist-rest getopt
         {:include-bottom (getopt :wrist-rest :bottom-plate :include)})
       (when (= (getopt :wrist-rest :style) :solid)
-        (tweak/selected-tweaks getopt true :main)))))
+        (tweak/union-3d getopt {:include-positive true, :include-top true,
+                                :bodies #{:main}})))))
 
 (defn wrist-rest-rubber-pad-right
   "Right-hand-side wrist-rest pad model. Useful in visualization and
@@ -74,7 +77,8 @@
       (flange/bosses-in-wrist-rest getopt
         {:include-bottom (getopt :wrist-rest :bottom-plate :include)})
       (when (= (getopt :wrist-rest :style) :solid)
-        (tweak/selected-tweaks getopt true :main)))))
+        (tweak/union-3d getopt {:include-positive true, :include-top true,
+                                :bodies #{:main}})))))
 
 (defn- wrist-rest-preview
   "Right-hand-side preview wrist-rest model."
@@ -110,7 +114,8 @@
               (when (getopt :central-housing :derived :include-adapter)
                 (bilateral (central/adapter-fastener-receivers getopt)))
               (auxf/ports-positive getopt #{:central-housing})
-              (tweak/selected-tweaks getopt true :central-housing))
+              (tweak/union-3d getopt {:include-positive true, :include-top true,
+                                      :bodies #{:central-housing}}))
             (when (getopt :central-housing :derived :include-adapter)
               (bilateral
                 (central/adapter-right-fasteners getopt)
@@ -160,7 +165,8 @@
       (auxf/backplate-block getopt))
     (when (getopt :main-body :rear-housing :include)
       (main-body/rear-housing-positive getopt))
-    (tweak/selected-tweaks getopt true :main)
+    (tweak/union-3d getopt {:include-positive true, :include-top true,
+                            :bodies #{:main}})
     (when (getopt :central-housing :derived :include-adapter)
       (central/adapter-shell getopt))))
 

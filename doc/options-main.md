@@ -557,11 +557,11 @@ A bottom plate can be added to each body of the keyboard, to close the case. Thi
 
 Bottom plates are largely two-dimensional. The application builds most of each plate from a set of polygons, trying to match the perimeter of the case at the ground level (i.e. z = 0).
 
-Specifically, there is one polygon per key cluster (limited to wall edges drawn to the floor), one polygon for each housing, and one set of polygons for each of the first-level case `tweaks` that use `at-ground`, ignoring chunk size and almost ignoring tweaks nested within lists of tweaks.
+Specifically, there is one polygon per key cluster (limited to wall edges drawn to the floor), one polygon for each housing, and one set of polygons for each of the first-level case `tweaks` that use `at-ground` (or `polyfill`, details [here](options-arbitrary-shapes.md)), ignoring chunk size and almost ignoring tweaks nested within lists of tweaks.
 
 This methodology is mentioned here because its results are not perfect. Pending future features in OpenSCAD, a future version may be based on a more exact projection of the case, but as of 2020, such a projection is hollow and cannot be convex-hulled without escaping the case, unless your case is convex to start with.
 
-For this reason, while the polygons fill the interior, the perimeter of the bottom plate is extended by key walls and case `tweaks` as they would appear at the height of the bottom plate. Even this brutality may be inadequate. If you require a more exact match, do a projection of the case without a bottom plate, save it as DXF/SVG etc. and post-process that file to fill the interior gap.
+For this reason, while the polygons fill the interior, the perimeter of the bottom plate is extended by key walls and case `tweaks` as they would appear at the height of the bottom plate. Even this brutality is inadequate in a corner case when you have tweaks `to-ground` from below that should affect the bottom plate. If you require a more exact match, do a projection of the case without a bottom plate, save it as DXF/SVG etc. and post-process that file to fill the interior gap.
 
 ### Parameter <a id="bottom-plates-preview">`preview`</a>
 

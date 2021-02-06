@@ -50,6 +50,31 @@
     (get node :body :auto)
     (get-in (get-leaf first node) [:anchoring :anchor])))
 
+(defn- top?
+  "Determine whether passed node should influence a body above the bottom
+  plate."
+  [{:keys [above-ground to-ground]}]
+  (if (some? above-ground) above-ground (or to-ground false)))
+
+(defn- bottom?
+  "Determine whether passed node should influence a bottom plate."
+  [{:keys [at-ground to-ground shadow-ground polyfill]}]
+  (if (some? at-ground) at-ground (or to-ground shadow-ground polyfill false)))
+
+(defn- projected-at-ground?
+  "Determine whether passed node should be projected onto the ground plane for
+  bottom plating purposes."
+  [{:keys [to-ground shadow-ground]}]
+  (if (some? shadow-ground) shadow-ground (or to-ground false)))
+
+(defn- polyfilled-at-ground?
+  "Determine whether passed node should be filled onto the ground plane for
+  bottom plating purposes."
+  [{:keys [to-ground shadow-ground polyfill] :as node}]
+  (if (some? polyfill)
+    polyfill
+    (and (bottom? node) (not (or to-ground shadow-ground)))))
+
 (defn- segment-range
   [{:keys [anchoring sweep]}]
   {:pre [(some? sweep) (some? (:segment anchoring))]}
@@ -69,29 +94,10 @@
     (mapv (partial single-step-node node) (segment-range node))
     [node]))
 
+;; Remove grove names from a forest.
 (defn unfence [setting] (apply concat (vals setting)))
 
-(defn- tweak-forest
-  "Retrieve the complete set of tweak nodes as one list, without names."
-  [getopt]
-  (apply concat (vals (getopt :tweaks))))
-
-(defn screener
-  "Compose a predicate function for filtering the forest.
-  Where a value has been specified in opts, check for it."
-  ; Exposed for unit testing.
-  [getopt {:keys [bodies] :as opts}]
-  {:pre [(seq opts)]}  ; Must not be empty, because every-pred is arity 1+.
-  (let [is (fn [key default]
-             (let [target (key opts)]  ; Target value from caller.
-               (when (some? target)
-                 (fn [node] (= (get node key default) target)))))]
-    (apply every-pred
-      (remove nil?
-        [(is :cut false)
-         (is :above-ground true)
-         (is :at-ground false)
-         (when bodies (fn [node] ((get-body getopt node) bodies)))]))))
+(defn- tweak-forest [getopt] (unfence (getopt :tweaks)))
 
 
 ;;;;;;;;
@@ -184,40 +190,65 @@
 (declare model-node-3d)
 
 (defn- model-branch-3d
-  [getopt {:keys [at-ground hull-around chunk-size highlight] :as node}]
+  [getopt bottom {:keys [to-ground hull-around chunk-size highlight] :as node}]
   {:pre [(spec/valid? ::arb/branch node)]}
   (let [prefix (if highlight model/-# identity)
-        shapes (map (partial model-node-3d getopt) hull-around)
-        hull (if at-ground (partial body-plate-hull getopt
-                                    (get-body getopt node))
-                           maybe/hull)]
+        shapes (map (partial model-node-3d getopt bottom) hull-around)
+        hull (if (or (and bottom (projected-at-ground? node))
+                     (and (not bottom) to-ground))
+               (partial body-plate-hull getopt (get-body getopt node))
+               maybe/hull)]
     (prefix
       (apply (if chunk-size model/union hull)
         (if chunk-size
+          ;; Emulate scad-tarmi.util/loft but with hulls.
           (map (partial apply hull) (partition chunk-size 1 shapes))
           shapes)))))
 
 (defn- model-node-3d
   "Screen a tweak node. If it’s relevant, represent it as a model."
-  [getopt node]
+  [getopt bottom node]
   {:pre [(spec/valid? ::arb/node node)]}
   (case (node-type node)
-    ::branch (model-branch-3d getopt node)
+    ::branch (model-branch-3d getopt bottom node)
     ::leaf (model-leaf-3d getopt node)))
 
 (defn grow
   "A user-specified shape, composed with the structure of a tweak forest."
-  [getopt unfenced]
-  (apply maybe/union (map (partial model-node-3d getopt) unfenced)))
+  [getopt bottom nodes]
+  (apply maybe/union (map (partial model-node-3d getopt bottom) nodes)))
 
-(defn selected-tweaks
-  "User-requested additional shapes for some body, in 3D."
-  [getopt positive body]
-  (grow getopt (filter
-                 (screener getopt {:cut (when (not positive) true)
-                                   :above-ground true
-                                   :bodies #{body}})
-                 (tweak-forest getopt))))
+(defn select
+  "Filter tweaks by aligning predicate functions."
+  ;; Exposed for unit testing.
+  [getopt {:keys [bodies projected-at-ground polyfilled-at-ground
+                  include-positive include-negative
+                  include-bottom include-top]}]
+  {:pre [(set? bodies) (every? keyword bodies)]}
+  (filter
+    (every-pred
+      (fn [node] (bodies (get-body getopt node)))
+      (fn [node]
+        (if (nil? projected-at-ground)
+          true
+          (= projected-at-ground (projected-at-ground? node))))
+      (fn [node]
+        (if (nil? polyfilled-at-ground)
+          true
+          (= polyfilled-at-ground (polyfilled-at-ground? node))))
+      (fn [{:keys [cut]}]
+        (or (and include-negative cut)
+            (and include-positive (not cut))))
+      (fn [node]
+        (or (and include-bottom (bottom? node))
+            (and include-top (top? node)))))
+    (tweak-forest getopt)))
+
+(defn union-3d
+  "User-requested additional shapes for some bodies, in 3D."
+  [getopt {:keys [include-top include-bottom] :as criteria}]
+  (grow getopt (and (not include-top) include-bottom)
+        (select getopt criteria)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -250,7 +281,7 @@
     (when (> (count points) 2)
       (model/polygon points))))
 
-(defn- maybe-floor-shadow
+(defn- maybe-floor-poly
   "A sequence of polygons representing a tweak node."
   [getopt node]
   {:pre [(spec/valid? ::arb/node node)]}
@@ -263,20 +294,22 @@
            ::branch (:hull-around node)
            ::leaf [node]))))
 
-(defn- floor-shadow-set
+(defn- floor-poly-set
   "Versions of a tweak footprint.
   This is a semi-brute-force-approach to the problem that we cannot easily
   identify which vertices shape the outside of the case at z = 0."
   [getopt node]
   {:pre [(spec/valid? ::arb/node node)]}
-  (apply maybe/union (distinct (maybe-floor-shadow getopt node))))
+  (apply maybe/union (distinct (maybe-floor-poly getopt node))))
 
-(defn floor-polygons
-  "The combined footprint of user-requested additional shapes that go to
-  the floor. No body is selected; the central housing and the main body
-  share bottom plates."
-  [getopt]
+(defn union-polyfill
+  "The combined footprint of user-requested additional shapes.
+  By default, target the main bottom plate and use only nodes that are tagged
+  for polyfill."
+  [getopt criteria]
   (apply maybe/union
-    (map (partial floor-shadow-set getopt)
-         (filter (screener getopt {:at-ground true}) (tweak-forest getopt)))))
-
+    (map (partial floor-poly-set getopt)
+         (select getopt (merge {:bodies #{:main :central-housing}
+                                :polyfilled-at-ground true
+                                :include-bottom true, :include-positive true}
+                               criteria)))))

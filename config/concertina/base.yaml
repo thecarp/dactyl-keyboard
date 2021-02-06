@@ -767,7 +767,7 @@ flanges:
           height: 0.001
         "1":
           diameter: 6
-          intrinsic-offset: [0, 0, 8]
+          intrinsic-offset: [0, 0, -8]
     positions:
     - boss-alias: f0-upper-right
       anchoring:
@@ -799,7 +799,8 @@ flanges:
         extrinsic-offset: [12, 10, -11]
 tweaks:
   near-wall:  # Up the south side of the main key cluster:
-  - chunk-size: 3
+  - above-ground: true
+    chunk-size: 3
     hull-around:  # Lower key-side.
     - [ca-near-lower-4]
     - [m4F, SSW, 1]
@@ -810,7 +811,8 @@ tweaks:
     - [ca-near-lower-1]
     - [m5F, SSE, 1]
     - [ca-near-base]
-  - chunk-size: 3
+  - above-ground: true
+    chunk-size: 3
     hull-around:
     - [sec-near-lower-4-2]
     - [ca-near-lower-4]
@@ -819,7 +821,8 @@ tweaks:
     - [m2F, SSW, 3]
     - [m2F, SSE, 3]
   top-wall:  # The roof of the main key cluster.
-  - chunk-size: 3
+  - above-ground: true
+    chunk-size: 3
     hull-around:
     - [m1L, NNW, 1, 2]
     - [ca-far-wall-5]
@@ -831,12 +834,14 @@ tweaks:
       - [sec-far-roof-1c-1]
     - [m0L, SW]
     - [m00, NW]
-  - hull-around:  # Level plate.
+  - above-ground: true
+    hull-around:  # Level plate.
     - [ca-mid-2]
     - [sec-far-roof-1b]
     - [sec-far-roof-1c]
     - [ca-far-roof]
-  - chunk-size: 2
+  - above-ground: true
+    chunk-size: 2
     hull-around:  # A strip between two rows of secondaries, just for a bevel.
     - hull-around:
       - [sec-far-roof-1a]
@@ -847,7 +852,8 @@ tweaks:
     - hull-around:
       - [sec-far-roof-1c]
       - [sec-far-roof-1c-1]
-  - chunk-size: 3
+  - above-ground: true
+    chunk-size: 3
     hull-around:
     - [sec-far-roof-1a]
     - [m0F, NW]
@@ -860,51 +866,60 @@ tweaks:
       - [sec-far-roof-1c-1]
   # Webbing between the outermost key mounts in the thumb cluster:
   thumb-web:
-  - chunk-size: 3
+  - above-ground: true
+    chunk-size: 3
     hull-around:
     - [t0L, NW]
     - [t0L, NE]
     - [t1L, NW]
     - [t1L, SW]
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [t1L, NW]
     - [t1L, NE]
     - [t2L, NW]
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [t2L, NE]
     - [t3L, NW]
     - [t3L, NE]
-  - chunk-size: 3
+  - above-ground: true
+    chunk-size: 3
     hull-around:
     - [t2F, NE]
     - [t2F, SE]
     - [t3F, SW]
     - [t3F, SE]
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [t1F, SE]
     - [t2F, SW]
     - [t2F, SE]
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [t0F, SW]
     - [t0F, SE]
     - [t1F, SW]
   # Extensions from the bosses of flange screws into the interior of the thumb
   # cluster.
   flange-bosses-upper:
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [t2L, NNE, 0, 2]
     - [t3L, NNW, 1]
     - [t3L, NNE, 0, 2]
     - [f0-upper-right, null, 0, 1]
     - [m0F1]
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [t2F, SSE]
     - [t3F, SSE, 0, 2]
     - [t3F, SSW, 1]
     - [f0-lower-right, null, 0, 1]
     - [m2F, SSW, 0, 3]
     - [m1F1]
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [t0F, SSW, 2, 3]
     - [t1F, SSW, 2, 3]
     - [f0-lower-left, null, 1, {size: 5}]
@@ -914,7 +929,8 @@ tweaks:
     - [sec-near-upper-1b]
     - [sec-near-upper-1b-1]
     - [sec-near-upper-1b-2]
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [t0L, NNW, 0, 2]
     - [t0L, NE]
     - [t1L, NNW, 0, 2]
@@ -926,7 +942,8 @@ tweaks:
   # Girdle the outermost keys in the thumb cluster without connecting as many
   # sides as natural walling based on extent would.
   thumb-border:
-  - chunk-size: 2
+  - above-ground: true
+    chunk-size: 2
     hull-around:
     - [t3F, ESE, 0, 1]
     - [t3F, SSE, 0, 1]
@@ -945,7 +962,8 @@ tweaks:
     - [t3L, NNE, 0, 1]
     - [t3L, ENE, 0, 1]
     - [t3L, NNE, 0, 1]
-  - chunk-size: 2
+  - above-ground: true
+    chunk-size: 2
     hull-around:
     - [t3F, ESE, 1, 2]
     - [t3F, SSE, 1, 2]
@@ -966,7 +984,8 @@ tweaks:
     - [t3L, NNE, 2, 3]
   thumb-wall:  # More complex additional thumb cluster walling.
   # Bridging the clusters at the top:
-  - chunk-size: 3
+  - above-ground: true
+    chunk-size: 3
     hull-around:
     # Bring the outer edge into the central housing.
     - hull-around:
@@ -976,7 +995,8 @@ tweaks:
       - [t0F, WNW, 2]
       - [t0L, WSW, 1, 2]
     - [ca-near-upper-2]
-  - chunk-size: 3
+  - above-ground: true
+    chunk-size: 3
     hull-around:
     - [ca-near-roof]
     - hull-around:
@@ -993,14 +1013,16 @@ tweaks:
     - [t2L, NNE, 2, 3]
     - [m0F1]
     - [t3L, NNE, 2, 3]
-  - chunk-size: 3
+  - above-ground: true
+    chunk-size: 3
     hull-around:
     - [sec-far-roof-1a]
     - [m0F, NW]
     - [m0F1]
     - [m0F, SW]
     - [t3L, NNE, 3]
-  - chunk-size: 3
+  - above-ground: true
+    chunk-size: 3
     hull-around:
     - [t3L, NNE, 3]
     - [m0F, SW]
@@ -1011,7 +1033,8 @@ tweaks:
     - hull-around:
       - [m2F, WSW, 1]
       - [m2F, SSW, 0, 1]
-  - chunk-size: 3
+  - above-ground: true
+    chunk-size: 3
     hull-around:
     - [m2F, WSW, 1]
     - hull-around:
@@ -1019,22 +1042,26 @@ tweaks:
       - [m1F, SE]
     - [m1F1]
     - [m1F, SW]
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [m0F, SW]
     - [m0F, SE]
     - [m1F, SW]
   # m2F and m3F joined by a couple of secondaries beneath the thumb cluster.
-  - chunk-size: 2
+  - above-ground: true
+    chunk-size: 2
     hull-around:  # User-facing back of m2F.
     - [m2F, SSW, 1, 3]
     - [m2F, SSE, 1, 3]
     - [m2F, ESE, 0, 3]
-  - hull-around:  # Cluster-facing fanned triangle between the two keys.
+  - above-ground: true
+    hull-around:  # Cluster-facing fanned triangle between the two keys.
     - [m2F, SE]
     - [m2F, NE]
     - [m3F, SW]
     - [m3F, SE]
-  - chunk-size: 3
+  - above-ground: true
+    chunk-size: 3
     hull-around:  # The user-facing edge.
     - [m2F, SE]
     - [m3F, SE]
@@ -1048,7 +1075,8 @@ tweaks:
     - [ca-near-lower-4]
     - [ca-near-lower-3]
   # Between the thumb cluster and the near side of the central housing:
-  - chunk-size: 3
+  - above-ground: true
+    chunk-size: 3
     hull-around:
     - [t3F, ENE, 2, 3]
     - [m2F, SSW, 0, 1]
@@ -1062,14 +1090,16 @@ tweaks:
     - [sec-near-upper-1b-2]
     - [t1F, SSW, 2]
     - [sec-near-upper-1b-1]
-  - chunk-size: 3
+  - above-ground: true
+    chunk-size: 3
     hull-around:
     - [sec-near-lower-4-2-1]
     - [sec-near-lower-4-2]
     - [sec-near-upper-1b-2]
     - [sec-near-upper-1a]
     - [sec-near-upper-1b-1]
-  - chunk-size: 3
+  - above-ground: true
+    chunk-size: 3
     hull-around:
     - [t1F, SSW, 2]
     - hull-around:
@@ -1077,12 +1107,14 @@ tweaks:
       - [t0F, WSW, 2]
     - [sec-near-upper-1b-1]
     - [sec-near-upper-1c]
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [sec-near-upper-1c]
     - [ca-near-upper-2]
     - [t0F, WSW, 2]
     - [t0F, WNW, 2]
-  - chunk-size: 3
+  - above-ground: true
+    chunk-size: 3
     hull-around:
     - [sec-near-upper-1a]
     - [sec-near-upper-1b]
@@ -1090,32 +1122,38 @@ tweaks:
     - [sec-near-upper-1c]
   # Between the central housing adapter and the secondaries anchoring to it
   # beneath the thumb cluster.
-  - chunk-size: 3
+  - above-ground: true
+    chunk-size: 3
     hull-around:
     - [sec-near-lower-4-2]
     - [ca-near-lower-4]
     - [sec-near-upper-1a]
     - [ca-near-upper-1]
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [sec-near-upper-1a]
     - [sec-near-upper-1b]
     - [sec-near-upper-1c]
     - [ca-near-upper-1]
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [sec-near-upper-1c]
     - [ca-near-upper-1]
     - [ca-near-upper-2]
   main-to-thumb-braces:  # Interior braces for extra strength.
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [sec-far-roof-1a]
     - [sec-far-roof-1b]
     - [ca-mid-2]
     - [m00, SW]
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [m00, SW]
     - [ca-mid-2]
     - [m0F, NW]
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [m0F, NW]
     - [ca-mid-2]
     - [sec-far-roof-1a]
@@ -1123,7 +1161,8 @@ tweaks:
   # west edge of the thumb cluster, by removing cluster walls penetrating the
   # interior.
   thumb-to-housing-negatives:
-  - cut: true
+  - above-ground: true
+    cut: true
     hull-around:
     - [ca-near-upper-1, {anchoring: {segment: 1, intrinsic-offset: [5, 0, 0]}}]
     - [ci-near-upper-1, {anchoring: {segment: 1}}]
@@ -1132,15 +1171,18 @@ tweaks:
     - [ca-near-roof, {anchoring: {segment: 1, intrinsic-offset: [5, 0, 0]}}]
     - [ci-near-roof, {anchoring: {segment: 1}}]
   gap-fill:  # Miscellaneous triangular fillers.
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [m1L, NNW, 1]
     - [m0L, NW]
     - [m0L, NE]
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [m0F, SE, 0]
     - [m1F, NW]
     - [m1F, SW, 0]
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [m1F, SE]
     - [m2F, WNW, 1]
   web-reinforcement:  # Miscellaneous extra material for strength:
@@ -1155,7 +1197,8 @@ tweaks:
   far-wall:  # The far side of the main cluster.
   # A fairly rectangular plate past m5L and a larger plate for m4L, up to
   # the side of m3L.
-  - chunk-size: 3
+  - above-ground: true
+    chunk-size: 3
     hull-around:
     # Start with a brace against the central-housing interface.
     - [ca-bottom-2]
@@ -1173,30 +1216,35 @@ tweaks:
       - [m3L, ENE, 1]
       - [m3L, NNE, 0, 1]
   # Down the far side of the central-housing adapter.
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [m1L, NNW, 2]
     - [m1L, NNE, 1]
     - [m2L, NNW, 1]
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [ca-far-wall-5]
     - [m1L, NNW, 2]
     - [m2L, NNW, 1]
     - [sec-far-wall-4]
-  - chunk-size: 3
+  - above-ground: true
+    chunk-size: 3
     hull-around:
     - [m1L, NNE, 2]
     - [sec-far-wall-4]
     - [m2L, NNW, 1]
     - [ca-far-wall-4]
     - [m2L, NNE, 1]
-  - chunk-size: 3
+  - above-ground: true
+    chunk-size: 3
     hull-around:
     - [ca-far-wall-4]
     - [m2L, NNE, 1]
     - [ca-far-wall-3]
     - [m3L, NNW, 1]
     - [m3L, NNE, 1]
-  - chunk-size: 3
+  - above-ground: true
+    chunk-size: 3
     hull-around:
     - [ca-far-wall-3]
     - [m3L, NNE, 1]
@@ -1208,18 +1256,21 @@ tweaks:
   # Tweaks for fitting an external USB port and printing the central housing
   # standing on end.
   external-usb:
-  - hull-around:  # Wide sides on the port holder for printing ease and strength.
+  - above-ground: true
+    hull-around:  # Wide sides on the port holder for printing ease and strength.
     - [ext-usb-holder]
     - [ext-usb-holder,
        {anchoring: {side: NW, segment: 1, intrinsic-offset: [-24, -5, 0]},
         size: [1, 10, 10]}]
     - [ext-usb-holder,
        {anchoring: {side: NE, segment: 1, intrinsic-offset: [5, 0, 0]}}]
-  - cut: true  # A dent in the interior wall, for DFM.
+  - above-ground: true
+    cut: true  # A dent in the interior wall, for DFM.
     hull-around:
     - [ext-usb-hole]
     - [ext-usb-hole, E, 1, {size: [1, 1, 11]}]
-  - cut: true  # A hole for USB pins and a locking nub.
+  - above-ground: true
+    cut: true  # A hole for USB pins and a locking nub.
     hull-around:
     - [ext-usb-hole,
        {anchoring: {side: S, segment: 1, intrinsic-offset: [3, -2, -2]},
@@ -1235,7 +1286,7 @@ tweaks:
   # from settings by key. Apart from expanding the bottom plate, the
   # extra material also strengthens the outside edge of the main
   # body and helps support bottom-plate fasteners.
-  - at-ground: true
+  - to-ground: true
     hull-around:
     - [ca-bottom-1, null, 0]
     - [ci-near-base, null, 0]
@@ -1243,7 +1294,7 @@ tweaks:
     - [m5F, SSE, 0, 1]
     - [m5F, SE]
     - [m5F, NE]
-  - at-ground: true
+  - to-ground: true
     hull-around:
     - [ca-bottom-1, null, 0]
     - [m5F, ENE, 1]
@@ -1251,7 +1302,7 @@ tweaks:
     - [m5M, NE]
     - [m5L, ESE, 1]
     - [ca-bottom-2, null, 0]
-  - at-ground: true
+  - to-ground: true
     hull-around:
     - [m5M, NE]
     - [m5L, SE]

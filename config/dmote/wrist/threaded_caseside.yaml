@@ -60,16 +60,16 @@ wrist-rest:
         wr1w0: [wrist-side, 0]
 tweaks:
   wrist-rest-nut-pockets:
-  - at-ground: true
+  - to-ground: true
     cut: true
     hull-around: [[wr0w0]]
-  - at-ground: true
+  - to-ground: true
     cut: true
     hull-around: [[wr0p0, {anchoring: {intrinsic-offset: [0, -2, 0]}}]]
-  - at-ground: true
+  - to-ground: true
     cut: true
     hull-around: [[wr1w0]]
-  - at-ground: true
+  - to-ground: true
     cut: true
     hull-around: [[wr1p0, {anchoring: {intrinsic-offset: [0, -0.5, 0]}}]]
   wrist-rest-nut-bosses:

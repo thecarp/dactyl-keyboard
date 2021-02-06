@@ -39,11 +39,18 @@
 ;;;;;;;;;;
 
 (defn- wall-base-3d
-  "A sliver cut from the case wall."
+  "A sliver cut from the tweaked main case wall.
+  This includes tweaks that are hulled to ground, but excludes tweaks that are
+  tagged up to appear in the bottom plate without being hulled to ground,
+  because the latter are modelled separately and more cheaply as polygonals in
+  this module."
   [getopt]
-  (mask/main-bottom-plate getopt 3
-    (key/metacluster wall/cluster getopt)
-    (tweak/selected-tweaks getopt true :main)))
+  (to-3d getopt
+    (model/cut
+      (key/metacluster wall/cluster getopt)
+      (tweak/union-3d getopt {:include-positive true, :include-bottom true,
+                              :bodies #{:main :central-housing},
+                              :projected-at-ground true}))))
 
 (defn- floor-finder
   "Make a function that takes a key mount and returns a 2D vertex
@@ -105,7 +112,7 @@
   (maybe/union
     (key/metacluster cluster-floor-polygon getopt)
     (mask/at-ground getopt (flange/bosses-in-main-body getopt))
-    (tweak/floor-polygons getopt)
+    (tweak/union-polyfill getopt {})
     (when (getopt :central-housing :derived :include-main)
       (chousing-floor-polygon getopt))
     (when (getopt :central-housing :derived :include-adapter)
@@ -157,7 +164,8 @@
 (defn- wrist-positive-2d [getopt]
   (maybe/union
     (model/cut (wrist/projection-maquette getopt))
-    (model/cut (flange/bosses-in-wrist-rest getopt))))
+    (model/cut (flange/bosses-in-wrist-rest getopt))
+    (tweak/union-polyfill getopt {:bodies #{:wrist-rest}})))
 
 (defn wrist-positive
   "3D wrist-rest bottom plate without screw holes."

@@ -38,7 +38,8 @@ mcu:
     extrinsic-offset: [0, 0, -3]
 tweaks:
   top-bridge:
-  - chunk-size: 2
+  - above-ground: true
+    chunk-size: 2
     hull-around:
     - hull-around:
       - [k, WNW, 1]

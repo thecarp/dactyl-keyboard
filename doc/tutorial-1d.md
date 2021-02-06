@@ -73,7 +73,8 @@ did in part 3.
 ```yaml
 tweaks:
   top-bridge:
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - hull-around:
       - [k, WNW, 1]
       - [rear-housing-interior, WSW, 1]
@@ -140,7 +141,8 @@ Expand the tweaks section in butty.yaml.
 ```yaml
 tweaks:
   top-bridge:
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - hull-around:
       - [k, WNW, 1]
       - [rear-housing-interior, WSW, 1]
@@ -165,7 +167,8 @@ moving to the east side of Butty:
 ```yaml
 tweaks:
   top-bridge:
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - hull-around:
       - [k, WNW, 1]
       - [rear-housing-interior, WSW, 1]
@@ -187,7 +190,8 @@ Another group, another piece of the roof, and we’ll continue in the same style
 ```yaml
 tweaks:
   top-bridge:
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - hull-around:
       - [k, WNW, 1]
       - [rear-housing-interior, WSW, 1]
@@ -224,7 +228,8 @@ setting for `chunk-size`:
 ```yaml
 tweaks:
   top-bridge:
-  - chunk-size: 2
+  - above-ground: true
+    chunk-size: 2
     hull-around:
     - hull-around:
       - [k, WNW, 1]
@@ -255,17 +260,18 @@ particular, the first and last groups no longer meet.
 ## Walls
 
 To round out this chapter, we’re going to add another tweak in one go. It uses
-the same anchors as the edges of the roof, but this one goes to ground like the
-walls around the key mounting plate. Add this to the bottom of `butty.yaml`:
+the same anchors as the edges of the roof, but this one goes `to-ground` like
+the walls around the key mounting plate. Add this to the bottom of
+`butty.yaml`:
 
 ```yaml
   wall-bridges:
-  - at-ground: true
+  - to-ground: true
     hull-around:
     - [k, WNW, 1]
     - [rear-housing-exterior, WSW, 1]
     - [rear-housing-interior, WSW, 1]
-  - at-ground: true
+  - to-ground: true
     hull-around:
     - [k, ENE, 1]
     - [rear-housing-exterior, ESE, 1]
@@ -286,7 +292,7 @@ so we’re good.
 In this part of the tutorial, we have learned:
 
 * How to name a key for use as an anchor of tweaks.
-* How to use tweaks with `hull-around`, `chunk-size` and `at-ground`.
+* How to use tweaks with `hull-around`, `chunk-size` and `to-ground`.
 * That nodes of a tweak behave differently, depending on
   the type of their anchor.
 

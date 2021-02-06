@@ -26,6 +26,7 @@ custom-bodies:
             size: [200, 200, 200]}]
 flanges:
   assortment-bookend-flanges:
+    include: true
     bolts:
       include: true
       bolt-properties:
@@ -137,6 +138,7 @@ flanges:
         intrinsic-rotation: [0, π/2, 0]
         intrinsic-offset: [2, -6, -2]
   central-housing-bottom-plate:
+    include: true
     positions:
     # The first of these go inside the centermost piece of the
     # housing.
@@ -210,7 +212,7 @@ tweaks:
   # These provide an additional lower compartment that is not a port but can be
   # filled with non-printed material to add mass to the keyboard.
   central-dividers:
-  - at-ground: true
+  - to-ground: true
     chunk-size: 2
     hull-around:
     - hull-around:
@@ -222,7 +224,7 @@ tweaks:
     - hull-around:
       - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [4.5, -1, -16]}, size: 1}]
       - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [4.5, 0, -16]}, size: 1}]
-  - at-ground: true
+  - to-ground: true
     chunk-size: 2
     hull-around:
     - hull-around:
@@ -238,35 +240,43 @@ tweaks:
   # Their shape is meant to ease cable runs and printing, while accommodating
   # long flange screws.
   central-flanges:
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [0, -2, 0]}, size: 4}]
     - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [0, -15, 9]}, size: [4, 1, 18]}]
     - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [75, -0.5, 2]}, size: [1, 1, 4]}]
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [0, -2, 0]}, size: 4}]
     - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [0, -15, 9]}, size: [4, 1, 18]}]
     - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [-75, -0.5, 2]}, size: [1, 1, 4]}]
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [assortment1, SW, 0, {anchoring: {intrinsic-offset: [0, 0, 0]}, size: 4}]
     - [assortment1, SW, 0, {anchoring: {intrinsic-offset: [0, 13, 9]}, size: [4, 1, 18]}]
     - [assortment1, SW, 0, {anchoring: {intrinsic-offset: [75, 0, 2]}, size: [1, 1, 4]}]
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [assortment1, SE, 0, {anchoring: {intrinsic-offset: [0, 0, 0]}, size: 4}]
     - [assortment1, SE, 0, {anchoring: {intrinsic-offset: [0, 13, 9]}, size: [4, 1, 18]}]
     - [assortment1, SE, 0, {anchoring: {intrinsic-offset: [-75, 0, 2]}, size: [1, 1, 4]}]
   # Extra shapes beneath the lowest assortment port contain the last sets of
   # flange screws and magnets.
   outer-bosses-beneath-drawer-stack:
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [6, -11, -2]}, size: [12, 22, 4]}]
     - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [9, -11, -1]}, size: [18, 22, 2]}]
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [-6, -11, -2]}, size: [12, 22, 4]}]
     - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [-9, -11, -1]}, size: [18, 22, 2]}]
   inner-bosses-beneath-drawer-stack:
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [6, 8, -2]}, size: [12, 18, 4]}]
     - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [9, 8, -1]}, size: [18, 18, 2]}]
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [-6, 8, -2]}, size: [12, 18, 4]}]
     - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [-9, 8, -1]}, size: [18, 18, 2]}]

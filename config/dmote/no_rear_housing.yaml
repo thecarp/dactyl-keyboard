@@ -78,14 +78,15 @@ tweaks:
   connector-housing: null
   # A new tweak is added to bridge the rear key cluster gap directly.
   rear-gap:
-    - hull-around:
+    - above-ground: true
+      hull-around:
       - [back3, NE]
       - [back3, NNE, 1]
       - [back3, ENE, 1]
       - [a0, NW, 1]
       - [back3, NNE, 2, 3]
       - [back3, ENE, 2, 3]
-    - at-ground: true
+    - to-ground: true
       hull-around:
       - [a0, NW, 1]
       - [back3, NNE, 3]

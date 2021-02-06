@@ -38,7 +38,8 @@ mcu:
     extrinsic-offset: [0, 0, -3]
 tweaks:
   top-bridge:
-  - hull-around:
+  - above-ground: true
+    hull-around:
     - hull-around:
       - [k, WNW, 1]
       - [rear-housing-interior, WSW, 1]

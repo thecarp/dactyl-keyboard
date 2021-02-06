@@ -60,7 +60,9 @@ mcu:
     extrinsic-offset: [0, 0, -3]
 tweaks:
   top-bridge:
-  - chunk-size: 2
+  - above-ground: true
+    shadow-ground: true
+    chunk-size: 2
     hull-around:
     - hull-around:
       - [k, WNW, 1]
@@ -79,21 +81,13 @@ tweaks:
       - [rear-housing-interior, ESE, 1]
       - [rear-housing-exterior, ESE, 1]
   wall-bridges:
-  - at-ground: true
+  - to-ground: true
     hull-around:
     - [k, WNW, 1]
     - [rear-housing-exterior, WSW, 1]
     - [rear-housing-interior, WSW, 1]
-  - at-ground: true
+  - to-ground: true
     hull-around:
     - [k, ENE, 1]
     - [rear-housing-exterior, ESE, 1]
     - [rear-housing-interior, ESE, 1]
-  bottom-bridge:
-  - at-ground: true
-    above-ground: false
-    hull-around:
-    - [k, WNW, 1]
-    - [rear-housing-exterior, WSW, 1]
-    - [rear-housing-exterior, ESE, 1]
-    - [k, ENE, 1]

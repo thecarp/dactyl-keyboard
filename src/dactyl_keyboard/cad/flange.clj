@@ -173,8 +173,8 @@
               (filter (partial base-pred getopt include-bottom include-top)
                       (flatten-flanges getopt))))))))
 
-;; TODO: Possibly remove the following to make the interface more like
-;; selected-tweaks.
+;; TODO: Remove the following and adopt an interface more like the tweak union
+;; functions.
 
 ;; The proper selection of fasteners varies with the program output.
 ;; For example, as long as the bottom plate for the main body also
