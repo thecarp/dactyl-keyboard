@@ -8,6 +8,15 @@
             [dactyl-keyboard.cad.misc :refer [bottom-extrusion wafer]]))
 
 
+(defn has-bottom-plate?
+  "True if named body should be built for and with a bottom plate."
+  [getopt body]
+  (case body
+    :main (getopt :main-body :bottom-plate :include)
+    :central-housing (has-bottom-plate? getopt :main)
+    :wrist-rest (getopt :wrist-rest :bottom-plate :include)
+    false))
+
 (defn bottom-plate-hull [getopt with-plate & shapes]
   "Extend passed shapes down to the level of the bottom of the body, as
   constrained by an optional bottom plate."

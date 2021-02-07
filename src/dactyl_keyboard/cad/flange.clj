@@ -11,6 +11,7 @@
             [scad-clj.model :as model]
             [scad-tarmi.maybe :as maybe]
             [scad-tarmi.util :refer [loft]]
+            [dactyl-keyboard.cad.body :refer [has-bottom-plate?]]
             [dactyl-keyboard.cad.misc :refer [merge-bolt flip-x]]
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.misc :refer [key-to-scadstr]]
@@ -44,7 +45,7 @@
                            (when (ins :include) {:include-threading false})))
       (when (ins :include)
         (maybe/union
-          (model/translate [0 0 (+ (ins :height) (/ (ins :length) 2))]
+          (model/translate [0 0 (- (+ (ins :height) (/ (ins :length) 2)))]
             (model/cylinder [(/ (ins :diameter :bottom) 2)
                              (/ (ins :diameter :top) 2)]
                             (ins :length)))
@@ -54,7 +55,7 @@
             ;; TODO: Parameterize this to allow placing the insert from an
             ;; arbitrary direction and distance.
             ;; TODO: Styles of inserts, including scad-klupe’s square nuts.
-            (maybe/translate [0 0 (+ base (/ gap 2))]
+            (maybe/translate [0 0 (- (+ base (/ gap 2)))]
               (model/cylinder (/ (ins :diameter :bottom) 2) gap))))))))
 
 (defn segment-model
@@ -76,13 +77,6 @@
   (let [prop (partial getopt :flanges flange)]
     (loft (map (partial segment-from-zero getopt flange position-index)
                (range 0 (inc (apply max (keys (prop :bosses :segments)))))))))
-
-(defn- item-shape
-  "Recall the shape of a complete flange screw or boss."
-  [getopt flange position-index positive]
-  (if positive
-    (boss-model getopt flange position-index)
-    (model/call-module (name-module flange))))
 
 (defn- flatten-flanges
   "Generate a list of all unique flange names and positions therein."
@@ -116,31 +110,26 @@
     (sort)  ; Deterministic.
     (mapv name-module)))
 
-(defn- body-pred
-  "Compose a complex function for whether a given flange screw
-  belongs on a given level of any of a given set of bodies."
-  [bodies]
-  {:pre [(set? bodies) (every? keyword? bodies)]}
-  (let [bodies (set bodies)]
-    (fn [getopt include-bottom include-top [flange position-index]]
-      (let [body (item-body getopt flange position-index)
-            require-bottom (getopt :flanges flange :bottom)]
-        (and (bodies body) (if require-bottom include-bottom include-top))))))
-
 (defn- item-in-place
-  "One model of a screw or boss, in place.
+  "One model of a bolt, insert and/or boss, in place.
   If the item should be reflected, do so at the upper level.
   If the item should be reflected and is also negative space, assume it is
   chiral and flip it in place at the lower well as well. This second flip
   should counteract the local effects of reflection at the upper level, thus
-  preserving screw threads in both copies of the item."
-  [getopt positive offset reflect [flange position-index]]
-  {:pre [(boolean? positive) (boolean? offset) (boolean? reflect)]}
-  (let [pose (partial place/flange-place getopt flange position-index 0)
-        shape (item-shape getopt flange position-index positive)]
+  preserving screw threads in both copies of the item.
+  Target segment nil for placement so as not apply any segment-specific
+  offsets."
+  [getopt positive negative reflect [flange position-index]]
+  {:pre [(boolean? positive) (boolean? reflect)]}
+  (let [pose (partial place/flange-place getopt flange position-index nil)
+        shape (maybe/union
+                 (when positive
+                   (boss-model getopt flange position-index))
+                 (when negative
+                   (model/call-module (name-module flange))))]
     (maybe/translate
       ;; Conditionally raise bottom flanges as DFM.
-      [0 0 (if (and offset (getopt :flanges flange :bottom))
+      [0 0 (if (and negative (getopt :flanges flange :bottom))
              (getopt :dfm :bottom-plate :fastener-plate-offset)
              0)]
       (maybe/union
@@ -151,36 +140,36 @@
           (flip-x (pose (if positive shape (flip-x shape)))))))))
 
 (defn union
-  "Shapes in place for all flanges associated with one or more bodies.
-  If “positive” is true, place bosses, else negative space (screws, inserts).
-  Body keywords are used to make a predicate function which it then used to
-  select flanges and positions in flanges."
-  [positive & bodies]
+  "Shapes in place for filtered flanges."
+  ;; The interface of this function is patterned after the union-3d function
+  ;; for tweaks, mainly for API compatibility rather than shared semantics.
+  [getopt {:keys [reflect
+                  ;; Remaining keyword arguments are search criteria.
+                  bodies
+                  include-positive include-negative
+                  include-bottom include-top]}]
   {:pre [(every? keyword? bodies)]}
-  (let [base-pred (body-pred (set bodies))]
-    (fn closure
-      ([getopt]
-       (closure getopt {}))
-      ([getopt {:keys [include-bottom include-top offset-bottom reflect]
-                :or {include-bottom true, include-top true,
-                     offset-bottom false, reflect false}}]
-       (apply maybe/union
-         (map #(item-in-place getopt positive offset-bottom reflect %)
-              (filter (partial base-pred getopt include-bottom include-top)
-                      (flatten-flanges getopt))))))))
-
-;; TODO: Remove the following and adopt an interface more like the tweak union
-;; functions.
-
-;; The proper selection of fasteners varies with the program output.
-;; For example, as long as the bottom plate for the main body also
-;; covers half of the central housing, the screw holes for the bottom
-;; plate must include positions from two bodies.
-
-(def bosses-in-main-body (union true :main))
-(def bosses-in-central-housing (union true :central-housing))
-(def bosses-in-wrist-rest (union true :wrist-rest))
-
-(def holes-in-main-body (union false :main))
-(def holes-in-central-housing (union false :central-housing))
-(def holes-in-wrist-rest (union false :wrist-rest))
+  (apply maybe/union
+    (map (partial item-in-place getopt
+                  (boolean include-positive)
+                  (boolean include-negative)
+                  (boolean reflect))
+         (filter
+           (every-pred
+             (let [allowed? (set bodies)]
+               (fn [[flange position-index]]
+                 (allowed? (item-body getopt flange position-index))))
+             (fn [[flange position-index]]
+               (if (getopt :flanges flange :bottom)
+                 (or include-bottom
+                     (and include-top
+                          (has-bottom-plate? getopt
+                            (item-body getopt flange position-index))))
+                 include-top))
+             (fn [[flange _]]
+               (or (and (getopt :flanges flange :bosses :include)
+                        include-positive)
+                   (and (or (getopt :flanges flange :inserts :include)
+                            (getopt :flanges flange :bolts :include))
+                        include-negative))))
+           (flatten-flanges getopt)))))

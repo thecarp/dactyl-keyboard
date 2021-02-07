@@ -4,7 +4,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns dactyl-keyboard.cad.bottom
-  (:require [scad-clj.model :as model]
+  (:require [clojure.set :as setlib]
+            [scad-clj.model :as model]
             [scad-tarmi.maybe :as maybe]
             [dactyl-keyboard.cad.auxf :as auxf]
             [dactyl-keyboard.cad.body.central :as central]
@@ -111,7 +112,13 @@
   [getopt]
   (maybe/union
     (key/metacluster cluster-floor-polygon getopt)
-    (mask/at-ground getopt (flange/bosses-in-main-body getopt))
+    (mask/at-ground getopt
+      (flange/union getopt
+        {:include-positive true, :include-bottom true,
+         :bodies (setlib/union
+                   #{:main}
+                   (when (getopt :central-housing :derived :include-main)
+                     #{:central-housing}))}))
     (tweak/union-polyfill getopt {})
     (when (getopt :central-housing :derived :include-main)
       (chousing-floor-polygon getopt))
@@ -153,8 +160,12 @@
   (model/color (:bottom-plate colours)
     (maybe/difference
       (case-positive getopt)
-      (flange/holes-in-main-body getopt
-                                 {:include-top false, :offset-bottom true}))))
+      (flange/union getopt
+        {:include-negative true, :include-bottom true,
+         :bodies (setlib/union
+                   #{:main}
+                   (when (getopt :central-housing :derived :include-main)
+                     #{:central-housing}))}))))
 
 
 ;;;;;;;;;;;;;;;;;
@@ -164,7 +175,9 @@
 (defn- wrist-positive-2d [getopt]
   (maybe/union
     (model/cut (wrist/projection-maquette getopt))
-    (model/cut (flange/bosses-in-wrist-rest getopt))
+    (model/cut (flange/union getopt
+                 {:include-positive true, :include-bottom true,
+                  :bodies (setlib/union #{:wrist-rest})}))
     (tweak/union-polyfill getopt {:bodies #{:wrist-rest}})))
 
 (defn wrist-positive
@@ -178,8 +191,9 @@
   (model/color (:bottom-plate colours)
     (maybe/difference
       (wrist-positive getopt)
-      (flange/holes-in-wrist-rest getopt
-                                  {:include-top false, :offset-bottom true}))))
+      (flange/union getopt
+        {:include-negative true, :include-bottom true,
+         :bodies (setlib/union #{:wrist-rest})}))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;
@@ -223,5 +237,11 @@
   (model/color (:bottom-plate colours)
     (maybe/difference
       (combined-positive getopt)
-      ((flange/union false :main :central-housing :wrist-rest)
-       getopt {:include-top false, :offset-bottom true}))))
+      (flange/union getopt
+        {:include-bottom true, :include-negative true,
+         :bodies (setlib/union
+                   #{:main}
+                   (when (getopt :central-housing :derived :include-main)
+                     #{:central-housing})
+                   (when (getopt :wrist-rest :include)
+                     #{:wrist-rest}))}))))

@@ -458,17 +458,18 @@
                        (range 0 (inc segment))))))
 
 (defn flange-place
-  "Place a flange screw or its boss.
+  "Place a flange bolt, insert and/or boss.
   For bottom flanges, force the preservation of orientation and use only the
   xy-plane for positioning relative to the anchor."
   [getopt flange position-index segment subject]
-  (let [bottom (getopt :flanges flange :bottom)]
-    (->> subject
-      (flex/rotate [(if bottom  π 0) 0 0])
-      (flex/translate (flange-segment-offset getopt flange position-index segment))
-      (at-named getopt
-        (merge (getopt :flanges flange :positions position-index :anchoring)
-               (when bottom {:preserve-orientation true, ::n-dimensions 2}))))))
+  (let [bottom (getopt :flanges flange :bottom)
+        anchoring (merge (when bottom {:preserve-orientation true, ::n-dimensions 2})
+                         (salient-anchoring
+                           (getopt :flanges flange :positions position-index :anchoring)))]
+    (cond->> subject
+      segment (flex/translate (flange-segment-offset getopt flange position-index segment))
+      bottom (flex/rotate [π 0 0])
+      true (at-named getopt anchoring))))
 
 ;; Polymorphic treatment of the properties of aliases.
 
