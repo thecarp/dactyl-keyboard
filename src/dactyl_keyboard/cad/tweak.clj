@@ -64,8 +64,10 @@
 (defn- projected-at-ground?
   "Determine whether passed node should be projected onto the ground plane for
   bottom plating purposes."
-  [{:keys [to-ground shadow-ground]}]
-  (if (some? shadow-ground) shadow-ground (or to-ground false)))
+  [{:keys [to-ground shadow-ground] :as node}]
+  (if (some? shadow-ground)
+    shadow-ground
+    (or (and to-ground (bottom? node)) false)))
 
 (defn- polyfilled-at-ground?
   "Determine whether passed node should be filled onto the ground plane for
@@ -227,7 +229,7 @@
                   include-positive include-negative
                   include-bottom include-top]}]
   {:pre [(set? bodies) (every? keyword bodies)]}
-  (filter
+  (filterv
     (every-pred
       (fn [node] (bodies (get-body getopt node)))
       (fn [node]
@@ -242,8 +244,15 @@
         (or (and include-negative cut)
             (and include-positive (not cut))))
       (fn [node]
-        (or (and include-bottom (bottom? node))
-            (and include-top (top? node)))))
+        (or (and (or (and include-bottom
+                          (bottom? node))
+                     (and polyfilled-at-ground
+                          (polyfilled-at-ground? node))
+                     (and projected-at-ground
+                          (projected-at-ground? node)))
+                 (not= include-top false (not (top? node))))
+            (and include-top (top? node)
+                 (not= include-bottom false (not (bottom? node)))))))
     (tweak-forest getopt)))
 
 (defn union-3d
