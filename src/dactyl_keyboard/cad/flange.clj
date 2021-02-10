@@ -3,8 +3,8 @@
 ;; Flanges                                                             ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; Screws and their bosses for attaching bottom plates and other loose parts
-;;; of a keyboard.
+;;; Bolts, their inserts and their bosses for attaching bottom plates and other
+;;; loose parts of a keyboard.
 
 (ns dactyl-keyboard.cad.flange
   (:require [clojure.set :refer [intersection]]
@@ -139,37 +139,44 @@
                   (getopt :flanges flange :positions position-index :reflect))
           (flip-x (pose (if positive shape (flip-x shape)))))))))
 
+(defn select  ; Exposed for unit testing only.
+  "Select flange positions."
+  [getopt {:keys [bodies
+                  include-positive include-negative
+                  include-bottom include-top]}]
+  {:pre [(set? bodies) (every? keyword? bodies)]}
+  (filter
+    (every-pred
+      (let [allowed? (set bodies)]
+        (fn [[flange position-index]]
+          (allowed? (item-body getopt flange position-index))))
+      (fn [[flange position-index]]
+        (if (getopt :flanges flange :bottom)
+          (or include-bottom
+              (and include-top
+                   (has-bottom-plate? getopt
+                     (item-body getopt flange position-index))))
+          include-top))
+      (fn [[flange _]]
+        (or (and (getopt :flanges flange :bosses :include)
+                 include-positive)
+            (and (or (getopt :flanges flange :inserts :include)
+                     (getopt :flanges flange :bolts :include))
+                 include-negative))))
+    (flatten-flanges getopt)))
+
 (defn union
   "Shapes in place for filtered flanges."
   ;; The interface of this function is patterned after the union-3d function
   ;; for tweaks, mainly for API compatibility rather than shared semantics.
   [getopt {:keys [reflect
-                  ;; Remaining keyword arguments are search criteria.
-                  bodies
-                  include-positive include-negative
-                  include-bottom include-top]}]
-  {:pre [(every? keyword? bodies)]}
+                  ;; Remaining keyword arguments are a subset of search
+                  ;; criteria.
+                  include-positive include-negative]
+           :as criteria}]
   (apply maybe/union
     (map (partial item-in-place getopt
                   (boolean include-positive)
                   (boolean include-negative)
                   (boolean reflect))
-         (filter
-           (every-pred
-             (let [allowed? (set bodies)]
-               (fn [[flange position-index]]
-                 (allowed? (item-body getopt flange position-index))))
-             (fn [[flange position-index]]
-               (if (getopt :flanges flange :bottom)
-                 (or include-bottom
-                     (and include-top
-                          (has-bottom-plate? getopt
-                            (item-body getopt flange position-index))))
-                 include-top))
-             (fn [[flange _]]
-               (or (and (getopt :flanges flange :bosses :include)
-                        include-positive)
-                   (and (or (getopt :flanges flange :inserts :include)
-                            (getopt :flanges flange :bolts :include))
-                        include-negative))))
-           (flatten-flanges getopt)))))
+         (select getopt criteria))))
