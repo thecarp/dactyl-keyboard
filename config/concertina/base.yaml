@@ -318,6 +318,11 @@ by-key:
               translation:
                 mid: [0.6, -3, 8]
           rows:
+            first:
+              parameters:
+                layout:
+                  pitch:
+                    intrinsic: -0.1
             last:
               parameters:
                 layout:
@@ -358,18 +363,18 @@ by-key:
               roll:
                 intrinsic: -0.28
               translation:
-                mid: [0.5, -3, 11]
+                mid: [0.5, -3, 12]
           rows:
             first:
               parameters:
                 layout:
                   translation:
-                    early: [0, -1, 3]
+                    early: [0, -1, 1]
             last:
               parameters:
                 layout:
                   translation:
-                    early: [0, 0.4, 2]
+                    early: [0, 0.4, 1]
           sides:
             ENE:
               parameters:
@@ -392,7 +397,7 @@ by-key:
                 wall:
                   extent: 1
                   segments:
-                    "1": [-2, 5, -3.5]
+                    "1": [-2, 3, -2.5]
     thumb0:
       parameters:
         layout:
@@ -534,7 +539,7 @@ central-housing:
       adapter:
         alias: ca-near-base
         segments:
-          "0": [6.5, 0, 0]
+          "0": [7.5, 0, 0]
           "1": [-1, 0, 0]
     - base:
         offset: [45, -55, 5]
@@ -729,26 +734,36 @@ flanges:
   main-bottom-plate:
     include: true
     bosses:
+      include: true
       segments:
         "0":
-          diameter: 6
+          diameter: 7
+          intrinsic-offset: [-1, 0, 0]
         "1":
-          diameter: 6
-          intrinsic-offset: [0, 0, -7]
+          diameter: 5
+          height: 4
+          intrinsic-offset: [1, 0, -4]
+        "2":
+          diameter: 4
+          height: 8
+          intrinsic-offset: [3, 0, -1]
     positions:
     - boss-alias: bottom-main-N
       anchoring:
         anchor: ca-far-base
-        extrinsic-offset: [1, -10, 0]
+        intrinsic-rotation: [0, 0, -0.5]
+        extrinsic-offset: [3, -9, 0]
     - boss-alias: bottom-main-E
       anchoring:
         anchor: m5L
         side: SE
+        intrinsic-rotation: [0, 0, -0.6]
         extrinsic-offset: [-4, 2, 0]
     - boss-alias: bottom-main-S
       anchoring:
         anchor: ca-near-base
-        extrinsic-offset: [-3, 8.2, 0]
+        intrinsic-rotation: [0, 0, -0.3]
+        extrinsic-offset: [-1, 5, 0]
   main-to-thumb-flange:
     include: true
     bolts:
@@ -1278,7 +1293,7 @@ tweaks:
     - [ext-usb-hole,
        {anchoring: {side: S, segment: 1, intrinsic-offset: [3, -5, -2]},
         size: [22, 4.01, 18]}]
-  bottom:
+  bottom-reinforcement:
   # A thin strip along the east side of the main cluster.
   # This comes in three parts because hulling the entire strip would extend the
   # bottom plate outside the case.
@@ -1311,6 +1326,29 @@ tweaks:
     - [ca-far-base, null, 0]
     - [ci-far-base, null, 0]
     - [ca-bottom-2]
+  bottom-plate-fastener-bosses:
+  # Design for manufacture. The main body is designed to print standing on the
+  # main-to-thumb flange and in that orientation, this tweak supports the
+  # bosses for bottom-plate fasteners.
+  - above-ground: true
+    hull-around:
+    - [m5L1]
+    - [m5L1b]
+    - [m5L, NW]
+    - [m5L, NE]
+    - [bottom-main-N, null, 2]
+  - above-ground: true
+    hull-around:
+    - [m5L, SW]
+    - [m5L, SE]
+    - [m5M, NE]
+    - [m5M, NW]
+    - [bottom-main-E, null, 2]
+  - above-ground: true
+    hull-around:
+    - [m5F, SSW, 0, 1]
+    - [m5F, SSE, 0, 1]
+    - [bottom-main-S, null, 2]
 mcu:
   include: true
   anchoring:

@@ -1,8 +1,7 @@
 # Configuration fragment for a solid bridge between case and wrist rest.
 
-main-body:
-  bottom-plate:
-    combine: true
+bottom-plates:
+  combine: true
 wrist-rest:
   include: true
   style: solid

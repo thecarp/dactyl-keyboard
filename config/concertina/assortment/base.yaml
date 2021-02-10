@@ -159,6 +159,7 @@ tweaks:
   # filled with non-printed material to add mass to the keyboard.
   central-dividers:
   - to-ground: true
+    at-ground: false
     reflect: true
     chunk-size: 2
     hull-around:
