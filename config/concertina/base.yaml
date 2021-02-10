@@ -737,15 +737,13 @@ flanges:
       include: true
       segments:
         "0":
-          diameter: 7
+          size: [7, 1]
           intrinsic-offset: [-1, 0, 0]
         "1":
-          diameter: 5
-          height: 4
+          size: [5, 4]
           intrinsic-offset: [1, 0, -4]
         "2":
-          diameter: 4
-          height: 8
+          size: [4, 8]
           intrinsic-offset: [3, 0, -1]
     positions:
     - boss-alias: bottom-main-N
@@ -778,10 +776,9 @@ flanges:
     bosses:
       segments:
         "0":
-          diameter: 6
-          height: 0.001
+          size: [6, 0.001]
         "1":
-          diameter: 6
+          size: [6, 1]
           intrinsic-offset: [0, 0, -8]
     positions:
     - boss-alias: f0-upper-right

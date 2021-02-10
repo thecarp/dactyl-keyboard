@@ -585,10 +585,10 @@ flanges:
       include: true
       segments:
         "0":
-          diameter: 7
+          size: [7, 1]
         "1":
           style: sphere
-          diameter: 5
+          size: 5
           intrinsic-offset: [0, 0, -6]
     positions:
     - anchoring:
@@ -625,10 +625,10 @@ flanges:
       include: true
       segments:
         "0":
-          diameter: 7
+          size: [7, 1]
         "1":
           style: sphere
-          diameter: 5
+          size: 5
           intrinsic-offset: [0, 0, -6]
     positions:
     - anchoring:
@@ -648,10 +648,10 @@ flanges:
       include: true
       segments:
         "0":
-          diameter: 5
+          size: [5, 1]
         "1":
           style: sphere
-          diameter: 4
+          size: 4
           intrinsic-offset: [0, 0, -3]
     positions:
     - anchoring:

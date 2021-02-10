@@ -60,10 +60,15 @@
 
 (defn segment-model
   "Take a boss segment configuration. Return OpenSCAD scaffolding."
-  [{:keys [style diameter height]}]
-  (case style
-    :cylinder (model/cylinder (/ diameter 2) height)
-    :sphere (model/sphere (/ diameter 2))))
+  ;; TODO: Expand this style & size subsystem and apply it to other things,
+  ;; like key-mount wall segments, secondary anchors and tweaks.
+  [{:keys [style size]}]
+  (let [[x _ z] size]
+    (case style
+      ;; TODO: Selectively apply scaling to a unit sphere etc. where the stated
+      ;; size is not uniform.
+      :cylinder (model/cylinder (/ x 2) z)
+      :sphere (model/sphere (/ x 2)))))
 
 (defn- segment-from-zero
   [getopt flange position-index segment]

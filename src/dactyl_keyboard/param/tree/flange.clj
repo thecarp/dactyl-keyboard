@@ -121,6 +121,10 @@
             {:default :cylinder
              :parse-fn keyword
              :validate [#{:cylinder :sphere}]}]
+           [[:size]
+            {:default 1
+             :parse-fn parse/pad-to-3-tuple
+             :validate [::tarmi-core/point-3d]}]
            [[:intrinsic-offset]
             ;; Future development: Consider adding support for z-axis formulae
             ;; referencing different parts of the screw (head-to-body
@@ -128,11 +132,7 @@
             ;; behaviour in v0.6.0.
             {:default [0 0 0]
              :parse-fn (parse/tuple-of num)
-             :validate [::tarmi-core/point-3d]}]
-           [[:diameter]
-            {:default 1 :parse-fn num}]
-           [[:height]
-            {:default 1 :parse-fn num}]]]
+             :validate [::tarmi-core/point-3d]}]]]
       {:default {0 (base/extract-defaults local)}
        :parse-fn (parse/map-of parse/integer (base/parser-with-defaults local))
        :validate [(spec/map-of integer?  (base/delegated-validation local))]})
@@ -142,11 +142,9 @@
     "The recognized properties of a segment are:\n"
     "- `style`: The shape of the segment. One of `cylinder` (default) or "
     "`sphere`.\n"
+    "- `size`: The measurements of the segment, in mm.\n"
     "- `intrinsic-offset`: An xyz-offset in mm from the previous segment or, "
-    "in the case of segment zero, from the flange position itself.\n"
-    "- `diameter`: The diameter in mm of the segment.\n"
-    "- `height`: The local-z-axis girth of the segment in mm. Ignored for "
-    "spheres."]
+    "in the case of segment zero, from the flange position itself.\n"]
    [[:positions]
     (let [local
           [[]  ; This header will not be rendered and is therefore empty.

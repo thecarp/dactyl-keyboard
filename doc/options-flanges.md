@@ -125,9 +125,9 @@ A map of numeric segment IDs to segment properties. Numbering starts at zero and
 
 The recognized properties of a segment are:
 - `style`: The shape of the segment. One of `cylinder` (default) or `sphere`.
+- `size`: The measurements of the segment, in mm.
 - `intrinsic-offset`: An xyz-offset in mm from the previous segment or, in the case of segment zero, from the flange position itself.
-- `diameter`: The diameter in mm of the segment.
-- `height`: The local-z-axis girth of the segment in mm. Ignored for spheres.
+
 
 ## Parameter <a id="positions">`positions`</a>
 

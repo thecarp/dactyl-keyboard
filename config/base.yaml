@@ -60,9 +60,9 @@ flanges:
     bosses:
       segments:
         "0":
-          diameter: 7
+          size: [7, 1]
         "1":
-          diameter: 4
+          size: [4, 1]
           intrinsic-offset: [0, 0, -6]
   central-housing-bottom-plate:
     bottom: true
@@ -77,9 +77,9 @@ flanges:
     bosses:
       segments:
         "0":
-          diameter: 7
+          size: [7, 1]
         "1":
-          diameter: 4
+          size: [4, 1]
           intrinsic-offset: [0, 0, -6]
   wrist-rest-bottom-plate:
     bottom: true
@@ -94,9 +94,9 @@ flanges:
     bosses:
       segments:
         "0":
-          diameter: 7
+          size: [7, 1]
         "1":
-          diameter: 4
+          size: [4, 1]
           intrinsic-offset: [0, 0, -6]
 mcu:
   type: promicro

@@ -341,11 +341,11 @@ flanges:
       include: true
       segments:
         "0":
-          diameter: 8  # 6.91 in Short’s original, but this is more robust with
-                       # a thin bottom plate.
+          size: [8, 1]  # 6.91 in Short’s original, but this is more robust with
+                        # a thin bottom plate.
         "1":
           style: sphere
-          diameter: 6.7
+          size: 6.7
           intrinsic-offset: [0, 0, -6]
     positions:
       - anchoring:
