@@ -63,10 +63,11 @@
   ;; TODO: Expand this style & size subsystem and apply it to other things,
   ;; like key-mount wall segments, secondary anchors and tweaks.
   [{:keys [style size]}]
-  (let [[x _ z] size]
+  (let [[x y z] size]
     (case style
       ;; TODO: Selectively apply scaling to a unit sphere etc. where the stated
       ;; size is not uniform.
+      :cube (model/cube x y z)
       :cylinder (model/cylinder (/ x 2) z)
       :sphere (model/sphere (/ x 2)))))
 

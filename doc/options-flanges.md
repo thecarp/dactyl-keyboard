@@ -124,7 +124,7 @@ If `false` (default), you can still get bosses, but you will need to give each p
 A map of numeric segment IDs to segment properties. Numbering starts at zero and in YAML, segment IDs that are map keys must be enclosed in quotes.
 
 The recognized properties of a segment are:
-- `style`: The shape of the segment. One of `cylinder` (default) or `sphere`.
+- `style`: The shape of the segment. One of `cylinder` (default), `cube` or `sphere`.
 - `size`: The measurements of the segment, in mm.
 - `intrinsic-offset`: An xyz-offset in mm from the previous segment or, in the case of segment zero, from the flange position itself.
 

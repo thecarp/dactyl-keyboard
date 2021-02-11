@@ -120,7 +120,7 @@
            [[:style]
             {:default :cylinder
              :parse-fn keyword
-             :validate [#{:cylinder :sphere}]}]
+             :validate [#{:cube :cylinder :sphere}]}]
            [[:size]
             {:default 1
              :parse-fn parse/pad-to-3-tuple
@@ -140,8 +140,8 @@
     "zero and in YAML, segment IDs that are map keys must be enclosed in quotes.\n"
     "\n"
     "The recognized properties of a segment are:\n"
-    "- `style`: The shape of the segment. One of `cylinder` (default) or "
-    "`sphere`.\n"
+    "- `style`: The shape of the segment. "
+    "One of `cylinder` (default), `cube` or `sphere`.\n"
     "- `size`: The measurements of the segment, in mm.\n"
     "- `intrinsic-offset`: An xyz-offset in mm from the previous segment or, "
     "in the case of segment zero, from the flange position itself.\n"]
