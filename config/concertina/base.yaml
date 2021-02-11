@@ -491,6 +491,12 @@ by-key:
                 base: 0.15
               translation:
                 mid: [0, 9, 0]
+          rows:
+            first:
+              parameters:
+                layout:
+                  translation:
+                    early: [0, 0, -0.5]
         last:
           parameters:
             layout:
@@ -771,15 +777,18 @@ flanges:
         head-type: countersunk
         include-threading: false
         threaded-length: 7
-        unthreaded-length: 2
+        unthreaded-length: 1
         channel-length: 20
     bosses:
       segments:
         "0":
-          size: [6, 0.001]
+          size: [7, 0.001]
         "1":
-          size: [6, 1]
-          intrinsic-offset: [0, 0, -8]
+          size: [8, 0.001]
+          intrinsic-offset: [0, 0, -1]
+        "2":
+          size: [4, 1]
+          intrinsic-offset: [0, 0, -7]
     positions:
     - boss-alias: f0-upper-right
       anchoring:
@@ -787,7 +796,7 @@ flanges:
         side: N
         preserve-orientation: true
         intrinsic-rotation: [π*-0.75, 0, 0]
-        extrinsic-offset: [-2, 8, -6]
+        extrinsic-offset: [-2, 7, -7]
     - boss-alias: f0-lower-right
       anchoring:
         anchor: t3F
@@ -808,7 +817,7 @@ flanges:
         segment: 2
         preserve-orientation: true
         intrinsic-rotation: [π*-0.75, 0, 0]
-        extrinsic-offset: [12, 10, -11]
+        extrinsic-offset: [12, 9, -9]
 tweaks:
   near-wall:  # Up the south side of the main key cluster:
   - above-ground: true
@@ -920,23 +929,22 @@ tweaks:
     - [t2L, NNE, 0, 2]
     - [t3L, NNW, 1]
     - [t3L, NNE, 0, 2]
-    - [f0-upper-right, null, 0, 1]
+    - [f0-upper-right, null, 0]
+    - [f0-upper-right, null, 2]
     - [m0F1]
   - above-ground: true
     hull-around:
     - [t2F, SSE]
     - [t3F, SSE, 0, 2]
     - [t3F, SSW, 1]
-    - [f0-lower-right, null, 0, 1]
+    - [f0-lower-right, null, 0, 2]
     - [m2F, SSW, 0, 3]
     - [m1F1]
   - above-ground: true
     hull-around:
     - [t0F, SSW, 2, 3]
     - [t1F, SSW, 2, 3]
-    - [f0-lower-left, null, 1, {size: 5}]
-    - [f0-lower-left, null, 0, {size: [7, 3.5, 0.1]}]
-    - [f0-lower-left, null, 0, {size: [3.5, 7, 0.1]}]
+    - [f0-lower-left, null, 0, 2]
     - [sec-near-upper-1a]
     - [sec-near-upper-1b]
     - [sec-near-upper-1b-1]
@@ -946,9 +954,7 @@ tweaks:
     - [t0L, NNW, 0, 2]
     - [t0L, NE]
     - [t1L, NNW, 0, 2]
-    - [f0-upper-left, null, 1, {size: 5}]
-    - [f0-upper-left, null, 0, {size: [7, 3.5, 0.1]}]
-    - [f0-upper-left, null, 0, {size: [3.5, 7, 0.1]}]
+    - [f0-upper-left, null, 0, 1]
     - [ca-mid-2]
     - [ca-mid-1, 1]
   # Girdle the outermost keys in the thumb cluster without connecting as many
@@ -1158,6 +1164,7 @@ tweaks:
     - [sec-far-roof-1a]
     - [sec-far-roof-1b]
     - [ca-mid-2]
+    - [f0-upper-left, null, 1]
     - [m00, SW]
   - above-ground: true
     hull-around:
@@ -1345,6 +1352,7 @@ tweaks:
     hull-around:
     - [m5F, SSW, 0, 1]
     - [m5F, SSE, 0, 1]
+    - [ca-near-base]
     - [bottom-main-S, null, 2]
 mcu:
   include: true
