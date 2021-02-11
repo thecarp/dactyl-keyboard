@@ -941,6 +941,14 @@ tweaks:
     - [m2F, SSW, 0, 3]
     - [m1F1]
   - above-ground: true
+    # Filling a corner inside the thumb cluster so the channel for
+    # f0-lower-right doesn’t cut through its wall.
+    hull-around:
+    - [t3F, ESE, 2]
+    - [t3F, ENE, 2]
+    - [m2F, SSW, 1]
+    - [m1F1]
+  - above-ground: true
     hull-around:
     - [t0F, SSW, 2, 3]
     - [t1F, SSW, 2, 3]
@@ -1281,8 +1289,6 @@ tweaks:
     - [ext-usb-holder,
        {anchoring: {side: NW, segment: 1, intrinsic-offset: [-24, -5, 0]},
         size: [1, 10, 10]}]
-    - [ext-usb-holder,
-       {anchoring: {side: NE, segment: 1, intrinsic-offset: [5, 0, 0]}}]
   - above-ground: true
     cut: true  # A dent in the interior wall, for DFM.
     hull-around:
