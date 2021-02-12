@@ -739,6 +739,7 @@ bottom-plates:
 flanges:
   main-bottom-plate:
     include: true
+    reflect: true
     bosses:
       include: true
       segments:
@@ -1168,12 +1169,14 @@ tweaks:
     - [ca-near-upper-2]
   main-to-thumb-braces:  # Interior braces for extra strength.
   - above-ground: true
+    chunk-size: 2
     hull-around:
-    - [sec-far-roof-1a]
-    - [sec-far-roof-1b]
+    - hull-around:
+      - [sec-far-roof-1a]
+      - [sec-far-roof-1b]
+      - [m00, SW]
     - [ca-mid-2]
     - [f0-upper-left, null, 1]
-    - [m00, SW]
   - above-ground: true
     hull-around:
     - [m00, SW]

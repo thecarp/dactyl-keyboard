@@ -14,7 +14,7 @@ central-housing:
       bolt-properties:
         include-threading: false
 flanges:
-  main-body-bottom-plate:
+  main-bottom-plate:
     bolts:
       bolt-properties:
         include-threading: false
