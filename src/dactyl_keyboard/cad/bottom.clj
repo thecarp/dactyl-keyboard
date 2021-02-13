@@ -238,10 +238,11 @@
     (maybe/difference
       (combined-positive getopt)
       (flange/union getopt
-        {:include-bottom true, :include-negative true,
-         :bodies (setlib/union
-                   #{:main}
-                   (when (getopt :central-housing :derived :include-main)
-                     #{:central-housing})
-                   (when (getopt :wrist-rest :include)
-                     #{:wrist-rest}))}))))
+        {:reflect (getopt :central-housing :derived :include-main)
+         :include-bottom true, :include-negative true,
+         :bodies (setlib/union #{:main} (when (getopt :wrist-rest :include)
+                                          #{:wrist-rest}))})
+      (when (getopt :central-housing :derived :include-main)
+        (flange/union getopt
+          {:include-bottom true, :include-negative true,
+           :bodies #{:central-housing}})))))

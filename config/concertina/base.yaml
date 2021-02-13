@@ -739,7 +739,8 @@ bottom-plates:
 flanges:
   main-bottom-plate:
     include: true
-    reflect: true
+    bolts:
+      include: true
     bosses:
       include: true
       segments:
