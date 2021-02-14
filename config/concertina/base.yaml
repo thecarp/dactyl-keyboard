@@ -285,7 +285,7 @@ by-key:
                   pitch:
                     intrinsic: 0.3
                   translation:
-                    early: [0, 4, 1]
+                    early: [0, 4, 2]
           sides:
             NNE:
               parameters:
@@ -313,21 +313,26 @@ by-key:
               pitch:
                 base: 0.2
                 progressive: 0.6
+              matrix:
+                separation:
+                  row: -1
               roll:
                 intrinsic: -0.1
               translation:
-                mid: [0.6, -3, 8]
+                mid: [0.6, -3, 10]
           rows:
             first:
               parameters:
                 layout:
                   pitch:
                     intrinsic: -0.1
-            last:
+                  translation:
+                    early: [0, 0, 1.5]
+            "-1":
               parameters:
                 layout:
                   translation:
-                    early: [0, 0, 1]
+                    early: [0, 0, -1]
           sides:
             NNE:
               parameters:
@@ -356,7 +361,7 @@ by-key:
             layout:
               matrix:
                 separation:
-                  row: -1
+                  row: -1.2
               pitch:
                 base: 0.15
                 progressive: 0.55
@@ -369,7 +374,7 @@ by-key:
               parameters:
                 layout:
                   translation:
-                    early: [0, -1, 1]
+                    early: [0, -0.8, 2.5]
             last:
               parameters:
                 layout:
@@ -545,14 +550,14 @@ central-housing:
       adapter:
         alias: ca-near-base
         segments:
-          "0": [7.5, 0, 0]
+          "0": [8.5, 0, 0]
           "1": [-1, 0, 0]
     - base:
         offset: [45, -55, 5]
       adapter:
         alias: ca-near-lower-1
         segments:
-          "0": [6.5, 0, 0]
+          "0": [8.5, 0, 0]
           "1": [-1, 0, 0]
     - base:
         offset: [45, -55, 20]
@@ -741,15 +746,17 @@ flanges:
     include: true
     bolts:
       include: true
+      bolt-properties:
+        total-length: 10  # Exaggerated for ease of tapping holes.
     bosses:
       include: true
       segments:
         "0":
-          size: [7, 1]
+          size: [8, 6]
           intrinsic-offset: [-1, 0, 0]
         "1":
           size: [5, 4]
-          intrinsic-offset: [1, 0, -4]
+          intrinsic-offset: [1, 0, -6]
         "2":
           size: [4, 8]
           intrinsic-offset: [3, 0, -1]
@@ -764,12 +771,12 @@ flanges:
         anchor: m5L
         side: SE
         intrinsic-rotation: [0, 0, -0.6]
-        extrinsic-offset: [-4, 2, 0]
+        extrinsic-offset: [-6.5, 0, 0]
     - boss-alias: bottom-main-S
       anchoring:
-        anchor: ca-near-base
+        anchor: ca-near-lower-1
         intrinsic-rotation: [0, 0, -0.3]
-        extrinsic-offset: [-1, 5, 0]
+        extrinsic-offset: [-3, 6, 0]
   main-to-thumb-flange:
     include: true
     bolts:
@@ -1363,7 +1370,13 @@ tweaks:
     - [m5F, SSW, 0, 1]
     - [m5F, SSE, 0, 1]
     - [ca-near-base]
+    - [ca-near-lower-1]
     - [bottom-main-S, null, 2]
+  - above-ground: true
+    hull-around:
+    - [ca-near-lower-1]
+    - [ca-near-lower-1, {anchoring: {extrinsic-offset: [-6, 0, 0]}}]
+    - [bottom-main-S, null, 0, 2]
 mcu:
   include: true
   anchoring:
