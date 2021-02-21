@@ -805,7 +805,7 @@ flanges:
         side: S
         preserve-orientation: true
         intrinsic-rotation: [π*-0.75, 0, 0]
-        extrinsic-offset: [-2, 6, -11]
+        extrinsic-offset: [-2, 7, -14]
     - boss-alias: f0-lower-left
       anchoring:
         anchor: sec-near-upper-1b
