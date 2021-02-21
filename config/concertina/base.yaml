@@ -285,7 +285,7 @@ by-key:
                   pitch:
                     intrinsic: 0.3
                   translation:
-                    early: [0, 4, 2]
+                    early: [0, 4, 3]
           sides:
             NNE:
               parameters:
@@ -501,18 +501,12 @@ by-key:
               parameters:
                 layout:
                   translation:
-                    early: [0, 0, -0.5]
+                    early: [0, 0, -1.5]
         last:
           parameters:
             layout:
               translation:
                 mid: [0, 2, 0]
-          rows:
-            first:
-              parameters:
-                layout:
-                  translation:
-                    early: [0, 0, -3]
           sides:
             ENE:
               parameters:
