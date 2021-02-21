@@ -105,38 +105,38 @@ flanges:
     - boss-alias: bottom-central-N
       # Not reflected; it would just end up in the same position.
       anchoring:
-        intrinsic-offset: [0, 36, 0]
+        extrinsic-offset: [0, 36, 0.25]
     - boss-alias: bottom-central-NE
       reflect: true  # Copy to the NW side.
       anchoring:
-        intrinsic-offset: [72, 36, 0]
+        extrinsic-offset: [72, 36, 0.25]
     - boss-alias: bottom-central-SE
       reflect: true
       anchoring:
         intrinsic-rotation: [0, 0, π]
-        intrinsic-offset: [72, -51, 0]
+        extrinsic-offset: [72, -51, 0.25]
     - boss-alias: bottom-central-S
       anchoring:
         intrinsic-rotation: [0, 0, π]
-        intrinsic-offset: [0, -51, 0]
+        extrinsic-offset: [0, -51, 0.25]
     # The remaining positions are inside the custom bodies made
     # from the central housing.
     - boss-alias: bottom-bookend-N
       reflect: true
       anchoring:
         anchor: ci-far-base
-        intrinsic-offset: [-7, -4, 0]
+        extrinsic-offset: [-7, -4, 0.25]
     - boss-alias: bottom-bookend-S
       reflect: true
       anchoring:
         anchor: ci-near-base
         intrinsic-rotation: [0, 0, π]
-        intrinsic-offset: [-10, 4, 0]
+        extrinsic-offset: [-10, 4, 0.25]
     - boss-alias: bottom-bookend-W
       reflect: true
       anchoring:
         intrinsic-rotation: [0, 0, π/2]
-        intrinsic-offset: [84, -7.5, 0]
+        extrinsic-offset: [84, -7.5, 0.25]
 ports:
   # Three slots follow for assortment drawers, with 4 mm between each.
   # There is also a 4 mm lip above the top drawer, partly for aesthetics and

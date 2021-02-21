@@ -758,18 +758,18 @@ flanges:
       anchoring:
         anchor: ca-far-base
         intrinsic-rotation: [0, 0, -0.5]
-        extrinsic-offset: [3, -9, 0]
+        extrinsic-offset: [3, -9, 0.25]
     - boss-alias: bottom-main-E
       anchoring:
         anchor: m5L
         side: SE
         intrinsic-rotation: [0, 0, -0.6]
-        extrinsic-offset: [-6.5, 0, 0]
+        extrinsic-offset: [-6.5, 0, 0.25]
     - boss-alias: bottom-main-S
       anchoring:
         anchor: ca-near-lower-1
         intrinsic-rotation: [0, 0, -0.3]
-        extrinsic-offset: [-3, 6, 0]
+        extrinsic-offset: [-3, 6, 0.25]
   main-to-thumb-flange:
     include: true
     bolts:
@@ -780,6 +780,7 @@ flanges:
         threaded-length: 7
         unthreaded-length: 1
         channel-length: 20
+        include-threading: true
     bosses:
       segments:
         "0":
