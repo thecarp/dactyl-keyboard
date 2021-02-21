@@ -27,11 +27,11 @@ version 0.2.0, thus covering only a fraction of the project’s history.
     - Changed the meaning of the `at-ground` parameter for tweak nodes,
       so that hulling to ground is no longer a side effect of it.
       Added a corresponding, explicit `to-ground` parameter.
-- Made `false` the default value of all Boolean parameters originating in
-  the application, though `bolt-properties` (using `scad-klupe`) can still
-  be default `true`.
-    - Stopped including arbitrary shapes in `above-ground` contexts by default.
+- Made `false` the default value of all Boolean parameters.
+    - Stopped including arbitrary shapes for tweaks in `above-ground` contexts
+      by default.
     - Replaced `positive` for arbitrary shapes with an inverted `cut` parameter.
+    - Set `include-threading` for bolts to `false` by default.
 - Completed migration from long-form names for the points of the compass,
   like `north`, to short-form names, like `N`. This leaves only short forms,
   so the distinction itself is abolished.

@@ -487,7 +487,6 @@ main-body:
         m-diameter: 6
         head-type: socket
         total-length: 8.5
-        include-threading: false
       bosses: true
       sides:
         W:
@@ -502,7 +501,6 @@ main-body:
       bolt-properties:
         m-diameter: 6
         head-type: socket
-        include-threading: false
       distance: 30
     anchoring:
       anchor: back1
@@ -580,7 +578,6 @@ flanges:
         head-type: countersunk
         point-type: cone
         total-length: 8.5
-        include-threading: false
     bosses:
       include: true
       segments:
@@ -620,7 +617,6 @@ flanges:
         head-type: countersunk
         point-type: cone
         total-length: 8.5
-        include-threading: false
     bosses:
       include: true
       segments:

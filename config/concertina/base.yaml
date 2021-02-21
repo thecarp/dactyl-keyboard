@@ -693,7 +693,6 @@ central-housing:
       bolt-properties:
         m-diameter: 3
         total-length: 8
-        include-threading: false
         channel-length: 10
       positions:
       - starting-point: ci-near-lower-3
@@ -778,7 +777,6 @@ flanges:
       bolt-properties:
         m-diameter: 3
         head-type: countersunk
-        include-threading: false
         threaded-length: 7
         unthreaded-length: 1
         channel-length: 20

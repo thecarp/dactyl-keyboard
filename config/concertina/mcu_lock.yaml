@@ -20,7 +20,6 @@ mcu:
         alias: mcu-plate
       fastener-properties:
         m-diameter: 3
-        include-threading: false
 ports:
   ext-usb-hole:
     include: false

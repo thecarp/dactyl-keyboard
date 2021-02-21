@@ -37,7 +37,6 @@ main-body:
       bolt-properties:
         m-diameter: 4
         head-type: countersunk
-        include-threading: false
 central-housing:
   adapter:
     fasteners:
@@ -45,7 +44,6 @@ central-housing:
         m-diameter: 3
         head-type: countersunk
         total-length: 8.5
-        include-threading: false
 flanges:
   main-bottom-plate:
     bottom: true
@@ -56,7 +54,6 @@ flanges:
         head-type: countersunk
         point-type: cone
         total-length: 8.5
-        include-threading: false
     bosses:
       segments:
         "0":
@@ -73,7 +70,6 @@ flanges:
         head-type: countersunk
         point-type: cone
         total-length: 8.5
-        include-threading: false
     bosses:
       segments:
         "0":
@@ -90,7 +86,6 @@ flanges:
         head-type: countersunk
         point-type: cone
         total-length: 8.5
-        include-threading: false
     bosses:
       segments:
         "0":

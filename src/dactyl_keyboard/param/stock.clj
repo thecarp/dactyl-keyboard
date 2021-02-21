@@ -48,7 +48,17 @@
        "* `total-length`: The length of the threaded part of the bolt, in "
        "mm.\n"
        "\n"
-       "Default values provided by the application are bare minima. More "
-       "usefully, the application injects DFM functions and flags negative "
-       "space for specific uses."))
+       "The DMOTE application provides some parameters that differ from the "
+       "default values in `scad-klupe` itself, in the following ways:\n"
+       "\n"
+       "* `negative`: The DMOTE application automatically sets this to `true` "
+       "for bolt models that represent negative space.\n"
+       "* `compensator`: The application automatically injects a DFM "
+       "function.\n"
+       "* `include-threading`: This is `true` by default in `scad-klupe` and "
+       "`false` by default in the DMOTE application. The main reason for this "
+       "difference is the general pattern of defaulting to false in the "
+       "application for predictability. Secondary reasons are rendering "
+       "performance, the option of tapping threads after printing, and the "
+       "uselessness of threads in combination with heat-set inserts.\n"))
 

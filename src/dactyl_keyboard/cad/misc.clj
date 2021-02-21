@@ -77,11 +77,12 @@
 
 (defn merge-bolt
   "Wrap scad-klupe.iso/bolt for multiple sources of parameters.
-  Assume a negative-space bolt with standard DFM compensation but allow
-  overrides."
+  Assume a negative-space bolt with threads to be tapped manually, and
+  with standard DFM compensation. Allow overrides."
   [getopt & option-maps]
   (bolt (merge {:negative true
-                :compensator (compensator getopt)}
+                :compensator (compensator getopt)
+                :include-threading false}
                (apply merge option-maps))))
 
 (defn grid-factors

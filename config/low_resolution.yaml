@@ -1,4 +1,5 @@
 # Configuration fragment for simplified geometry where it’s least visible.
+#
 # This will affect functionality and should not be used for a final render.
 # It is intended to speed up rendering for previews in the design process,
 # and should be applied after other files for this purpose.

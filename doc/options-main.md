@@ -265,7 +265,12 @@ The following describes only a subset of what you can include here:
 * `head-type`: A keyword describing the head of the bolt, such as `hex` or `countersunk`.
 * `total-length`: The length of the threaded part of the bolt, in mm.
 
-Default values provided by the application are bare minima. More usefully, the application injects DFM functions and flags negative space for specific uses.
+The DMOTE application provides some parameters that differ from the default values in `scad-klupe` itself, in the following ways:
+
+* `negative`: The DMOTE application automatically sets this to `true` for bolt models that represent negative space.
+* `compensator`: The application automatically injects a DFM function.
+* `include-threading`: This is `true` by default in `scad-klupe` and `false` by default in the DMOTE application. The main reason for this difference is the general pattern of defaulting to false in the application for predictability. Secondary reasons are rendering performance, the option of tapping threads after printing, and the uselessness of threads in combination with heat-set inserts.
+
 
 ##### Parameter <a id="main-body-rear-housing-fasteners-bosses">`bosses`</a>
 
@@ -323,7 +328,12 @@ The following describes only a subset of what you can include here:
 * `head-type`: A keyword describing the head of the bolt, such as `hex` or `countersunk`.
 * `total-length`: The length of the threaded part of the bolt, in mm.
 
-Default values provided by the application are bare minima. More usefully, the application injects DFM functions and flags negative space for specific uses.
+The DMOTE application provides some parameters that differ from the default values in `scad-klupe` itself, in the following ways:
+
+* `negative`: The DMOTE application automatically sets this to `true` for bolt models that represent negative space.
+* `compensator`: The application automatically injects a DFM function.
+* `include-threading`: This is `true` by default in `scad-klupe` and `false` by default in the DMOTE application. The main reason for this difference is the general pattern of defaulting to false in the application for predictability. Secondary reasons are rendering performance, the option of tapping threads after printing, and the uselessness of threads in combination with heat-set inserts.
+
 
 ##### Parameter <a id="main-body-back-plate-fasteners-distance">`distance`</a>
 

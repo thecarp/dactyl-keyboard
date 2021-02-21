@@ -36,7 +36,6 @@ flanges:
       bolt-properties:
         m-diameter: 3
         head-type: countersunk
-        include-threading: false
         unthreaded-length: 6
         channel-length: 1
     positions:
