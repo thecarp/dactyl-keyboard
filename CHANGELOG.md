@@ -85,8 +85,10 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - Added a parameter for central-housing interface fastener-receiver radial
   thickness.
 - Added thinning of central-housing adapter lips based on DFM error setting.
-- Added precise control over segment 1 for each node on the central housing
+- Added precise control over segments for each node on the central housing
   interface’s adapter.
+- Added a parameter for disabling all threading to improve low-resolution
+  rendering performance.
 - Added a tutorial for getting started designing from scratch.
 - Bundled designs:
     - Added a configuration fragment for removing the rear housing of the DMOTE.

@@ -835,6 +835,10 @@
     "configuration. Otherwise, use defaults built into this application, "
     "its libraries and OpenSCAD. The defaults are generally conservative, "
     "providing quick renders for previews."]
+   [[:resolution :exclude-all-threading]
+    {:default false :parse-fn boolean}
+    "If `true`, override all `include-threading` settings to exclude "
+    "the detail of threading in all bolt holes etc."]
    [[:resolution :minimum-facet-size]
     {:default 1, :parse-fn num, :validate [::appschema/minimum-facet-size]}
     "File-wide OpenSCAD minimum face size in mm."]

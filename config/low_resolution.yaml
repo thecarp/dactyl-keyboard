@@ -4,33 +4,6 @@
 # It is intended to speed up rendering for previews in the design process,
 # and should be applied after other files for this purpose.
 
-main-body:
-  back-plate:
-    fasteners:
-      bolt-properties:
-        include-threading: false
-central-housing:
-  adapter:
-    fasteners:
-      bolt-properties:
-        include-threading: false
-flanges:
-  main-bottom-plate:
-    bolts:
-      bolt-properties:
-        include-threading: false
-  central-housing-bottom-plate:
-    bolts:
-      bolt-properties:
-        include-threading: false
-  wrist-rest-bottom-plate:
-    bolts:
-      bolt-properties:
-        include-threading: false
-mcu:
-  support:
-    lock:
-      fastener-properties:
-        include-threading: false
 resolution:
   include: false
+  exclude-all-threading: true

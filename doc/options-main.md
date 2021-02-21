@@ -136,6 +136,7 @@ Other documents cover special sections of this one in more detail.
 - Freely keyed section <a href="#user-content-ports">`ports`</a>
 - Section <a href="#user-content-resolution">`resolution`</a>
     - Parameter <a href="#user-content-resolution-include">`include`</a>
+    - Parameter <a href="#user-content-resolution-exclude-all-threading">`exclude-all-threading`</a>
     - Parameter <a href="#user-content-resolution-minimum-facet-size">`minimum-facet-size`</a>
 - Section <a href="#user-content-dfm">`dfm`</a>
     - Parameter <a href="#user-content-dfm-error-general">`error-general`</a>
@@ -828,6 +829,10 @@ Settings for the amount of detail on curved surfaces. More specific resolution p
 ### Parameter <a id="resolution-include">`include`</a>
 
 If `true`, apply resolution parameters found throughout the configuration. Otherwise, use defaults built into this application, its libraries and OpenSCAD. The defaults are generally conservative, providing quick renders for previews.
+
+### Parameter <a id="resolution-exclude-all-threading">`exclude-all-threading`</a>
+
+If `true`, override all `include-threading` settings to exclude the detail of threading in all bolt holes etc.
 
 ### Parameter <a id="resolution-minimum-facet-size">`minimum-facet-size`</a>
 

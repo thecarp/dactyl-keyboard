@@ -78,12 +78,15 @@
 (defn merge-bolt
   "Wrap scad-klupe.iso/bolt for multiple sources of parameters.
   Assume a negative-space bolt with threads to be tapped manually, and
-  with standard DFM compensation. Allow overrides."
+  with standard DFM compensation. Allow overrides, including a built-in
+  override for low resolution."
   [getopt & option-maps]
   (bolt (merge {:negative true
                 :compensator (compensator getopt)
                 :include-threading false}
-               (apply merge option-maps))))
+               (apply merge option-maps)
+               (when (getopt :resolution :exclude-all-threading)
+                 {:include-threading false}))))
 
 (defn grid-factors
   "Find a pair of [x y] unit particles for movement on a grid."
