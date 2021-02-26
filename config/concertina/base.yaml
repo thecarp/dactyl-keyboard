@@ -1261,7 +1261,6 @@ tweaks:
   - above-ground: true
     chunk-size: 3
     hull-around:
-    - [m1L, NNE, 2]
     - [sec-far-wall-4]
     - [m2L, NNW, 1]
     - [ca-far-wall-4]
@@ -1412,8 +1411,7 @@ secondaries:
     anchoring:
       anchor: m1F
       side: SW
-      segment: 0
-      extrinsic-offset: [20, 0, -4]
+      extrinsic-offset: [18, 0, -4]
     size: 4
   m3F1:
     anchoring:
