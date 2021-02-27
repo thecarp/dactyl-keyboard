@@ -21,10 +21,10 @@
 ;; Keycap Models ;;
 ;;;;;;;;;;;;;;;;;;;
 
-(defn- mount-thickness
+(defn mount-thickness
   "Key mount thickness."
   [getopt cluster coord]
-  (most-specific getopt [:wall :thickness 2] cluster coord))
+  (most-specific getopt [:wall :segments 0 :size 2] cluster coord))
 
 (defn switch-for-cap
   "Simplify the choice of key switch type for a keycap.

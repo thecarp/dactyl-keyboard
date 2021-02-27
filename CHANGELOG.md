@@ -11,7 +11,8 @@ version 0.2.0, thus covering only a fraction of the project’s history.
 - More precise control.
     - Replaced the way that key-cluster walls are measured. Instead of separate
       settings for `bevel`, `parallel` and `perpendicular`, there is now only
-      one setting, called `segments`, with more power.
+      one setting, called `segments`, with more power, including the ability to
+      vary size (was `thickness`) by segment.
     - Integrated bottom-plate fasteners and their bosses with the `flanges`
       section of configuration introduced in v0.6.0. This invalidates most of
       the `bottom-plate` settings that were previously available under

@@ -96,14 +96,18 @@ by-key:
     wall:
       extent: 2
       to-ground: true
-      thickness: [2.1, 2.1, 4]
       segments:
         "0":
+          size: [2.1, 2.1, 4]
           intrinsic-offset: [0, 0, 0]
         "1":
+          size: [2.1, 2.1, 4]
           intrinsic-offset: [0, 2, -1]
         "2":
+          size: [2.1, 2.1, 4]
           intrinsic-offset: [0, 5, -14]
+        "3":
+          size: [2.1, 2.1, 4]
   clusters:
     main:
       parameters:
@@ -221,7 +225,9 @@ by-key:
         wall:
           extent: 0
           to-ground: false
-          thickness: [0.1, 0.1, 4]
+          segments:
+            "0":
+              size: [0.1, 0.1, 4]
       columns:
         last:
           parameters:
@@ -232,16 +238,16 @@ by-key:
             ESE:
               parameters:
                 wall:
-                  thickness: [2.1, 2.1, 4]
                   segments:
                     "0":
+                      size: [2.1, 2.1, 4]
                       intrinsic-offset: [-1, -1, 0]
             SSE:
               parameters:
                 wall:
-                  thickness: [2.1, 2.1, 4]
                   segments:
                     "0":
+                      size: [2.1, 2.1, 4]
                       intrinsic-offset: [-1, -1, 0]
     thumb1:
       parameters:
@@ -251,8 +257,6 @@ by-key:
               column: 1
             separation:
               column: 1
-        wall:
-          thickness: [2.1, 2.1, 4]
       columns:
         first:
           rows:

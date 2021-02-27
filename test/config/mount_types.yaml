@@ -21,11 +21,11 @@ by-key:
     plate:
       use-key-style: true
     wall:
-      thickness: [1, 1, 5]
       extent: 1
       to-ground: true
       segments:
         "1":
+          size: [1, 1, 5]
           intrinsic-offset: [0, 2, -2]
   columns:
     "1":

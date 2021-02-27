@@ -4,10 +4,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns dactyl-keyboard.param.tree.central
-  (:require [clojure.spec.alpha :as spec]
-            [scad-tarmi.core :as tarmi-core]
-            [dactyl-keyboard.param.schema.anch :as anch]
-            [dactyl-keyboard.param.schema.parse :as parse]
+  (:require [dactyl-keyboard.param.schema.parse :as parse]
             [dactyl-keyboard.param.schema.valid :as valid]
             [dactyl-keyboard.param.stock :as stock]))
 

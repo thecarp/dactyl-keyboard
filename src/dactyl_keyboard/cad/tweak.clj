@@ -123,7 +123,7 @@
     (case type
       ::anch/key-mount
         (let [{:keys [cluster coordinates]} resolved]
-          (if side (web-post getopt cluster coordinates side)
+          (if side (web-post getopt cluster coordinates side segment)
                    (single-plate getopt cluster coordinates)))
       ::anch/central-gabel
         (when-not segment (central-housing-line getopt anchor))

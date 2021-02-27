@@ -23,7 +23,8 @@
             [dactyl-keyboard.compass :as compass]
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.misc :as misc]
-            [dactyl-keyboard.cad.key.switch :refer [resting-clearance]]
+            [dactyl-keyboard.cad.key.switch :refer [mount-thickness
+                                                    resting-clearance]]
             [dactyl-keyboard.param.access
              :refer [most-specific resolve-anchor key-properties
                      salient-anchoring compensator]]
@@ -40,9 +41,12 @@
 
 (defn- adaptive-corner-offset
   "Locate the corner of a switch mount based on its key style."
-  [most {:keys [unit-size] :or {unit-size [1 1]}} [dx dy]]
-  (let [[subject-x subject-y] (map measure/key-length unit-size)]
-    [(* 1/2 dx subject-x) (* 1/2 dy subject-y) (/ (most :wall :thickness 2) -2)]))
+  [getopt cluster coord side key-style [dx dy]]
+  (let [{:keys [unit-size]} (getopt :keys :derived key-style)
+        [subject-x subject-y] (map measure/key-length (or unit-size [1 1]))]
+    [(* 1/2 dx subject-x)
+     (* 1/2 dy subject-y)
+     (/ (mount-thickness getopt cluster coord) -2)]))
 
 (defn- custom-corner-offset
   "Locate the corner of a switch mount based on explicit plate properties."
@@ -60,7 +64,7 @@
                              (or side :dactyl-keyboard.cad.key/any))
         factors (misc/grid-factors side)]
     (if (most :plate :use-key-style)
-      (adaptive-corner-offset most (getopt :keys :derived (most :key-style)) factors)
+      (adaptive-corner-offset getopt cluster coord side (most :key-style) factors)
       (custom-corner-offset most factors))))
 
 (defn- curver
@@ -162,7 +166,7 @@
   This can go to one corner of the hem of the mount’s skirt of
   walling and therefore finds the base of full walls."
   [getopt cluster coordinates
-   {:keys [side segment vertex] :or {vertex false} :as keyopts}]
+   {:keys [side segment vertex] :or {segment 0, vertex false} :as keyopts}]
   {:pre [(or (nil? side) (compass/all side))]}
   (mapv +
     (mount-corner-offset getopt cluster coordinates side)
@@ -172,7 +176,8 @@
       (matrix/cube-vertex-offset
         side
         (map #(/ % 2)
-             (most-specific getopt [:wall :thickness] cluster coordinates side))
+             (most-specific getopt [:wall :segments segment :size]
+                            cluster coordinates side))
         keyopts)
       [0 0 0])))
 

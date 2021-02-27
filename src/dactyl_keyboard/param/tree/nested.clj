@@ -322,23 +322,6 @@
     "The `wall` section determines the shape of the case wall, specifically "
     "the skirt around each key mount along the edges of the board. These "
     "skirts are made up of convex hulls wrapping sets of corner posts."]
-   [[:wall :thickness]
-    {:default [1 1 1] :parse-fn parse/pad-to-3-tuple
-     :validate [::tarmi-core/point-3d]}
-    "The size in mm of the key mount and each wall post.\n\n"
-    "Notice that the unit size of each key, and therefore the horizontal "
-    "extent of each key mounting plate, is a function of `key-style`, not of "
-    "this parameter.\n\n"
-    "The `thickness` parameter instead controls three other aspects of the "
-    "keyboard case:\n\n"
-    "- The thickness of the key mounting plate itself. When specifying "
-    "`thickness` as a list of three dimensions (`[1, 2, 3]`), mounting plate "
-    "thickness is governed solely by the z-axis dimension (`3`) and the other "
-    "figures are ignored.\n"
-    "- The thickness of the walls as drawn automatically and as targeted by "
-    "`tweaks`. Whereas mounting-plate thickness ignores the x- and y-axis "
-    "dimensions of this parameter, wall posts are cuboids that use all three "
-    "dimensions."]
    [[:wall :extent]
     {:default 0 :parse-fn num :validate [(set (range 4))]}
     "A segment ID describing how far away from the key mount to extend its "
@@ -351,29 +334,37 @@
    [[:wall :segments]
     (let [local
           [[]  ; This header will not be rendered and is therefore empty.
+           [[:size]
+            {:default [1 1 1]
+             :parse-fn parse/pad-to-3-tuple
+             :validate [::tarmi-core/point-3d]}]
            [[:intrinsic-offset]
             {:default [0 0 0]
              :parse-fn (parse/tuple-of num)
              :validate [::tarmi-core/point-3d]}]]]
       {:default {0 (base/extract-defaults local)}
-       :parse-fn (parse/map-of parse/integer (base/parser-with-defaults local))
+       :parse-fn (parse/map-of parse/integer (base/parser-wo-defaults local))
        :validate [(spec/map-of integer?  (base/delegated-validation local))]})
     "A map describing the properties of the wall at each of its segments.\n"
     "\n"
     "This map is indexed by wall segment IDs, which are non-negative "
     "integers. These must be entered in YAML as strings, i.e. in quotes.\n"
     "\n"
-    "The values of the map are maps, including three-dimensional offsets. "
-    "Any offset given for segment 0 is relative to a switch mounting plate. "
-    "The default value for segment 0 is `[0, 0, 0]`, which means that walls "
-    "will start to build out from the corner of each mounting plate. "
-    "Segments other than 0, starting with segment 1, are offset relative to "
-    "the preceding segment.\n"
+    "For each wall segment, the following parameters are available:\n\n"
+    "- `size`: The measurements of the segment, in mm.\n"
+    "- `intrinsic-offset`: An xyz-offset in mm from the previous segment or, "
+    "in the case of segment zero, from the corner of the switch mounting plate.\n"
     "\n"
-    "Offsets are *cumulative*. Segments form a chain, each one positioned "
-    "relative to the one before, as the building blocks of each wall.\n"
+    "As a side effect, the `size` of segment 0 determines the thickness of "
+    "the key mount and the internal webbing between key mounts, as well as the "
+    "size of each wall post. "
+    "By contrast, the *unit* size of each *key*, and therefore the horizontal "
+    "extent of each key mounting plate, is a function of `key-style`, not of "
+    "any parameter under `segments`.\n"
     "\n"
-    "Consider this example:\n"
+    "`intrinsic-offset` is *cumulative*. Segments form a chain, each one "
+    "positioned relative to the one before, as the building blocks of each "
+    "wall. Consider this example:\n"
     "\n"
     "```\n"
     "by-key:\n"

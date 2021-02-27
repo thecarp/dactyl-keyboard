@@ -14,7 +14,8 @@
             [dactyl-keyboard.cad.place :as place]
             [dactyl-keyboard.cad.key.switch :refer [cap-channel-negative
                                                     cap-positive
-                                                    switch-for-cap]]
+                                                    switch-for-cap
+                                                    mount-thickness]]
             [dactyl-keyboard.param.access :refer [most-specific key-properties
                                                   compensator]]))
 
@@ -29,7 +30,7 @@
   (let [most #(most-specific getopt % cluster coord)
         style-data (getopt :keys :derived (most [:key-style]))
         [x y] (map measure/key-length (get style-data :unit-size [1 1]))
-        z (most [:wall :thickness 2])]
+        z (mount-thickness getopt cluster coord)]
     (model/translate [0 0 (/ z -2)]
       (model/cube x y z))))
 

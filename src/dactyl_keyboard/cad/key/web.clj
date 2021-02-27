@@ -48,10 +48,14 @@
 
 (defn web-post
   "The shape of a corner of a switch mount."
-  [getopt cluster coord side]
-  {:pre [(compass/all side)]}
-  (apply model/cube
-    (most-specific getopt [:wall :thickness] cluster coord side)))
+  ;; TODO: With the introduction of styles to key wall segments, combine this
+  ;; with flange boss segment model functions.
+  ([getopt cluster coord side]
+   (web-post getopt cluster coord side 0))
+  ([getopt cluster coord side segment]
+   {:pre [(compass/all side)]}
+   (apply model/cube
+     (most-specific getopt [:wall :segments (or segment 0) :size] cluster coord side))))
 
 (defn cluster
   "A union of shapes covering the interstices between points in a matrix.

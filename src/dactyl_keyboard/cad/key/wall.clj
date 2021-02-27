@@ -78,7 +78,7 @@
   "Place an individual wall post."
   [getopt cluster coord side segment]
   (->>
-    (web-post getopt cluster coord (first side))
+    (web-post getopt cluster coord (first side) segment)
     (flex/translate
       (place/wall-corner-offset getopt cluster coord
         {:side (compass/tuple-to-intermediate side)
