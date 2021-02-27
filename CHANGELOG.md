@@ -104,7 +104,8 @@ Here is an example of adaptation from the old wall-building syntax to the new:
 -      parallel: 4
 -      perpendicular: -16
 +      segments:
-+        "2": [0, 4, -16]
++        "2":
++          intrinsic-offset: [0, 4, -16]
 ```
 
 That is an excerpt from `config/macropad/base.yaml`, preserving the shape of

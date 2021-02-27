@@ -237,14 +237,16 @@ by-key:
                   extent: 2
                   to-ground: true
                   segments:
-                    "2": [0, 0, -12]
+                    "2":
+                      intrinsic-offset: [0, 0, -12]
             SSW:
               parameters:
                 wall:
                   extent: 2
                   to-ground: true
                   segments:
-                    "2": [0, 0, -12]
+                    "2":
+                      intrinsic-offset: [0, 0, -12]
         "4":
           parameters:
             layout:
@@ -353,25 +355,29 @@ by-key:
                 wall:
                   extent: 3
                   segments:
-                    "2": [0, 0, -6]
+                    "2":
+                      intrinsic-offset: [0, 0, -6]
             SSE:
               parameters:
                 wall:
                   extent: 2
                   segments:
-                    "2": [0, -2, -8]
+                    "2":
+                      intrinsic-offset: [0, -2, -8]
             SSW:
               parameters:
                 wall:
                   extent: 2
                   segments:
-                    "2": [0, -2, -8]
+                    "2":
+                      intrinsic-offset: [0, -2, -8]
             NNW:
               parameters:
                 wall:
                   extent: 3
                   segments:
-                    "2": [0, 0, -6]
+                    "2":
+                      intrinsic-offset: [0, 0, -6]
         last:
           parameters:
             layout:
@@ -379,7 +385,8 @@ by-key:
                 mid: [0, -7, 0]
             wall:
               segments:
-                "2": [0, 0, -11]
+                "2":
+                  intrinsic-offset: [0, 0, -11]
           rows:
             first:
               parameters:
@@ -440,13 +447,16 @@ by-key:
           parameters:
             wall:
               segments:
-                "0": [0, 2, 0]
+                "0":
+                  intrinsic-offset: [0, 2, 0]
         WNW:
           parameters:
             wall:
               segments:
-                "0": [0, 2, 0]
-                "1": [1, 0, -1]
+                "0":
+                  intrinsic-offset: [0, 2, 0]
+                "1":
+                  intrinsic-offset: [1, 0, -1]
         NNW:
           parameters:
             wall:

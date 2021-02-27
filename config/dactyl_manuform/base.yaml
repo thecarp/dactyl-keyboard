@@ -98,9 +98,12 @@ by-key:
       to-ground: true
       thickness: [2.1, 2.1, 4]
       segments:
-        "0": [0, 0, 0]
-        "1": [0, 2, -1]
-        "2": [0, 5, -14]
+        "0":
+          intrinsic-offset: [0, 0, 0]
+        "1":
+          intrinsic-offset: [0, 2, -1]
+        "2":
+          intrinsic-offset: [0, 5, -14]
   clusters:
     main:
       parameters:
@@ -121,17 +124,23 @@ by-key:
                 wall:
                   extent: 3
                   segments:
-                    "1": [0, 8.5, -7]
-                    "2": [0, 1, -3]
-                    "3": [0, -2, -10]
+                    "1":
+                      intrinsic-offset: [0, 8.5, -7]
+                    "2":
+                      intrinsic-offset: [0, 1, -3]
+                    "3":
+                      intrinsic-offset: [0, -2, -10]
             WSW:
               parameters:
                 wall:
                   extent: 3
                   segments:
-                    "1": [0, 8.5, -7]
-                    "2": [0, 1, -3]
-                    "3": [0, -2, -10]
+                    "1":
+                      intrinsic-offset: [0, 8.5, -7]
+                    "2":
+                      intrinsic-offset: [0, 1, -3]
+                    "3":
+                      intrinsic-offset: [0, -2, -10]
             # No internal wall against thumb clusters.
             SSE:
               parameters:
@@ -190,7 +199,8 @@ by-key:
               parameters:
                 wall:
                   segments:
-                    "2": [3, 5, -14]
+                    "2":
+                      intrinsic-offset: [3, 5, -14]
         "4":
           parameters:
             layout:
@@ -201,7 +211,8 @@ by-key:
               parameters:
                 wall:
                   segments:
-                    "2": [-7, 5, -14]
+                    "2":
+                      intrinsic-offset: [-7, 5, -14]
     thumb0:
       parameters:
         key-style: big
@@ -223,13 +234,15 @@ by-key:
                 wall:
                   thickness: [2.1, 2.1, 4]
                   segments:
-                    "0": [-1, -1, 0]
+                    "0":
+                      intrinsic-offset: [-1, -1, 0]
             SSE:
               parameters:
                 wall:
                   thickness: [2.1, 2.1, 4]
                   segments:
-                    "0": [-1, -1, 0]
+                    "0":
+                      intrinsic-offset: [-1, -1, 0]
     thumb1:
       parameters:
         layout:
@@ -266,12 +279,14 @@ by-key:
               parameters:
                 wall:
                   segments:
-                    "2": [0, 3, -8]
+                    "2":
+                      intrinsic-offset: [0, 3, -8]
             NNW:
               parameters:
                 wall:
                   segments:
-                    "2": [0, 3, -8]
+                    "2":
+                      intrinsic-offset: [0, 3, -8]
         last:
           rows:
             first:

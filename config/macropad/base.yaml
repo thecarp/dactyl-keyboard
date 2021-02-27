@@ -22,7 +22,8 @@ by-key:
       extent: 2
       to-ground: true
       segments:
-        "2": [0, 4, -16]
+        "2":
+          intrinsic-offset: [0, 4, -16]
   clusters:
     main:
       columns:
@@ -38,18 +39,21 @@ by-key:
                   parameters:
                     wall:
                       segments:
-                        "2": [-12, 0, 0]
+                        "2":
+                          intrinsic-offset: [-12, 0, 0]
   sides:
     NNE:
       parameters:
         wall:
           segments:
-            "2": [0, 8, -2]
+            "2":
+              intrinsic-offset: [0, 8, -2]
     NNW:
       parameters:
         wall:
           segments:
-            "2": [0, 8, -2]
+            "2":
+              intrinsic-offset: [0, 8, -2]
 secondaries:
   back-wall:
     anchoring:

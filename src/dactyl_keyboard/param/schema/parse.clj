@@ -148,7 +148,9 @@
                         :left-hand-alias keyword
                         :right-hand-alias keyword})
        :adapter (map-like {:alias keyword
-                           :segments (map-of integer (tuple-of num))})})))
+                           :segments (map-of integer
+                                             (map-like {:intrinsic-offset
+                                                        (tuple-of num)}))})})))
 
 (def central-housing-normal-positions
   (tuple-of

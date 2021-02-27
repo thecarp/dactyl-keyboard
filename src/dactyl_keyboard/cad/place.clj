@@ -148,7 +148,8 @@
   ;; the closest cardinal direction, flipping x and y accordingly so that a
   ;; user can supply a single offset that is equally useful in all directions,
   ;; and/or fully detailed exceptions for any particular side and segment.
-  (let [most #(most-specific getopt [:wall :segments %] cluster coord side)
+  (let [most #(most-specific getopt [:wall :segments % :intrinsic-offset]
+                             cluster coord side)
         [dx _] (misc/grid-factors (compass/northern-modulus side))
         rotation (compass/matrices (compass/convert-to-cardinal side))
         rotate (fn [[x y z]] (conj (mmul rotation [x y]) z))]

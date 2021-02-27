@@ -135,8 +135,8 @@
   "Get raw offsets for each point on the interface."
   [interface]
   [(map #(get-in % [:base :offset] [0 0 0]) interface)
-   (map #(get-in % [:adapter :segments 0] [0 0 0]) interface)
-   (map #(get-in % [:adapter :segments 1] [0 0 0]) interface)])
+   (map #(get-in % [:adapter :segments 0 :intrinsic-offset] [0 0 0]) interface)
+   (map #(get-in % [:adapter :segments 1 :intrinsic-offset] [0 0 0]) interface)])
 
 (defn- get-widths
   "Get half the width of the central housing and the full width of its

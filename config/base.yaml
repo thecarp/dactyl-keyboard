@@ -21,9 +21,12 @@ by-key:
     wall:
       thickness: 2
       segments:
-        "1": [0,  1, -1]  # Top bevel.
-        "2": [0,  0, -8]  # Perpendicular wall.
-        "3": [0, -1, -1]  # Bottom bevel.
+        "1":
+          intrinsic-offset: [0,  1, -1]  # Top bevel.
+        "2":
+          intrinsic-offset: [0,  0, -8]  # Perpendicular wall.
+        "3":
+          intrinsic-offset: [0, -1, -1]  # Bottom bevel.
 main-body:
   rear-housing:
     thickness:

@@ -71,6 +71,9 @@
 (spec/def :central/direction-point keyword?)
 (spec/def :central/axial-offset #(not (zero? %)))
 (spec/def :central/radial-offset #(not (zero? %)))
+(spec/def :central/intrinsic-offset ::tarmi/point-3d)
+(spec/def :central/segments (spec/map-of integer?
+                                         (spec/keys :req-un [:central/intrinsic-offset])))
 (spec/def :numeric/direction number?)
 (spec/def :intercardinal/side compass/intercardinals)
 (spec/def :intermediate/side compass/intermediates)
@@ -80,7 +83,6 @@
 (spec/def :two/offset ::tarmi/point-2d)
 (spec/def :three/offset ::tarmi/point-3d)
 (spec/def :three/override (spec/coll-of (spec/nilable number?) :count 3))
-(spec/def :three/segments (spec/map-of integer? ::tarmi/point-3d))
 (spec/def :flexible/offset ::tarmi/point-2-3d)
 
 
@@ -99,7 +101,7 @@
   (spec/keys :req-un [:three/offset]
              :opt-un [:central/left-hand-alias :central/right-hand-alias]))
 (spec/def :central/adapter
-  (spec/keys :opt-un [:three/segments ::alias]))
+  (spec/keys :opt-un [:central/segments ::alias]))
 (spec/def :central/interface-node
   (spec/keys :req-un [:central/base]
              :opt-un [:central/adapter ::at-ground ::above-ground]))

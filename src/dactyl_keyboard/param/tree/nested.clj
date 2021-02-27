@@ -4,7 +4,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns dactyl-keyboard.param.tree.nested
-  (:require [scad-tarmi.core :as tarmi-core]
+  (:require [clojure.spec.alpha :as spec]
+            [scad-tarmi.core :as tarmi-core]
+            [dactyl-keyboard.param.base :as base]
             [dactyl-keyboard.param.schema.parse :as parse]))
 
 (def raws
@@ -347,23 +349,26 @@
     "If `true`, draw one extra, vertical section of wall between the segment "
     "identified by `extent` and the ground beneath it."]
    [[:wall :segments]
-    {:default {0 [0 0 0]}
-     :parse-fn (parse/map-of parse/integer (parse/tuple-of num))
-     :validate [:three/segments]}
-    "A map of segment IDs to xyz-coordinates in mm.\n"
+    (let [local
+          [[]  ; This header will not be rendered and is therefore empty.
+           [[:intrinsic-offset]
+            {:default [0 0 0]
+             :parse-fn (parse/tuple-of num)
+             :validate [::tarmi-core/point-3d]}]]]
+      {:default {0 (base/extract-defaults local)}
+       :parse-fn (parse/map-of parse/integer (base/parser-with-defaults local))
+       :validate [(spec/map-of integer?  (base/delegated-validation local))]})
+    "A map describing the properties of the wall at each of its segments.\n"
     "\n"
     "This map is indexed by wall segment IDs, which are non-negative "
-    "integers. As with column IDs under `columns`, they must be entered in "
-    "YAML as strings.\n"
+    "integers. These must be entered in YAML as strings, i.e. in quotes.\n"
     "\n"
-    "The values of the map are three-dimensional offsets. "
+    "The values of the map are maps, including three-dimensional offsets. "
     "Any offset given for segment 0 is relative to a switch mounting plate. "
     "The default value for segment 0 is `[0, 0, 0]`, which means that walls "
-    "will start to build out from the corner of each mounting plate.\n"
-    "\n"
+    "will start to build out from the corner of each mounting plate. "
     "Segments other than 0, starting with segment 1, are offset relative to "
-    "the preceding segment and have no default value built into the "
-    "application.\n"
+    "the preceding segment.\n"
     "\n"
     "Offsets are *cumulative*. Segments form a chain, each one positioned "
     "relative to the one before, as the building blocks of each wall.\n"
@@ -376,18 +381,22 @@
     "    wall:\n"
     "      extent: 2\n"
     "      segments:\n"
-    "        "1": [0, 1, -0.5]\n"
-    "        "2": [0, 0, -4]\n"
+    "        "1":\n"
+    "          intrinsic-offset: [0, 1, -0.5]\n"
+    "        "2":\n"
+    "          intrinsic-offset: [0, 0, -4]\n"
     "  sides\n"
     "    SSE:\n"
     "      parameters:\n"
     "        wall:\n"
     "          segments:\n"
-    "            "2": [0, 0, -10]\n```"
-    "\n\n"
+    "            "2":\n"
+    "              intrinsic-offset: [0, 0, -10]\n"
+    "```\n"
+    "\n"
     "With this configuration, walls will be built connecting segments 0, 1 "
     "and 2 on the edge of each key cluster. For the sake of illustration, "
-    "Let’s say there’s only one cluster of keys: A, B, and C, in one row. "
+    "Let’s say there’s only one cluster of three keys: A, B, and C, in one row. "
     "Imagine their corners radiating numbered wall segments.\n"
     "\n"
     "```\n"
@@ -408,7 +417,7 @@
     "–0–––––0–\n"
     "NNW   NNE\n"
     "\n"
-    "   B\n"
+    "    B\n"
     "\n"
     "SSW   SSE\n"
     "–0–––––0–\n"

@@ -309,13 +309,11 @@ If `true`, draw one extra, vertical section of wall between the segment identifi
 
 ### Parameter <a id="wall-segments">`segments`</a>
 
-A map of segment IDs to xyz-coordinates in mm.
+A map describing the properties of the wall at each of its segments.
 
-This map is indexed by wall segment IDs, which are non-negative integers. As with column IDs under `columns`, they must be entered in YAML as strings.
+This map is indexed by wall segment IDs, which are non-negative integers. These must be entered in YAML as strings, i.e. in quotes.
 
-The values of the map are three-dimensional offsets. Any offset given for segment 0 is relative to a switch mounting plate. The default value for segment 0 is `[0, 0, 0]`, which means that walls will start to build out from the corner of each mounting plate.
-
-Segments other than 0, starting with segment 1, are offset relative to the preceding segment and have no default value built into the application.
+The values of the map are maps, including three-dimensional offsets. Any offset given for segment 0 is relative to a switch mounting plate. The default value for segment 0 is `[0, 0, 0]`, which means that walls will start to build out from the corner of each mounting plate. Segments other than 0, starting with segment 1, are offset relative to the preceding segment.
 
 Offsets are *cumulative*. Segments form a chain, each one positioned relative to the one before, as the building blocks of each wall.
 
@@ -327,17 +325,20 @@ by-key:
     wall:
       extent: 2
       segments:
-        1: [0, 1, -0.5]
-        2: [0, 0, -4]
+        1:
+          intrinsic-offset: [0, 1, -0.5]
+        2:
+          intrinsic-offset: [0, 0, -4]
   sides
     SSE:
       parameters:
         wall:
           segments:
-            2: [0, 0, -10]
+            2:
+              intrinsic-offset: [0, 0, -10]
 ```
 
-With this configuration, walls will be built connecting segments 0, 1 and 2 on the edge of each key cluster. For the sake of illustration, Let’s say there’s only one cluster of keys: A, B, and C, in one row. Imagine their corners radiating numbered wall segments.
+With this configuration, walls will be built connecting segments 0, 1 and 2 on the edge of each key cluster. For the sake of illustration, Let’s say there’s only one cluster of three keys: A, B, and C, in one row. Imagine their corners radiating numbered wall segments.
 
 ```
   2–––2–2–––2–2–––2
@@ -357,7 +358,7 @@ A more detailed ASCII diagram of the B key names the sides from which its wall s
 –0–––––0–
 NNW   NNE
 
-   B
+    B
 
 SSW   SSE
 –0–––––0–

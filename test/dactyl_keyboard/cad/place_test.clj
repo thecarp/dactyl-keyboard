@@ -10,7 +10,7 @@
 
 (deftest key-wall-offsets
   (testing "single source, single segment"
-    (let [options {:by-key {:parameters {:wall {:segments {0 [1 2 3]}}}}}
+    (let [options {:by-key {:parameters {:wall {:segments {0 {:intrinsic-offset[1 2 3]}}}}}}
           w (wall-coordinate-finder options)
           a (fn [side] (mapv int (w side 0)))]  ; Ease of comparison.
       (is (= (a :N) [0 2 3]))
@@ -21,10 +21,10 @@
       (is (= (a :S) [0 -2 3]))
       (is (= (a :NNW) [-1 2 3]))))
   (testing "multiple sources, multiple segments"
-    (let [options {:by-key {:parameters {:wall {:segments {0 [0 0 0]
-                                                           1 [0 1 -1]
-                                                           2 [0 1 -5]}}}
-                            :sides {:E {:parameters {:wall {:segments {1 [0 2 0]}}}}}}}
+    (let [options {:by-key {:parameters {:wall {:segments {0 {:intrinsic-offset [0 0 0]}
+                                                           1 {:intrinsic-offset [0 1 -1]}
+                                                           2 {:intrinsic-offset [0 1 -5]}}}}
+                            :sides {:E {:parameters {:wall {:segments {1 {:intrinsic-offset [0 2 0]}}}}}}}}
           w (wall-coordinate-finder options)
           a (fn [side] (mapv int (w side 2)))]
       (is (= (a :N) [0 2 -6]))
