@@ -592,7 +592,7 @@ flanges:
       include: true
       segments:
         "0":
-          size: [7, 1]
+          size: [8, 5]
         "1":
           style: sphere
           size: 5
@@ -629,6 +629,8 @@ flanges:
         total-length: 8.5
     bosses:
       include: true
+      # Bosses are slightly smaller, because they are supported by the rear
+      # housing.
       segments:
         "0":
           size: [7, 1]
