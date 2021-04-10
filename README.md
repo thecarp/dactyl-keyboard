@@ -13,7 +13,8 @@ files of parameters, you can change:
 Here are two of the application’s bundled designs for concave, columnar,
 ergonomic keyboards, as examples of what you can do:
 
-[![Image of the second working Concertina](https://viktor.eikman.se/image/concertina-2-front-view/display)](https://viktor.eikman.se/gallery/the-concertina/) 
+[![Image of the second working
+Concertina](https://viktor.eikman.se/image/concertina-2-front-view/display)](https://viktor.eikman.se/gallery/the-concertina/)
 
 ⤤ The [Concertina](https://viktor.eikman.se/article/the-concertina/), a diploid
 keyboard with 20 thumb keys and 3 assortment drawers.

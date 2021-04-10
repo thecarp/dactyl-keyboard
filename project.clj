@@ -1,4 +1,4 @@
-(defproject dactyl-keyboard "0.7.0-SNAPSHOT"
+(defproject dactyl-keyboard "0.7.0"
   :description "A parametrized keyboard design tool"
   :url "https://viktor.eikman.se/article/the-dmote/"
   :license {:name "GNU Affero General Public License"
