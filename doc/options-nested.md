@@ -306,7 +306,7 @@ For each wall segment, the following parameters are available:
 - `size`: The measurements of the segment, in mm.
 - `intrinsic-offset`: An xyz-offset in mm from the previous segment or, in the case of segment zero, from the corner of the switch mounting plate.
 
-The `size` of segment 0 has a dual function, determining the thickness of the key mount as well as the size of each wall post. By contrast, the *unit* size of each *key*, and therefore the horizontal extent of each key mounting plate, is a function of `key-style`, not of any parameter under `segments`.
+As a side effect, the `size` of segment 0 determines the thickness of the key mount and the internal webbing between key mounts, as well as the size of each wall post. By contrast, the *unit* size of each *key*, and therefore the horizontal extent of each key mounting plate, is a function of `key-style`, not of any parameter under `segments`.
 
 `intrinsic-offset` is *cumulative*. Segments form a chain, each one positioned relative to the one before, as the building blocks of each wall. Consider this example:
 
