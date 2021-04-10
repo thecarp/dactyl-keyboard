@@ -182,6 +182,7 @@ bottom-plates:
 flanges:
   main-bottom-plate:
     include: true
+    reflect: true
     bolts:
       include: true
       bolt-properties:
@@ -189,10 +190,6 @@ flanges:
     bosses:
       include: true
     positions:
-    - anchoring:
-        anchor: k
-        side: NNW
-        extrinsic-offset: [1.5, 1, 0]
     - anchoring:
         anchor: k
         side: NNE
@@ -245,6 +242,7 @@ Here’s the new part, in the middle:
 flanges:
   main-bottom-plate:
     include: true
+    reflect: true
     bolts:
       include: true
       bolt-properties:
@@ -252,10 +250,6 @@ flanges:
     bosses:
       include: true
     positions:
-    - anchoring:
-        anchor: k
-        side: NNW
-        extrinsic-offset: [1.5, 1, 0]
     - anchoring:
         anchor: k
         side: NNE
