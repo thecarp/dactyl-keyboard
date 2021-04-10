@@ -14,7 +14,7 @@
                  [scad-clj "0.5.3"]
                  [scad-klupe "0.2.0"]
                  [scad-tarmi "0.6.0"]
-                 [dmote-keycap "0.4.0"]]
+                 [dmote-keycap "0.5.0"]]
   :main dactyl-keyboard.core
   :aot :all
   :uberjar-name "dmote.jar")
