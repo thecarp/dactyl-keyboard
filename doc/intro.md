@@ -15,12 +15,14 @@ Concrete build guides and other peripheral documents can be found elsewhere:
     * The [Dactyl](https://github.com/adereth/dactyl-keyboard/tree/master/guide),
       which is currently not bundled with the DMOTE application.
     * The [Dactyl-ManuForm](https://github.com/tshort/dactyl-keyboard).
-    * The [Concertina](https://viktor.eikman.se/article/concertina-v060-build-guide/).
+    * The [Concertina](https://viktor.eikman.se/article/concertina-v070-build-guide/).
 * A guide to [planning for wiring](https://viktor.eikman.se/article/3d-keyboard-wiring/) in 3D.
 
 As for microcontroller firmware, QMK works great and has good documentation. In
 that project, the DMOTE is filed as a version of the Dactyl-ManuForm
 [here](https://github.com/qmk/qmk_firmware/tree/master/keyboards/handwired/dactyl_manuform/dmote).
+The Concertina is filed as a stand-alone project
+[here](https://github.com/qmk/qmk_firmware/tree/master/keyboards/handwired/concertina).
 
 ## From code to print
 
