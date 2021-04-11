@@ -4,7 +4,9 @@ This log follows the conventions of
 version 0.2.0, thus covering only a fraction of the project’s history.
 
 ## [Unreleased]
-Nothing yet.
+### New
+- Bundled designs: Added a `kailh.yaml` file for PG1511-style switches on a
+  Concertina.
 
 ## [Version 0.7.0] - 2021-04-10
 ### Changed

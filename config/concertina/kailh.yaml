@@ -1,0 +1,8 @@
+# Configuration fragment for PG1511-series switches on a Concertina.
+
+keys:
+  styles:
+    default:
+      switch-type: kailh-pg1511
+      skirt-length: 3  # Prevent collisions between pinky-finger keys.
+
