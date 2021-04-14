@@ -4,7 +4,12 @@ This log follows the conventions of
 version 0.2.0, thus covering only a fraction of the project’s history.
 
 ## [Unreleased]
-### New
+### Changed
+- Starting using YAML anchors in bundled configuration files for deduplication.
+  This is not a change in application logic, API or design; the YAML parser
+  expands each reference to the same effect as before.
+
+### Added
 - Bundled designs: Added a `kailh.yaml` file for PG1511-style switches on a
   Concertina.
 
