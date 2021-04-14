@@ -82,7 +82,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
     - Slight tuning of DFM settings for more common printers and more modern
       slicers.
 
-### New
+### Added
 - Added support for Kailh’s PG1511 series switches and similar MX clones
   without lateral recesses in the lower body.
 - Added a nominal clearance parameter to make it easier to design for multiple
