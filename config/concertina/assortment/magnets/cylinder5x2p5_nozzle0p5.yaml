@@ -13,37 +13,45 @@ tweaks:
     cut: true
     reflect: true
     hull-around:
-    - [assortment1, SE, 2, {anchoring: {intrinsic-offset: [-5, 4, -1.755]}, size: [10, 10.5, 2.5]}]
-    - [assortment1, SE, 2, {anchoring: {intrinsic-offset: [-12, 4, -1.755]}, size: [1, 1, 2.5]}]
+    - [assortment1, SE, 2,
+       &inner-pocket
+       {anchoring: {intrinsic-offset: [-5, 4, -1.755]}, size: &pocket-size [10, 10.5, 2.5]}]
+    - [assortment1, SE, 2,
+       &inner-channel
+       {anchoring: {intrinsic-offset: [-12, 4, -1.755]}, size: &channel-size [1, 1, 2.5]}]
   - above-ground: true
     cut: true
     reflect: true
     hull-around:
-    - [assortment2, SE, 2, {anchoring: {intrinsic-offset: [-5, 4, -1.755]}, size: [10, 10.5, 2.5]}]
-    - [assortment2, SE, 2, {anchoring: {intrinsic-offset: [-12, 4, -1.755]}, size: [1, 1, 2.5]}]
+    - [assortment2, SE, 2, *inner-pocket]
+    - [assortment2, SE, 2, *inner-channel]
   - above-ground: true
     cut: true
     reflect: true
     hull-around:
-    - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [-5, 4, -1.755]}, size: [10, 10.5, 2.5]}]
-    - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [-12, 4, -1.755]}, size: [1, 1, 2.5]}]
+    - [assortment3, SE, 2, *inner-pocket]
+    - [assortment3, SE, 2, *inner-channel]
   # The same sort of pockets but at the front of each drawer, to keep it steady while open.
   outer-magnet-pockets:
   - above-ground: true
     cut: true
     reflect: true
     hull-around:
-    - [assortment1, NE, 2, {anchoring: {intrinsic-offset: [-5, -15, -1.755]}, size: [10, 10.5, 2.5]}]
-    - [assortment1, NE, 2, {anchoring: {intrinsic-offset: [-12, -15, -1.755]}, size: [1, 1, 2.5]}]
+    - [assortment1, NE, 2,
+       &outer-pocket
+       {anchoring: {intrinsic-offset: [-5, -15, -1.755]}, size: *pocket-size}]
+    - [assortment1, NE, 2,
+       &outer-channel
+       {anchoring: {intrinsic-offset: [-12, -15, -1.755]}, size: *channel-size}]
   - above-ground: true
     cut: true
     reflect: true
     hull-around:
-    - [assortment2, NE, 2, {anchoring: {intrinsic-offset: [-5, -15, -1.755]}, size: [10, 10.5, 2.5]}]
-    - [assortment2, NE, 2, {anchoring: {intrinsic-offset: [-12, -15, -1.755]}, size: [1, 1, 2.5]}]
+    - [assortment2, NE, 2, *outer-pocket]
+    - [assortment2, NE, 2, *outer-channel]
   - above-ground: true
     cut: true
     reflect: true
     hull-around:
-    - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [-5, -15, -1.755]}, size: [10, 10.5, 2.5]}]
-    - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [-12, -15, -1.755]}, size: [1, 1, 2.5]}]
+    - [assortment3, NE, 2, *outer-pocket]
+    - [assortment3, NE, 2, *outer-channel]
