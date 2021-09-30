@@ -13,7 +13,7 @@
                  [scad-app "1.0.0"]
                  [scad-clj "0.5.3"]
                  [scad-klupe "0.3.0"]
-                 [scad-tarmi "0.7.0"]
+                 [scad-tarmi "0.8.0"]
                  [dmote-keycap "0.7.0"]]
   :main dactyl-keyboard.core
   :aot :all
