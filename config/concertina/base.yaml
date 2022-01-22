@@ -6,7 +6,8 @@
 #
 # This version uses only printable dmote-keycap caps and ALPS-style switches.
 # The keys are arranged so tightly in places that other types of caps and
-# switches should be expected to require adjustment of the keyboard design.
+# switches should be expected to require adjustment of the keyboard design;
+# see kailh.yml for an example.
 
 keys:
   styles:
@@ -75,10 +76,6 @@ key-clusters:
 by-key:
   parameters:
     layout:
-      matrix:
-        separation:
-          row: -0.5
-          column: -0.2
       pitch:
         intrinsic: -0.1
       clearance:
@@ -90,6 +87,9 @@ by-key:
           matrix:
             neutral:
               column: 2
+            separation:
+              row: -0.5
+              column: -0.2
           pitch:
             progressive: 0.3
       columns:
@@ -479,18 +479,13 @@ by-key:
                         "2":
                           intrinsic-offset: [0, 0, -3]
           sides:
-            SSW:
+            SSW: &first-thumb-offset
               parameters:
                 wall:
                   segments:
                     "2":
                       intrinsic-offset: [-1, 0, -6]
-            NNW:
-              parameters:
-                wall:
-                  segments:
-                    "2":
-                      intrinsic-offset: [-1, 0, -6]
+            NNW: *first-thumb-offset
         "1":
           parameters:
             layout:
