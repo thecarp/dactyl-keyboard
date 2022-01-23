@@ -14,7 +14,7 @@ keys:
     default:
       style: minimal
       top-size: [10, 10, 2.6]
-      skirt-thickness: 2.4
+      skirt-thickness: 1.2
 key-clusters:
   main:
     anchoring:

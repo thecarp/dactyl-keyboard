@@ -5,8 +5,9 @@
 # reducing index-finger travel.
 
 # In version 0.6.0 of the DMOTE application, these tighter keys were part of
-# the basic DMOTE configuration. They were moved here for version 0.7.0 because
-# users were surprised to find that standard keycaps would not fit.
+# the basic DMOTE configuration. They were moved here for version 0.7.0 on the
+# principle of least surprise, in that users were surprised to find that
+# standard keycaps would not fit.
 
 # The necessary small keycaps are outputs of the application and are designed
 # to be easily printable.
@@ -16,11 +17,11 @@ keys:
     minimal-short:  # Thin top.
       style: minimal
       top-size: [9, 9, 1.6]
-      skirt-thickness: 2.4
+      skirt-thickness: 1.2
     minimal-tall:  # Thicker top.
       style: minimal
       top-size: [9, 9, 3]
-      skirt-thickness: 2.4
+      skirt-thickness: 1.2
 by-key:
   clusters:
     main:
