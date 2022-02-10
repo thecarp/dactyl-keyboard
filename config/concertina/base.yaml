@@ -14,7 +14,8 @@ keys:
     default:
       style: minimal
       top-size: [10, 10, 2.6]
-      skirt-thickness: 1.2
+      bowl-radii: [20, 20, 20]
+      skirt-length: 5
 key-clusters:
   main:
     anchoring:

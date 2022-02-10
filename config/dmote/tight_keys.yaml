@@ -17,11 +17,9 @@ keys:
     minimal-short:  # Thin top.
       style: minimal
       top-size: [9, 9, 1.6]
-      skirt-thickness: 1.2
     minimal-tall:  # Thicker top.
       style: minimal
       top-size: [9, 9, 3]
-      skirt-thickness: 1.2
 by-key:
   clusters:
     main:
