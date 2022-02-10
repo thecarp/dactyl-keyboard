@@ -103,8 +103,8 @@ its own line in the YAML file:
   analogous to the first node, but on the rear housing.
 
 Notice that the rear housing is targeted with two automatically reserved names.
-One of these is `rear-housing-interior`, the same name we used to anchor the
-MCU. By contrast, the node anchored to Butty’s key mount uses the name we just
+One of these is rear-housing-interior, the same name we used to anchor the MCU.
+By contrast, the node anchored to Butty’s key mount uses the name we just
 defined: `k`. Keys do not have default names.
 
 We won’t be getting very advanced in this tutorial, but you can read about the
